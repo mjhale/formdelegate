@@ -1,0 +1,85 @@
+html {
+  box-sizing: border-box; }
+
+*, *::after, *::before {
+  box-sizing: inherit; }
+
+body {
+  background-color: #f7f7f7;
+  font-family: "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif; }
+
+label {
+  display: block;
+  padding-top: .1rem; }
+
+input[type="text"] {
+  border: .1rem solid #CCC;
+  border-radius: 0.3rem;
+  display: block;
+  margin: .25rem 0;
+  padding: 0.2rem;
+  width: 20rem; }
+
+button[type="submit"] {
+  background-color: #a7a7a7;
+  border: none;
+  border-radius: .2rem;
+  color: #FFF;
+  cursor: pointer;
+  font-weight: 500;
+  margin: .25rem 0;
+  outline: none;
+  overflow: hidden;
+  padding: .5rem 1rem;
+  text-align: center;
+  text-transform: uppercase;
+  transition: all 60ms ease-in-out; }
+  button[type="submit"]:hover {
+    opacity: .85;
+    transition: all 60ms ease; }
+  button[type="submit"]:active {
+    transition: all 60ms ease;
+    opacity: .55; }
+  button[type="submit"][disabled=disabled], button[type="submit"]:disabled {
+    color: #5D5D5D;
+    cursor: not-allowed;
+    text-shadow: .1rem .1rem #ADADAD; }
+
+#container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto; }
+  #container::after {
+    clear: both;
+    content: "";
+    display: block; }
+
+.logo {
+  font-family: 'Francois One', sans-serif;
+  font-size: 2.5rem;
+  max-width: 4em; }
+
+.nav {
+  background-color: #333333;
+  list-style-type: none;
+  margin: .5rem 0;
+  overflow: hidden;
+  padding: 0; }
+
+.nav li {
+  float: left;
+  padding: 1rem; }
+
+.nav a {
+  color: #ccc; }
+
+.nav a:hover {
+  color: #fff; }
+
+h1 {
+  font-size: 1.25rem; }
+
+h2, h3, h4, h5, h6 {
+  font-size: 1rem; }
+
+/*# sourceMappingURL=app.css.map*/
