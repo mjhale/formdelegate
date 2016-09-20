@@ -35,3 +35,6 @@ node_modules
 # OSX
 *.DS_Store
 Thumbs.db
+
+# Ignore static build assets
+priv/static
