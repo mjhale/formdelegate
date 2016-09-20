@@ -41,7 +41,7 @@ defmodule FormDelegate.AccountController do
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render(Testapp.ChangesetView, "error.json", changeset: changeset)
+        |> render(FormDelegate.ChangesetView, "error.json", changeset: changeset)
     end
   end
 

@@ -46124,7 +46124,7 @@
 	  } else if (accounts.isFetching) {
 	    return false;
 	  } else {
-	    console.log('@TODO: shouldInvalidateAccounts');
+	    return true;
 	  }
 	}
 	
@@ -46701,9 +46701,9 @@
 	
 	var _Account2 = _interopRequireDefault(_Account);
 	
-	var _AccountForm = __webpack_require__(742);
+	var _AccountEdit = __webpack_require__(749);
 	
-	var _AccountForm2 = _interopRequireDefault(_AccountForm);
+	var _AccountEdit2 = _interopRequireDefault(_AccountEdit);
 	
 	var _Home = __webpack_require__(743);
 	
@@ -46726,7 +46726,7 @@
 				_react2.default.createElement(_reactRouter.Route, { path: 'about', component: _About2.default }),
 				_react2.default.createElement(_reactRouter.Route, { path: 'accounts', component: _Accounts2.default }),
 				_react2.default.createElement(_reactRouter.Route, { path: '/accounts/:accountId', component: _Account2.default }),
-				_react2.default.createElement(_reactRouter.Route, { path: '/accounts/:accountId/edit', component: _AccountForm2.default }),
+				_react2.default.createElement(_reactRouter.Route, { path: '/accounts/:accountId/edit', component: _AccountEdit2.default }),
 				_react2.default.createElement(_reactRouter.Route, { path: '*', component: _Invalid2.default })
 			)
 		);
@@ -46857,39 +46857,60 @@
 						'Accounts'
 					),
 					_react2.default.createElement(
-						'div',
-						{ className: 'accounts' },
-						isEmpty ? isFetching ? _react2.default.createElement(
-							'p',
+						'table',
+						{ className: 'accounts table-minimal' },
+						_react2.default.createElement(
+							'thead',
 							null,
-							'Loading data...'
-						) : null : _react2.default.createElement(
-							'ul',
-							{ style: { opacity: isFetching ? 0.5 : 1 } },
+							_react2.default.createElement(
+								'tr',
+								null,
+								_react2.default.createElement(
+									'th',
+									null,
+									'Account Name'
+								),
+								_react2.default.createElement(
+									'th',
+									null,
+									'Message Count'
+								),
+								_react2.default.createElement(
+									'th',
+									null,
+									'Verified Status'
+								)
+							)
+						),
+						_react2.default.createElement(
+							'tbody',
+							null,
 							items.map(function (account) {
 								return _react2.default.createElement(
-									'li',
+									'tr',
 									{ key: account.id },
 									_react2.default.createElement(
-										_reactRouter.Link,
-										{ to: '/accounts/' + account.id },
-										account.username
+										'td',
+										null,
+										_react2.default.createElement(
+											_reactRouter.Link,
+											{ to: '/accounts/' + account.id },
+											account.username
+										)
 									),
 									_react2.default.createElement(
-										'p',
+										'td',
 										null,
-										'Password: ',
-										account.password_hash
+										'500'
+									),
+									_react2.default.createElement(
+										'td',
+										null,
+										'Unverified'
 									)
 								);
 							})
 						)
-					),
-					_react2.default.createElement(
-						'p',
-						null,
-						'Updated: ',
-						lastUpdated
 					)
 				);
 			}
@@ -47084,141 +47105,7 @@
 	exports.default = Account;
 
 /***/ },
-/* 742 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _react = __webpack_require__(300);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _reactRedux = __webpack_require__(484);
-	
-	var _reduxForm = __webpack_require__(562);
-	
-	var _account = __webpack_require__(736);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var propTypes = {
-	  handleSubmit: _react.PropTypes.func,
-	  fields: _react.PropTypes.object
-	};
-	
-	var AccountFormContainer = function (_React$Component) {
-	  _inherits(AccountFormContainer, _React$Component);
-	
-	  function AccountFormContainer() {
-	    _classCallCheck(this, AccountFormContainer);
-	
-	    return _possibleConstructorReturn(this, (AccountFormContainer.__proto__ || Object.getPrototypeOf(AccountFormContainer)).apply(this, arguments));
-	  }
-	
-	  _createClass(AccountFormContainer, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      var dispatch = this.props.dispatch;
-	      var accountId = this.props.params.accountId;
-	
-	      dispatch((0, _account.fetchAccount)(accountId));
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var dispatch = _props.dispatch;
-	      var submitting = _props.submitting;
-	      var pristine = _props.pristine;
-	      var handleSubmit = _props.handleSubmit;
-	
-	
-	      var doSubmit = function doSubmit(values) {
-	        dispatch((0, _account.updateAccount)(values));
-	      };
-	
-	      return _react2.default.createElement(
-	        'form',
-	        { onSubmit: handleSubmit(doSubmit) },
-	        _react2.default.createElement(
-	          'div',
-	          null,
-	          _react2.default.createElement(
-	            'label',
-	            { htmlFor: 'username' },
-	            'Username'
-	          ),
-	          _react2.default.createElement(_reduxForm.Field, { name: 'username', component: 'input', type: 'text', placeholder: 'Username' })
-	        ),
-	        _react2.default.createElement(
-	          'div',
-	          null,
-	          _react2.default.createElement(
-	            'label',
-	            { htmlFor: 'username' },
-	            'Name'
-	          ),
-	          _react2.default.createElement(_reduxForm.Field, { name: 'name', component: 'input', type: 'text', placeholder: 'Full Name' })
-	        ),
-	        _react2.default.createElement(
-	          'div',
-	          null,
-	          _react2.default.createElement(
-	            'label',
-	            { htmlFor: 'password' },
-	            'Password'
-	          ),
-	          _react2.default.createElement(_reduxForm.Field, { name: 'password', component: 'input', type: 'text', placeholder: 'Password' })
-	        ),
-	        _react2.default.createElement(
-	          'button',
-	          { type: 'submit', disabled: submitting | pristine },
-	          'Save Changes'
-	        )
-	      );
-	    }
-	  }]);
-	
-	  return AccountFormContainer;
-	}(_react2.default.Component);
-	
-	AccountFormContainer.propTypes = propTypes;
-	
-	AccountFormContainer = (0, _reduxForm.reduxForm)({
-	  form: 'account-edit',
-	  enableReinitialize: true
-	})(AccountFormContainer);
-	
-	var mapStateToProps = function mapStateToProps(state) {
-	  var _state$account = state.account;
-	  var account = _state$account.account;
-	  var isFetching = _state$account.isFetching;
-	  var lastUpdated = _state$account.lastUpdated;
-	
-	
-	  return {
-	    account: account,
-	    isFetching: isFetching,
-	    lastUpdated: lastUpdated,
-	    initialValues: account
-	  };
-	};
-	
-	exports.default = (0, _reactRedux.connect)(mapStateToProps)(AccountFormContainer);
-
-/***/ },
+/* 742 */,
 /* 743 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -47363,6 +47250,197 @@
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 746 */,
+/* 747 */,
+/* 748 */,
+/* 749 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(300);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactRedux = __webpack_require__(484);
+	
+	var _reduxForm = __webpack_require__(562);
+	
+	var _account = __webpack_require__(736);
+	
+	var _AccountForm = __webpack_require__(750);
+	
+	var _AccountForm2 = _interopRequireDefault(_AccountForm);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var AccountFormContainer = function (_React$Component) {
+	  _inherits(AccountFormContainer, _React$Component);
+	
+	  function AccountFormContainer() {
+	    _classCallCheck(this, AccountFormContainer);
+	
+	    return _possibleConstructorReturn(this, (AccountFormContainer.__proto__ || Object.getPrototypeOf(AccountFormContainer)).apply(this, arguments));
+	  }
+	
+	  _createClass(AccountFormContainer, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var dispatch = this.props.dispatch;
+	      var accountId = this.props.params.accountId;
+	
+	      dispatch((0, _account.fetchAccount)(accountId));
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {}
+	  }, {
+	    key: 'onSubmit',
+	    value: function onSubmit(values, dispatch) {
+	      dispatch((0, _account.updateAccount)(values));
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(_AccountForm2.default, _extends({}, this.props, { onSubmit: this.onSubmit }));
+	    }
+	  }]);
+	
+	  return AccountFormContainer;
+	}(_react2.default.Component);
+	
+	AccountFormContainer = (0, _reduxForm.reduxForm)({
+	  form: 'accountForm',
+	  enableReinitialize: true
+	})(AccountFormContainer);
+	
+	var mapStateToProps = function mapStateToProps(state) {
+	  var account = state.account.account;
+	
+	  return {
+	    account: account,
+	    initialValues: account
+	  };
+	};
+	
+	exports.default = (0, _reactRedux.connect)(mapStateToProps)(AccountFormContainer);
+
+/***/ },
+/* 750 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	var _react = __webpack_require__(300);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reduxForm = __webpack_require__(562);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var propTypes = _extends({}, _reduxForm.propTypes);
+	
+	var defaultProps = {};
+	
+	var AccountForm = function AccountForm(props) {
+	  var error = props.error;
+	  var handleSubmit = props.handleSubmit;
+	  var onSubmit = props.onSubmit;
+	  var pristine = props.pristine;
+	  var submitting = props.submitting;
+	  var reset = props.reset;
+	
+	
+	  return _react2.default.createElement(
+	    'form',
+	    { onSubmit: handleSubmit(onSubmit) },
+	    _react2.default.createElement(
+	      'div',
+	      null,
+	      _react2.default.createElement(
+	        'label',
+	        { htmlFor: 'username' },
+	        'Username'
+	      ),
+	      _react2.default.createElement(_reduxForm.Field, { name: 'username', component: 'input', type: 'text', placeholder: 'Username' })
+	    ),
+	    _react2.default.createElement(
+	      'div',
+	      null,
+	      _react2.default.createElement(
+	        'label',
+	        { htmlFor: 'username' },
+	        'Name'
+	      ),
+	      _react2.default.createElement(_reduxForm.Field, { name: 'name', component: 'input', type: 'text', placeholder: 'Full Name' })
+	    ),
+	    _react2.default.createElement(
+	      'div',
+	      null,
+	      _react2.default.createElement(
+	        'label',
+	        { htmlFor: 'password' },
+	        'Password'
+	      ),
+	      _react2.default.createElement(_reduxForm.Field, { name: 'password', component: 'input', type: 'password', placeholder: 'Password' })
+	    ),
+	    error && _react2.default.createElement(
+	      'p',
+	      null,
+	      _react2.default.createElement(
+	        'strong',
+	        null,
+	        error
+	      )
+	    ),
+	    _react2.default.createElement(
+	      'div',
+	      null,
+	      _react2.default.createElement(
+	        'button',
+	        { type: 'submit', disabled: submitting },
+	        'Save Changes'
+	      )
+	    ),
+	    _react2.default.createElement(
+	      'div',
+	      null,
+	      _react2.default.createElement(
+	        'button',
+	        { type: 'reset', disabled: pristine || submitting, onClick: reset },
+	        'Reset Changes'
+	      )
+	    )
+	  );
+	};
+	
+	AccountForm.propTypes = propTypes;
+	AccountForm.defaultProps = defaultProps;
+	
+	exports.default = AccountForm;
 
 /***/ }
 /******/ ]);

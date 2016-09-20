@@ -4,6 +4,40 @@ html {
 *, *::after, *::before {
   box-sizing: inherit; }
 
+.table-minimal {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%; }
+  .table-minimal tbody tr:hover > td, .table-minimal tbody tr:hover > th {
+    background-color: #c7c7c7; }
+  .table-minimal tbody tr:first-child td {
+    border-top: 2px solid gainsboro; }
+  .table-minimal thead th {
+    background-color: #e6e6e6;
+    border-bottom: 0;
+    padding: 0.75em 1em;
+    text-align: left; }
+  .table-minimal tbody {
+    background-color: #ccc; }
+    .table-minimal tbody td {
+      border-bottom: 0;
+      border-top: 1px solid gainsboro;
+      line-height: 1.5em;
+      padding: 0.75em 1em; }
+      .table-minimal tbody td button {
+        display: inline-block;
+        font-size: 0.7em;
+        line-height: 1.5em;
+        margin-bottom: 0.3em;
+        margin-right: 0.5em;
+        outline: none;
+        padding: 0.3em 1em;
+        width: 100%; }
+        @media screen and (min-width: 40em) {
+          .table-minimal tbody td button {
+            margin-bottom: 0;
+            width: auto; } }
+
 body {
   background-color: #f7f7f7;
   font-family: "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif; }

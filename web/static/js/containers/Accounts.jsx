@@ -28,21 +28,24 @@ class AccountsContainer extends React.Component {
     return (
       <div>
         <h1>Accounts</h1>
-        <div className="accounts">
-					{isEmpty
-	          ? (isFetching ? <p>Loading data...</p> : null)
-	          :	<ul style={{ opacity: isFetching ? 0.5 : 1 }}>
-							{items.map((account) => (
-								<li key={account.id}>
-									<Link to={`/accounts/${account.id}`}>{account.username}</Link>
-									<p>Password: {account.password_hash}</p>
-								</li>
-							))}
-		          </ul>
-	        }
-
-        </div>
-				<p>Updated: {lastUpdated}</p>
+        <table className="accounts table-minimal">
+					<thead>
+						<tr>
+							<th>Account Name</th>
+							<th>Message Count</th>
+							<th>Verified Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						{items.map((account) => (
+							<tr key={account.id}>
+								<td><Link to={`/accounts/${account.id}`}>{account.username}</Link></td>
+								<td>500</td>
+								<td>Unverified</td>
+							</tr>
+						))}
+					</tbody>
+        </table>
       </div>
     );
   }

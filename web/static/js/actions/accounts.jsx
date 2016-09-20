@@ -33,7 +33,7 @@ function shouldFetchAccounts(state) {
   } else if (accounts.isFetching) {
     return false;
   } else {
-    console.log('@TODO: shouldInvalidateAccounts');
+    return true;
   }
 }
 

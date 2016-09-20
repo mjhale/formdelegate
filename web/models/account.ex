@@ -15,9 +15,10 @@ defmodule FormDelegate.Account do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :username])
+    |> cast(params, [:name, :username, :password])
     |> validate_required([:username])
     |> validate_length(:username, min: 3, max: 128)
+    |> put_password_hash()
   end
 
   @doc """
