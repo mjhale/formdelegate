@@ -2,18 +2,19 @@ import React from 'react';
 import { Link } from 'react-router';
 
 class HomeContainer extends React.Component {
-	render() {
+  render() {
     return (
       <div className="welcome">
         <div className="logo">Form Delegate</div>
         <ul className="nav" role="nav">
-					<li><Link to="/">Home</Link></li>
+          <li><Link to="/">Home</Link></li>
           <li><Link to="/about">About</Link></li>
           <li><Link to="/accounts">Accounts</Link></li>
+          <li><Link to="/login">Login</Link></li>
         </ul>
-				<div className="content">
-					{this.props.children}
-				</div>
+        <div className="content">
+          {this.props.children}
+        </div>
       </div>
     );
   }
