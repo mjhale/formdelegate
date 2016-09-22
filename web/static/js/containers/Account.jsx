@@ -14,11 +14,11 @@ class AccountContainer extends Component {
 
 const mapStateToProps = (state) => {
   const { account, isFetching, lastUpdated } = state.account;
-	return {
+  return {
     account,
     isFetching,
     lastUpdated
-	}
+  }
 }
 
 export default connect(mapStateToProps)(AccountContainer);

@@ -10,14 +10,14 @@ import InvalidRoute from './components/Invalid';
 import LoginContainer from './containers/Login';
 
 export const RootRouter = ({history}) => (
-	<Router history={history}>
-		<Route path="/" component={HomeContainer}>
-			<Route path="about" component={AboutContainer}/>
-			<Route path="accounts" component={AccountsContainer}/>
-			<Route path="accounts/:accountId" component={AccountContainer}/>
-			<Route path="accounts/:accountId/edit" component={AccountEditContainer}/>
-			<Route path="login" component={LoginContainer}/>
-			<Route path="*" component={InvalidRoute}/>
-		</Route>
-	</Router>
+  <Router history={history}>
+    <Route path="/" component={HomeContainer}>
+      <Route path="about" component={AboutContainer}/>
+      <Route path="accounts" component={AccountsContainer}/>
+      <Route path="accounts/:accountId" component={AccountContainer}/>
+      <Route path="accounts/:accountId/edit" component={AccountEditContainer}/>
+      <Route path="login" component={LoginContainer}/>
+      <Route path="*" component={InvalidRoute}/>
+    </Route>
+  </Router>
 );

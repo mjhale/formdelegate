@@ -11,9 +11,9 @@ defmodule FormDelegate.AccountView do
 
   def render("account.json", %{account: account}) do
     %{id: account.id,
-			name: account.name,
-			password: account.password,
-			password_hash: account.password_hash,
+      name: account.name,
+      password: account.password,
+      password_hash: account.password_hash,
       username: account.username}
   end
 end

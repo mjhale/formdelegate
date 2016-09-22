@@ -27,19 +27,19 @@ defmodule FormDelegate.Account do
   Builds a account registration changeset based on the `struct` and `params`.
   """
   def registration_changeset(struct, params) do
-  	struct
-  	|> changeset(params)
-  	|> cast(params, [:password])
-  	|> validate_length(:password, min: 10, max: 128)
-  	|> put_password_hash()
+    struct
+    |> changeset(params)
+    |> cast(params, [:password])
+    |> validate_length(:password, min: 10, max: 128)
+    |> put_password_hash()
   end
 
   defp put_password_hash(changeset) do
-  	case changeset do
-  		%Ecto.Changeset{valid?: true, changes: %{password: password}} ->
-  			put_change(changeset, :password_hash, Comeonin.Pbkdf2.hashpwsalt(password))
-  		_ ->
-  			changeset
-  	end
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
+        put_change(changeset, :password_hash, Comeonin.Pbkdf2.hashpwsalt(password))
+      _ ->
+        changeset
+    end
   end
 end

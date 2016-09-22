@@ -1,32 +1,32 @@
 defmodule FormDelegate.MessageController do
   use FormDelegate.Web, :controller
 
-	alias FormDelegate.Message
+  alias FormDelegate.Message
 
   # plug Guardian.Plug.EnsureAuthenticated, handler: FormDelegate.AuthorizationErrorHandler
 
-	def index(conn, _params) do
+  def index(conn, _params) do
     messages = Repo.all(Message)
     render(conn, "index.json", messages: messages)
   end
 
-	def create(conn, %{"message" => message_params}) do
-		changeset = Message.changeset(%Message{}, message_params)
+  def create(conn, %{"message" => message_params}) do
+    changeset = Message.changeset(%Message{}, message_params)
 
-		case Repo.insert(changeset) do
+    case Repo.insert(changeset) do
       {:ok, message} ->
-				conn
-				|> put_status(:created)
-				|> put_resp_header("location", message_path(conn, :show, message))
-				|> render("show.json", message: message)
-			{:error, changeset} ->
-				conn
-				|> put_status(:unprocessable_entity)
-				|> render(FormDelegate.ChangesetView, "error.json", changeset: changeset)
-		end
+        conn
+        |> put_status(:created)
+        |> put_resp_header("location", message_path(conn, :show, message))
+        |> render("show.json", message: message)
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(FormDelegate.ChangesetView, "error.json", changeset: changeset)
+    end
   end
 
-	def show(conn, %{"id" => id}) do
+  def show(conn, %{"id" => id}) do
     message = Repo.get!(Message, id)
     render(conn, "show.json", message: message)
   end

@@ -52,10 +52,10 @@ export function fetchAccount(accountId) {
 }
 
 export function fetchAccount(accountId) {
-	return dispatch => {
-		dispatch(requestAccount());
-		return fetch(`/api/accounts/${accountId}`)
-			.then((response) => response.json())
-			.then(json => dispatch(receiveAccount(json)));
-	};
+  return dispatch => {
+    dispatch(requestAccount());
+    return fetch(`/api/accounts/${accountId}`)
+      .then((response) => response.json())
+      .then(json => dispatch(receiveAccount(json)));
+  };
 }

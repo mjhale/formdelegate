@@ -18,12 +18,12 @@ function receiveAccounts(json) {
 }
 
 function fetchAccounts() {
-	return dispatch => {
-		dispatch(requestAccounts());
-		return fetch('/api/accounts')
-			.then((response) => response.json())
-			.then(json => dispatch(receiveAccounts(json)));
-	};
+  return dispatch => {
+    dispatch(requestAccounts());
+    return fetch('/api/accounts')
+      .then((response) => response.json())
+      .then(json => dispatch(receiveAccounts(json)));
+  };
 }
 
 function shouldFetchAccounts(state) {
@@ -38,7 +38,7 @@ function shouldFetchAccounts(state) {
 }
 
 export function fetchAccountsIfNeeded() {
-	return (dispatch, getState) => {
+  return (dispatch, getState) => {
     if (shouldFetchAccounts(getState())) {
       return dispatch(fetchAccounts());
     }
