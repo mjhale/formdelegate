@@ -1,6 +1,8 @@
 defmodule FormDelegate.Account do
   use FormDelegate.Web, :model
 
+  @derive {Poison.Encoder, except: [:__meta__]}
+
   schema "accounts" do
     field :name, :string
     field :password, :string, virtual: true

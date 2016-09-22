@@ -4,20 +4,23 @@ defmodule FormDelegate.SessionController do
   plug :scrub_params, "session" when action in [:create]
 
   def create(conn, %{"session" => session_params}) do
-		case FormDelegate.Session.authenticate(session_params) do
-			{:ok, account} ->
-				{:ok, jwt, _full_claims} = account |> Guardian.encode_and_sign(:token)
+    case FormDelegate.Session.authenticate(session_params) do
+      {:ok, account} ->
+        new_conn = Guardian.Plug.api_sign_in(conn, account)
+        jwt = Guardian.Plug.current_token(new_conn)
+        {:ok, claims} = Guardian.Plug.claims(new_conn)
+        exp = Map.get(claims, "exp")
 
-				conn
-				|> put_status(:created)
-				|> Guardian.Plug.sign_in(account)
-				|> render("show.json", jwt: jwt, account: account)
+        new_conn
+        |> put_resp_header("authorization", "Bearer #{jwt}")
+        |> put_resp_header("x-expires", "#{exp}")
+        |> render("show.json", %{account: account, jwt: jwt, exp: exp})
 
-			:error ->
-				conn
-				|> put_status(:unprocessable_entity)
-				|> render("error.json")
-		end
+      :error ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render("error.json")
+    end
   end
 
   def delete(conn, _params) do
