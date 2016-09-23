@@ -58,8 +58,8 @@ const mapStateToProps = (state) => {
   return {
     items: state.accounts.items,
     isFetching: state.accounts.isFetching,
-    lastUpdated: state.accounts.lastUpdated
-  }
-}
+    lastUpdated: state.accounts.lastUpdated,
+  };
+};
 
 export default connect(mapStateToProps)(AccountsContainer);

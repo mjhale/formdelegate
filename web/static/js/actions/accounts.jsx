@@ -5,7 +5,7 @@ export const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 
 function requestAccounts() {
   return {
-    type: REQUEST_ACCOUNTS
+    type: REQUEST_ACCOUNTS,
   };
 }
 
@@ -13,16 +13,16 @@ function receiveAccounts(json) {
   return {
     type: RECEIVE_ACCOUNTS,
     items: json.data,
-    receivedAt: Date.now()
+    receivedAt: Date.now(),
   };
 }
 
 function fetchAccounts() {
-  return dispatch => {
+  return (dispatch) => {
     dispatch(requestAccounts());
     return fetch('/api/accounts')
       .then((response) => response.json())
-      .then(json => dispatch(receiveAccounts(json)));
+      .then((json) => dispatch(receiveAccounts(json)));
   };
 }
 
@@ -42,5 +42,5 @@ export function fetchAccountsIfNeeded() {
     if (shouldFetchAccounts(getState())) {
       return dispatch(fetchAccounts());
     }
-  }
+  };
 }

@@ -6,7 +6,7 @@ export const UPDATE_ACCOUNT = 'UPDATE_ACCOUNT';
 
 function requestAccount() {
   return {
-    type: REQUEST_ACCOUNT
+    type: REQUEST_ACCOUNT,
   };
 }
 
@@ -14,7 +14,7 @@ function receiveAccount(json) {
   return {
     type: RECEIVE_ACCOUNT,
     account: json.data,
-    receivedAt: Date.now()
+    receivedAt: Date.now(),
   };
 }
 
@@ -26,7 +26,7 @@ function updateAccountOptimistic(account) {
 }
 
 export function updateAccount(account) {
-  return dispatch => {
+  return (dispatch) => {
     dispatch(updateAccountOptimistic(account));
     return fetch(`/api/accounts/${account.id}`, {
       method: 'put',
@@ -35,7 +35,7 @@ export function updateAccount(account) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        account
+        account,
       }),
     })
     .catch((error) => console.log(error));
@@ -43,19 +43,10 @@ export function updateAccount(account) {
 }
 
 export function fetchAccount(accountId) {
-  return dispatch => {
+  return (dispatch) => {
     dispatch(requestAccount());
     return fetch(`/api/accounts/${accountId}`)
       .then((response) => response.json())
-      .then(json => dispatch(receiveAccount(json)));
-  };
-}
-
-export function fetchAccount(accountId) {
-  return dispatch => {
-    dispatch(requestAccount());
-    return fetch(`/api/accounts/${accountId}`)
-      .then((response) => response.json())
-      .then(json => dispatch(receiveAccount(json)));
+      .then((json) => dispatch(receiveAccount(json)));
   };
 }

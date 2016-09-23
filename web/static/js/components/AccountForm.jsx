@@ -6,7 +6,7 @@ const propTypes = {
 };
 
 const defaultProps = {
-}
+};
 
 const AccountForm = (props) => {
   const { error, handleSubmit, onSubmit, pristine, submitting, reset } = props;
@@ -33,8 +33,8 @@ const AccountForm = (props) => {
       <div><button type="submit" disabled={submitting}>Save Changes</button></div>
       <div><button type="reset" disabled={pristine || submitting} onClick={reset}>Reset Changes</button></div>
     </form>
-  )
-}
+  );
+};
 
 AccountForm.propTypes = propTypes;
 AccountForm.defaultProps = defaultProps;

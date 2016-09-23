@@ -36,7 +36,7 @@ const mapStateToProps = (state) => {
   return {
     account,
     initialValues: account,
-  }
-}
+  };
+};
 
 export default connect(mapStateToProps)(AccountFormContainer);

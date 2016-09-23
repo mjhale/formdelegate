@@ -17,8 +17,8 @@ const mapStateToProps = (state) => {
   return {
     account,
     isFetching,
-    lastUpdated
-  }
-}
+    lastUpdated,
+  };
+};
 
 export default connect(mapStateToProps)(AccountContainer);
