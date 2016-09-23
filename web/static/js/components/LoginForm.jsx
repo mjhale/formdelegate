@@ -18,7 +18,7 @@ const LoginForm = (props) => {
 
       <div><button type="submit" disabled={submitting}>Login</button></div>
     </form>
-  )
-}
+  );
+};
 
 export default LoginForm;

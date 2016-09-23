@@ -2,19 +2,21 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 
-import LoginForm from 'components/LoginForm';
-import { signIn } from 'actions/sessions';
+import LoginForm from '../components/LoginForm';
+import { loginAccount } from '../actions/sessions';
 
 class LoginContainer extends React.Component {
   onSubmit(values, dispatch) {
-    dispatch(signIn(values));
+    dispatch(loginAccount(values));
   }
 
   render() {
+    const { handleSubmit } = this.props;
+
     return (
       <LoginForm
         {...this.props.fields}
-        handleSubmit={this.props.handleSubmit(this.onSubmit)}
+        handleSubmit={handleSubmit(this.onSubmit)}
       />
     );
   }
@@ -32,15 +34,20 @@ const validate = (values) => {
   }
 
   return errors;
-}
+};
 
 LoginContainer = reduxForm({
   form: 'loginForm',
-  validate
+  validate,
 })(LoginContainer);
 
 const mapStateToProps = (state) => {
-  return {}
-}
+  const { authentication } = state;
+  const { isAuthenticated } = authentication;
+
+  return {
+    isAuthenticated,
+  };
+};
 
 export default connect(mapStateToProps)(LoginContainer);
