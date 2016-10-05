@@ -1,24 +1,51 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
+import { Link } from 'react-router';
 
 import LoginForm from '../components/LoginForm';
-import { loginAccount } from '../actions/sessions';
+import { loginAccount, logoutAccount } from '../actions/sessions';
+import Logout from '../components/Logout';
+
+const propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  submitting: PropTypes.bool.isRequired,
+  pristine: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool.isRequired,
+};
 
 class LoginContainer extends React.Component {
-  onSubmit(values, dispatch) {
+  handleSubmit(values, dispatch) {
     dispatch(loginAccount(values));
   }
 
   render() {
-    const { handleSubmit } = this.props;
+    const {
+      dispatch,
+      fields,
+      handleSubmit,
+      pristine,
+      submitting,
+      isAuthenticated
+    } = this.props;
 
-    return (
-      <LoginForm
-        {...this.props.fields}
-        handleSubmit={handleSubmit(this.onSubmit)}
-      />
-    );
+    if (isAuthenticated) {
+      return (
+        <div className="logout-prompt">
+          You are currently logged in. Would you like to <Logout onLogoutClick={() => dispatch(logoutAccount())} />?
+        </div>
+      );
+    } else {
+      return (
+        <LoginForm
+          {...fields}
+          pristine={pristine}
+          submitting={submitting}
+          handleSubmit={handleSubmit(this.handleSubmit)}
+        />
+      );
+    }
   }
 }
 
@@ -35,6 +62,8 @@ const validate = (values) => {
 
   return errors;
 };
+
+LoginContainer.propTypes = propTypes;
 
 LoginContainer = reduxForm({
   form: 'loginForm',

@@ -17,8 +17,7 @@ const defaultProps = {
 
 class AccountsContainer extends React.Component {
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch(fetchAccountsIfNeeded());
+    this.props.dispatch(fetchAccountsIfNeeded());
   }
 
   render() {

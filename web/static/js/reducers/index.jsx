@@ -3,6 +3,7 @@ import { routerReducer } from 'react-router-redux';
 import { reducer as formReducer } from 'redux-form';
 
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/sessions';
+import { LOGOUT_REQUEST, LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../actions/sessions';
 import { REQUEST_ACCOUNTS, RECEIVE_ACCOUNTS } from '../actions/accounts';
 import { REQUEST_ACCOUNT, RECEIVE_ACCOUNT, UPDATE_ACCOUNT } from '../actions/account';
 
@@ -50,16 +51,17 @@ const accountReducer = (state = {
   }
 };
 
+/* @TODO Check if fd_token is expired. */
 const authenticationReducer = (state = {
   isFetching: false,
-  isAuthenticated: localStorage.getItem('fd_jwt') ? true : false,
+  isAuthenticated: localStorage.getItem('fd_token') ? true : false,
+  errorMessage: '',
 }, action) => {
   switch (action.type) {
     case LOGIN_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
         isAuthenticated: false,
-        credentials: action.credentials,
       });
     case LOGIN_SUCCESS:
       return Object.assign({}, state, {
@@ -73,18 +75,32 @@ const authenticationReducer = (state = {
         isAuthenticated: false,
         errorMessage: action.message,
       });
+    case LOGOUT_REQUEST:
+      return Object.assign({}, state, {
+        isFetching: true,
+      });
+    case LOGOUT_SUCCESS:
+      return Object.assign({}, state, {
+        isFetching: false,
+        isAuthenticated: false,
+      });
+    case LOGOUT_FAILURE:
+      return Object.assign({}, state, {
+        isFetching: false,
+        isAuthenticated: false,
+        errorMessage: action.message,
+      });
     default:
       return state;
   }
 };
 
-
 const reducers = {
-  authentication: authenticationReducer,
   account: accountReducer,
   accounts: accountsReducer,
-  routing: routerReducer,
+  authentication: authenticationReducer,
   form: formReducer,
+  routing: routerReducer,
 };
 
 export default combineReducers(reducers);

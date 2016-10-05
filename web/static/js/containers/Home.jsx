@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router';
+
+const propTypes = {
+  children: React.PropTypes.node,
+};
 
 class HomeContainer extends React.Component {
   render() {
+    const { children } = this.props;
+
     return (
       <div className="welcome">
         <div className="logo">Form Delegate</div>
@@ -13,11 +20,13 @@ class HomeContainer extends React.Component {
           <li><Link to="/login">Login</Link></li>
         </ul>
         <div className="content">
-          {this.props.children}
+          {children}
         </div>
       </div>
     );
   }
 }
+
+HomeContainer.propTypes = propTypes;
 
 export default HomeContainer;
