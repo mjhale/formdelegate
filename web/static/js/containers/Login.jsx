@@ -4,8 +4,22 @@ import { reduxForm } from 'redux-form';
 import { Link } from 'react-router';
 
 import LoginForm from '../components/LoginForm';
-import { loginAccount, logoutAccount } from '../actions/sessions';
 import Logout from '../components/Logout';
+import { loginAccount, logoutAccount } from '../actions/sessions';
+
+const validate = (values) => {
+  const errors = {};
+
+  if (!values.username) {
+    errors.username = 'Required';
+  }
+
+  if (!values.password) {
+    errors.password = 'Required';
+  }
+
+  return errors;
+};
 
 const propTypes = {
   handleSubmit: PropTypes.func.isRequired,
@@ -27,16 +41,10 @@ class LoginContainer extends React.Component {
       handleSubmit,
       pristine,
       submitting,
-      isAuthenticated
+      isAuthenticated,
     } = this.props;
 
-    if (isAuthenticated) {
-      return (
-        <div className="logout-prompt">
-          You are currently logged in. Would you like to <Logout onLogoutClick={() => dispatch(logoutAccount())} />?
-        </div>
-      );
-    } else {
+    if (!isAuthenticated) {
       return (
         <LoginForm
           {...fields}
@@ -45,23 +53,19 @@ class LoginContainer extends React.Component {
           handleSubmit={handleSubmit(this.handleSubmit)}
         />
       );
+    } else {
+      return (
+        <div className="logout-prompt">
+          You are currently logged in. Would you like to&nbsp;
+          <Logout
+            logoutText="logout"
+            onLogoutClick={() => dispatch(logoutAccount())}
+          />?
+        </div>
+      );
     }
   }
 }
-
-const validate = (values) => {
-  const errors = {};
-
-  if (!values.username) {
-    errors.username = 'Required';
-  }
-
-  if (!values.password) {
-    errors.password = 'Required';
-  }
-
-  return errors;
-};
 
 LoginContainer.propTypes = propTypes;
 
@@ -71,8 +75,7 @@ LoginContainer = reduxForm({
 })(LoginContainer);
 
 const mapStateToProps = (state) => {
-  const { authentication } = state;
-  const { isAuthenticated } = authentication;
+  const { isAuthenticated } = state.authentication;
 
   return {
     isAuthenticated,

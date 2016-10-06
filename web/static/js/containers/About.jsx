@@ -4,7 +4,8 @@ class AboutContainer extends Component {
   render() {
     return (
       <div className="about">
-        About Form Delegate
+        <h1>What is Form Delegate?</h1>
+        <p>Easy, we manage the processing for your forms.</p>
       </div>
     );
   }

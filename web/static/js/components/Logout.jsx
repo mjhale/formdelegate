@@ -2,16 +2,29 @@ import React, { PropTypes } from 'react';
 
 export default class Logout extends React.Component {
   render() {
-    const { onLogoutClick } = this.props;
+    const { onLogoutClick, logoutText, className, to } = this.props;
 
     return (
-      <a href="#"
-        onClick={() => onLogoutClick()}
-        className="button button-logout">Logout</a>
+      <a href={to}
+        onClick={() => {
+          onLogoutClick();
+        }}
+        className={className}
+      >
+        {logoutText}
+      </a>
     );
   }
 }
 
 Logout.propTypes = {
-  onLogoutClick: PropTypes.func.isRequired
+  className: PropTypes.string,
+  onLogoutClick: PropTypes.func.isRequired,
+  logoutText: PropTypes.string.isRequired,
+  to: PropTypes.string.isRequired,
+};
+
+Logout.defaultProps = {
+  logoutText: 'Logout',
+  to: '/',
 };
