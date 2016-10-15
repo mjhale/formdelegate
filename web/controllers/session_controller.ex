@@ -15,7 +15,6 @@ defmodule FormDelegate.SessionController do
         |> put_resp_header("authorization", "Bearer #{jwt}")
         |> put_resp_header("x-expires", "#{exp}")
         |> render("show.json", %{account: account, jwt: jwt, exp: exp})
-
       :error ->
         conn
         |> put_status(:unprocessable_entity)
@@ -26,5 +25,11 @@ defmodule FormDelegate.SessionController do
   def delete(conn, _params) do
     Guardian.Plug.sign_out(conn)
     |> redirect(to: "/")
+  end
+
+  def unauthenticated(conn, _params) do
+    conn
+    |> put_status(:forbidden)
+    |> render(FormDelegate.SessionView, "forbidden.json", error: "Not Authenticated")
   end
 end

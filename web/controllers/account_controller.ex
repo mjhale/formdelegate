@@ -3,10 +3,10 @@ defmodule FormDelegate.AccountController do
 
   alias FormDelegate.Account
 
-  # plug Guardian.Plug.EnsureAuthenticated, handler: FormDelegate.AuthorizationController
+  plug Guardian.Plug.EnsureAuthenticated, handler: FormDelegate.SessionController
 
   def index(conn, _params) do
-    accounts = Repo.all(Account)
+    accounts = Account |> Repo.all |> Repo.preload([:messages])
     render(conn, "index.json", accounts: accounts)
   end
 
@@ -27,7 +27,7 @@ defmodule FormDelegate.AccountController do
   end
 
   def show(conn, %{"id" => id}) do
-    account = Repo.get!(Account, id)
+    account = Account |> Repo.get!(id) |> Repo.preload([:messages])
     render(conn, "show.json", account: account)
   end
 

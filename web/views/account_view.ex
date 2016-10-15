@@ -10,10 +10,11 @@ defmodule FormDelegate.AccountView do
   end
 
   def render("account.json", %{account: account}) do
-    %{id: account.id,
+    %{
+      id: account.id,
       name: account.name,
-      password: account.password,
-      password_hash: account.password_hash,
-      username: account.username}
+      username: account.username,
+      messages: render_many(account.messages, FormDelegate.MessageView, "message.json")
+    }
   end
 end

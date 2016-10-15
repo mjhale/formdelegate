@@ -38,7 +38,7 @@ class AccountsContainer extends React.Component {
           <tbody>
             {items.map((account) => (
               <tr key={account.id}>
-                <td><Link to={`/accounts/${account.id}`}>{account.username}</Link></td>
+                <td><Link to={`/admin/accounts/${account.id}`}>{account.username}</Link></td>
                 <td>500</td>
                 <td>Unverified</td>
               </tr>

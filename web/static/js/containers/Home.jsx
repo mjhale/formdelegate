@@ -25,7 +25,8 @@ class HomeContainer extends React.Component {
         <ul className="nav" role="nav">
           <li><Link to="/">Home</Link></li>
           <li><Link to="/about">About</Link></li>
-          <li><Link to="/accounts">Accounts</Link></li>
+          <li><Link to="/messages">My Messages</Link></li>
+          <li><Link to="/admin/accounts">Accounts</Link></li>
           { !isAuthenticated &&
             <li><Link to="/login">Login</Link></li>
           }

@@ -1,7 +1,7 @@
 defmodule FormDelegate.Account do
-  use FormDelegate.Web, :model
+  @derive {Poison.Encoder, only: [:id, :name, :username]}
 
-  @derive {Poison.Encoder, except: [:__meta__]}
+  use FormDelegate.Web, :model
 
   schema "accounts" do
     field :name, :string
@@ -9,17 +9,22 @@ defmodule FormDelegate.Account do
     field :password_hash, :string, null: false
     field :username, :string, null: false
 
+    has_many :messages, FormDelegate.Message
+
     timestamps()
   end
+
+  @required_fields ~w(username password)
+  @optional_fields ~w(password_hash name)
 
   @doc """
   Builds a changeset based on the `struct` and `params`.
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :username, :password])
-    |> validate_required([:username])
+    |> cast(params, @required_fields, @optional_fields)
     |> validate_length(:username, min: 3, max: 128)
+    |> validate_length(:password, min: 10, max: 128)
     |> put_password_hash()
   end
 
@@ -29,7 +34,8 @@ defmodule FormDelegate.Account do
   def registration_changeset(struct, params) do
     struct
     |> changeset(params)
-    |> cast(params, [:password])
+    |> cast(params, @required_fields, @optional_fields)
+    |> validate_length(:username, min: 3, max: 128)
     |> validate_length(:password, min: 10, max: 128)
     |> put_password_hash()
   end

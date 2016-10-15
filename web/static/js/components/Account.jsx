@@ -19,7 +19,7 @@ class Account extends React.Component {
           <div>Password hash: {account.password_hash}</div>
           <div>Name: {account.name}</div>
           <div>
-            <Link to={`/accounts/${account.id}/edit`}>Edit Account</Link>
+            <Link to={`/admin/accounts/${account.id}/edit`}>Edit Account</Link>
           </div>
         </div>
       );

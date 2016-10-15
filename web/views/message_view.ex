@@ -10,8 +10,10 @@ defmodule FormDelegate.MessageView do
   end
 
   def render("message.json", %{message: message}) do
-    %{id: message.id,
+    %{
+      id: message.id,
       content: message.content,
-      sender_name: message.sender_name}
+      sender: message.sender
+    }
   end
 end

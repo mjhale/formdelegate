@@ -3,15 +3,20 @@ defmodule FormDelegate.MessageController do
 
   alias FormDelegate.Message
 
-  # plug Guardian.Plug.EnsureAuthenticated, handler: FormDelegate.AuthorizationErrorHandler
+  plug Guardian.Plug.EnsureAuthenticated, handler: FormDelegate.SessionController
 
   def index(conn, _params) do
-    messages = Repo.all(Message)
+    current_account = Guardian.Plug.current_resource(conn)
+    messages = Repo.all(account_messages(current_account))
+
     render(conn, "index.json", messages: messages)
   end
 
   def create(conn, %{"message" => message_params}) do
-    changeset = Message.changeset(%Message{}, message_params)
+    current_account = Guardian.Plug.current_resource(conn)
+    changeset = current_account
+      |> build_assoc(:messages)
+      |> Message.changeset(message_params)
 
     case Repo.insert(changeset) do
       {:ok, message} ->
@@ -27,7 +32,7 @@ defmodule FormDelegate.MessageController do
   end
 
   def show(conn, %{"id" => id}) do
-    message = Repo.get!(Message, id)
+    message = Message |> Repo.get!(id) |> Repo.preload([:account])
     render(conn, "show.json", message: message)
   end
 
@@ -51,5 +56,9 @@ defmodule FormDelegate.MessageController do
     Repo.delete!(message)
 
     send_resp(conn, :no_content, "")
+  end
+
+  defp account_messages(account) do
+    assoc(account, :messages)
   end
 end

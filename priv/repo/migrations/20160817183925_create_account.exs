@@ -1,15 +1,15 @@
-defmodule FormDelegate.Repo.Migrations.CreateAccount do
+defmodule FormDelegate.Repo.Migrations.CreateMessage do
   use Ecto.Migration
 
   def change do
-    create table(:accounts) do
-      add :name, :string
-      add :password_hash, :string
-      add :username, :string
+    create table(:messages) do
+      add :content, :string, null: false
+      add :sender, :string, null: false
+      add :account_id, references(:accounts, on_delete: :nothing)
 
       timestamps()
     end
 
-    create unique_index(:accounts, [:username])
+    create index(:messages, [:account_id])
   end
 end
