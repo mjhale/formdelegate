@@ -26,27 +26,45 @@ function updateAccountOptimistic(account) {
 }
 
 export function updateAccount(account) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch(updateAccountOptimistic(account));
-    return fetch(`/api/accounts/${account.id}`, {
-      method: 'put',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        account,
-      }),
-    })
-    .catch((error) => console.log(error));
+
+    let token = localStorage.getItem('fd_token') || null;
+
+    if (token) {
+      return fetch(`/api/accounts/${account.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          account
+        }),
+      })
+      .catch((error) => console.log(error));
+    } else {
+      throw 'No token found.';
+    }
   };
 }
 
 export function fetchAccount(accountId) {
   return (dispatch) => {
     dispatch(requestAccount());
-    return fetch(`/api/accounts/${accountId}`)
+
+    let token = localStorage.getItem('fd_token') || null;
+
+    if (token) {
+      return fetch(`/api/accounts/${accountId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      })
       .then((response) => response.json())
       .then((json) => dispatch(receiveAccount(json)));
+    } else {
+      throw 'No token found.';
+    }
   };
 }

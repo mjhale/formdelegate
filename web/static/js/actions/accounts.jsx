@@ -20,9 +20,20 @@ function receiveAccounts(json) {
 function fetchAccounts() {
   return (dispatch) => {
     dispatch(requestAccounts());
-    return fetch('/api/accounts')
+
+    let token = localStorage.getItem('fd_token') || null;
+
+    if (token) {
+      return fetch('/api/accounts', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      })
       .then((response) => response.json())
       .then((json) => dispatch(receiveAccounts(json)));
+    } else {
+      throw 'No token found.';
+    }
   };
 }
 

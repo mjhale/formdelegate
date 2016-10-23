@@ -26,6 +26,7 @@ defmodule FormDelegate.ConnCase do
       import Ecto.Query
 
       import FormDelegate.Router.Helpers
+      import FormDelegate.TestHelpers
 
       # The default endpoint for testing
       @endpoint FormDelegate.Endpoint

@@ -3,8 +3,18 @@ defmodule FormDelegate.AccountTest do
 
   alias FormDelegate.Account
 
-  @valid_attrs %{encrypted_password: "some content", name: "some content"}
-  @invalid_attrs %{}
+  @valid_attrs %{
+    password_hash: "some password hash",
+    password: "some password",
+    name: "Joseph",
+    username: "joe",
+  }
+  @invalid_attrs %{
+    password_hash: "password hash",
+    password: "pass",
+    name: "Joseph",
+    username: "joe",
+  }
 
   test "changeset with valid attributes" do
     changeset = Account.changeset(%Account{}, @valid_attrs)
@@ -14,5 +24,10 @@ defmodule FormDelegate.AccountTest do
   test "changeset with invalid attributes" do
     changeset = Account.changeset(%Account{}, @invalid_attrs)
     refute changeset.valid?
+  end
+
+  test "password_hash value gets set to a hash" do
+    changeset = Account.changeset(%Account{}, @valid_attrs)
+    assert Comeonin.Pbkdf2.checkpw(@valid_attrs.password, Ecto.Changeset.get_change(changeset, :password_hash))
   end
 end
