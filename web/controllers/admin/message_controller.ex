@@ -1,4 +1,4 @@
-defmodule FormDelegate.MessageController do
+defmodule FormDelegate.Admin.MessageController do
   use FormDelegate.Web, :controller
 
   alias FormDelegate.Message

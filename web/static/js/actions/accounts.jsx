@@ -24,7 +24,7 @@ function fetchAccounts() {
     let token = localStorage.getItem('fd_token') || null;
 
     if (token) {
-      return fetch('/api/accounts', {
+      return fetch('/api/admin/accounts', {
         headers: {
           'Authorization': `Bearer ${token}`,
         }

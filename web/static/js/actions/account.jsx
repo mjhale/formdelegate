@@ -32,7 +32,7 @@ export function updateAccount(account) {
     let token = localStorage.getItem('fd_token') || null;
 
     if (token) {
-      return fetch(`/api/accounts/${account.id}`, {
+      return fetch(`/api/admin/accounts/${account.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export function fetchAccount(accountId) {
     let token = localStorage.getItem('fd_token') || null;
 
     if (token) {
-      return fetch(`/api/accounts/${accountId}`, {
+      return fetch(`/api/admin/accounts/${accountId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         }

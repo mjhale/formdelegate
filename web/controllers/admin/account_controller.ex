@@ -1,4 +1,4 @@
-defmodule FormDelegate.AccountController do
+defmodule FormDelegate.Admin.AccountController do
   use FormDelegate.Web, :controller
 
   alias FormDelegate.Account
@@ -11,7 +11,7 @@ defmodule FormDelegate.AccountController do
   end
 
   def create(conn, %{"account" => account_params}) do
-    changeset = Account.registration_changeset(%Account{}, account_params)
+    changeset = Account.changeset(%Account{}, account_params)
 
     case Repo.insert(changeset) do
       {:ok, account} ->
@@ -32,7 +32,7 @@ defmodule FormDelegate.AccountController do
   end
 
   def update(conn, %{"id" => id, "account" => account_params}) do
-    account = Repo.get!(Account, id)
+    account = Repo.get!(Account, id) |> Repo.preload([:messages])
     changeset = Account.changeset(account, account_params)
 
     case Repo.update(changeset) do

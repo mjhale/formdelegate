@@ -14,8 +14,8 @@ defmodule FormDelegate.Account do
     timestamps()
   end
 
-  @required_fields ~w(username password)
-  @optional_fields ~w(password_hash name)
+  @required_fields ~w(username)
+  @optional_fields ~w(password name)
 
   @doc """
   Builds a changeset based on the `struct` and `params`.
@@ -23,18 +23,7 @@ defmodule FormDelegate.Account do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, @required_fields, @optional_fields)
-    |> validate_length(:username, min: 3, max: 128)
-    |> validate_length(:password, min: 10, max: 128)
-    |> put_password_hash()
-  end
-
-  @doc """
-  Builds a account registration changeset based on the `struct` and `params`.
-  """
-  def registration_changeset(struct, params) do
-    struct
-    |> changeset(params)
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast_assoc(:messages, required: false)
     |> validate_length(:username, min: 3, max: 128)
     |> validate_length(:password, min: 10, max: 128)
     |> put_password_hash()
