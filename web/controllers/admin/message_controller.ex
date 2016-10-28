@@ -15,8 +15,8 @@ defmodule FormDelegate.Admin.MessageController do
   def create(conn, %{"message" => message_params}) do
     current_account = Guardian.Plug.current_resource(conn)
     changeset = current_account
-      |> build_assoc(:messages)
-      |> Message.changeset(message_params)
+    |> build_assoc(:messages)
+    |> Message.create_changeset(message_params)
 
     case Repo.insert(changeset) do
       {:ok, message} ->
@@ -53,7 +53,9 @@ defmodule FormDelegate.Admin.MessageController do
   def delete(conn, %{"id" => id}) do
     message = Repo.get!(Message, id)
 
-    Repo.delete!(message)
+    message
+    |> Message.delete_changeset
+    |> Repo.delete!
 
     send_resp(conn, :no_content, "")
   end

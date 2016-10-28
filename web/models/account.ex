@@ -8,6 +8,7 @@ defmodule FormDelegate.Account do
     field :password, :string, virtual: true
     field :password_hash, :string, null: false
     field :username, :string, null: false
+    field :messages_count, :integer, null: false
 
     has_many :messages, FormDelegate.Message
 

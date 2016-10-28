@@ -12,13 +12,15 @@ export default function(ComposedComponent) {
 
   class Authentication extends React.Component {
     componentWillMount() {
-      if(!this.props.isAuthenticated) {
-        this.context.router.push('/login');
-      }
+      this.redirectIfNotAuthenticated();
     }
 
     componentWillUpdate(nextProps) {
-      if(!nextProps.isAuthenticated) {
+      this.redirectIfNotAuthenticated();
+    }
+
+    redirectIfNotAuthenticated() {
+      if (!this.props.isAuthenticated) {
         this.context.router.push('/login');
       }
     }

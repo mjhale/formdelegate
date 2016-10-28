@@ -1,9 +1,8 @@
-import React, { PropTypes, Component } from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-
-import Account from '../components/Account';
 import { fetchAccount } from '../actions/account';
+import Account from '../components/Account';
 
 const propTypes = {
   account: PropTypes.object.isRequired,
@@ -13,7 +12,7 @@ const propTypes = {
   params: PropTypes.object.isRequired,
 };
 
-class AccountContainer extends Component {
+class AdminAccountContainer extends React.Component {
   componentDidMount() {
     const { dispatch, params } = this.props;
     const { accountId } = params;
@@ -27,7 +26,7 @@ class AccountContainer extends Component {
   }
 }
 
-AccountContainer.propTypes = propTypes;
+AdminAccountContainer.propTypes = propTypes;
 
 const mapStateToProps = (state) => {
   const { account, isFetching, lastUpdated } = state.account;
@@ -38,4 +37,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(AccountContainer);
+export default connect(mapStateToProps)(AdminAccountContainer);

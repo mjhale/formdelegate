@@ -9,7 +9,7 @@ defmodule FormDelegate.TestHelpers do
     }, attrs)
 
     %FormDelegate.Account{}
-    |> FormDelegate.Account.registration_changeset(changes)
+    |> FormDelegate.Account.changeset(changes)
     |> Repo.insert!()
   end
 end

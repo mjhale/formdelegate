@@ -2,10 +2,9 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { Link } from 'react-router';
-
+import { loginAccount, logoutAccount } from '../actions/sessions';
 import LoginForm from '../components/LoginForm';
 import Logout from '../components/Logout';
-import { loginAccount, logoutAccount } from '../actions/sessions';
 
 const validate = (values) => {
   const errors = {};
@@ -30,10 +29,6 @@ const propTypes = {
 };
 
 class LoginContainer extends React.Component {
-  handleSubmit(values, dispatch) {
-    dispatch(loginAccount(values));
-  }
-
   render() {
     const {
       dispatch,
@@ -42,6 +37,7 @@ class LoginContainer extends React.Component {
       pristine,
       submitting,
       isAuthenticated,
+      onSubmit
     } = this.props;
 
     if (!isAuthenticated) {
@@ -50,7 +46,7 @@ class LoginContainer extends React.Component {
           {...fields}
           pristine={pristine}
           submitting={submitting}
-          handleSubmit={handleSubmit(this.handleSubmit)}
+          handleSubmit={handleSubmit(onSubmit)}
         />
       );
     } else {
@@ -82,4 +78,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(LoginContainer);
+export default connect(
+  mapStateToProps,
+  { onSubmit: loginAccount }
+)(LoginContainer);

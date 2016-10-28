@@ -6,7 +6,7 @@ defmodule FormDelegate.Admin.AccountController do
   plug Guardian.Plug.EnsureAuthenticated, handler: FormDelegate.SessionController
 
   def index(conn, _params) do
-    accounts = Account |> Repo.all |> Repo.preload([:messages])
+    accounts = Account |> Repo.all
     render(conn, "index.json", accounts: accounts)
   end
 

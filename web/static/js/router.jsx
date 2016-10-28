@@ -1,11 +1,10 @@
 import React from 'react';
 import { Router, Route } from 'react-router';
-
 import AboutContainer from './containers/About';
 import AdminContainer from './containers/Admin';
-import AccountsContainer from './containers/Accounts';
-import AccountContainer from './containers/Account';
-import AccountEditContainer from './containers/AccountEdit';
+import AdminAccountsContainer from './containers/AdminAccounts';
+import AdminAccountContainer from './containers/AdminAccount';
+import AdminAccountFormContainer from './containers/AdminAccountForm';
 import HomeContainer from './containers/Home';
 import InvalidRoute from './components/InvalidRoute';
 import LoginContainer from './containers/Login';
@@ -16,9 +15,9 @@ export const RootRouter = ({history}) => (
     <Route path="/" component={HomeContainer}>
       <Route path="about" component={AboutContainer}/>
       <Route path="admin" component={requireAuth(AdminContainer)}>
-        <Route path="accounts" component={AccountsContainer}/>
-        <Route path="accounts/:accountId" component={AccountContainer}/>
-        <Route path="accounts/:accountId/edit" component={AccountEditContainer}/>
+        <Route path="accounts" component={AdminAccountsContainer}/>
+        <Route path="accounts/:accountId" component={AdminAccountContainer}/>
+        <Route path="accounts/:accountId/edit" component={AdminAccountFormContainer}/>
       </Route>
       <Route path="login" component={LoginContainer}/>
       <Route path="*" component={InvalidRoute}/>

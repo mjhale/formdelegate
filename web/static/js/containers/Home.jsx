@@ -1,9 +1,8 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-
-import Logout from '../components/Logout';
 import { logoutAccount } from '../actions/sessions';
+import Logout from '../components/Logout';
 
 const propTypes = {
   children: PropTypes.node,
@@ -13,6 +12,10 @@ const propTypes = {
 
 const defaultProps = {
   isAuthenticated: false,
+};
+
+const contextTypes = {
+  router: React.PropTypes.object.isRequired
 };
 
 class HomeContainer extends React.Component {
@@ -33,7 +36,10 @@ class HomeContainer extends React.Component {
           { isAuthenticated &&
             <li>
               <Logout
-                onLogoutClick={() => dispatch(logoutAccount())}
+                onLogoutClick={() => {
+                  dispatch(logoutAccount());
+                  this.context.router.push('/');
+                }}
               />
             </li>
           }
@@ -48,6 +54,7 @@ class HomeContainer extends React.Component {
 
 HomeContainer.propTypes = propTypes;
 HomeContainer.defaultProps = defaultProps;
+HomeContainer.contextTypes = contextTypes;
 
 const mapStateToProps = (state) => {
   const { isAuthenticated } = state.authentication;
