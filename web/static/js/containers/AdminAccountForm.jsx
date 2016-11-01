@@ -31,7 +31,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
+const mapDispatchToProps = (dispatch) => ({
   onSubmit(data) {
     dispatch(updateAccount(data));
     browserHistory.push(`/admin/accounts/${data.id}`);

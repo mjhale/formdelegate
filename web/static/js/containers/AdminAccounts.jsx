@@ -39,7 +39,7 @@ class AdminAccountsContainer extends React.Component {
               <tr key={account.id}>
                 <td><Link to={`/admin/accounts/${account.id}`}>{account.username}</Link></td>
                 <td>{account.messages_count}</td>
-                <td>Unverified</td>
+                <td>{account.verified ? 'Verified' : 'Unverified'}</td>
               </tr>
             ))}
           </tbody>

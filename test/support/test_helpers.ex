@@ -1,4 +1,6 @@
 defmodule FormDelegate.TestHelpers do
+  {:ok, _} = Application.ensure_all_started(:ex_machina)
+
   alias FormDelegate.Repo
 
   def insert_account(attrs \\ %{}) do
@@ -10,6 +12,12 @@ defmodule FormDelegate.TestHelpers do
 
     %FormDelegate.Account{}
     |> FormDelegate.Account.changeset(changes)
+    |> Repo.insert!()
+  end
+
+  def insert_message(account, attrs \\ %{}) do
+    account
+    |> Ecto.build_assoc(:messages, attrs)
     |> Repo.insert!()
   end
 end

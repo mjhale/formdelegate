@@ -9,8 +9,10 @@ defmodule FormDelegate.Account do
     field :password_hash, :string, null: false
     field :username, :string, null: false
     field :messages_count, :integer, null: false
+    field :verified, :boolean, null: false
+    field :is_admin, :boolean, null: false
 
-    has_many :messages, FormDelegate.Message
+    has_many :messages, FormDelegate.Message, on_delete: :delete_all
 
     timestamps()
   end

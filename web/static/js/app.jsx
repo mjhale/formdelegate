@@ -7,7 +7,6 @@ import { browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 import thunk from 'redux-thunk';
 import createLogger from 'redux-logger';
-
 import reducer from './reducers/index';
 import { RootRouter } from './router';
 

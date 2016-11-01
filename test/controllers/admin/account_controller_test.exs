@@ -1,4 +1,4 @@
-defmodule FormDelegate.AccountControllerTest do
+defmodule FormDelegate.AdminAccountControllerTest do
   use FormDelegate.ConnCase
 
   test "requires account authentication on all actions", %{conn: conn} do

@@ -6,6 +6,26 @@ import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/sessions
 import { LOGOUT_REQUEST, LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../actions/sessions';
 import { REQUEST_ACCOUNTS, RECEIVE_ACCOUNTS } from '../actions/accounts';
 import { REQUEST_ACCOUNT, RECEIVE_ACCOUNT, UPDATE_ACCOUNT } from '../actions/account';
+import { REQUEST_MESSAGES, RECEIVE_MESSAGES } from '../actions/messages';
+
+const messagesReducer = (state = {
+  messages: [],
+  isFetching: false,
+}, action) => {
+  switch (action.type) {
+    case REQUEST_MESSAGES:
+      return Object.assign({}, state, {
+        isFetching: true,
+      });
+    case RECEIVE_MESSAGES:
+      return Object.assign({}, state, {
+        isFetching: false,
+        messages: action.messages,
+      });
+    default:
+      return state;
+  }
+};
 
 const accountsReducer = (state = {
   isFetching: false,
@@ -101,6 +121,7 @@ const reducers = {
   authentication: authenticationReducer,
   form: formReducer,
   routing: routerReducer,
+  messages: messagesReducer,
 };
 
 export default combineReducers(reducers);
