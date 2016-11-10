@@ -14,6 +14,7 @@ defmodule FormDelegate.MessageController do
 
   def create(conn, %{"message" => message_params}) do
     current_account = Guardian.Plug.current_resource(conn)
+
     changeset = current_account
     |> build_assoc(:messages)
     |> Message.create_changeset(message_params)
@@ -36,22 +37,8 @@ defmodule FormDelegate.MessageController do
     render(conn, "show.json", message: message)
   end
 
-  def update(conn, %{"id" => id, "message" => message_params}) do
-    message = Repo.get!(Message, id)
-    changeset = Message.changeset(message, message_params)
-
-    case Repo.update(changeset) do
-      {:ok, message} ->
-        render(conn, "show.json", message: message)
-      {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Testapp.ChangesetView, "error.json", changeset: changeset)
-    end
-  end
-
   def delete(conn, %{"id" => id}) do
-    message = Repo.get!(Message, id)
+    message = Message |> Repo.get!(id) |> Repo.preload([:account])
 
     message
     |> Message.delete_changeset

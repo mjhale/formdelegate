@@ -10,7 +10,7 @@ defmodule FormDelegate.Account do
     field :username, :string, null: false
     field :messages_count, :integer, null: false
     field :verified, :boolean, null: false
-    field :is_admin, :boolean, null: false
+    field :admin, :boolean, null: false
 
     has_many :messages, FormDelegate.Message, on_delete: :delete_all
 

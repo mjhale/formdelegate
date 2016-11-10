@@ -18,7 +18,13 @@ defmodule FormDelegate.Router do
   scope "/api", FormDelegate do
     pipe_through :api
 
-    resources "/messages", MessageController
+    post "/forms/:id", FormController, :create
+
+    get "/messages", MessageController, :index
+    get "/messages/:id", MessageController, :show
+    post "/messages", MessageController, :create
+    delete "/messages/:id", MessageController, :delete
+
     resources "/admin/accounts", Admin.AccountController
 
     post "/sessions", SessionController, :create

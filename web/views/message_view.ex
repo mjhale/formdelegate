@@ -14,6 +14,7 @@ defmodule FormDelegate.MessageView do
       id: message.id,
       content: message.content,
       sender: message.sender,
+      unknown_fields: message.unknown_fields,
       inserted_at: message.inserted_at,
       updated_at: message.updated_at,
     }

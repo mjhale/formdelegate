@@ -4,14 +4,15 @@ defmodule FormDelegate.Message do
   schema "messages" do
     field :content, :string, null: false
     field :sender, :string, null: false
+    field :unknown_fields, :map
 
     belongs_to :account, FormDelegate.Account
 
     timestamps()
   end
 
-  @required_fields ~w(content sender account_id)
-  @optional_fields ~w()
+  @required_fields ~w(account_id sender content)
+  @optional_fields ~w(unknown_fields)
 
   @doc """
   Builds a changeset based on the `struct` and `params`.

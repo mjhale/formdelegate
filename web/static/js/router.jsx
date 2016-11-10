@@ -22,6 +22,7 @@ export const RootRouter = ({history}) => (
         <Route path="accounts/:accountId/edit" component={AdminAccountFormContainer}/>
       </Route>
       <Route path="login" component={LoginContainer}/>
+      <Route path="*" component={InvalidRoute}/>
     </Route>
   </Router>
 );
