@@ -7,6 +7,26 @@ import { LOGOUT_REQUEST, LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../actions/sessi
 import { REQUEST_ACCOUNTS, RECEIVE_ACCOUNTS } from '../actions/accounts';
 import { REQUEST_ACCOUNT, RECEIVE_ACCOUNT, UPDATE_ACCOUNT } from '../actions/account';
 import { REQUEST_MESSAGES, RECEIVE_MESSAGES } from '../actions/messages';
+import { REQUEST_FORMS, RECEIVE_FORMS } from '../actions/forms';
+
+const formsReducer = (state = {
+  forms: [],
+  isFetching: false,
+}, action) => {
+  switch (action.type) {
+    case REQUEST_FORMS:
+      return Object.assign({}, state, {
+        isFetching: true,
+      });
+    case RECEIVE_FORMS:
+      return Object.assign({}, state, {
+        isFetching: false,
+        forms: action.forms,
+      });
+    default:
+      return state;
+  }
+};
 
 const messagesReducer = (state = {
   messages: [],
@@ -119,9 +139,10 @@ const reducers = {
   account: accountReducer,
   accounts: accountsReducer,
   authentication: authenticationReducer,
-  form: formReducer,
+  forms: formsReducer,
   routing: routerReducer,
   messages: messagesReducer,
+  form: formReducer, // redux-form
 };
 
 export default combineReducers(reducers);

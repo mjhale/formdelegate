@@ -13,7 +13,7 @@ class Account extends React.Component {
 
     if (!isFetching) {
       return (
-        <div className="account">
+        <div className="account card">
           <h1>Account Management</h1>
           <div>User: {account.username}</div>
           <div>Password hash: {account.password_hash}</div>

@@ -11,7 +11,7 @@ export const MessageList = ({ messages, isFetching }) => {
   return (
     <div>
       {messages.map((message) => (
-        <div key={message.id} className="message">
+        <div key={message.id} className="message card">
           <div className="sender">{message.sender}</div>
           <div className="timestamp">
             {moment(message.inserted_at).format('MMMM Do, YYYY, h:mm:ss a')}

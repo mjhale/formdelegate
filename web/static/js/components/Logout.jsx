@@ -6,10 +6,7 @@ export default class Logout extends React.Component {
 
     return (
       <a href={to}
-        onClick={(event) => {
-          event.preventDefault();
-          onLogoutClick();
-        }}
+        onClick={onLogoutClick}
         className={className}
       >
         {logoutText}
