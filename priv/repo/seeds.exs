@@ -5,33 +5,34 @@
 
 alias FormDelegate.Repo
 alias FormDelegate.Account
+alias FormDelegate.Form
 alias FormDelegate.Message
 
 # Scrub prior data before seeding
-Repo.delete_all(Message)
 Repo.delete_all(Account)
+Repo.delete_all(Message)
+Repo.delete_all(Form)
 
 # Seed Accounts
 Repo.insert! %Account{
-  id: 1,
   name: "The Administrator",
   username: "admin",
   password_hash: Comeonin.Pbkdf2.hashpwsalt("admin"),
   messages_count: 2, # pre-set the counter cache
+  forms_count: 1, # pre-set the counter cache
   verified: true,
 }
+admin_account = Repo.get_by!(Account, username: "admin")
 
 Repo.insert! %Account{
-  id: 2,
   name: "Joshua Fern",
   username: "josh.f",
   password_hash: Comeonin.Pbkdf2.hashpwsalt("securepass"),
   messages_count: 1, # pre-set the counter cache
 }
+user_account = Repo.get_by!(Account, username: "josh.f")
 
 # Seed Messages
-admin_account = Repo.get!(Account, 1)
-
 Repo.insert! %Message{
   content: "We need more tests!",
   account: admin_account,
@@ -44,10 +45,15 @@ Repo.insert! %Message{
   sender: "Anonymous",
 }
 
-user_account = Repo.get!(Account, 2)
-
 Repo.insert! %Message{
   content: "Let's meet at 6:30 pm at the coffee shop.",
   account: user_account,
   sender: "sam@gmail.com",
+}
+
+# Seed Forms
+Repo.insert! %Form{
+  name: "Contact Form",
+  account: admin_account,
+  verified: true,
 }
