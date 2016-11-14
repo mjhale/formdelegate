@@ -1,7 +1,15 @@
 defmodule FormDelegate.AdminAccountControllerTest do
   use FormDelegate.ConnCase
 
-  test "requires account authentication on all actions", %{conn: conn} do
+  import FormDelegate.Factory
+
+  setup do
+    account = insert(:account)
+    {:ok, jwt, full_claims} = Guardian.encode_and_sign(account)
+    {:ok, %{account: account, jwt: jwt, claims: full_claims}}
+  end
+
+  test "requires authentication on all actions", %{conn: conn} do
     Enum.each([
       get(conn, account_path(conn, :index)),
       get(conn, account_path(conn, :show, "1")),
