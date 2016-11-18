@@ -1,14 +1,18 @@
 defmodule FormDelegate.Form do
   use FormDelegate.Web, :model
 
+  alias FormDelegate.Account
+  alias FormDelegate.FormIntegration
+
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "forms" do
     field :name, :string
     field :host, :string
     field :verified, :boolean, default: false
 
-    belongs_to :account, FormDelegate.Account
-    many_to_many :integrations, FormDelegate.Integration, join_through: FormDelegate.FormIntegration
+    belongs_to :account, Account
+    has_many :form_integrations, FormIntegration
+    has_many :integrations, through: [:form_integrations, :integration]
 
     timestamps()
   end

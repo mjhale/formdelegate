@@ -3,7 +3,7 @@ defmodule FormDelegate.IntegrationTest do
 
   alias FormDelegate.Integration
 
-  @valid_attrs %{enabled: true, name: "some content"}
+  @valid_attrs %{type: "e-mail"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do

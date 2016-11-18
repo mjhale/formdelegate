@@ -1,11 +1,13 @@
 defmodule FormDelegate.Integration do
   use FormDelegate.Web, :model
 
-  schema "integrations" do
-    field :name, :string
-    field :enabled, :boolean, default: false
+  alias FormDelegate.FormIntegration
 
-    many_to_many :forms, FormDelegate.Form, join_through: FormDelegate.FormIntegration
+  schema "integrations" do
+    field :type, :string
+
+    has_many :form_integrations, FormIntegration
+    has_many :forms, through: [:form_integrations, :form]
 
     timestamps()
   end
@@ -15,7 +17,7 @@ defmodule FormDelegate.Integration do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :enabled])
-    |> validate_required([:name, :enabled])
+    |> cast(params, [:type])
+    |> validate_required([:type])
   end
 end

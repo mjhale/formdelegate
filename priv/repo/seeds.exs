@@ -6,6 +6,8 @@
 alias FormDelegate.Repo
 alias FormDelegate.Account
 alias FormDelegate.Form
+alias FormDelegate.Integration
+alias FormDelegate.FormIntegration
 alias FormDelegate.Message
 
 # Scrub prior data before seeding
@@ -56,4 +58,38 @@ Repo.insert! %Form{
   name: "Contact Form",
   account: admin_account,
   verified: true,
+}
+contact_form = Repo.get_by!(Form, name: "Contact Form")
+
+Repo.insert! %Form{
+  name: "Contact Form #{2}",
+  account: user_account,
+  verified: false,
+}
+
+# Seed Integrations
+Repo.insert! %Integration{
+  type: "E-mail",
+}
+email_integration = Repo.get_by!(Integration, type: "E-mail")
+
+Repo.insert! %Integration{
+  type: "Ifttt",
+}
+ifttt_integration = Repo.get_by!(Integration, type: "Ifttt")
+
+Repo.insert! %FormIntegration{
+  form: contact_form,
+  integration: ifttt_integration,
+  settings: %{
+    api_key: "31134"
+  }
+}
+
+Repo.insert! %FormIntegration{
+  form: contact_form,
+  integration: email_integration,
+  settings: %{
+    api_key: "00000-523-232222"
+  }
 }

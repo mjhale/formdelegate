@@ -15,6 +15,18 @@ defmodule FormDelegate.FormView do
       name: form.name,
       host: form.host,
       verified: form.verified,
+      form_integrations: render_many(
+        form.form_integrations,
+        FormDelegate.FormIntegrationView,
+        "form_integration.json"
+      ),
+      integrations: render_many(
+        form.integrations,
+        FormDelegate.IntegrationView,
+        "integration.json"
+      ),
+      inserted_at: form.inserted_at,
+      updated_at: form.updated_at,
     }
   end
 end

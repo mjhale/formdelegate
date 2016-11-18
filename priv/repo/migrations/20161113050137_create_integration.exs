@@ -4,7 +4,6 @@ defmodule FormDelegate.Repo.Migrations.CreateIntegration do
   def change do
     create table(:integrations) do
       add :type, :string, null: false
-      add :enabled, :boolean, default: false, null: false
 
       timestamps()
     end
@@ -12,6 +11,8 @@ defmodule FormDelegate.Repo.Migrations.CreateIntegration do
     create table(:forms_integrations) do
       add :form_id, references(:forms, type: :uuid)
       add :integration_id, references(:integrations)
+      add :enabled, :boolean, default: false, null: false
+      add :settings, :map
 
       timestamps()
     end
