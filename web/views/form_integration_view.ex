@@ -30,6 +30,11 @@ defmodule FormDelegate.FormIntegrationView do
         FormDelegate.SettingsView,
         "settings.json"
       ),
+      integration: render_one(
+        form_integration.integration,
+        FormDelegate.IntegrationView,
+        "integration.json"
+      ),
       inserted_at: form_integration.inserted_at,
       updated_at: form_integration.updated_at,
     }

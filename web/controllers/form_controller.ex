@@ -2,7 +2,6 @@ defmodule FormDelegate.FormController do
   use FormDelegate.Web, :controller
 
   alias FormDelegate.Form
-  alias FormDelegate.Integration
 
   plug Guardian.Plug.EnsureAuthenticated, handler: FormDelegate.SessionController
 
