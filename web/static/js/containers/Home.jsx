@@ -8,8 +8,10 @@ class HomeContainer extends React.Component {
 
     return (
       <div className="home">
-        <div className="logo">Form Delegate</div>
-        <Nav {...this.props} />
+        <nav className="navigation">
+          <div className="logo">Form Delegate</div>
+          <Nav {...this.props} />
+        </nav>
         <div className="content">
           {children}
         </div>

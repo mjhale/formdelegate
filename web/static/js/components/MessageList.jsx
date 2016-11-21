@@ -9,16 +9,25 @@ export const MessageList = ({ messages, isFetching }) => {
   }
 
   return (
-    <div>
-      {messages.map((message) => (
-        <div key={message.id} className="message card">
-          <div className="sender">{message.sender}</div>
-          <div className="timestamp">
-            {moment(message.inserted_at).format('MMMM Do, YYYY, h:mm:ss a')}
+    <div className="table">
+      <div className="table-header table-row">
+        <div className="table-cell sender">Sender</div>
+        <div className="table-cell message">Message</div>
+        <div className="table-cell form">Form</div>
+        <div className="table-cell date">Received</div>
+      </div>
+      <div className="table-content">
+        {messages.map((message) => (
+          <div key={message.id} className="table-row">
+            <div className="table-cell sender">{message.sender}</div>
+            <div className="table-cell message">{message.content}</div>
+            <div className="table-cell form">#Form Name#</div>
+            <div className="table-cell date">
+              {moment(message.inserted_at).fromNow()}
+            </div>
           </div>
-          <div className="content">{message.content}</div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };

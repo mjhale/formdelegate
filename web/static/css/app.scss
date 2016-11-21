@@ -1,10 +1,95 @@
 @import 'bourbon';
 @import 'neat';
+@import 'buttons';
 @import 'table';
+@import 'switch';
+@import 'colors';
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
 
 body {
-  background-color: #f7f7f7;
+  background-color: $background-color;
   font-family: $helvetica;
+  font-size: 1rem;
+  overflow-x: hidden;
+  padding: 0;
+  position: relative;
+}
+
+.home {
+  @include outer-container;
+  box-sizing: border-box;
+  display: table;
+  height: 100%;
+  overflow-x: hidden;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.navigation {
+  @include span-columns(3 of 15, table);
+  background-color: $primary-color;
+  bottom: 0;
+  height: 100%;
+  left: 0;
+  padding: 0 .5rem;
+  position: fixed;
+  top: 0;
+}
+
+.content {
+  @include span-columns(12 of 15, table);
+  height: 100%;
+  overflow: hidden;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 1rem;
+  position: absolute;
+  right: 0;
+}
+
+.logo {
+  color: $nav-font;
+  font-family: 'Francois One', sans-serif;
+  font-size: 2.5rem;
+  margin: 0 auto;
+  max-width: 4em;
+  padding-top: 1.5rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  list-style-type: none;
+  overflow: hidden;
+  padding: 0;
+
+  li {
+    padding: 1rem;
+  }
+
+  a {
+    color: $nav-font;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: $solid-white;
+  }
+}
+
+.content h1 {
+  color: $header-font;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 1.5;
+  margin: 0 0 .5rem;
+  word-wrap: break-word;
 }
 
 label {
@@ -21,82 +106,107 @@ input[type="text"] {
   width: 20rem;
 }
 
-button[type="submit"] {
-  background-color: #a7a7a7;
-  border: none;
-  border-radius: .2rem;
-  color: #FFF;
-  cursor: pointer;
-  font-weight: 500;
-  margin: .25rem 0;
-  outline: none;
-  overflow: hidden;
-  padding: .5rem 1rem;
-  text-align: center;
-  text-transform: uppercase;
-  transition: all 60ms ease-in-out;
-
-  &:hover {
-    opacity: .85;
-    transition: all 60ms ease;
-  }
-
-  &:active {
-    transition: all 60ms ease;
-    opacity: .55;
-  }
-
-  &[disabled=disabled], &:disabled {
-    color: #5D5D5D;
-    cursor: not-allowed;
-    text-shadow: .1rem .1rem #ADADAD;
-  }
-}
-
-#container {
-  @include outer-container;
-}
-
-.logo {
-  font-family: 'Francois One', sans-serif;
-  font-size: 2.5rem;
-  max-width: 4em;
-}
-
-.nav {
-  background-color: #333333;
-  list-style-type: none;
-  margin: .5rem 0;
-  overflow: hidden;
-  padding: 0;
-}
-
-.nav li {
-  float: left;
-  padding: 1rem;
-}
-
-.nav a {
-  color: #ccc;
-}
-
-.nav a:hover {
-  color: #fff;
-}
-
-h1 {
-  font-size: 1.25rem;
-}
-
-h2, h3, h4, h5, h6 {
-  font-size: 1rem;
-}
-
 .card {
-  background: #FFF;
+  background: $solid-white;
   border: 1px solid #b2b5b7;
   border-bottom-width: 2px;
   border-radius: 3px;
   padding: .5rem;
   margin-bottom: .5rem;
+}
+
+.table {
+  @include display(flex);
+  @include flex-flow(column nowrap);
+  @include justify-content(space-between);
+  background: $solid-white;
+  line-height: 1.5;
+
+  &-header {
+    background: $off-white;
+    border: 1px solid $border-color;
+    color: $header-font;
+    font-size: .6rem;
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  &-content {
+    border: 1px solid $border-color;
+    border-top: 0;
+  }
+
+  &-row {
+    @include display(flex);
+    @include flex-flow(row nowrap);
+    box-shadow: inset 0 -1px 0 0 $off-white;
+    width: 100%;
+
+    &:hover {
+      background-color: #fafafa;
+    }
+  }
+
+  &-cell {
+    @include display(flex);
+    @include flex-flow(row nowrap);
+    @include flex-grow(1);
+    @include flex-basis(0);
+    @include word-wrap;
+    font-size: .8rem;
+    padding: .5rem;
+  }
+}
+
+.table .date {
+  @include justify-content(flex-end);
+  @include flex(0 0 10em);
+}
+
+.table .sender {
+  @include flex(0 0 15em);
+}
+
+.table .form {
+  @include flex(0 0 15em);
+  @include justify-content(center);
+}
+
+.messages .filter {
+  float: right;
+}
+
+.btn {
+  background-color: #eee;
+  background-image: -webkit-linear-gradient($porcelain-gray, $off-white);
+  background-image: linear-gradient($porcelain-gray, $off-white);
+  border: 1px solid $border-color;
+  border-radius: 3px;
+  color: $mine-black;
+  display: inline-block;
+  cursor: pointer;
+  font-size: .65rem;
+  font-weight: 600;
+  line-height: 20px;
+  padding: 6px 12px;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: middle;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+
+  &:hover {
+    background-color: $alto-gray;
+    background-image: -webkit-linear-gradient(#eee, #ddd);
+    background-image: linear-gradient(#eee, #ddd);
+    border-color: #ccc;
+  }
 }

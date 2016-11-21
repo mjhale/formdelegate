@@ -23,11 +23,11 @@ class NavContainer extends React.Component {
     const { children, isAuthenticated, dispatch } = this.props;
 
     return (
-      <ul className="nav" role="nav">
+      <ul className="nav-links" role="nav">
         <li><Link to="/">Home</Link></li>
         <li><Link to="/messages">My Messages</Link></li>
         <li><Link to="/forms">Forms</Link></li>
-        <li><Link to="/forms">Integrations</Link></li>
+        <li><Link to="/integrations">Integrations</Link></li>
         <li><Link to="/admin/accounts">Accounts</Link></li>
         { !isAuthenticated &&
           <li><Link to="/login">Login</Link></li>

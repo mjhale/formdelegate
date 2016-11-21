@@ -1,0 +1,31 @@
+button[type="submit"] {
+  background-color: #a7a7a7;
+  border: none;
+  border-radius: .2rem;
+  color: #FFF;
+  cursor: pointer;
+  font-weight: 500;
+  margin: .25rem 0;
+  outline: none;
+  overflow: hidden;
+  padding: .5rem 1rem;
+  text-align: center;
+  text-transform: uppercase;
+  transition: all 60ms ease-in-out;
+
+  &:hover {
+    opacity: .85;
+    transition: all 60ms ease;
+  }
+
+  &:active {
+    transition: all 60ms ease;
+    opacity: .55;
+  }
+
+  &[disabled=disabled], &:disabled {
+    color: #5D5D5D;
+    cursor: not-allowed;
+    text-shadow: .1rem .1rem #ADADAD;
+  }
+}

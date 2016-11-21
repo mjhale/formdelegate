@@ -14,7 +14,13 @@ class MessagesContainer extends React.Component {
   }
 
   render() {
-    return <MessageList {...this.props} />;
+    return (
+      <div className="messages">
+        <a href="#" className="filter btn">Filter</a>
+        <h1>My Messages</h1>
+        <MessageList {...this.props} />
+      </div>
+    );
   }
 }
 

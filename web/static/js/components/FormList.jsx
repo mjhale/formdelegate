@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormIntegrationList } from './FormIntegrationList';
 
 export const FormList = ({ forms, isFetching }) => {
   if (isFetching) {
@@ -10,9 +11,13 @@ export const FormList = ({ forms, isFetching }) => {
   return (
     <div>
       {forms.map((form) => (
-        <div key={form.id} className="form card">
-          <div className="id">{form.id}</div>
-          <div className="name">{form.name}</div>
+        <div key={form.id}>
+          <h2 className="name">{form.name}</h2>
+          <div className="form card">
+            <div>Host: {form.host || 'Not Specified'}</div>
+            <div>Number of Messages: {form.messages_count}</div>
+            <FormIntegrationList integrations={form.form_integrations} />
+          </div>
         </div>
       ))}
     </div>

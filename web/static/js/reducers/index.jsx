@@ -8,6 +8,26 @@ import { REQUEST_ACCOUNTS, RECEIVE_ACCOUNTS } from '../actions/accounts';
 import { REQUEST_ACCOUNT, RECEIVE_ACCOUNT, UPDATE_ACCOUNT } from '../actions/account';
 import { REQUEST_MESSAGES, RECEIVE_MESSAGES } from '../actions/messages';
 import { REQUEST_FORMS, RECEIVE_FORMS } from '../actions/forms';
+import { REQUEST_INTEGRATIONS, RECEIVE_INTEGRATIONS } from '../actions/integrations';
+
+const integrationsReducer = (state = {
+  integrations: [],
+  isFetching: false,
+}, action) => {
+  switch (action.type) {
+    case REQUEST_INTEGRATIONS:
+      return Object.assign({}, state, {
+        isFetching: true,
+      });
+    case RECEIVE_INTEGRATIONS:
+      return Object.assign({}, state, {
+        isFetching: false,
+        integrations: action.integrations,
+      });
+    default:
+      return state;
+  }
+};
 
 const formsReducer = (state = {
   forms: [],
@@ -140,6 +160,7 @@ const reducers = {
   accounts: accountsReducer,
   authentication: authenticationReducer,
   forms: formsReducer,
+  integrations: integrationsReducer,
   routing: routerReducer,
   messages: messagesReducer,
   form: formReducer, // redux-form

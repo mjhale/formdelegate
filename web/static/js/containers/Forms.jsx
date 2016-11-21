@@ -24,7 +24,7 @@ FormsContainer.propTypes = propTypes;
 const mapStateToProps = (state) => {
   return {
     forms: state.forms.forms,
-    isFetching: state.messages.isFetching,
+    isFetching: state.forms.isFetching,
   };
 };
 
