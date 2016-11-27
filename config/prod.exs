@@ -60,6 +60,11 @@ config :logger, level: :info
 #
 #     config :form_delegate, FormDelegate.Endpoint, root: "."
 
+# Configures Bamboo mailer
+config :form_delegate, FormDelegate.Mailer,
+  adapter: Bamboo.SparkPostAdapter,
+  api_key: System.get_env("SPARKPOST_KEY")
+
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
 import_config "prod.secret.exs"

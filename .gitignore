@@ -38,3 +38,6 @@ Thumbs.db
 
 # Ignore static build assets
 priv/static
+
+# Secrets
+.env

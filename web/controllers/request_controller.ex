@@ -4,10 +4,13 @@ defmodule FormDelegate.RequestController do
   alias FormDelegate.Account
   alias FormDelegate.Form
   alias FormDelegate.Message
+  alias FormDelegate.Services.EmailNewMessage
+  alias FormDelegate.Services.Ifttt
 
   def process_request(conn, %{"message" => message_params, "id" => id} = params) do
     form = Repo.get!(Form, id)
     |> Repo.preload(:account)
+    |> Repo.preload(:integrations)
 
     current_account = Repo.get!(Account, form.account.id)
 
@@ -22,12 +25,23 @@ defmodule FormDelegate.RequestController do
     |> Message.create_changeset(params)
 
     case Repo.insert(changeset) do
-      {:ok, _message} ->
-        conn
-        |> redirect(to: "/success")
+      {:ok, message} ->
+        form |> run_integrations(message)
+        conn |> redirect(to: "/success")
       {:error, _changeset} ->
         conn
         |> redirect(to: "/failure")
+    end
+  end
+
+  def run_integrations(form, message) do
+    Enum.each form.integrations, fn integration ->
+      cond do
+        integration.type === "E-mail" ->
+          EmailNewMessage.send_email(form.account, integration, message)
+        integration.type === "Ifttt" ->
+          Ifttt.send_request(form.account, integration, message)
+      end
     end
   end
 end

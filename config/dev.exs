@@ -45,3 +45,7 @@ config :form_delegate, FormDelegate.Repo,
   database: "form_delegate_dev",
   hostname: "localhost",
   pool_size: 10
+
+# Configures Bamboo mailer
+config :form_delegate, FormDelegate.Mailer,
+  adapter: Bamboo.LocalAdapter
