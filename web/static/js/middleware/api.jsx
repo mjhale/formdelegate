@@ -31,7 +31,6 @@ function callApi(endpoint, authenticated) {
   })
 
   .then(({data, response}) => {
-    console.log(data);
     if (!response.ok) {
       return Promise.reject(data);
     }

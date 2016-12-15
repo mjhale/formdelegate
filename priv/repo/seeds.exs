@@ -18,21 +18,21 @@ Repo.delete_all(Form)
 # Seed Accounts
 Repo.insert! %Account{
   name: "The Administrator",
-  username: "admin",
+  email: "admin@admin.com",
   password_hash: Comeonin.Pbkdf2.hashpwsalt("admin"),
   messages_count: 2, # pre-set the counter cache
   forms_count: 1, # pre-set the counter cache
   verified: true,
 }
-admin_account = Repo.get_by!(Account, username: "admin")
+admin_account = Repo.get_by!(Account, email: "admin@admin.com")
 
 Repo.insert! %Account{
   name: "Joshua Fern",
-  username: "josh.f",
+  email: "josh.f@gmail.com",
   password_hash: Comeonin.Pbkdf2.hashpwsalt("securepass"),
   messages_count: 1, # pre-set the counter cache
 }
-user_account = Repo.get_by!(Account, username: "josh.f")
+user_account = Repo.get_by!(Account, email: "josh.f@gmail.com")
 
 # Seed Messages
 Repo.insert! %Message{
@@ -55,14 +55,14 @@ Repo.insert! %Message{
 
 # Seed Forms
 Repo.insert! %Form{
-  name: "Contact Form",
+  form: "Contact Form",
   account: admin_account,
   verified: true,
 }
-contact_form = Repo.get_by!(Form, name: "Contact Form")
+contact_form = Repo.get_by!(Form, form: "Contact Form")
 
 Repo.insert! %Form{
-  name: "Contact Form #{2}",
+  form: "Contact Form #{2}",
   account: user_account,
   verified: false,
 }

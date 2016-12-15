@@ -23,6 +23,6 @@ Logout.propTypes = {
 };
 
 Logout.defaultProps = {
-  logoutText: 'Logout',
+  logoutText: 'logout',
   to: '/',
 };

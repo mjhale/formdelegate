@@ -12,8 +12,8 @@ defmodule FormDelegate.Admin.AccountView do
   def render("account.json", %{account: account}) do
     %{
       id: account.id,
+      email: account.email,
       name: account.name,
-      username: account.username,
       forms_count: account.forms_count,
       messages_count: account.messages_count,
       verified: account.verified,

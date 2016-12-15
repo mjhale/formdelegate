@@ -14,12 +14,12 @@ const AccountForm = (props) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <label htmlFor="username">Username</label>
-        <Field name="username" component="input" type="text" placeholder="Username" />
+        <label htmlFor="email">E-Mail</label>
+        <Field name="email" component="input" type="text" placeholder="E-mail Address" />
       </div>
 
       <div>
-        <label htmlFor="username">Name</label>
+        <label htmlFor="name">Full Name</label>
         <Field name="name" component="input" type="text" placeholder="Full Name" />
       </div>
 

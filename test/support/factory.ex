@@ -3,7 +3,7 @@ defmodule FormDelegate.Factory do
 
   def account_factory do
     %FormDelegate.Account{
-      username: sequence(:username, &"User #{&1}"),
+      email: sequence(:email, &"User #{&1}"),
       password: "securepass",
       password_hash: Comeonin.Pbkdf2.hashpwsalt("securepass"),
     }

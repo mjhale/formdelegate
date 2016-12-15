@@ -15,8 +15,7 @@ class Account extends React.Component {
       return (
         <div className="account card">
           <h1>Account Management</h1>
-          <div>User: {account.username}</div>
-          <div>Password hash: {account.password_hash}</div>
+          <div>E-Mail: {account.email}</div>
           <div>Name: {account.name}</div>
           <div>
             <Link to={`/admin/accounts/${account.id}/edit`}>Edit Account</Link>

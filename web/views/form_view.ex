@@ -12,7 +12,7 @@ defmodule FormDelegate.FormView do
   def render("form.json", %{form: form}) do
     %{
       id: form.id,
-      name: form.name,
+      form: form.form,
       host: form.host,
       verified: form.verified,
       form_integrations: render_many(

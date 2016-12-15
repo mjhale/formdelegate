@@ -12,8 +12,9 @@ export const FormList = ({ forms, isFetching }) => {
     <div>
       {forms.map((form) => (
         <div key={form.id}>
-          <h2 className="name">{form.name}</h2>
+          <h2 className="name">{form.form}</h2>
           <div className="form card">
+            <div>ID: {form.id}</div>
             <div>Host: {form.host || 'Not Specified'}</div>
             <div>Number of Messages: {form.messages_count}</div>
             <FormIntegrationList integrations={form.form_integrations} />

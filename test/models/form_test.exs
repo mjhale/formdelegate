@@ -3,7 +3,7 @@ defmodule FormDelegate.FormTest do
 
   alias FormDelegate.Form
 
-  @valid_attrs %{forms_count: 42, host: "some content", name: "some content", verified: true}
+  @valid_attrs %{forms_count: 42, host: "some content", form: "some content", verified: true}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do

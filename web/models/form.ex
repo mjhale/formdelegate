@@ -6,7 +6,7 @@ defmodule FormDelegate.Form do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "forms" do
-    field :name, :string
+    field :form, :string
     field :host, :string
     field :verified, :boolean, default: false
 
@@ -22,7 +22,7 @@ defmodule FormDelegate.Form do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :host, :verified])
-    |> validate_required([:name, :host, :verified])
+    |> cast(params, [:form, :host, :verified])
+    |> validate_required([:form, :host, :verified])
   end
 end

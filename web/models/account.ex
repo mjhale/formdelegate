@@ -4,10 +4,10 @@ defmodule FormDelegate.Account do
   use FormDelegate.Web, :model
 
   schema "accounts" do
+    field :email, :string, null: false
     field :name, :string
     field :password, :string, virtual: true
     field :password_hash, :string, null: false
-    field :username, :string, null: false
     field :messages_count, :integer, null: false
     field :forms_count, :integer, null: false
     field :verified, :boolean, null: false
@@ -19,7 +19,7 @@ defmodule FormDelegate.Account do
     timestamps()
   end
 
-  @required_fields ~w(username)
+  @required_fields ~w(email)
   @optional_fields ~w(password name)
 
   @doc """
@@ -29,7 +29,7 @@ defmodule FormDelegate.Account do
     struct
     |> cast(params, @required_fields, @optional_fields)
     |> cast_assoc(:messages, required: false)
-    |> validate_length(:username, min: 3, max: 128)
+    |> validate_length(:email, min: 3, max: 128)
     |> validate_length(:password, min: 10, max: 128)
     |> put_password_hash()
   end

@@ -23,7 +23,7 @@ export const MessageList = ({ messages, isFetching }) => {
             <div className="table-cell message">{message.content}</div>
             <div className="table-cell form">#Form Name#</div>
             <div className="table-cell date">
-              {moment(message.inserted_at).fromNow()}
+              {moment.utc(message.inserted_at).fromNow()}
             </div>
           </div>
         ))}

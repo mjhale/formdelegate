@@ -4,7 +4,7 @@ defmodule FormDelegate.Repo.Migrations.CreateForm do
   def change do
     create table(:forms, primary_key: false) do
       add :id, :binary_id, primary_key: true
-      add :name, :string
+      add :form, :string
       add :callback, :string
       add :host, :string
       add :verified, :boolean, null: false, default: false

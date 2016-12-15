@@ -9,8 +9,8 @@ import Logout from '../components/Logout';
 const validate = (values) => {
   const errors = {};
 
-  if (!values.username) {
-    errors.username = 'Required';
+  if (!values.email) {
+    errors.email = 'Required';
   }
 
   if (!values.password) {
@@ -52,10 +52,14 @@ class LoginContainer extends React.Component {
     } else {
       return (
         <div className="logout-prompt">
-          You are currently logged in. Would you like to&nbsp;
+          You are currently logged in. Would you like to
+          {' '}
           <Logout
             logoutText="logout"
-            onLogoutClick={() => dispatch(logoutAccount())}
+            onLogoutClick={(e) => {
+              e.preventDefault();
+              dispatch(logoutAccount());
+            }}
           />?
         </div>
       );

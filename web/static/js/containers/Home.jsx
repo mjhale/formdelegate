@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
 import Nav from './Nav';
 
 class HomeContainer extends React.Component {
@@ -9,7 +10,7 @@ class HomeContainer extends React.Component {
     return (
       <div className="home">
         <nav className="navigation">
-          <div className="logo">Form Delegate</div>
+          <Link to="/" className="logo">form delegate</Link>
           <Nav {...this.props} />
         </nav>
         <div className="content">

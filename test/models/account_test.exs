@@ -7,13 +7,13 @@ defmodule FormDelegate.AccountTest do
     password_hash: "some password hash",
     password: "some password",
     name: "Joseph",
-    username: "joe",
+    email: "joe@joe.com",
   }
   @invalid_attrs %{
     password_hash: "password hash",
     password: "pass",
     name: "Joseph",
-    username: "joe",
+    email: "joe@joe.com",
   }
 
   test "changeset with valid attributes" do

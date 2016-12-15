@@ -14,12 +14,12 @@ const LoginForm = (props) => {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <label htmlFor="username">Username</label>
+        <label htmlFor="email">E-Mail</label>
         <Field
-          name="username"
+          name="email"
           component={renderField}
           type="text"
-          placeholder="Username"
+          placeholder="E-mail Address"
         />
       </div>
 

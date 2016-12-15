@@ -36,7 +36,6 @@ body {
   bottom: 0;
   height: 100%;
   left: 0;
-  padding: 0 .5rem;
   position: fixed;
   top: 0;
 }
@@ -53,14 +52,43 @@ body {
 }
 
 .logo {
-  color: $nav-font;
-  font-family: 'Francois One', sans-serif;
+  color: $logo-font;
+  display: block;
+  font-family: 'Lato', sans-serif;
   font-size: 2.5rem;
+  font-style: italic;
+  font-weight: 900;
+  line-height: 2.2rem;
   margin: 0 auto;
   max-width: 4em;
-  padding-top: 1.5rem;
+  padding: 1.5rem 0 1rem;
   text-align: center;
-  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.logo:hover {
+  @include animation(scale .2s ease-in, slide .4s ease);
+  color: $solid-white;
+
+  @include keyframes(scale) {
+    0%, 100% {
+      @include transform(scale(1));
+    }
+
+    50% {
+      @include transform(scale(1.05));
+    }
+  }
+
+  @include keyframes(slide) {
+    0%, 100% {
+      left: 0;
+    }
+
+    50% {
+      left: 100%;
+    }
+  }
 }
 
 .nav-links {
@@ -68,16 +96,20 @@ body {
   overflow: hidden;
   padding: 0;
 
-  li {
-    padding: 1rem;
-  }
-
   a {
     color: $nav-font;
+    display: block;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 1rem;
+    padding: 1rem;
     text-decoration: none;
   }
 
-  a:hover {
+  a:hover,
+  .active {
+    @include transition(all .4s);
+    background-color: $mine-black;
+    border-right: .5rem solid $nav-highlight;
     color: $solid-white;
   }
 }
