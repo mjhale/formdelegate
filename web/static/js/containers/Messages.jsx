@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { fetchMessages } from '../actions/messages';
 import { MessageList } from '../components/MessageList';
+import { getOrderedMessages } from '../selectors';
 
 const propTypes = {
   messages: PropTypes.array.isRequired,
@@ -28,7 +29,7 @@ MessagesContainer.propTypes = propTypes;
 
 const mapStateToProps = (state) => {
   return {
-    messages: state.messages.messages,
+    messages: getOrderedMessages(state),
     isFetching: state.messages.isFetching,
   };
 };

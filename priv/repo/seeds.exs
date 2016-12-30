@@ -80,6 +80,7 @@ ifttt_integration = Repo.get_by!(Integration, type: "Ifttt")
 
 Repo.insert! %FormIntegration{
   form: contact_form,
+  enabled: true,
   integration: ifttt_integration,
   settings: %{
     api_key: "31134"
@@ -88,6 +89,7 @@ Repo.insert! %FormIntegration{
 
 Repo.insert! %FormIntegration{
   form: contact_form,
+  enabled: false,
   integration: email_integration,
   settings: %{
     api_key: "00000-523-232222"

@@ -1,30 +1,30 @@
 import fetch from 'isomorphic-fetch';
 
-export const REQUEST_INTEGRATIONS = 'REQUEST_INTEGRATIONS';
-export const RECEIVE_INTEGRATIONS = 'RECEIVE_INTEGRATIONS';
+export const REQUEST_MESSAGE = 'REQUEST_MESSAGE';
+export const RECEIVE_MESSAGE = 'RECEIVE_MESSAGE';
 
-function requestIntegrations() {
+function requestMessage() {
   return {
-    type: REQUEST_INTEGRATIONS,
+    type: REQUEST_MESSAGE,
   };
 }
 
-function receiveIntegrations(json) {
+function receiveMessage(json) {
   return {
-    type: RECEIVE_INTEGRATIONS,
-    integrations: json.data,
+    type: RECEIVE_MESSAGE,
+    response: json.data,
     receivedAt: Date.now(),
   };
 }
 
-export function fetchIntegrations() {
+export function fetchMessage(messageId) {
   return (dispatch) => {
-    dispatch(requestIntegrations());
+    dispatch(requestMessage());
 
     let token = localStorage.getItem('fd_token') || null;
 
     if (token) {
-      return fetch('/api/integrations', {
+      return fetch(`/api/messages/${messageId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         }
@@ -33,7 +33,7 @@ export function fetchIntegrations() {
         return response.json();
       })
       .then((json) => {
-        return dispatch(receiveIntegrations(json));
+        return dispatch(receiveMessage(json));
       });
     } else {
       throw 'No token found.';

@@ -12,7 +12,7 @@ function requestMessages() {
 function receiveMessages(json) {
   return {
     type: RECEIVE_MESSAGES,
-    messages: json.data,
+    response: json.data,
     receivedAt: Date.now(),
   };
 }

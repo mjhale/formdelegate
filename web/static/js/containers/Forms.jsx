@@ -15,7 +15,13 @@ class FormsContainer extends React.Component {
 
 
   render() {
-    return <FormList {...this.props} />;
+    return (
+      <div className="forms">
+        <a href="#" className="add-form btn">Add Form</a>
+        <h1>My Forms</h1>
+        <FormList {...this.props} />
+      </div>
+    );
   }
 }
 

@@ -1,5 +1,8 @@
 import React from 'react';
 import moment from 'moment';
+import { Link } from 'react-router';
+import { map } from 'lodash';
+
 
 export const MessageList = ({ messages, isFetching }) => {
   if (isFetching) {
@@ -17,16 +20,18 @@ export const MessageList = ({ messages, isFetching }) => {
         <div className="table-cell date">Received</div>
       </div>
       <div className="table-content">
-        {messages.map((message) => (
-          <div key={message.id} className="table-row">
-            <div className="table-cell sender">{message.sender}</div>
-            <div className="table-cell message">{message.content}</div>
-            <div className="table-cell form">#Form Name#</div>
-            <div className="table-cell date">
-              {moment.utc(message.inserted_at).fromNow()}
-            </div>
-          </div>
-        ))}
+        {Object.keys(messages).map((key) => {
+          return (
+            <Link key={messages[key].id} className="table-row" to={'/messages/' + messages[key].id}>
+              <div className="table-cell sender">{messages[key].sender}</div>
+              <div className="table-cell message">{messages[key].content}</div>
+              <div className="table-cell form">#Form Name#</div>
+              <div className="table-cell date">
+                {moment.utc(messages[key].inserted_at).fromNow()}
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

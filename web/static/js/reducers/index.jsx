@@ -1,33 +1,17 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 import { reducer as formReducer } from 'redux-form';
+import { merge, keyBy, map, union } from 'lodash';
+import { normalize, arrayOf } from 'normalizr';
 
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/sessions';
 import { LOGOUT_REQUEST, LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../actions/sessions';
 import { REQUEST_ACCOUNTS, RECEIVE_ACCOUNTS } from '../actions/accounts';
 import { REQUEST_ACCOUNT, RECEIVE_ACCOUNT, UPDATE_ACCOUNT } from '../actions/account';
 import { REQUEST_MESSAGES, RECEIVE_MESSAGES } from '../actions/messages';
+import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from '../actions/message';
 import { REQUEST_FORMS, RECEIVE_FORMS } from '../actions/forms';
-import { REQUEST_INTEGRATIONS, RECEIVE_INTEGRATIONS } from '../actions/integrations';
 
-const integrationsReducer = (state = {
-  integrations: [],
-  isFetching: false,
-}, action) => {
-  switch (action.type) {
-    case REQUEST_INTEGRATIONS:
-      return Object.assign({}, state, {
-        isFetching: true,
-      });
-    case RECEIVE_INTEGRATIONS:
-      return Object.assign({}, state, {
-        isFetching: false,
-        integrations: action.integrations,
-      });
-    default:
-      return state;
-  }
-};
 
 const formsReducer = (state = {
   forms: [],
@@ -49,7 +33,8 @@ const formsReducer = (state = {
 };
 
 const messagesReducer = (state = {
-  messages: [],
+  byId: {},
+  allIds: [],
   isFetching: false,
 }, action) => {
   switch (action.type) {
@@ -60,7 +45,22 @@ const messagesReducer = (state = {
     case RECEIVE_MESSAGES:
       return Object.assign({}, state, {
         isFetching: false,
-        messages: action.messages,
+        byId: keyBy(action.response, 'id'),
+        allIds: map(action.response, 'id'),
+      });
+    case REQUEST_MESSAGE:
+      return Object.assign({}, state, {
+        isFetching: true,
+      });
+    case RECEIVE_MESSAGE:
+      return Object.assign({}, state, {
+        isFetching: false,
+        byId: Object.assign({}, state.byId, {
+          [action.response.id]: {
+            ...action.response
+          }
+        }),
+        allIds: union(state.allIds, [action.response.id]),
       });
     default:
       return state;
@@ -160,7 +160,6 @@ const reducers = {
   accounts: accountsReducer,
   authentication: authenticationReducer,
   forms: formsReducer,
-  integrations: integrationsReducer,
   routing: routerReducer,
   messages: messagesReducer,
   form: formReducer, // redux-form

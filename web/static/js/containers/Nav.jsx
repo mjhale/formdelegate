@@ -27,7 +27,6 @@ class NavContainer extends React.Component {
       <ul className="nav-links" role="nav">
         <li><Link to="/messages" activeClassName="active">messages</Link></li>
         <li><Link to="/forms" activeClassName="active">forms</Link></li>
-        <li><Link to="/integrations" activeClassName="active">integrations</Link></li>
         <li><Link to="/admin/accounts" activeClassName="active">accounts</Link></li>
         { !isAuthenticated &&
           <li><Link to="/login" activeClassName="active">login</Link></li>

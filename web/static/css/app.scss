@@ -1,9 +1,10 @@
 @import 'bourbon';
 @import 'neat';
 @import 'buttons';
-@import 'table';
-@import 'switch';
 @import 'colors';
+@import 'fonts';
+@import 'switch';
+@import 'table';
 
 html,
 body {
@@ -99,7 +100,7 @@ body {
   a {
     color: $nav-font;
     display: block;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: $system;
     font-size: 1rem;
     padding: 1rem;
     text-decoration: none;
@@ -107,21 +108,45 @@ body {
 
   a:hover,
   .active {
-    @include transition(all .4s);
-    background-color: $mine-black;
-    border-right: .5rem solid $nav-highlight;
-    color: $solid-white;
+    @include transition(all .1s);
+    color: $mine-black;
+  }
+
+  a:hover:not(.active) {
+    background-color: darken($background-color, 10%);
+    border-left: .5rem solid darken($nav-highlight, 10%);
+  }
+
+  .active {
+    background-color: $background-color;
+    border-left: .5rem solid $nav-highlight;
   }
 }
 
-.content h1 {
+.content h1, h2, h3 {
   color: $header-font;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-size: 1.5rem;
   font-weight: 300;
+  word-wrap: break-word;
+}
+
+.content h1 {
+  font-size: 1.5rem;
   line-height: 1.5;
   margin: 0 0 .5rem;
-  word-wrap: break-word;
+}
+
+.content h2 {
+  font-size: 1.2rem;
+  line-height: 1.2;
+  margin: .4rem 0;
+}
+
+.content h3 {
+  font-size: 1.1rem;
+  line-height: 1.2;
+  margin: .4rem 0;
+
 }
 
 label {
@@ -138,11 +163,59 @@ input[type="text"] {
   width: 20rem;
 }
 
+.forms-list h2 {
+  background: $off-white;
+  border: 1px solid $border-color;
+  color: $header-font;
+  display: block;
+  font-size: .8rem;
+  font-weight: 700;
+  margin: 0;
+  padding: .5rem;
+  text-transform: uppercase;
+}
+
+.forms-list .form {
+  font-size: .9em;
+  line-height: 1.5rem;
+}
+
+.forms-list .integration {
+  background-color: #fafafa;
+  border: 1px solid $border-color;
+  font-size: .8rem;
+  line-height: 1rem;
+  text-transform: uppercase;
+}
+
+.forms-list .integration .type {
+  background-color: $background-color;
+  color: $header-font;
+  font-family: $system;
+  font-size: .9rem;
+  padding: .5rem;
+}
+
+.forms-list .integration .status {
+  float: right;
+  margin: .25rem .25rem 0 0;
+}
+
+.forms-list .integration:not(:last-child) {
+  margin-bottom: .5rem;
+}
+
+.forms-list .integration .settings {
+  padding: .5rem;
+}
+
 .card {
   background: $solid-white;
-  border: 1px solid #b2b5b7;
+  border-bottom: 1px solid $border-color;
   border-bottom-width: 2px;
-  border-radius: 3px;
+  border-left: 1px solid $border-color;
+  border-radius: 0 0 3px 3px;
+  border-right: 1px solid $border-color;
   padding: .5rem;
   margin-bottom: .5rem;
 }
@@ -177,6 +250,8 @@ input[type="text"] {
     @include display(flex);
     @include flex-flow(row nowrap);
     box-shadow: inset 0 -1px 0 0 $off-white;
+    color: $mine-black;
+    text-decoration: none;
     width: 100%;
 
     &:hover {
@@ -210,6 +285,10 @@ input[type="text"] {
 }
 
 .messages .filter {
+  float: right;
+}
+
+.forms .add-form {
   float: right;
 }
 
