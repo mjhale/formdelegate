@@ -21,11 +21,11 @@ const validate = (values) => {
 };
 
 const propTypes = {
-  handleSubmit: PropTypes.func.isRequired,
-  submitting: PropTypes.bool.isRequired,
-  pristine: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
+  pristine: PropTypes.bool.isRequired,
+  submitting: PropTypes.bool.isRequired,
 };
 
 class LoginContainer extends React.Component {
@@ -34,10 +34,10 @@ class LoginContainer extends React.Component {
       dispatch,
       fields,
       handleSubmit,
+      isAuthenticated,
+      onSubmit,
       pristine,
       submitting,
-      isAuthenticated,
-      onSubmit
     } = this.props;
 
     if (!isAuthenticated) {

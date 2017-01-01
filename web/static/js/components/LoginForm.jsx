@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Field } from 'redux-form';
-import { renderField } from '../components/Field.jsx';
+import renderField from '../components/Field.jsx';
 
 const propTypes = {
   handleSubmit: React.PropTypes.func.isRequired,

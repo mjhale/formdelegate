@@ -13,7 +13,6 @@ class FormsContainer extends React.Component {
     this.props.dispatch(fetchForms());
   }
 
-
   render() {
     return (
       <div className="forms">

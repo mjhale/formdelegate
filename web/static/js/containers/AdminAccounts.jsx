@@ -36,7 +36,12 @@ class AdminAccountsContainer extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {items.map((account) => (
+            {isEmpty && !isFetching &&
+              <tr>
+                <td colSpan="4">No accounts found.</td>
+              </tr>
+            }
+            {!isEmpty && items.map((account) => (
               <tr key={account.id}>
                 <td><Link to={`/admin/accounts/${account.id}`}>{account.email}</Link></td>
                 <td>{account.forms_count}</td>

@@ -1,14 +1,13 @@
 import React, { PropTypes } from 'react';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
-import { Link, IndexLink } from 'react-router';
+import { Link } from 'react-router';
 import { logoutAccount } from '../actions/sessions';
 import Logout from '../components/Logout';
 
 const propTypes = {
-  children: PropTypes.node,
   isAuthenticated: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  onLogoutClick: PropTypes.func.isRequired,
 };
 
 const defaultProps = {
@@ -16,12 +15,12 @@ const defaultProps = {
 };
 
 const contextTypes = {
-  router: React.PropTypes.object.isRequired
+  router: React.PropTypes.object.isRequired,
 };
 
 class NavContainer extends React.Component {
   render() {
-    const { children, isAuthenticated, dispatch } = this.props;
+    const { isAuthenticated, onLogoutClick } = this.props;
 
     return (
       <ul className="nav-links" role="nav">
@@ -34,7 +33,7 @@ class NavContainer extends React.Component {
         { isAuthenticated &&
           <li>
             <Logout
-              {...this.props}
+              onLogoutClick={onLogoutClick}
             />
           </li>
         }

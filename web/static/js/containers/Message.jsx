@@ -1,12 +1,11 @@
 import React, { PropTypes } from 'react';
-import moment from 'moment';
 import { connect } from 'react-redux';
-import { find } from 'lodash';
 import { fetchMessage } from '../actions/message';
-import { getOrderedMessages } from '../selectors';
+import { getMessage } from '../selectors';
+import Message from '../components/Message';
 
 const propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  message: PropTypes.object,
 };
 
 class MessageContainer extends React.Component {
@@ -17,11 +16,7 @@ class MessageContainer extends React.Component {
   }
 
   render() {
-    const { isFetching, messages, params } = this.props;
-    const { messageId } = params;
-
-    /* @TODO: Move to proper location */
-    const message = find(messages, function (object) { return object.id == messageId; });
+    const { isFetching, message, params } = this.props;
 
     if (isFetching || !message) {
       return (
@@ -30,21 +25,7 @@ class MessageContainer extends React.Component {
     }
 
     return (
-      <div className="message">
-        <h1>Message From {message.sender}</h1>
-        <div className="date">{moment.utc(message.inserted_at).fromNow()}</div>
-        <div className="mesage">{message.content}</div>
-        <div className="unknown-fields">
-          {/* @TODO: Fix null errors on unknown_fields */}
-          {Object.keys(message.unknown_fields).map((key, index) => {
-            return (
-              <div key={index} className="unknown-field">
-                {key}: {message.unknown_fields[key]}
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <Message message={message} />
     );
   }
 };
@@ -53,7 +34,7 @@ MessageContainer.propTypes = propTypes;
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    messages: getOrderedMessages(state),
+    message: getMessage(state, ownProps),
     isFetching: state.messages.isFetching,
   };
 };

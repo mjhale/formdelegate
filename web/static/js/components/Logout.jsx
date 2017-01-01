@@ -1,5 +1,17 @@
 import React, { PropTypes } from 'react';
 
+const propTypes = {
+  className: PropTypes.string,
+  onLogoutClick: PropTypes.func.isRequired,
+  logoutText: PropTypes.string.isRequired,
+  to: PropTypes.string.isRequired,
+};
+
+const defaultProps = {
+  logoutText: 'logout',
+  to: '/',
+};
+
 export default class Logout extends React.Component {
   render() {
     const { onLogoutClick, logoutText, className, to } = this.props;
@@ -15,14 +27,5 @@ export default class Logout extends React.Component {
   }
 }
 
-Logout.propTypes = {
-  className: PropTypes.string,
-  onLogoutClick: PropTypes.func.isRequired,
-  logoutText: PropTypes.string.isRequired,
-  to: PropTypes.string.isRequired,
-};
-
-Logout.defaultProps = {
-  logoutText: 'logout',
-  to: '/',
-};
+Logout.propTypes = propTypes;
+Logout.defaultProps = defaultProps;

@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import moment from 'moment';
 import { Link } from 'react-router';
 import { map } from 'lodash';
 
+const propTypes = {
+  messages: PropTypes.array.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+};
 
-export const MessageList = ({ messages, isFetching }) => {
+const MessageList = ({ messages, isFetching }) => {
   if (isFetching) {
     return (
       <p>Loading messages...</p>
@@ -36,3 +40,7 @@ export const MessageList = ({ messages, isFetching }) => {
     </div>
   );
 };
+
+MessageList.propTypes = propTypes;
+
+export default MessageList;

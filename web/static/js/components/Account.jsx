@@ -11,22 +11,22 @@ class Account extends React.Component {
   render() {
     const { account, isFetching, lastUpdated } = this.props;
 
-    if (!isFetching) {
-      return (
-        <div className="account card">
-          <h1>Account Management</h1>
-          <div>E-Mail: {account.email}</div>
-          <div>Name: {account.name}</div>
-          <div>
-            <Link to={`/admin/accounts/${account.id}/edit`}>Edit Account</Link>
-          </div>
-        </div>
-      );
-    } else {
+    if (isFetching) {
       return (
         <p>Loading data...</p>
       );
     }
+
+    return (
+      <div className="account card">
+        <h1>Account Management</h1>
+        <div>E-Mail: {account.email}</div>
+        <div>Name: {account.name}</div>
+        <div>
+          <Link to={`/admin/accounts/${account.id}/edit`}>Edit Account</Link>
+        </div>
+      </div>
+    );
   }
 }
 

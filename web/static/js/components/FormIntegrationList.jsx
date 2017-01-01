@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const FormIntegrationList = ({ integrations }) => {
+const FormIntegrationList = ({ integrations }) => {
   return(
     <div>
       <h3>Integrations</h3>
@@ -26,3 +26,5 @@ const IntegrationSettings = ({ settings }) => {
     </div>
   );
 };
+
+export default FormIntegrationList;

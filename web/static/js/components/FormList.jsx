@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormIntegrationList } from './FormIntegrationList';
+import FormIntegrationList from './FormIntegrationList';
 
 export const FormList = ({ forms, isFetching }) => {
   if (isFetching) {

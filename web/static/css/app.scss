@@ -284,8 +284,26 @@ input[type="text"] {
   @include justify-content(center);
 }
 
-.messages .filter {
+.messages .actions {
   float: right;
+  margin: 0;
+  padding: 0;
+
+  li {
+    float: left;
+    list-style-type: none;
+    margin: 0 .5rem 0 0;
+  }
+
+  li:last-child {
+    margin: 0;
+  }
+}
+
+.messages .search {
+  line-height: 20px;
+  padding: 6px 12px;
+  margin: 0;
 }
 
 .forms .add-form {

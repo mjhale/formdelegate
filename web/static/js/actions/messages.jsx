@@ -2,6 +2,7 @@ import fetch from 'isomorphic-fetch';
 
 export const REQUEST_MESSAGES = 'REQUEST_MESSAGES';
 export const RECEIVE_MESSAGES = 'RECEIVE_MESSAGES';
+export const SEARCH_MESSAGES = 'SEARCH_MESSAGES';
 
 function requestMessages() {
   return {
@@ -14,6 +15,13 @@ function receiveMessages(json) {
     type: RECEIVE_MESSAGES,
     response: json.data,
     receivedAt: Date.now(),
+  };
+}
+
+export function searchMessages(searchText) {
+  return {
+    type: SEARCH_MESSAGES,
+    text: searchText || '',
   };
 }
 

@@ -8,10 +8,9 @@ import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/sessions
 import { LOGOUT_REQUEST, LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../actions/sessions';
 import { REQUEST_ACCOUNTS, RECEIVE_ACCOUNTS } from '../actions/accounts';
 import { REQUEST_ACCOUNT, RECEIVE_ACCOUNT, UPDATE_ACCOUNT } from '../actions/account';
-import { REQUEST_MESSAGES, RECEIVE_MESSAGES } from '../actions/messages';
+import { REQUEST_MESSAGES, RECEIVE_MESSAGES, SEARCH_MESSAGES } from '../actions/messages';
 import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from '../actions/message';
 import { REQUEST_FORMS, RECEIVE_FORMS } from '../actions/forms';
-
 
 const formsReducer = (state = {
   forms: [],
@@ -35,6 +34,7 @@ const formsReducer = (state = {
 const messagesReducer = (state = {
   byId: {},
   allIds: [],
+  searchText: '',
   isFetching: false,
 }, action) => {
   switch (action.type) {
@@ -61,6 +61,10 @@ const messagesReducer = (state = {
           }
         }),
         allIds: union(state.allIds, [action.response.id]),
+      });
+    case SEARCH_MESSAGES:
+      return Object.assign({}, state, {
+          searchText: action.text
       });
     default:
       return state;

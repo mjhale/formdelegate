@@ -12,8 +12,18 @@ class AdminAccountFormContainer extends React.Component {
   }
 
   render() {
+    {/* @TODO: Explicitly define required props */}
+    const { error, onSubmit, pristine, submitting, reset, ...rest } = this.props;
+
     return (
-      <AccountForm {... this.props} />
+      <AccountForm
+        {...rest}
+        error={error}
+        onSubmit={onSubmit}
+        pristine={pristine}
+        submitting={submitting}
+        reset={reset}
+      />
     );
   }
 }
