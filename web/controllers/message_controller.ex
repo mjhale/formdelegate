@@ -5,11 +5,13 @@ defmodule FormDelegate.MessageController do
 
   plug Guardian.Plug.EnsureAuthenticated, handler: FormDelegate.SessionController
 
-  def index(conn, _params) do
+  def index(conn, params) do
     current_account = Guardian.Plug.current_resource(conn)
-    messages = Repo.all(account_messages(current_account))
+    page = assoc(current_account, :messages) |> Repo.paginate(params)
 
-    render(conn, "index.json", messages: messages)
+    conn
+    |> Scrivener.Headers.paginate(page)
+    |> render("index.json", messages: page.entries)
   end
 
   def create(conn, %{"message" => message_params}) do
@@ -45,9 +47,5 @@ defmodule FormDelegate.MessageController do
     |> Repo.delete!
 
     send_resp(conn, :no_content, "")
-  end
-
-  defp account_messages(account) do
-    assoc(account, :messages)
   end
 end
