@@ -18,8 +18,18 @@ defmodule FormDelegate.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {FormDelegate, []},
-     applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger,
-                    :gettext, :phoenix_ecto, :postgrex, :comeonin, :bamboo]]
+      applications:
+        [:phoenix,
+         :phoenix_pubsub,
+         :phoenix_html,
+         :cowboy,
+         :logger,
+         :gettext,
+         :phoenix_ecto,
+         :postgrex,
+         :comeonin,
+         :bamboo,
+         :scrivener_ecto]]
   end
 
   # Specifies which paths to compile per environment.
@@ -42,7 +52,9 @@ defmodule FormDelegate.Mixfile do
      {:comeonin, "~> 3.0.1"},
      {:ex_machina, "~> 1.0", only: :test},
      {:bamboo, "~> 0.7"},
-     {:bamboo_sparkpost, "~> 0.5.0"}]
+     {:bamboo_sparkpost, "~> 0.5.0"},
+     {:scrivener_ecto, "~> 1.1"},
+     {:scrivener_headers, "~> 3.0"}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

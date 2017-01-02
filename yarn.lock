@@ -2930,8 +2930,8 @@ loader-utils@0.2.x, loader-utils@^0.2.11, loader-utils@^0.2.15, loader-utils@^0.
     object-assign "^4.0.1"
 
 lodash-es@^4.17.3, lodash-es@^4.2.0, lodash-es@^4.2.1:
-  version "4.17.3"
-  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.3.tgz#567a08d2f0c91d92b31ce35c5565e1f337fb81db"
+  version "4.17.4"
+  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.4.tgz#dcc1d7552e150a0640073ba9cb31d70f032950e7"
 
 lodash._arraycopy@^3.0.0:
   version "3.0.0"
@@ -3022,9 +3022,9 @@ lodash.mergewith@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/lodash.mergewith/-/lodash.mergewith-4.6.0.tgz#150cf0a16791f5903b8891eab154609274bdea55"
 
-lodash@^4.0.0, lodash@^4.14.0, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0:
-  version "4.17.3"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.3.tgz#557ed7d2a9438cac5fd5a43043ca60cb455e01f7"
+lodash@^4.0.0, lodash@^4.14.0, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0:
+  version "4.17.4"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
 lodash@~4.16.4:
   version "4.16.6"
@@ -3366,11 +3366,9 @@ normalize-url@^1.4.0:
     query-string "^4.1.0"
     sort-keys "^1.0.0"
 
-normalizr@^2.2.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/normalizr/-/normalizr-2.3.1.tgz#ac12d771ce1fe6a43094c3d828caada4ed9a4540"
-  dependencies:
-    lodash "^4.17.2"
+normalizr@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/normalizr/-/normalizr-3.0.0.tgz#43099e099c102762f9b270fad02a7ca69620310e"
 
 "npmlog@0 || 1 || 2 || 3":
   version "3.1.2"
@@ -3540,7 +3538,7 @@ pbkdf2-compat@2.0.1:
   resolved "https://registry.yarnpkg.com/pbkdf2-compat/-/pbkdf2-compat-2.0.1.tgz#b6e0c8fa99494d94e0511575802a59a5c142f288"
 
 "phoenix@file:deps/phoenix":
-  version "1.2.0"
+  version "1.2.1"
 
 "phoenix_html@file:deps/phoenix_html":
   version "2.9.2"
@@ -3592,8 +3590,8 @@ postcss-colormin@^2.1.8:
     postcss-value-parser "^3.2.3"
 
 postcss-convert-values@^2.3.4:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/postcss-convert-values/-/postcss-convert-values-2.5.0.tgz#570aceb04b3061fb25f6f46bd0329e7ab6263c0b"
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/postcss-convert-values/-/postcss-convert-values-2.6.0.tgz#08c6d06130fe58a91a21ff50829e1aad6a3a1acc"
   dependencies:
     postcss "^5.0.11"
     postcss-value-parser "^3.1.2"
@@ -3718,8 +3716,8 @@ postcss-minify-params@^1.0.4:
     uniqs "^2.0.0"
 
 postcss-minify-selectors@^2.0.4:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/postcss-minify-selectors/-/postcss-minify-selectors-2.0.7.tgz#bfb9248fe14db33770f036572de6b4897c48d81c"
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/postcss-minify-selectors/-/postcss-minify-selectors-2.1.1.tgz#b2c6a98c0072cf91b932d1a496508114311735bf"
   dependencies:
     alphanum-sort "^1.0.2"
     has "^1.0.1"
@@ -3760,8 +3758,8 @@ postcss-normalize-charset@^1.1.0:
     postcss "^5.0.5"
 
 postcss-normalize-url@^3.0.7:
-  version "3.0.7"
-  resolved "https://registry.yarnpkg.com/postcss-normalize-url/-/postcss-normalize-url-3.0.7.tgz#6bd90d0a4bc5a1df22c26ea65c53257dc3829f4e"
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/postcss-normalize-url/-/postcss-normalize-url-3.0.8.tgz#108f74b3f2fcdaf891a2ffa3ea4592279fc78222"
   dependencies:
     is-absolute-url "^2.0.0"
     normalize-url "^1.4.0"
@@ -4088,9 +4086,9 @@ redux-form-material-ui@^4.0.1:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/redux-form-material-ui/-/redux-form-material-ui-4.1.2.tgz#a4e3ced6122468dd27b1a188e5ae03d4dc10e6fc"
 
-redux-form@^6.4.2:
-  version "6.4.2"
-  resolved "https://registry.yarnpkg.com/redux-form/-/redux-form-6.4.2.tgz#71afe3c85744210419f204a5e2421f281c2c3523"
+redux-form@^6.4.3:
+  version "6.4.3"
+  resolved "https://registry.yarnpkg.com/redux-form/-/redux-form-6.4.3.tgz#bd83a77770d9805f7b595a4ff18f00fe4267d3c8"
   dependencies:
     array-findindex-polyfill "^0.1.0"
     deep-equal "^1.0.1"
@@ -4953,8 +4951,8 @@ yargs@^4.7.1:
     yargs-parser "^2.4.1"
 
 yargs@^6.3.0:
-  version "6.5.0"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-6.5.0.tgz#a902e23a1f0fe912b2a03f6131b7ed740c9718ff"
+  version "6.6.0"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-6.6.0.tgz#782ec21ef403345f830a808ca3d513af56065208"
   dependencies:
     camelcase "^3.0.0"
     cliui "^3.2.0"
@@ -4967,7 +4965,6 @@ yargs@^6.3.0:
     set-blocking "^2.0.0"
     string-width "^1.0.2"
     which-module "^1.0.0"
-    window-size "^0.2.0"
     y18n "^3.2.1"
     yargs-parser "^4.2.0"
 
