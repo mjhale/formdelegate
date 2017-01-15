@@ -4,6 +4,7 @@
     "babel-polyfill": "^6.16.0",
     "bourbon": "^4.2.7",
     "bourbon-neat": "^1.7.4",
+    "classnames": "^2.2.5",
     "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",

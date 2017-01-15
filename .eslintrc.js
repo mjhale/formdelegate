@@ -43,6 +43,15 @@ module.exports = {
       "babel/no-await-in-loop": 1,
       "babel/flow-object-type": 1,
       "babel/func-params-comma-dangle": 1,
+      // Require stateless functions when not using lifecycle methods, setState or ref
+      "react/prefer-stateless-function": "error",
+      // Prevent usage of .bind() in JSX props
+      "react/jsx-no-bind": ["error", {
+        ignoreRefs: true,
+        allowArrowFunctions: true,
+        allowBind: false,
+      }],
+
       "semi": 1,
     },
 };
