@@ -43,11 +43,8 @@ body {
 
 .content {
   @include span-columns(12 of 15, table);
-  height: 100%;
   overflow: hidden;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-top: 1rem;
+  padding: 1rem;
   position: absolute;
   right: 0;
 }
@@ -300,10 +297,24 @@ input[type="text"] {
   }
 }
 
+.messages .pagination {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+
+  .status {
+    font-size: .8rem;
+    font-weight: 600;
+    line-height: 20px;
+  }
+}
+
 .messages .search {
   line-height: 20px;
   padding: 6px 12px;
   margin: 0;
+  max-width: 200px;
 }
 
 .forms .add-form {
@@ -338,4 +349,9 @@ input[type="text"] {
     background-image: linear-gradient(#eee, #ddd);
     border-color: #ccc;
   }
+}
+
+.btn.disabled {
+  background: shade($porcelain-gray, 3%);
+  pointer-events: none;
 }

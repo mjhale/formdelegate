@@ -32,21 +32,37 @@ const formsReducer = (state = {
 };
 
 const messagesReducer = (state = {
-  byId: {},
   allIds: [],
-  searchText: '',
+  byId: {},
   isFetching: false,
+  pagination: {
+    currentPage: 0,
+    itemsPerPage: 0,
+    requestedPage: 0,
+    totalPages: 0,
+    totalItems: 0,
+  },
+  searchText: '',
 }, action) => {
   switch (action.type) {
     case REQUEST_MESSAGES:
       return Object.assign({}, state, {
         isFetching: true,
+        pagination: Object.assign({}, state.pagination, {
+          requestedPage: action.requestedPage,
+        }),
       });
     case RECEIVE_MESSAGES:
       return Object.assign({}, state, {
         isFetching: false,
         byId: keyBy(action.response, 'id'),
         allIds: map(action.response, 'id'),
+        pagination: Object.assign({}, state.pagination, {
+          currentPage: action.currentPage,
+          itemsPerPage: action.itemsPerPage,
+          totalItems: action.totalItems,
+          totalPages: action.totalPages,
+        }),
       });
     case REQUEST_MESSAGE:
       return Object.assign({}, state, {
@@ -64,7 +80,7 @@ const messagesReducer = (state = {
       });
     case SEARCH_MESSAGES:
       return Object.assign({}, state, {
-          searchText: action.text
+        searchText: action.text
       });
     default:
       return state;

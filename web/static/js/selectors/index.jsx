@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { find, map, filter, includes } from 'lodash';
+import { find, map, filter } from 'lodash';
 
 const getMessages = (state) => state.messages;
 const getMessagesSearchText = (state) => state.messages.searchText;
@@ -13,9 +13,17 @@ export const getVisibleMessages = createSelector(
   [ getOrderedMessages, getMessagesSearchText ],
   (messages, searchText) => {
     if (searchText) {
-      /* @TODO: Add case insensitive search within nested objects */
       return filter(messages, (message) => {
-        return includes(message, searchText);
+        let found = false;
+        Object.keys(message).find((key) => {
+          if (message[key]) {
+            if (!found) {
+              let value = message[key].toString().toLowerCase();
+              found = value.indexOf(searchText.toLowerCase()) !== -1;
+            }
+          }
+        });
+        return found;
       });
     } else {
       return messages;
