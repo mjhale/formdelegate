@@ -1,46 +1,59 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { fetchMessages } from '../actions/messages';
+import { fetchMessages, fetchSearchMessages } from '../actions/messages';
 import { getVisibleMessages } from '../selectors';
-import { searchMessages } from '../actions/messages';
 import MessageList from '../components/MessageList';
 import SearchContainer from '../containers/Search';
 import Pagination from '../components/Paginator';
 
 const propTypes = {
-  messages: PropTypes.array.isRequired,
   isFetching: PropTypes.bool.isRequired,
-  searchText: PropTypes.string,
+  loadMessages: PropTypes.func.isRequired,
+  loadSearchResults: PropTypes.func.isRequired,
+  messages: PropTypes.array.isRequired,
+  onSearch: PropTypes.func.isRequired,
   pagination: PropTypes.shape({
-    currentPage: PropTypes.number.isRequired,
-    itemsPerPage: PropTypes.number.isRequired,
-    totalItems: PropTypes.number.isRequired,
-    totalPages: PropTypes.number.isRequired,
+    limit: PropTypes.number.isRequired,
+    offset: PropTypes.number.isRequired,
+    total: PropTypes.number.isRequired,
   }).isRequired,
+  query: PropTypes.string,
 };
 
 class MessagesContainer extends React.Component {
   componentDidMount() {
-    const { requestedPage, dispatch } = this.props;
-    dispatch(fetchMessages(requestedPage));
+    const { loadMessages } = this.props;
+    // start with the first page of results
+    loadMessages(1);
+  }
+
+  handlePageChange = (evt, requestedPage) => {
+    const { loadMessages, loadSearchResults, messages, search } = this.props;
+    const { query } = search;
+
+    evt.preventDefault();
+
+    if (!query || 0 === query.length) {
+      loadMessages(requestedPage);
+    } else {
+      loadSearchResults(query, requestedPage);
+    }
   }
 
   render() {
-    const { handlePageChange, isFetching, messages, pagination } = this.props;
-    const { currentPage, itemsPerPage, totalItems, totalPages } = pagination;
+    const { isFetching, messages, pagination } = this.props;
+    const { limit, offset, total } = pagination;
 
     return (
       <div className="messages">
         <ul className="actions">
           <li><SearchContainer {...this.props} /></li>
-          <li><a href="#" className="filter btn">Filter</a></li>
           <li>
             <Pagination
-              currentPage={currentPage}
-              handlePageChange={handlePageChange}
-              itemsPerPage={itemsPerPage}
-              totalItems={totalItems}
-              totalPages={totalPages}
+              handlePageChange={this.handlePageChange}
+              limit={limit}
+              offset={offset}
+              total={total}
               />
           </li>
         </ul>
@@ -54,29 +67,35 @@ class MessagesContainer extends React.Component {
 MessagesContainer.propTypes = propTypes;
 
 const mapStateToProps = (state) => {
-  const { messages } = state.messages;
+  const messages = state.messages;
 
   return {
-    filteredItems: messages,
-    isFetching: state.messages.isFetching,
+    isFetching: messages.isFetching,
     messages: getVisibleMessages(state),
     pagination: {
-      currentPage: state.messages.pagination.currentPage,
-      itemsPerPage: state.messages.pagination.itemsPerPage,
-      totalItems: state.messages.pagination.totalItems,
-      totalPages: state.messages.pagination.totalPages,
-    }
+      limit: messages.pagination.limit,
+      offset: messages.pagination.offset,
+      total: messages.pagination.total,
+    },
+    search: {
+      query: messages.search.query,
+    },
   };
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  handlePageChange(evt, requestedPage) {
-    evt.preventDefault();
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  loadMessages(requestedPage) {
     dispatch(fetchMessages(requestedPage));
   },
 
+  loadSearchResults(query, requestedPage) {
+    dispatch(fetchSearchMessages(query, requestedPage));
+  },
+
   onSearch(values) {
-    dispatch(searchMessages(values.search));
+    // start with the first page of results
+    const requestedPage = 1;
+    dispatch(fetchSearchMessages(values.search, requestedPage));
   }
 });
 

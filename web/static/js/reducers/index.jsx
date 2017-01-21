@@ -1,14 +1,14 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 import { reducer as formReducer } from 'redux-form';
-import { merge, keyBy, map, union } from 'lodash';
-import { normalize, arrayOf } from 'normalizr';
+import { keyBy, map, union } from 'lodash';
 
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/sessions';
 import { LOGOUT_REQUEST, LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../actions/sessions';
 import { REQUEST_ACCOUNTS, RECEIVE_ACCOUNTS } from '../actions/accounts';
 import { REQUEST_ACCOUNT, RECEIVE_ACCOUNT, UPDATE_ACCOUNT } from '../actions/account';
-import { REQUEST_MESSAGES, RECEIVE_MESSAGES, SEARCH_MESSAGES } from '../actions/messages';
+import { RECEIVE_MESSAGES, REQUEST_MESSAGES } from '../actions/messages';
+import { RECEIVE_SEARCH_MESSAGES, REQUEST_SEARCH_MESSAGES } from '../actions/messages';
 import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from '../actions/message';
 import { REQUEST_FORMS, RECEIVE_FORMS } from '../actions/forms';
 
@@ -32,55 +32,64 @@ const formsReducer = (state = {
 };
 
 const messagesReducer = (state = {
-  allIds: [],
   byId: {},
   isFetching: false,
   pagination: {
-    currentPage: 0,
-    itemsPerPage: 0,
-    requestedPage: 0,
-    totalPages: 0,
-    totalItems: 0,
+    offset: 0,
+    limit: 0,
+    total: 0,
   },
-  searchText: '',
+  search: {
+    query: '',
+  },
+  visibleIds: [],
 }, action) => {
   switch (action.type) {
-    case REQUEST_MESSAGES:
-      return Object.assign({}, state, {
-        isFetching: true,
-        pagination: Object.assign({}, state.pagination, {
-          requestedPage: action.requestedPage,
-        }),
-      });
-    case RECEIVE_MESSAGES:
-      return Object.assign({}, state, {
-        isFetching: false,
-        byId: keyBy(action.response, 'id'),
-        allIds: map(action.response, 'id'),
-        pagination: Object.assign({}, state.pagination, {
-          currentPage: action.currentPage,
-          itemsPerPage: action.itemsPerPage,
-          totalItems: action.totalItems,
-          totalPages: action.totalPages,
-        }),
-      });
-    case REQUEST_MESSAGE:
-      return Object.assign({}, state, {
-        isFetching: true,
-      });
     case RECEIVE_MESSAGE:
       return Object.assign({}, state, {
-        isFetching: false,
         byId: Object.assign({}, state.byId, {
           [action.response.id]: {
             ...action.response
           }
         }),
-        allIds: union(state.allIds, [action.response.id]),
+        isFetching: false,
       });
-    case SEARCH_MESSAGES:
+    case RECEIVE_MESSAGES:
       return Object.assign({}, state, {
-        searchText: action.text
+        byId: Object.assign({}, state.byId, keyBy(action.response, 'id')),
+        isFetching: false,
+        pagination: Object.assign({}, state.pagination, {
+          limit: action.limit,
+          offset: action.offset,
+          total: action.total,
+        }),
+        visibleIds: map(action.response, 'id'),
+      });
+    case RECEIVE_SEARCH_MESSAGES:
+      return Object.assign({}, state, {
+        byId: Object.assign({}, state.byId, keyBy(action.response, 'id')),
+        isFetching: false,
+        pagination: Object.assign({}, state.pagination, {
+          limit: action.limit,
+          offset: action.offset,
+          total: action.total,
+        }),
+        visibleIds: map(action.response, 'id'),
+      });
+    case REQUEST_MESSAGE:
+      return Object.assign({}, state, {
+        isFetching: true,
+      });
+    case REQUEST_MESSAGES:
+      return Object.assign({}, state, {
+        isFetching: true,
+      });
+    case REQUEST_SEARCH_MESSAGES:
+      return Object.assign({}, state, {
+        isFetching: true,
+        search: {
+          query: action.query,
+        },
       });
     default:
       return state;

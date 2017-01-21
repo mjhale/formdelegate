@@ -3,34 +3,33 @@ import { Link } from 'react-router';
 import classNames from 'classnames';
 
 const propTypes = {
-  currentPage: PropTypes.number.isRequired,
   handlePageChange: PropTypes.func.isRequired,
-  itemsPerPage: PropTypes.number.isRequired,
-  totalItems: PropTypes.number.isRequired,
-  totalPages: PropTypes.number.isRequired,
+  limit: PropTypes.number.isRequired,
+  offset: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
 };
 
-const Paginator = ({ currentPage, handlePageChange, itemsPerPage, totalItems, totalPages }) => {
-  if (!currentPage) return null;
+const Paginator = ({ handlePageChange, limit, offset, total }) => {
+  if (!total) return null;
 
-  let minIndexRangeOfItems = (currentPage - 1) * itemsPerPage + 1;
-  let maxIndexRangeOfItems = currentPage * itemsPerPage;
-  if (maxIndexRangeOfItems > totalItems) maxIndexRangeOfItems = totalItems;
+  let currentPage = Math.ceil(offset / limit) || 1;
+  let itemIndexCeiling = ((offset+limit) <= total) ? offset+limit : total;
+  let itemIndexFloor = offset || 1;
 
   const prevBtnClasses = classNames({
-    'disabled': minIndexRangeOfItems <= 1,
+    'disabled': itemIndexFloor <= 1,
     'btn': true,
   });
 
   const nextBtnClasses = classNames({
-    'disabled': maxIndexRangeOfItems >= totalItems,
+    'disabled': itemIndexCeiling >= total,
     'btn': true,
   });
 
   return (
     <ul className="pagination">
       <li className="status">
-        {minIndexRangeOfItems}{'-'}{maxIndexRangeOfItems} of {totalItems}
+        {itemIndexFloor}{'-'}{itemIndexCeiling} of {total}
       </li>
       <li>
         <Link className={prevBtnClasses} onClick={(evt) => handlePageChange(evt, currentPage - 1)}>

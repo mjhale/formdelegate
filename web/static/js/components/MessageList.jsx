@@ -15,6 +15,12 @@ const MessageList = ({ messages, isFetching, ...props }) => {
     );
   }
 
+  if (!isFetching && messages.length === 0) {
+    return (
+      <p>No messages found.</p>
+    );  
+  }
+
   return (
     <div>
       <div className="table">

@@ -27,11 +27,13 @@ defmodule FormDelegate.Router do
     get "/forms", FormController, :index
 
     get "/integrations", IntegrationController, :index
-
+    
     get "/messages", MessageController, :index
     get "/messages/:id", MessageController, :show
     post "/messages", MessageController, :create
     delete "/messages/:id", MessageController, :delete
+
+    get "/search/messages", SearchMessageController, :index
 
     resources "/admin/accounts", Admin.AccountController
 
