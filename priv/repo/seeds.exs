@@ -34,38 +34,20 @@ Repo.insert! %Account{
 }
 user_account = Repo.get_by!(Account, email: "josh.f@gmail.com")
 
-# Seed Messages
-Repo.insert! %Message{
-  content: "We need more tests!",
-  account: admin_account,
-  sender: "Anonymous",
-}
-
-Repo.insert! %Message{
-  content: "And also better architecture.",
-  account: admin_account,
-  sender: "Anonymous",
-}
-
-Repo.insert! %Message{
-  content: "Let's meet at 6:30 pm at the coffee shop.",
-  account: user_account,
-  sender: "sam@gmail.com",
-}
-
 # Seed Forms
 Repo.insert! %Form{
   form: "Contact Form",
   account: admin_account,
   verified: true,
 }
-contact_form = Repo.get_by!(Form, form: "Contact Form")
+admin_form = Repo.get_by!(Form, form: "Contact Form")
 
 Repo.insert! %Form{
-  form: "Contact Form #{2}",
+  form: "More Info Form",
   account: user_account,
   verified: false,
 }
+user_form = Repo.get_by!(Form, form: "More Info Form")
 
 # Seed Integrations
 Repo.insert! %Integration{
@@ -79,7 +61,7 @@ Repo.insert! %Integration{
 ifttt_integration = Repo.get_by!(Integration, type: "Ifttt")
 
 Repo.insert! %FormIntegration{
-  form: contact_form,
+  form: admin_form,
   enabled: true,
   integration: ifttt_integration,
   settings: %{
@@ -88,10 +70,32 @@ Repo.insert! %FormIntegration{
 }
 
 Repo.insert! %FormIntegration{
-  form: contact_form,
+  form: admin_form,
   enabled: false,
   integration: email_integration,
   settings: %{
     api_key: "00000-523-232222"
   }
+}
+
+# Seed Messages
+Repo.insert! %Message{
+  content: "We need more tests!",
+  account: admin_account,
+  form: admin_form,
+  sender: "Anonymous",
+}
+
+Repo.insert! %Message{
+  content: "And also better architecture.",
+  account: admin_account,
+  form: admin_form,
+  sender: "Anonymous",
+}
+
+Repo.insert! %Message{
+  content: "Let's meet at 6:30 pm at the coffee shop.",
+  account: user_account,
+  form: user_form,
+  sender: "sam@gmail.com",
 }

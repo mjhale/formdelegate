@@ -17,6 +17,6 @@ defmodule FormDelegate.Repo.Migrations.CreateIntegration do
       timestamps()
     end
 
-    create index(:forms_integrations, [:form_id])
+    create index(:forms_integrations, [:form_id, :integration_id])
   end
 end
