@@ -7,7 +7,22 @@ defmodule FormDelegate.MessageController do
 
   def index(conn, params) do
     current_account = Guardian.Plug.current_resource(conn)
-    page = assoc(current_account, :messages) |> Repo.paginate(params)
+
+    query = from m in Message,
+      where: m.account_id == ^current_account.id,
+      order_by: [desc: m.inserted_at],
+      left_join: form in assoc(m, :form),
+      left_join: form_integrations in assoc(form, :form_integrations),
+      left_join: integration in assoc(form_integrations, :integration),
+      left_join: integrations in assoc(form, :integrations),
+      preload: [
+        form: {
+          form,
+          form_integrations: {form_integrations, integration: integration},
+          integrations: integrations
+        }
+      ]
+    page = query |> Repo.paginate(params)
 
     conn
     |> Scrivener.Headers.paginate(page)

@@ -3,6 +3,7 @@ defmodule FormDelegate.Form do
 
   alias FormDelegate.Account
   alias FormDelegate.FormIntegration
+  alias FormDelegate.Message
 
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "forms" do
@@ -11,6 +12,7 @@ defmodule FormDelegate.Form do
     field :verified, :boolean, default: false
 
     belongs_to :account, Account
+    has_many :messages, Message
     has_many :form_integrations, FormIntegration
     has_many :integrations, through: [:form_integrations, :integration]
 

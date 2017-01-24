@@ -32,12 +32,12 @@ const Paginator = ({ handlePageChange, limit, offset, total }) => {
         {itemIndexFloor}{'-'}{itemIndexCeiling} of {total}
       </li>
       <li>
-        <Link className={prevBtnClasses} onClick={(evt) => handlePageChange(evt, currentPage - 1)}>
+        <Link className={prevBtnClasses} onClick={(evt) => handlePageChange(currentPage - 1, evt)}>
           {'<'}
         </Link>
       </li>
       <li>
-        <Link className={nextBtnClasses} onClick={(evt) => handlePageChange(evt, currentPage + 1)}>
+        <Link className={nextBtnClasses} onClick={(evt) => handlePageChange(currentPage + 1, evt)}>
           {'>'}
         </Link>
       </li>

@@ -227,6 +227,7 @@ input[type="text"] {
   &-header {
     background: $off-white;
     border: 1px solid $border-color;
+    border-bottom: 0;
     color: $header-font;
     font-size: .6rem;
     font-weight: 700;
@@ -240,7 +241,6 @@ input[type="text"] {
 
   &-content {
     border: 1px solid $border-color;
-    border-top: 0;
   }
 
   &-row {
@@ -315,6 +315,24 @@ input[type="text"] {
   padding: 6px 12px;
   margin: 0;
   max-width: 200px;
+}
+
+.messages .table-content a {
+  display: block;
+}
+
+.messages .table-content .message {
+  cursor: pointer;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.message.expanded {
+  background-color: $border-color;
+  margin: 0 -.5rem;
+  padding: .5rem;
 }
 
 .forms .add-form {

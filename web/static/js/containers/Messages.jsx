@@ -21,13 +21,18 @@ const propTypes = {
 };
 
 class MessagesContainer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {openedMessageId: null};
+  }
+
   componentDidMount() {
     const { loadMessages } = this.props;
     // start with the first page of results
     loadMessages(1);
   }
 
-  handlePageChange = (evt, requestedPage) => {
+  handlePageChange = (requestedPage, evt) => {
     const { loadMessages, loadSearchResults, messages, search } = this.props;
     const { query } = search;
 
@@ -40,8 +45,16 @@ class MessagesContainer extends React.Component {
     }
   }
 
+  handleViewChange = (message, evt) => {
+    evt.preventDefault();
+
+    this.setState((prevState, props) => ({
+      openedMessageId: (prevState.openedMessageId !== message.id) ? message.id : null
+    }));
+  }
+
   render() {
-    const { isFetching, messages, pagination } = this.props;
+    const { isFetching, messages, openedMessageId, pagination } = this.props;
     const { limit, offset, total } = pagination;
 
     return (
@@ -54,11 +67,16 @@ class MessagesContainer extends React.Component {
               limit={limit}
               offset={offset}
               total={total}
-              />
+            />
           </li>
         </ul>
         <h1>My Messages</h1>
-        <MessageList messages={messages} isFetching={isFetching} />
+        <MessageList
+          handleViewChange={this.handleViewChange}
+          isFetching={isFetching}
+          messages={messages}
+          openedMessageId={this.state.openedMessageId}
+        />
       </div>
     );
   }

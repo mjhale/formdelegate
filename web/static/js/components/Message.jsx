@@ -1,32 +1,48 @@
 import React, { PropTypes } from 'react';
 import moment from 'moment';
 
-const Message = ({ message }) => {
-  const { sender, inserted_at, content, unknown_fields } = message;
-
-  return (
-    <div className="message">
-      <h1>{sender}</h1>
-      <div className="date">{moment.utc(inserted_at).fromNow()}</div>
-      <div className="message">{content}</div>
-      {unknown_fields &&
-        <div className="unknown-fields">
-          <h2>Fields</h2>
-          {Object.keys(unknown_fields).map((key, index) => {
-            return (
-              <div key={index} className="unknown-field">
-                {key}: {unknown_fields[key]}
-              </div>
-            );
-          })}
-        </div>
-      }
-    </div>
-  );
-};
-
-Message.propTypes = {
+const propTypes = {
   message: PropTypes.shape({}),
+  openedMessageId: PropTypes.number,
 };
+
+const Message = ({ message, openedMessageId }) => {
+  const { content, inserted_at, sender, unknown_fields } = message;
+
+  if (message.id !== openedMessageId) {
+    return (
+      <div className="table-row message flattened">
+        <div className="table-cell sender">{sender}</div>
+        <div className="table-cell message">{content}</div>
+        <div className="table-cell form">#Form Name#</div>
+        <div className="table-cell date">
+          {moment.utc(inserted_at).fromNow()}
+        </div>
+      </div>
+    );
+  } else {
+    return (
+      <div className="message expanded">
+        <h1>{sender}</h1>
+        <div className="date">{moment.utc(inserted_at).fromNow()}</div>
+        <div className="message">{content}</div>
+        {unknown_fields &&
+          <div className="unknown-fields">
+            <h2>Fields</h2>
+            {Object.keys(unknown_fields).map((key, index) => {
+              return (
+                <div key={index} className="unknown-field">
+                  {key}: {unknown_fields[key]}
+                </div>
+              );
+            })}
+          </div>
+        }
+      </div>
+    );
+  }
+};
+
+Message.propTypes = propTypes;
 
 export default Message;

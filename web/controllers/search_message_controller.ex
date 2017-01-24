@@ -7,16 +7,25 @@ defmodule FormDelegate.SearchMessageController do
 
   def index(conn, params) do
     current_account = Guardian.Plug.current_resource(conn)
-  
-    # @TODO: Rewrite entire query to search *all* fields
-    # - Ensure that it is limited only to current account msgs
-    page = assoc(current_account, :messages)
-      |> where([m], ilike(m.content, ^"%#{params["query"]}%"))
-      # Below clause would include non-current account msgs
-      # |> or_where([m], m.sender = ^"%#{params["query"]}%"))
-      |> or_where([m], fragment("?->>? ilike ?", m.unknown_fields, "user_mail",  ^"%#{params["query"]}%"))
-      |> order_by([m], desc: m.updated_at)
-      |> Repo.paginate(params)
+
+    query = from m in Message,
+      where: m.account_id == ^current_account.id,
+      where: ilike(m.content, ^"%#{params["query"]}%") or
+             ilike(m.sender, ^"%#{params["query"]}%")  or
+             fragment("?->>? ilike ?", m.unknown_fields, "user_mail",  ^"%#{params["query"]}%"),
+      order_by: [desc: m.inserted_at],
+      left_join: form in assoc(m, :form),
+      left_join: form_integrations in assoc(form, :form_integrations),
+      left_join: integration in assoc(form_integrations, :integration),
+      left_join: integrations in assoc(form, :integrations),
+      preload: [
+        form: {
+          form,
+          form_integrations: {form_integrations, integration: integration},
+          integrations: integrations
+        }
+      ]
+    page = query |> Repo.paginate(params)
 
     conn
     |> Scrivener.Headers.paginate(page)

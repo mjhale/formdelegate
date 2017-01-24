@@ -11,7 +11,6 @@ defmodule FormDelegate.FormController do
     query = from f in Form,
       where: f.account_id == ^current_account.id,
       preload: [{:form_integrations, :integration}, :integrations]
-
     forms = Repo.all(query)
 
     render(conn, "index.json", forms: forms)

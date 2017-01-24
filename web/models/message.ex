@@ -7,12 +7,13 @@ defmodule FormDelegate.Message do
     field :unknown_fields, :map
 
     belongs_to :account, FormDelegate.Account
+    belongs_to :form, FormDelegate.Form, type: Ecto.UUID
 
     timestamps()
   end
 
-  @required_fields ~w(account_id sender content)
-  @optional_fields ~w(unknown_fields)
+  @required_fields ~w(account_id)
+  @optional_fields ~w(content sender unknown_fields)
 
   @doc """
   Builds a changeset based on the `struct` and `params`.

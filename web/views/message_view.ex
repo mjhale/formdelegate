@@ -12,6 +12,11 @@ defmodule FormDelegate.MessageView do
   def render("message.json", %{message: message}) do
     %{
       id: message.id,
+      form: render_one(
+        message.form,
+        FormDelegate.FormView,
+        "form.json"
+      ),
       content: message.content,
       sender: message.sender,
       unknown_fields: message.unknown_fields,
