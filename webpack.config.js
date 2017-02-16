@@ -22,8 +22,9 @@ module.exports = {
       }, {
         test: /\.scss$/,
         loader: ExtractTextPlugin.extract({
-          fallbackLoader: 'style-loader',
-          loader: 'css-loader?sourceMap' +
+          fallback: 'style-loader',
+          use: 'css-loader?sourceMap' +
+                  '!postcss-loader' +
                   '!sass-loader?sourceMap' +
                     '&includePaths[]=' + require('bourbon').includePaths +
                     '&includePaths[]=' + require('bourbon-neat').includePaths

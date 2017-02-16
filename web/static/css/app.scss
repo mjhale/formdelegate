@@ -2,9 +2,11 @@
 @import 'neat';
 @import 'buttons';
 @import 'colors';
+@import 'flashes';
 @import 'fonts';
 @import 'switch';
 @import 'table';
+@import 'tooltip';
 
 html,
 body {
@@ -22,7 +24,6 @@ body {
 }
 
 .home {
-  @include outer-container;
   box-sizing: border-box;
   display: table;
   height: 100%;
@@ -32,21 +33,26 @@ body {
 }
 
 .navigation {
-  @include span-columns(3 of 15, table);
   background-color: $primary-color;
   bottom: 0;
-  height: 100%;
+  display: block;
   left: 0;
   position: fixed;
   top: 0;
+  width: 250px;
+}
+
+.content-container {
+  @include grid-container;
+  display: block;
+  min-height: 100%;
+  padding-left: 250px;
 }
 
 .content {
-  @include span-columns(12 of 15, table);
-  overflow: hidden;
+  margin: 0 auto;
+  max-width: 960px;
   padding: 1rem;
-  position: absolute;
-  right: 0;
 }
 
 .logo {
@@ -65,26 +71,18 @@ body {
 }
 
 .logo:hover {
-  @include animation(scale .2s ease-in, slide .4s ease);
+  animation: scale .2s ease-in, slide .4s ease;
   color: $solid-white;
 
-  @include keyframes(scale) {
-    0%, 100% {
-      @include transform(scale(1));
-    }
-
-    50% {
-      @include transform(scale(1.05));
-    }
-  }
-
-  @include keyframes(slide) {
+  @keyframes anim {
     0%, 100% {
       left: 0;
+      transform: scale(1);
     }
 
     50% {
       left: 100%;
+      transform: scale(1.05);
     }
   }
 }
@@ -105,8 +103,8 @@ body {
 
   a:hover,
   .active {
-    @include transition(all .1s);
     color: $mine-black;
+    transition: all .1s;
   }
 
   a:hover:not(.active) {
@@ -160,7 +158,7 @@ input[type="text"] {
   width: 20rem;
 }
 
-.forms-list h2 {
+.forms-list .header {
   background: $off-white;
   border: 1px solid $border-color;
   color: $header-font;
@@ -170,6 +168,10 @@ input[type="text"] {
   margin: 0;
   padding: .5rem;
   text-transform: uppercase;
+}
+
+.forms-list .header .edit {
+  float: right;
 }
 
 .forms-list .form {
@@ -206,6 +208,33 @@ input[type="text"] {
   padding: .5rem;
 }
 
+.forms-list .message-count {
+  color: $header-font;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-style: italic;
+  padding-top: .5rem;
+}
+
+.forms-list .address {
+  background-color: #f5f5f5;
+  color: $mine-black;
+  font-family: Courier New, Courier, monospace;
+  font-size: .9rem;
+  font-weight: 300;
+  padding: 1rem;
+  text-align: center;
+  user-select: none;
+
+  &:hover {
+    cursor: hand;
+    cursor: pointer;
+  }
+
+  &:active {
+    box-shadow: 0 0.2rem $primary-color;
+  }
+}
+
 .card {
   background: $solid-white;
   border-bottom: 1px solid $border-color;
@@ -218,10 +247,10 @@ input[type="text"] {
 }
 
 .table {
-  @include display(flex);
-  @include flex-flow(column nowrap);
-  @include justify-content(space-between);
   background: $solid-white;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
   line-height: 1.5;
 
   &-header {
@@ -244,10 +273,10 @@ input[type="text"] {
   }
 
   &-row {
-    @include display(flex);
-    @include flex-flow(row nowrap);
     box-shadow: inset 0 -1px 0 0 $off-white;
     color: $mine-black;
+    display: flex;
+    flex-flow: row nowrap;
     text-decoration: none;
     width: 100%;
 
@@ -257,28 +286,28 @@ input[type="text"] {
   }
 
   &-cell {
-    @include display(flex);
-    @include flex-flow(row nowrap);
-    @include flex-grow(1);
-    @include flex-basis(0);
-    @include word-wrap;
+    @include overflow-wrap;
+    display: flex;
+    flex-basis: 0;
+    flex-flow: row nowrap;
+    flex-grow: 1;
     font-size: .8rem;
     padding: .5rem;
   }
 }
 
 .table .date {
-  @include justify-content(flex-end);
-  @include flex(0 0 10em);
+  flex: 0 0 10em;
+  justify-content: flex-end;
 }
 
 .table .sender {
-  @include flex(0 0 15em);
+  flex: 0 0 15em;
 }
 
 .table .form {
-  @include flex(0 0 15em);
-  @include justify-content(center);
+  flex: 0 0 15em;
+  justify-content: center;
 }
 
 .messages .actions {
