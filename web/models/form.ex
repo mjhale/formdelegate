@@ -9,11 +9,12 @@ defmodule FormDelegate.Form do
   schema "forms" do
     field :form, :string
     field :host, :string
-    field :verified, :boolean, default: false
+    field :verified, :boolean, default: false, null: false
+    field :message_count, :integer, default: 0, null: false
 
     belongs_to :account, Account
-    has_many :messages, Message
-    has_many :form_integrations, FormIntegration
+    has_many :messages, Message, on_delete: :delete_all
+    has_many :form_integrations, FormIntegration, on_replace: :delete
     has_many :integrations, through: [:form_integrations, :integration]
 
     timestamps()
@@ -25,6 +26,7 @@ defmodule FormDelegate.Form do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [:form, :host, :verified])
-    |> validate_required([:form, :host, :verified])
+    |> cast_assoc(:form_integrations)
+    |> validate_required([:form])
   end
 end

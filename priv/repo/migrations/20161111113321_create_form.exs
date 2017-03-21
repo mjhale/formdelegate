@@ -8,6 +8,7 @@ defmodule FormDelegate.Repo.Migrations.CreateForm do
       add :callback, :string
       add :host, :string
       add :verified, :boolean, null: false, default: false
+      add :message_count, :integer, null: false, default: 0
 
       add :account_id, references(:accounts, on_delete: :delete_all)
 

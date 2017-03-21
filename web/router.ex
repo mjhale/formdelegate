@@ -24,10 +24,10 @@ defmodule FormDelegate.Router do
 
     post "/requests/:id", RequestController, :process_request
 
-    get "/forms", FormController, :index
+    resources "/forms", FormController
 
     get "/integrations", IntegrationController, :index
-    
+
     get "/messages", MessageController, :index
     get "/messages/:id", MessageController, :show
     post "/messages", MessageController, :create

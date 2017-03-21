@@ -7,14 +7,14 @@ const propTypes = {
 };
 
 const Message = ({ message, openedMessageId }) => {
-  const { content, inserted_at, sender, unknown_fields } = message;
+  const { content, form, inserted_at, sender, unknown_fields } = message;
 
   if (message.id !== openedMessageId) {
     return (
       <div className="table-row message flattened">
         <div className="table-cell sender">{sender}</div>
         <div className="table-cell message">{content}</div>
-        <div className="table-cell form">#Form Name#</div>
+        <div className="table-cell form">{form.form}</div>
         <div className="table-cell date">
           {moment.utc(inserted_at).fromNow()}
         </div>

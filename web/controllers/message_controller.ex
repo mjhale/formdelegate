@@ -10,7 +10,6 @@ defmodule FormDelegate.MessageController do
 
     query = from m in Message,
       where: m.account_id == ^current_account.id,
-      order_by: [desc: m.inserted_at],
       left_join: form in assoc(m, :form),
       left_join: form_integrations in assoc(form, :form_integrations),
       left_join: integration in assoc(form_integrations, :integration),
@@ -21,7 +20,9 @@ defmodule FormDelegate.MessageController do
           form_integrations: {form_integrations, integration: integration},
           integrations: integrations
         }
-      ]
+      ],
+      distinct: true,
+      order_by: [desc: m.id]
     page = query |> Repo.paginate(params)
 
     conn
@@ -32,8 +33,7 @@ defmodule FormDelegate.MessageController do
   def create(conn, %{"message" => message_params}) do
     current_account = Guardian.Plug.current_resource(conn)
 
-    changeset = current_account
-    |> build_assoc(:messages)
+    changeset = build_assoc(current_account, :messages)
     |> Message.create_changeset(message_params)
 
     case Repo.insert(changeset) do

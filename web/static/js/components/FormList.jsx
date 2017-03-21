@@ -1,27 +1,46 @@
 import React from 'react';
-import FormIntegrationList from './FormIntegrationList';
+import { Link } from 'react-router';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
-export const FormList = ({ forms, isFetching }) => {
+let FormList = ({ forms, isFetching }) => {
   if (isFetching) {
-    return (
-      <p>Loading forms...</p>
-    );
+    return null;
   }
 
   return (
-    <div className="forms-list">
+    <div className="form-list">
       {forms.map((form) => (
-        <div key={form.id}>
-          <h2 className="name">{form.form}</h2>
-          <div className="form card">
-            <div>https://www.formdelegate.com/api/requests/{form.id}</div>
-            <div>Domain Whitelist: {form.host || 'All'}</div>
-            <div>No. of Messages: {form.messages_count || 'None'}</div>
-
-            <FormIntegrationList integrations={form.form_integrations} />
-          </div>
-        </div>
+        <FormSimpleView key={form.id} form={form} />
       ))}
     </div>
   );
 };
+
+const FormSimpleView = ({ form }) => {
+  return (
+    <div className="form">
+      <div className="header">
+        <span className="form-name">{form.form}</span>
+      </div>
+
+      <div className="card">
+        <CopyToClipboard
+          text={`https://www.formdelegate.com/api/requests/${form.id}`}
+        >
+          <div className="address tooltip-item">
+            https://www.formdelegate.com/api/requests/{form.id}
+            <div className="tooltip">
+              Copy to Clipboard
+            </div>
+          </div>
+        </CopyToClipboard>
+        <div className="actions">
+          <Link to={`/forms/${form.id}/edit`} className="btn">Edit Form</Link>
+          <Link to={``} className="btn delete">Delete Form</Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default FormList;

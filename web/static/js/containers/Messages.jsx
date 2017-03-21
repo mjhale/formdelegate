@@ -11,7 +11,6 @@ const propTypes = {
   loadMessages: PropTypes.func.isRequired,
   loadSearchResults: PropTypes.func.isRequired,
   messages: PropTypes.array.isRequired,
-  onSearch: PropTypes.func.isRequired,
   pagination: PropTypes.shape({
     limit: PropTypes.number.isRequired,
     offset: PropTypes.number.isRequired,
@@ -23,13 +22,11 @@ const propTypes = {
 class MessagesContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {openedMessageId: null};
+    this.state = { openedMessageId: null };
   }
 
   componentDidMount() {
-    const { loadMessages } = this.props;
-    // start with the first page of results
-    loadMessages(1);
+    this.props.loadMessages(1); /* begin with first page */
   }
 
   handlePageChange = (requestedPage, evt) => {
@@ -45,9 +42,24 @@ class MessagesContainer extends React.Component {
     }
   }
 
+  handleSearch = (values) => {
+    const { loadSearchResults, router } = this.props;
+    const location = Object.assign({}, router.getCurrentLocation());
+    const searchQuery = values.search;
+    const requestedPage = 1; /* begin with first page */
+
+    /* collapse any opened message */
+    this.setState({openedMessageId: null});
+
+    /* add search query to location params */
+    Object.assign(location.query, values);
+    router.push(location);
+
+    loadSearchResults(searchQuery, requestedPage);
+  }
+
   handleViewChange = (message, evt) => {
     evt.preventDefault();
-
     this.setState((prevState, props) => ({
       openedMessageId: (prevState.openedMessageId !== message.id) ? message.id : null
     }));
@@ -60,7 +72,12 @@ class MessagesContainer extends React.Component {
     return (
       <div className="messages">
         <ul className="actions">
-          <li><SearchContainer {...this.props} /></li>
+          <li>
+            <SearchContainer
+              {...this.props}
+              handleSearch={this.handleSearch}
+            />
+          </li>
           <li>
             <Pagination
               handlePageChange={this.handlePageChange}
@@ -108,12 +125,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
   loadSearchResults(query, requestedPage) {
     dispatch(fetchSearchMessages(query, requestedPage));
-  },
-
-  onSearch(values) {
-    // start with the first page of results
-    const requestedPage = 1;
-    dispatch(fetchSearchMessages(values.search, requestedPage));
   }
 });
 

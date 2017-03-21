@@ -5,6 +5,7 @@ import AdminAccountContainer from './containers/AdminAccount';
 import AdminAccountFormContainer from './containers/AdminAccountForm';
 import AdminAccountsContainer from './containers/AdminAccounts';
 import AppContainer from './containers/App';
+import FormEditContainer from './containers/FormEdit';
 import FormsContainer from './containers/Forms';
 import InvalidRoute from './components/InvalidRoute';
 import LoginContainer from './containers/Login';
@@ -20,6 +21,7 @@ export const RootRouter = ({history}) => (
     <Route path="/" component={AppContainer}>
       <IndexRoute component={Welcome} />
       <Route path="forms" component={requireAuth(FormsContainer)}/>
+      <Route path="forms/:formId/edit" component={requireAuth(FormEditContainer)}/>
       <Route path="messages" component={requireAuth(MessagesContainer)}/>
       <Route path="messages/:messageId" component={requireAuth(MessageContainer)}/>
       <Route path="admin" component={requireAuth(AdminContainer)}>

@@ -1,31 +1,48 @@
-button[type="submit"] {
-  background-color: #a7a7a7;
-  border: none;
-  border-radius: .2rem;
-  color: #FFF;
+@import 'colors';
+
+.btn {
+  background: linear-gradient(to bottom, $porcelain-gray, $off-white);
+  border: 1px solid $border-color;
+  border-radius: 3px;
+  color: $mine-black;
+  display: inline-block;
   cursor: pointer;
-  font-weight: 500;
-  margin: .25rem 0;
-  outline: none;
-  overflow: hidden;
-  padding: .5rem 1rem;
-  text-align: center;
+  font-size: .65rem;
+  font-weight: 600;
+  line-height: 20px;
+  padding: 6px 12px;
+  text-decoration: none;
   text-transform: uppercase;
-  transition: all 60ms ease-in-out;
+  white-space: nowrap;
+  vertical-align: middle;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
 
   &:hover {
-    opacity: .85;
-    transition: all 60ms ease;
+    background: linear-gradient(to bottom,#eee 100%, #ddd 100%);
+    border-color: #ccc;
   }
+}
 
-  &:active {
-    transition: all 60ms ease;
-    opacity: .55;
-  }
+.btn.disabled {
+  background: shade($porcelain-gray, 3%);
+  pointer-events: none;
+}
 
-  &[disabled=disabled], &:disabled {
-    color: #5D5D5D;
-    cursor: not-allowed;
-    text-shadow: .1rem .1rem #ADADAD;
+.btn.delete {
+  background: linear-gradient(to bottom,#dd4b39 50%, #b53727 100%);
+  border-color: #d73925;
+  color: #f5f7ff;
+  float: right;
+
+  &:hover {
+    background: linear-gradient(to bottom,#b53727 100%, #b53727 100%);
+    border-color: #333;
   }
+}
+
+.btn.add-integration {
+  float: right;
 }

@@ -12,20 +12,21 @@ defmodule FormDelegate.Message do
     timestamps()
   end
 
-  @required_fields ~w(account_id)
-  @optional_fields ~w(content sender unknown_fields)
-
   @doc """
   Builds a changeset based on the `struct` and `params`.
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, [:content, :sender, :unknown_fields, :account_id, :form_id])
+    |> assoc_constraint(:account)
+    |> assoc_constraint(:form)
   end
 
   def create_changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, [:content, :sender, :unknown_fields, :account_id, :form_id])
+    |> assoc_constraint(:account)
+    |> assoc_constraint(:form)
     |> update_counter_cache(1)
   end
 
@@ -39,8 +40,8 @@ defmodule FormDelegate.Message do
       %Ecto.Changeset{valid?: true} ->
         changeset
         |> prepare_changes(fn prepared_changeset ->
-          assoc(prepared_changeset.data, :account)
-          |> prepared_changeset.repo.update_all(inc: [messages_count: value])
+          assoc(prepared_changeset.data, :form)
+          |> prepared_changeset.repo.update_all(inc: [message_count: value])
 
           prepared_changeset
         end)

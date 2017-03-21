@@ -18,8 +18,10 @@ class AppContainer extends React.Component {
           <Link to="/" className="logo">form delegate</Link>
           <Nav isAuthenticated={isAuthenticated} />
         </nav>
-        <div className="content">
-          {children}
+        <div className="content-container">
+          <div className="content">
+            {children}
+          </div>
         </div>
       </div>
     );

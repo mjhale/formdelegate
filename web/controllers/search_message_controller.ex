@@ -13,7 +13,6 @@ defmodule FormDelegate.SearchMessageController do
       where: ilike(m.content, ^"%#{params["query"]}%") or
              ilike(m.sender, ^"%#{params["query"]}%")  or
              fragment("?->>? ilike ?", m.unknown_fields, "user_mail",  ^"%#{params["query"]}%"),
-      order_by: [desc: m.inserted_at],
       left_join: form in assoc(m, :form),
       left_join: form_integrations in assoc(form, :form_integrations),
       left_join: integration in assoc(form_integrations, :integration),
@@ -24,7 +23,9 @@ defmodule FormDelegate.SearchMessageController do
           form_integrations: {form_integrations, integration: integration},
           integrations: integrations
         }
-      ]
+      ],
+      distinct: true,
+      order_by: [desc: m.id]
     page = query |> Repo.paginate(params)
 
     conn

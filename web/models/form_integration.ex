@@ -3,8 +3,8 @@ defmodule FormDelegate.FormIntegration do
 
   schema "forms_integrations" do
     field :enabled, :boolean, default: false
-    embeds_one :settings, FormDelegate.Settings
 
+    embeds_one :settings, FormDelegate.Settings, on_replace: :delete
     belongs_to :form, FormDelegate.Form, type: Ecto.UUID
     belongs_to :integration, FormDelegate.Integration
 
@@ -13,7 +13,10 @@ defmodule FormDelegate.FormIntegration do
 
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:form_id, :integration_id, :settings, :enabled])
-    |> validate_required([:form_id, :integration_id])
+    |> cast(params, [:enabled, :form_id, :integration_id])
+    |> cast_embed(:settings)
+    |> assoc_constraint(:form)
+    |> assoc_constraint(:integration)
+    |> validate_required([:integration_id])
   end
 end

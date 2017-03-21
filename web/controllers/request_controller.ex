@@ -1,18 +1,16 @@
 defmodule FormDelegate.RequestController do
   use FormDelegate.Web, :controller
 
-  alias FormDelegate.Account
   alias FormDelegate.Form
   alias FormDelegate.Message
   alias FormDelegate.Services.EmailNewMessage
   alias FormDelegate.Services.Ifttt
 
-  def process_request(conn, %{"message" => message_params, "id" => id} = params) do
-    form = Repo.get!(Form, id)
+  # @TODO: Optimize query calls
+  def process_request(conn, %{"message" => message_params, "id" => form_id} = params) do
+    form = Repo.get!(Form, form_id)
     |> Repo.preload(:account)
     |> Repo.preload(:integrations)
-
-    current_account = Repo.get!(Account, form.account.id)
 
     unknown_fields = Map.drop(params, ["id", "message"])
 
@@ -20,8 +18,8 @@ defmodule FormDelegate.RequestController do
       "unknown_fields" => unknown_fields
     })
 
-    changeset = current_account
-    |> build_assoc(:messages)
+    changeset = form
+    |> build_assoc(:messages, account_id: form.account.id)
     |> Message.create_changeset(params)
 
     case Repo.insert(changeset) do
@@ -34,6 +32,7 @@ defmodule FormDelegate.RequestController do
     end
   end
 
+  # @TODO: Spin out to its own module (outside of Phoenix)
   def run_integrations(form, message) do
     Enum.each form.integrations, fn integration ->
       cond do

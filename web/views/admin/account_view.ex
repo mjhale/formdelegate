@@ -14,8 +14,7 @@ defmodule FormDelegate.Admin.AccountView do
       id: account.id,
       email: account.email,
       name: account.name,
-      forms_count: account.forms_count,
-      messages_count: account.messages_count,
+      form_count: account.form_count,
       verified: account.verified,
       admin: account.admin,
     }

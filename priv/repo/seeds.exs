@@ -20,8 +20,7 @@ Repo.insert! %Account{
   name: "The Administrator",
   email: "admin@admin.com",
   password_hash: Comeonin.Pbkdf2.hashpwsalt("admin"),
-  messages_count: 2, # pre-set the counter cache
-  forms_count: 1, # pre-set the counter cache
+  form_count: 1, # pre-set the counter cache
   verified: true,
 }
 admin_account = Repo.get_by!(Account, email: "admin@admin.com")
@@ -30,7 +29,6 @@ Repo.insert! %Account{
   name: "Joshua Fern",
   email: "josh.f@gmail.com",
   password_hash: Comeonin.Pbkdf2.hashpwsalt("securepass"),
-  messages_count: 1, # pre-set the counter cache
 }
 user_account = Repo.get_by!(Account, email: "josh.f@gmail.com")
 
@@ -39,8 +37,18 @@ Repo.insert! %Form{
   form: "Contact Form",
   account: admin_account,
   verified: true,
+  message_count: 2, # pre-set the counter cache
 }
-admin_form = Repo.get_by!(Form, form: "Contact Form")
+admin_contact_form = Repo.get_by!(Form, form: "Contact Form")
+
+Repo.insert! %Form{
+  form: "Error Form",
+  account: admin_account,
+  verified: true,
+  message_count: 1, # pre-set the counter cache
+}
+admin_error_form = Repo.get_by!(Form, form: "Error Form")
+
 
 Repo.insert! %Form{
   form: "More Info Form",
@@ -61,7 +69,7 @@ Repo.insert! %Integration{
 ifttt_integration = Repo.get_by!(Integration, type: "Ifttt")
 
 Repo.insert! %FormIntegration{
-  form: admin_form,
+  form: admin_contact_form,
   enabled: true,
   integration: ifttt_integration,
   settings: %{
@@ -70,7 +78,7 @@ Repo.insert! %FormIntegration{
 }
 
 Repo.insert! %FormIntegration{
-  form: admin_form,
+  form: admin_contact_form,
   enabled: false,
   integration: email_integration,
   settings: %{
@@ -82,14 +90,21 @@ Repo.insert! %FormIntegration{
 Repo.insert! %Message{
   content: "We need more tests!",
   account: admin_account,
-  form: admin_form,
+  form: admin_contact_form,
   sender: "Anonymous",
+}
+
+Repo.insert! %Message{
+  content: "There's a bug in some code.",
+  account: admin_account,
+  form: admin_error_form,
+  sender: "Merk",
 }
 
 Repo.insert! %Message{
   content: "And also better architecture.",
   account: admin_account,
-  form: admin_form,
+  form: admin_contact_form,
   sender: "Anonymous",
 }
 

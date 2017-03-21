@@ -44,8 +44,7 @@ class AdminAccountsContainer extends React.Component {
             {!isEmpty && items.map((account) => (
               <tr key={account.id}>
                 <td><Link to={`/admin/accounts/${account.id}`}>{account.email}</Link></td>
-                <td>{account.forms_count}</td>
-                <td>{account.messages_count}</td>
+                <td>{account.form_count}</td>
                 <td>{account.verified ? 'Verified' : 'Unverified'}</td>
               </tr>
             ))}

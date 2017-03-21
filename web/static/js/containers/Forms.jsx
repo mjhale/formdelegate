@@ -1,7 +1,9 @@
 import React, { PropTypes } from 'react';
+import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { fetchForms } from '../actions/forms';
-import { FormList } from '../components/FormList';
+import { getOrderedForms } from '../selectors';
+import FormList from '../components/FormList';
 
 const propTypes = {
   forms: PropTypes.array.isRequired,
@@ -10,15 +12,20 @@ const propTypes = {
 
 class FormsContainer extends React.Component {
   componentDidMount() {
-    this.props.dispatch(fetchForms());
+    this.props.loadForms();
   }
 
   render() {
+    const { forms, isFetching } = this.props;
+
     return (
       <div className="forms">
-        <a href="#" className="add-form btn">Add Form</a>
+        <Link to="/forms/new" className="add-form btn">Create New Form</Link>
         <h1>My Forms</h1>
-        <FormList {...this.props} />
+        <FormList
+          forms={forms}
+          isFetching={isFetching}
+        />
       </div>
     );
   }
@@ -28,9 +35,15 @@ FormsContainer.propTypes = propTypes;
 
 const mapStateToProps = (state) => {
   return {
-    forms: state.forms.forms,
+    forms: getOrderedForms(state),
     isFetching: state.forms.isFetching,
   };
 };
 
-export default connect(mapStateToProps)(FormsContainer);
+const mapDispatchToProps = (dispatch) => ({
+  loadForms() {
+    dispatch(fetchForms());
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(FormsContainer);

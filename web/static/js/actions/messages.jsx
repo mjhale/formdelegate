@@ -64,7 +64,7 @@ export function fetchSearchMessages(query, requestedPage) {
           const limit = Number(response.headers.get('per-page'));
           const offset = (requestedPage-1) * (limit+1);
           const total = Number(response.headers.get('total'));
-    
+
           return dispatch(receiveSearchMessages(json, limit, offset, total));
         });
       });

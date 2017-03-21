@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
-import { reducer as formReducer } from 'redux-form';
-import { keyBy, map, union } from 'lodash';
+import { reducer as reduxFormReducer } from 'redux-form';
+import { keyBy, map, merge, union } from 'lodash';
 
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/sessions';
 import { LOGOUT_REQUEST, LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../actions/sessions';
@@ -10,21 +10,29 @@ import { REQUEST_ACCOUNT, RECEIVE_ACCOUNT, UPDATE_ACCOUNT } from '../actions/acc
 import { RECEIVE_MESSAGES, REQUEST_MESSAGES } from '../actions/messages';
 import { RECEIVE_SEARCH_MESSAGES, REQUEST_SEARCH_MESSAGES } from '../actions/messages';
 import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from '../actions/message';
-import { REQUEST_FORMS, RECEIVE_FORMS } from '../actions/forms';
+import { REQUEST_FORM, REQUEST_FORMS, RECEIVE_FORM, RECEIVE_FORMS } from '../actions/forms';
 
 const formsReducer = (state = {
-  forms: [],
   isFetching: false,
+  allIds: [],
 }, action) => {
   switch (action.type) {
+    case REQUEST_FORM:
+      return Object.assign({}, state, {
+        isFetching: true,
+      });
     case REQUEST_FORMS:
       return Object.assign({}, state, {
         isFetching: true,
       });
+    case RECEIVE_FORM:
+      return Object.assign({}, state, {
+        isFetching: false,
+      });
     case RECEIVE_FORMS:
       return Object.assign({}, state, {
         isFetching: false,
-        forms: action.forms,
+        allIds: action.response.result,
       });
     default:
       return state;
@@ -184,14 +192,23 @@ const authenticationReducer = (state = {
   }
 };
 
+const entities = (state = {}, action) => {
+  if (action.response && action.response.entities) {
+    return merge({}, state, action.response.entities);
+  };
+  return state;
+};
+
 const reducers = {
   account: accountReducer,
   accounts: accountsReducer,
   authentication: authenticationReducer,
   forms: formsReducer,
-  routing: routerReducer,
+  entities,
   messages: messagesReducer,
-  form: formReducer, // redux-form
+  routing: routerReducer,
+  /* redux-form, must be the final reducer */
+  form: reduxFormReducer,
 };
 
 export default combineReducers(reducers);
