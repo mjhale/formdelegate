@@ -3,36 +3,144 @@ import { routerReducer } from 'react-router-redux';
 import { reducer as reduxFormReducer } from 'redux-form';
 import { keyBy, map, merge, union } from 'lodash';
 
+import { FORM_REQUEST, FORM_SUCCESS, FORM_FAILURE } from '../actions/forms';
+import { FORMS_REQUEST, FORMS_SUCCESS, FORMS_FAILURE } from '../actions/forms';
+import { INTEGRATIONS_REQUEST, INTEGRATIONS_SUCCESS, INTEGRATIONS_FAILURE } from '../actions/forms';
+
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/sessions';
 import { LOGOUT_REQUEST, LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../actions/sessions';
-import { REQUEST_ACCOUNTS, RECEIVE_ACCOUNTS } from '../actions/accounts';
-import { REQUEST_ACCOUNT, RECEIVE_ACCOUNT, UPDATE_ACCOUNT } from '../actions/account';
-import { RECEIVE_MESSAGES, REQUEST_MESSAGES } from '../actions/messages';
-import { RECEIVE_SEARCH_MESSAGES, REQUEST_SEARCH_MESSAGES } from '../actions/messages';
-import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from '../actions/message';
-import { REQUEST_FORM, REQUEST_FORMS, RECEIVE_FORM, RECEIVE_FORMS } from '../actions/forms';
 
-const formsReducer = (state = {
+import { MESSAGE_SEARCH_RESULTS, MESSAGE_SEARCH_QUERY } from '../actions/messages';
+import { MESSAGES_FAILURE, MESSAGES_REQUEST, MESSAGES_RESULTS, MESSAGES_SUCCESS } from '../actions/messages';
+import { MESSAGE_FAILURE, MESSAGE_REQUEST, MESSAGE_SUCCESS } from '../actions/message';
+import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from '../actions/message';
+
+import { REQUEST_ACCOUNT, RECEIVE_ACCOUNT, UPDATE_ACCOUNT } from '../actions/account';
+import { REQUEST_ACCOUNTS, RECEIVE_ACCOUNTS } from '../actions/accounts';
+
+
+const accountReducer = (state = {
+  account: {},
   isFetching: false,
-  allIds: [],
 }, action) => {
   switch (action.type) {
-    case REQUEST_FORM:
+    case RECEIVE_ACCOUNT:
+      return Object.assign({}, state, {
+        isFetching: false,
+        account: action.account,
+        lastUpdated: action.receivedAt,
+      });
+    case REQUEST_ACCOUNT:
       return Object.assign({}, state, {
         isFetching: true,
       });
-    case REQUEST_FORMS:
+    case UPDATE_ACCOUNT:
+      return Object.assign({}, state, {
+        account: action.account,
+      });
+    default:
+      return state;
+  }
+};
+
+const accountsReducer = (state = {
+  isFetching: false,
+  items: [],
+}, action) => {
+  switch (action.type) {
+    case RECEIVE_ACCOUNTS:
+      return Object.assign({}, state, {
+        isFetching: false,
+        items: action.items,
+        lastUpdated: action.receivedAt,
+      });
+    case REQUEST_ACCOUNTS:
       return Object.assign({}, state, {
         isFetching: true,
       });
-    case RECEIVE_FORM:
+    default:
+      return state;
+  }
+};
+
+/* @TODO Check if fd_token is expired. */
+const authenticationReducer = (state = {
+  isAuthenticated: localStorage.getItem('fd_token') ? true : false,
+  isFetching: false,
+  errorMessage: '',
+}, action) => {
+  switch (action.type) {
+    case LOGIN_FAILURE:
+      return Object.assign({}, state, {
+        isAuthenticated: false,
+        isFetching: false,
+        errorMessage: action.error,
+      });
+    case LOGIN_REQUEST:
+      return Object.assign({}, state, {
+        isAuthenticated: false,
+        isFetching: true,
+      });
+    case LOGIN_SUCCESS:
+      return Object.assign({}, state, {
+        isAuthenticated: true,
+        isFetching: false,
+      });
+    case LOGOUT_FAILURE:
+      return Object.assign({}, state, {
+        isAuthenticated: false,
+        isFetching: false,
+        errorMessage: action.error,
+      });
+    case LOGOUT_REQUEST:
+      return Object.assign({}, state, {
+        isFetching: true,
+      });
+    case LOGOUT_SUCCESS:
+      return Object.assign({}, state, {
+        isAuthenticated: false,
+        isFetching: false,
+      });
+    default:
+      return state;
+  }
+};
+
+const entitiesReducer = (state = {
+  form_integrations: {},
+  forms: {},
+  integrations: {},
+  messages: {},
+}, action) => {
+  if (action.payload && action.payload.entities) {
+    return merge({}, state, action.payload.entities);
+  };
+  return state;
+};
+
+const formsReducer = (state = {
+  allIds: [],
+  isFetching: false,
+}, action) => {
+  switch (action.type) {
+    case FORM_REQUEST:
+    case FORMS_REQUEST:
+    case INTEGRATIONS_REQUEST:
+      return Object.assign({}, state, {
+        isFetching: true,
+      });
+    case FORM_FAILURE:
+    case FORM_SUCCESS:
+    case FORMS_FAILURE:
+    case INTEGRATIONS_FAILURE:
+    case INTEGRATIONS_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
       });
-    case RECEIVE_FORMS:
+    case FORMS_SUCCESS:
       return Object.assign({}, state, {
+        allIds: action.payload.result,
         isFetching: false,
-        allIds: action.response.result,
       });
     default:
       return state;
@@ -40,7 +148,6 @@ const formsReducer = (state = {
 };
 
 const messagesReducer = (state = {
-  byId: {},
   isFetching: false,
   pagination: {
     offset: 0,
@@ -53,48 +160,39 @@ const messagesReducer = (state = {
   visibleIds: [],
 }, action) => {
   switch (action.type) {
-    case RECEIVE_MESSAGE:
+    case MESSAGE_SUCCESS:
       return Object.assign({}, state, {
-        byId: Object.assign({}, state.byId, {
-          [action.response.id]: {
-            ...action.response
-          }
-        }),
         isFetching: false,
       });
-    case RECEIVE_MESSAGES:
+    case MESSAGES_RESULTS:
       return Object.assign({}, state, {
-        byId: Object.assign({}, state.byId, keyBy(action.response, 'id')),
         isFetching: false,
         pagination: Object.assign({}, state.pagination, {
           limit: action.limit,
           offset: action.offset,
           total: action.total,
         }),
-        visibleIds: map(action.response, 'id'),
+        visibleIds: action.payload.result,
       });
-    case RECEIVE_SEARCH_MESSAGES:
+    case MESSAGE_SEARCH_RESULTS:
       return Object.assign({}, state, {
-        byId: Object.assign({}, state.byId, keyBy(action.response, 'id')),
-        isFetching: false,
         pagination: Object.assign({}, state.pagination, {
           limit: action.limit,
           offset: action.offset,
           total: action.total,
         }),
-        visibleIds: map(action.response, 'id'),
+        visibleIds: action.payload.result,
       });
-    case REQUEST_MESSAGE:
+    case MESSAGE_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
       });
-    case REQUEST_MESSAGES:
+    case MESSAGES_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
       });
-    case REQUEST_SEARCH_MESSAGES:
+    case MESSAGE_SEARCH_QUERY:
       return Object.assign({}, state, {
-        isFetching: true,
         search: {
           query: action.query,
         },
@@ -104,109 +202,15 @@ const messagesReducer = (state = {
   }
 };
 
-const accountsReducer = (state = {
-  isFetching: false,
-  items: [],
-}, action) => {
-  switch (action.type) {
-    case REQUEST_ACCOUNTS:
-      return Object.assign({}, state, {
-        isFetching: true,
-      });
-    case RECEIVE_ACCOUNTS:
-      return Object.assign({}, state, {
-        isFetching: false,
-        items: action.items,
-        lastUpdated: action.receivedAt,
-      });
-    default:
-      return state;
-  }
-};
-
-const accountReducer = (state = {
-  isFetching: false,
-  account: {},
-}, action) => {
-  switch (action.type) {
-    case REQUEST_ACCOUNT:
-      return Object.assign({}, state, {
-        isFetching: true,
-      });
-    case RECEIVE_ACCOUNT:
-      return Object.assign({}, state, {
-        isFetching: false,
-        account: action.account,
-        lastUpdated: action.receivedAt,
-      });
-    case UPDATE_ACCOUNT:
-      return Object.assign({}, state, {
-        account: action.account,
-      });
-    default:
-      return state;
-  }
-};
-
-/* @TODO Check if fd_token is expired. */
-const authenticationReducer = (state = {
-  isFetching: false,
-  isAuthenticated: localStorage.getItem('fd_token') ? true : false,
-  errorMessage: '',
-}, action) => {
-  switch (action.type) {
-    case LOGIN_REQUEST:
-      return Object.assign({}, state, {
-        isFetching: true,
-        isAuthenticated: false,
-      });
-    case LOGIN_SUCCESS:
-      return Object.assign({}, state, {
-        isFetching: false,
-        isAuthenticated: true,
-        errorMessage: '',
-      });
-    case LOGIN_FAILURE:
-      return Object.assign({}, state, {
-        isFetching: false,
-        isAuthenticated: false,
-        errorMessage: action.message,
-      });
-    case LOGOUT_REQUEST:
-      return Object.assign({}, state, {
-        isFetching: true,
-      });
-    case LOGOUT_SUCCESS:
-      return Object.assign({}, state, {
-        isFetching: false,
-        isAuthenticated: false,
-      });
-    case LOGOUT_FAILURE:
-      return Object.assign({}, state, {
-        isFetching: false,
-        isAuthenticated: false,
-        errorMessage: action.message,
-      });
-    default:
-      return state;
-  }
-};
-
-const entities = (state = {}, action) => {
-  if (action.response && action.response.entities) {
-    return merge({}, state, action.response.entities);
-  };
-  return state;
-};
-
 const reducers = {
   account: accountReducer,
   accounts: accountsReducer,
   authentication: authenticationReducer,
+  entities: entitiesReducer,
   forms: formsReducer,
-  entities,
   messages: messagesReducer,
   routing: routerReducer,
+
   /* redux-form, must be the final reducer */
   form: reduxFormReducer,
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Router, Route, IndexRoute } from 'react-router';
+
 import AdminContainer from './containers/Admin';
 import AdminAccountContainer from './containers/AdminAccount';
 import AdminAccountFormContainer from './containers/AdminAccountForm';
@@ -11,6 +12,7 @@ import InvalidRoute from './components/InvalidRoute';
 import LoginContainer from './containers/Login';
 import MessageContainer from './containers/Message';
 import MessagesContainer from './containers/Messages';
+import NewFormContainer from './containers/NewForm';
 import ReceiveFailureContainer from './containers/ReceiveFailure';
 import ReceiveSuccessContainer from './containers/ReceiveSuccess';
 import requireAuth from './containers/RequireAuth';
@@ -21,6 +23,7 @@ export const RootRouter = ({history}) => (
     <Route path="/" component={AppContainer}>
       <IndexRoute component={Welcome} />
       <Route path="forms" component={requireAuth(FormsContainer)}/>
+      <Route path="forms/new" component={requireAuth(NewFormContainer)}/>
       <Route path="forms/:formId/edit" component={requireAuth(FormEditContainer)}/>
       <Route path="messages" component={requireAuth(MessagesContainer)}/>
       <Route path="messages/:messageId" component={requireAuth(MessageContainer)}/>

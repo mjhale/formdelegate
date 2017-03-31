@@ -1,145 +1,69 @@
-import fetch from 'isomorphic-fetch';
+import { CALL_API } from '../middleware/api';
 import { formSchema, integrationListSchema } from '../schema';
-import { normalize } from 'normalizr';
 
-export const REQUEST_FORM = 'REQUEST_FORM';
-export const REQUEST_FORMS = 'REQUEST_FORMS';
-export const RECEIVE_FORM = 'RECEIVE_FORM';
-export const RECEIVE_FORMS = 'RECEIVE_FORMS';
-export const RECEIVE_INTEGRATIONS = 'RECEIVE_INTEGRATIONS';
+export const FORM_REQUEST = 'FORM_REQUEST';
+export const FORM_SUCCESS = 'FORM_SUCCESS';
+export const FORM_FAILURE = 'FORM_FAILURE';
+export const FORM_UPDATE_REQUEST = 'FORM_UPDATE_REQUEST';
+export const FORM_UPDATE_SUCCESS = 'FORM_UPDATE_SUCCESS';
+export const FORM_UPDATE_FAILURE = 'FORM_UPDATE_FAILURE';
+export const FORMS_REQUEST = 'FORMS_REQUEST';
+export const FORMS_SUCCESS = 'FORMS_SUCCESS';
+export const FORMS_FAILURE = 'FORMS_FAILURE';
+export const INTEGRATIONS_REQUEST = 'INTEGRATIONS_REQUEST';
+export const INTEGRATIONS_SUCCESS = 'INTEGRATIONS_SUCCESS';
+export const INTEGRATIONS_FAILURE = 'INTEGRATIONS_FAILURE';
 
-function requestForm() {
-  return {
-    type: REQUEST_FORM,
-  };
-}
+export const fetchForms = () => ({
+  [CALL_API]: {
+    authenticated: true,
+    endpoint: 'forms',
+    schema: [formSchema],
+    types: [FORMS_REQUEST, FORMS_SUCCESS, FORMS_FAILURE],
+  }
+});
 
-function requestForms() {
-  return {
-    type: REQUEST_FORMS,
-  };
-}
+export const fetchIntegrations = () => ({
+  [CALL_API]: {
+    authenticated: true,
+    endpoint: 'integrations',
+    schema: integrationListSchema,
+    types: [INTEGRATIONS_REQUEST, INTEGRATIONS_SUCCESS, INTEGRATIONS_FAILURE],
+  }
+});
 
-function receiveForm(response) {
-  return {
-    type: RECEIVE_FORM,
-    receivedAt: Date.now(),
-    response,
-  };
-}
-
-function receiveForms(response) {
-  return {
-    type: RECEIVE_FORMS,
-    receivedAt: Date.now(),
-    response,
-  };
-}
-
-function receiveIntegrations(response) {
-  return {
-    type: RECEIVE_INTEGRATIONS,
-    receivedAt: Date.now(),
-    response,
-  };
-}
-
-export function fetchForms() {
-  return (dispatch) => {
-    dispatch(requestForms());
-
-    let token = localStorage.getItem('fd_token') || null;
-
-    if (token) {
-      return fetch('/api/forms', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        }
-      })
-      .then((response) => {
-        return response.json();
-      })
-      .then((json) => {
-        const response = normalize(json.data, [formSchema]);
-        return dispatch(receiveForms(response));
-      });
-    } else {
-      throw 'No token found.';
-    }
-  };
-}
-
-export function fetchIntegrations() {
-  return (dispatch) => {
-    let token = localStorage.getItem('fd_token') || null;
-
-    if (token) {
-      return fetch(`/api/integrations`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        }
-      })
-      .then((response) => {
-        return response.json();
-      })
-      .then((json) => {
-        const response = normalize(json.data, integrationListSchema);
-        return dispatch(receiveIntegrations(response));
-      });
-    } else {
-      throw 'No token found.';
-    }
-  };
-}
-
-
-export function fetchForm(formId) {
-  return (dispatch) => {
-    dispatch(requestForm());
-
-    let token = localStorage.getItem('fd_token') || null;
-
-    if (token) {
-      return fetch(`/api/forms/${formId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        }
-      })
-      .then((response) => {
-        return response.json();
-      })
-      .then((json) => {
-        const response = normalize(json.data, formSchema);
-        return dispatch(receiveForm(response));
-      });
-    } else {
-      throw 'No token found.';
-    }
-  };
-}
+export const fetchForm = (formId) => ({
+  [CALL_API]: {
+    authenticated: true,
+    endpoint: `forms/${formId}`,
+    schema: formSchema,
+    types: [FORM_REQUEST, FORM_SUCCESS, FORM_FAILURE],
+  }
+});
 
 export function updateForm(form) {
-  return (dispatch, getState) => {
-    // dispatch(updateAccountOptimistic(account));
-
-    let token = localStorage.getItem('fd_token') || null;
-
-    if (token) {
-      return fetch(`/api/forms/${form.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+  return async(dispatch, getState) => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        authenticated: true,
+        config: {
+          body: JSON.stringify({ form }),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          method: 'PUT',
         },
-        body: JSON.stringify({
-          form
-        }),
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    } else {
-      throw 'No token found.';
+        endpoint: `forms/${form.id}`,
+        schema: null,
+        types: [FORM_UPDATE_REQUEST, FORM_UPDATE_SUCCESS, FORM_UPDATE_FAILURE],
+      }
+    });
+
+    if (actionResponse.error) {
+      throw new Error('Promise flow received action error', actionResponse);
     }
+
+    return actionResponse;
   };
-};
+}

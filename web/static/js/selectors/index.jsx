@@ -1,10 +1,11 @@
 import { createSelector } from 'reselect';
-import { find, map, filter } from 'lodash';
+import { filter, find, map } from 'lodash';
 
 const getForms = (state) => state.entities.forms;
 const getFormId = (_state, props) => props.params.formId;
 const getFormIds = (state) => state.forms.allIds;
-const getMessages = (state) => state.messages;
+const getMessages = (state) => state.entities.messages;
+const getMessageIds = (state) => state.messages.visibleIds;
 const getMessageId = (_state, props) => props.params.messageId;
 
 export const getForm = createSelector(
@@ -19,7 +20,7 @@ export const getForm = createSelector(
 export const getMessage = createSelector(
   [ getMessages, getMessageId ],
   (messages, messageId) => {
-    return find(messages.byId, function (object) {
+    return find(messages, function (object) {
       return object.id == messageId;
     });
   }
@@ -28,11 +29,13 @@ export const getMessage = createSelector(
 export const getOrderedForms = createSelector(
   [ getForms, getFormIds ],
   (forms, allIds) => {
-  return allIds.map((id) => forms[id]);
+    return allIds.map((id) => forms[id]);
 });
 
-const getOrderedMessages = createSelector(getMessages, (messages) => {
-  return messages.visibleIds.map((id) => messages.byId[id]);
+const getOrderedMessages = createSelector(
+  [getMessages, getMessageIds],
+  (messages, messageIds) => {
+    return messageIds.map((id) => messages[id]);
 });
 
 export const getVisibleMessages = createSelector(

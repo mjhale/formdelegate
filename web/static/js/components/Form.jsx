@@ -5,7 +5,16 @@ import FormIntegrationList from '../components/FormIntegrationList';
 import NewIntegrations from '../components/NewIntegrations';
 
 const FormEdit = (props) => {
-  const { form, handleSubmit, newIntegrationFields, lastFormIntegrationId, integrationTypes, submitting, pristine, reset } = props;
+  const {
+    form,
+    handleSubmit,
+    integrationTypes,
+    lastFormIntegrationId,
+    newIntegrationFields,
+    pristine,
+    reset,
+    submitting
+  } = props;
 
   if (!form) return null;
 
@@ -46,9 +55,9 @@ const FormEdit = (props) => {
         </div>
         <FormIntegrationList integrations={form.form_integrations} />
         <NewIntegrations
-          newIntegrationFields={newIntegrationFields}
           integrationTypes={integrationTypes}
           lastFormIntegrationId={lastFormIntegrationId}
+          newIntegrationFields={newIntegrationFields}
         />
       </div>
       <div>

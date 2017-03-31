@@ -1,108 +1,100 @@
-import fetch from 'isomorphic-fetch';
+import { CALL_API } from '../middleware/api';
+import { messageListSchema } from '../schema';
 
-export const REQUEST_MESSAGES = 'REQUEST_MESSAGES';
-export const RECEIVE_MESSAGES = 'RECEIVE_MESSAGES';
-export const REQUEST_SEARCH_MESSAGES = 'REQUEST_SEARCH_MESSAGES';
-export const RECEIVE_SEARCH_MESSAGES = 'RECEIVE_SEARCH_MESSAGES';
+export const MESSAGE_SEARCH_FAILURE = 'MESSAGE_SEARCH_FAILURE';
+export const MESSAGE_SEARCH_QUERY = 'MESSAGE_SEARCH_QUERY';
+export const MESSAGE_SEARCH_REQUEST = 'MESSAGE_SEARCH_REQUEST';
+export const MESSAGE_SEARCH_RESULTS = 'MESSAGE_SEARCH_RESULTS';
+export const MESSAGE_SEARCH_SUCCESS = 'MESSAGE_SEARCH_SUCCESS';
+export const MESSAGES_FAILURE = 'MESSAGES_FAILURE';
+export const MESSAGES_REQUEST = 'MESSAGES_REQUEST';
+export const MESSAGES_RESULTS = 'MESSAGES_RESULTS';
+export const MESSAGES_SUCCESS = 'MESSAGES_SUCCESS';
 
-function requestMessages(requestedPage) {
+function receiveMessages(payload, limit, offset, total) {
   return {
-    type: REQUEST_MESSAGES,
-    requestedPage: requestedPage,
-  };
-}
-
-function receiveMessages(json, limit, offset, total) {
-  return {
-    type: RECEIVE_MESSAGES,
-    response: json.data,
-    receivedAt: Date.now(),
     limit,
     offset,
+    payload,
     total,
+    type: MESSAGES_RESULTS,
   };
 }
 
-function requestSearchMessages(query, requestedPage) {
+function messageSearchQuery(query, requestedPage) {
   return {
-    type: REQUEST_SEARCH_MESSAGES,
-    requestedPage: requestedPage,
+    requestedPage,
+    type: MESSAGE_SEARCH_QUERY,
     query: query || '',
   };
 }
 
-function receiveSearchMessages(json, limit, offset, total) {
+function messageSearchResults(payload, limit, offset, total) {
   return {
-    type: RECEIVE_SEARCH_MESSAGES,
-    response: json.data,
-    receivedAt: Date.now(),
     limit,
     offset,
+    payload,
     total,
+    type: MESSAGE_SEARCH_RESULTS,
   };
 }
 
-export function fetchSearchMessages(query, requestedPage) {
-  if (!requestedPage) requestedPage = 1;
+export function messageSearchFetch(query, requestedPage) {
   if (!query) query = '';
+  if (!requestedPage) requestedPage = 1;
 
-  return (dispatch) => {
-    let token = localStorage.getItem('fd_token') || null;
+  return async(dispatch) => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        authenticated: true,
+        endpoint: `search/messages?query=${query}&page=${requestedPage}`,
+        schema: messageListSchema,
+        types: [MESSAGE_SEARCH_REQUEST, MESSAGE_SEARCH_SUCCESS, MESSAGE_SEARCH_FAILURE],
+      }
+    });
 
-    if (token) {
-      return fetch(`/api/search/messages?query=${query}&page=${requestedPage}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        }
-      })
-      .then((response) => {
-        dispatch(requestSearchMessages(query, requestedPage));
-
-        response.json().then((json) => {
-          if (!response.ok) return Promise.reject(json);
-
-          const limit = Number(response.headers.get('per-page'));
-          const offset = (requestedPage-1) * (limit+1);
-          const total = Number(response.headers.get('total'));
-
-          return dispatch(receiveSearchMessages(json, limit, offset, total));
-        });
-      });
-    } else {
-      throw 'No token found.';
+    if (actionResponse.error) {
+      throw new Error('Promise flow received action error', actionResponse);
     }
+
+    const limit = Number(actionResponse.headers.get('per-page'));
+    const offset = (requestedPage-1) * (limit+1);
+    const total = Number(actionResponse.headers.get('total'));
+
+    return dispatch(messageSearchActions(actionResponse.payload, query, requestedPage, limit, offset, total));
   };
+}
+
+function messageSearchActions(payload, query, requestedPage, limit, offset, total) {
+  return (dispatch) => Promise.all([
+    dispatch(messageSearchQuery(query, requestedPage)),
+    dispatch(messageSearchResults(payload, limit, offset, total)),
+  ]);
 }
 
 export function fetchMessages(requestedPage) {
   if (!requestedPage) requestedPage = 1;
 
-  return (dispatch) => {
-    dispatch(requestMessages());
+  return async(dispatch) => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        authenticated: true,
+        endpoint: `messages?page=${requestedPage}`,
+        schema: messageListSchema,
+        types: [MESSAGES_REQUEST, MESSAGES_SUCCESS, MESSAGES_FAILURE],
+      }
+    });
 
-    let token = localStorage.getItem('fd_token') || null;
-
-    if (token) {
-      return fetch(`/api/messages?page=${requestedPage}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        }
-      })
-      .then((response) =>
-        response.json().then((json) => {
-          if (!response.ok) return Promise.reject(json);
-
-          const total = Number(response.headers.get('total'));
-          if (!total) return null;
-
-          const limit = Number(response.headers.get('per-page'));
-          const offset = (requestedPage-1) * (limit+1);
-
-          return dispatch(receiveMessages(json, limit, offset, total));
-        })
-      );
-    } else {
-      throw 'No token found.';
+    if (actionResponse.error) {
+      throw new Error('Promise flow received action error', actionResponse);
     }
+
+    const limit = Number(actionResponse.headers.get('per-page'));
+    const offset = (requestedPage-1) * (limit+1);
+    const total = Number(actionResponse.headers.get('total'));
+
+    if (!total) return null;
+
+    return dispatch(receiveMessages(actionResponse.payload, limit, offset, total));
   };
 }

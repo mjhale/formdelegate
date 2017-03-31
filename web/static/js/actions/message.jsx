@@ -1,42 +1,25 @@
-import fetch from 'isomorphic-fetch';
+import { CALL_API } from '../middleware/api';
+import { messageSchema } from '../schema';
 
-export const REQUEST_MESSAGE = 'REQUEST_MESSAGE';
-export const RECEIVE_MESSAGE = 'RECEIVE_MESSAGE';
-
-function requestMessage() {
-  return {
-    type: REQUEST_MESSAGE,
-  };
-}
-
-function receiveMessage(json) {
-  return {
-    type: RECEIVE_MESSAGE,
-    response: json.data,
-    receivedAt: Date.now(),
-  };
-}
+export const MESSAGE_FAILURE = 'MESSAGE_FAILURE';
+export const MESSAGE_REQUEST = 'MESSAGE_REQUEST';
+export const MESSAGE_SUCCESS = 'MESSAGE_SUCCESS';
 
 export function fetchMessage(messageId) {
-  return (dispatch) => {
-    dispatch(requestMessage());
+  return async(dispatch) => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        authenticated: true,
+        endpoint: `messages/${messageId}`,
+        schema: messageSchema,
+        types: [MESSAGE_REQUEST, MESSAGE_SUCCESS, MESSAGE_FAILURE],
+      }
+    });
 
-    let token = localStorage.getItem('fd_token') || null;
-
-    if (token) {
-      return fetch(`/api/messages/${messageId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        }
-      })
-      .then((response) => {
-        return response.json();
-      })
-      .then((json) => {
-        return dispatch(receiveMessage(json));
-      });
-    } else {
-      throw 'No token found.';
+    if (actionResponse.error) {
+      throw new Error('Promise flow received action error', actionResponse);
     }
+
+    return actionResponse.payload;
   };
 }

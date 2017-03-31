@@ -1,45 +1,40 @@
-/* @TODO: Add thunks support */
-
 import fetch from 'isomorphic-fetch';
+import { normalize } from 'normalizr';
+import { merge } from 'lodash';
 
-const BASE_URL = 'http://localhost:4000/api/';
+const API_ROOT = 'http://localhost:4000/api/';
 export const CALL_API = Symbol('Call API');
 
-function callApi(endpoint, authenticated) {
-  let token = localStorage.getItem('fd_token') || null;
-  let config = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  };
+const callApi = (endpoint, schema, authenticated, config) => {
+  const fullUrl = (endpoint.indexOf(API_ROOT) === -1) ? API_ROOT + endpoint : endpoint;
+  const token = localStorage.getItem('fd_token') || null;
 
   if (authenticated) {
     if (token) {
-      Object.assign(config, {
+      config = merge({}, {
         headers: {
           'Authorization': `Bearer ${token}`,
-        }
-      });
+        },
+      }, config);
     } else {
-      throw 'No token found.';
+      throw new Error('No authentication token was found');
     }
   }
 
-  return fetch(BASE_URL + endpoint, config)
+  return fetch(fullUrl, config)
+    .then((response) =>
+      response.json().then((json) => ({ json, response }))
+    ).then(({ json, response }) => {
+      if (!response.ok) {
+        return Promise.reject(json);
+      }
 
-  .then((response) => {
-    response.json().then((data) => ({ data, response }));
-  })
-
-  .then(({data, response}) => {
-    if (!response.ok) {
-      return Promise.reject(data);
-    }
-
-    return data;
-  })
-
-  .catch((error) => console.log(error));
-}
+      return {
+        headers: new Headers(response.headers),
+        payload: ((schema) ? normalize(json.data, schema) : json),
+      };
+    });
+};
 
 export default (store) => (next) => (action) => {
   const callAPI = action[CALL_API];
@@ -48,20 +43,44 @@ export default (store) => (next) => (action) => {
     return next(action);
   }
 
-  let { endpoint, types, authenticated } = callAPI;
+  let { authenticated, config, endpoint, schema, types } = callAPI;
 
-  const [requestType, successType, errorType] = types;
+  if (typeof endpoint === 'function') {
+    endpoint = endpoint(store.getState());
+  }
 
-  return callApi(endpoint, authenticated).then(
+  if (typeof endpoint !== 'string') {
+    throw new Error('Please specify a string endpoint URL');
+  }
+
+  if (typeof schema === 'undefined') {
+    throw new Error('Please specify a schema or null');
+  }
+
+  const actionWith = (data) => {
+    const finalAction = Object.assign({}, action, data);
+    delete finalAction[CALL_API];
+    return finalAction;
+  };
+
+  let [requestType, successType, errorType] = types;
+  next(actionWith({
+    isFetching: true,
+    type: requestType,
+  }));
+
+  return callApi(endpoint, schema, authenticated, config).then(
     (response) =>
       next({
-        response,
-        authenticated,
+        headers: response.headers,
+        isFetching: false,
+        payload: response.payload,
         type: successType,
       }),
     (error) =>
       next({
-        error: error.message || 'There was an error.',
+        error: error.message || 'There was an unknown error',
+        isFetching: false,
         type: errorType,
       })
   );

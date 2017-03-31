@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { fetchMessages, fetchSearchMessages } from '../actions/messages';
+import { fetchMessages, messageSearchFetch } from '../actions/messages';
 import { getVisibleMessages } from '../selectors';
 import MessageList from '../components/MessageList';
 import SearchContainer from '../containers/Search';
@@ -124,7 +124,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
 
   loadSearchResults(query, requestedPage) {
-    dispatch(fetchSearchMessages(query, requestedPage));
+    dispatch(messageSearchFetch(query, requestedPage));
   }
 });
 
