@@ -7,12 +7,12 @@ import AdminAccountFormContainer from './containers/AdminAccountForm';
 import AdminAccountsContainer from './containers/AdminAccounts';
 import AppContainer from './containers/App';
 import FormEditContainer from './containers/FormEdit';
+import FormNewContainer from './containers/FormNew';
 import FormsContainer from './containers/Forms';
 import InvalidRoute from './components/InvalidRoute';
 import LoginContainer from './containers/Login';
 import MessageContainer from './containers/Message';
 import MessagesContainer from './containers/Messages';
-import NewFormContainer from './containers/NewForm';
 import ReceiveFailureContainer from './containers/ReceiveFailure';
 import ReceiveSuccessContainer from './containers/ReceiveSuccess';
 import requireAuth from './containers/RequireAuth';
@@ -23,7 +23,7 @@ export const RootRouter = ({history}) => (
     <Route path="/" component={AppContainer}>
       <IndexRoute component={Welcome} />
       <Route path="forms" component={requireAuth(FormsContainer)}/>
-      <Route path="forms/new" component={requireAuth(NewFormContainer)}/>
+      <Route path="forms/new" component={requireAuth(FormNewContainer)}/>
       <Route path="forms/:formId/edit" component={requireAuth(FormEditContainer)}/>
       <Route path="messages" component={requireAuth(MessagesContainer)}/>
       <Route path="messages/:messageId" component={requireAuth(MessageContainer)}/>

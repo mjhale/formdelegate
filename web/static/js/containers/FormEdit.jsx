@@ -1,10 +1,12 @@
 import React, { PropTypes } from 'react';
-import Form from '../components/Form';
+import FormIntegrationList from '../components/FormIntegrationList';
+import NewIntegrations from '../components/NewIntegrations';
 import { animateScroll } from 'react-scroll';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { denormalize } from 'normalizr';
 import { fetchForm, fetchIntegrations, updateForm } from '../actions/forms';
+import { Field } from 'redux-form';
 import { findLastIndex } from 'lodash';
 import { formSchema } from '../schema';
 import { getForm } from '../selectors';
@@ -28,10 +30,17 @@ class FormEdit extends React.Component {
   }
 
   render() {
-    const { formData, isFetching, lastFormIntegrationId, newIntegrationFields } = this.props;
+    const {
+      formData,
+      handleSubmit,
+      isFetching,
+      lastFormIntegrationId,
+      newIntegrationFields,
+      submitting,
+    } = this.props;
     const integrationTypes = this.props.integrations;
 
-    if (isFetching) {
+    if (isFetching || !formData) {
       return (
         <div>Loading form...</div>
       );
@@ -50,13 +59,51 @@ class FormEdit extends React.Component {
           Add Integration To Form
         </Link>
         <h1>Edit Form</h1>
-        <Form
-          {...this.props}
-          form={formData}
-          newIntegrationFields={this.state.newIntegrationFields}
-          integrationTypes={integrationTypes}
-          lastFormIntegrationId={lastFormIntegrationId}
-        />
+        <form onSubmit={handleSubmit} className="form">
+          <div className="header">
+            <div className="verified">
+              {(formData.verified) ? 'Verified' : 'Unverified'}
+            </div>
+            {formData.form}
+          </div>
+          <div className="card">
+            <div>
+              <label>Form Name</label>
+              <Field
+                name="form"
+                component="input"
+                type="text"
+              />
+            </div>
+            <div>
+              <label>Form ID</label>
+              <Field
+                name="id"
+                component="input"
+                type="text"
+                disabled
+              />
+            </div>
+            <div>
+              <label>Number of Messages</label>
+              <Field
+                name="message_count"
+                component="input"
+                type="text"
+                disabled
+              />
+            </div>
+            <FormIntegrationList integrations={formData.form_integrations} />
+            <NewIntegrations
+              integrationTypes={integrationTypes}
+              lastFormIntegrationId={lastFormIntegrationId}
+              newIntegrationFields={this.state.newIntegrationFields}
+            />
+          </div>
+          <div>
+            <button type="submit" className="btn" disabled={submitting}>Save Form</button>
+          </div>
+        </form>
       </div>
     );
   }
@@ -89,12 +136,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
   onSubmit(values) {
     dispatch(updateForm(values));
-    browserHistory.push(`/forms/`);
-  }
+    browserHistory.push('/forms/');
+  },
 });
 
 FormEdit = reduxForm({
-  form: 'formForm'
+  form: 'formForm',
 })(FormEdit);
 
 export default connect(mapStateToProps, mapDispatchToProps)(FormEdit);

@@ -22,17 +22,19 @@ const renderIntegrationTypeSelector = (props) => {
 
 const NewIntegrations = ({ newIntegrationFields, integrationTypes, lastFormIntegrationId }) => {
   if (!newIntegrationFields) return null;
+  if (!lastFormIntegrationId) lastFormIntegrationId = -1;
 
   let items = [];
 
   for (let i = 1; i <= newIntegrationFields; i++) {
+    const currentId = lastFormIntegrationId + i;
     items.push(
       <div key={i} className="integration new-integration">
         <div className="settings">
           <div>
             <label>Integration Type</label>
             <Field
-              name={`form_integrations[${lastFormIntegrationId+i}][integration_id]`}
+              name={`form_integrations[${currentId}][integration_id]`}
               integrationTypes={integrationTypes}
               component={renderIntegrationTypeSelector}
             />
@@ -40,7 +42,7 @@ const NewIntegrations = ({ newIntegrationFields, integrationTypes, lastFormInteg
           <div>
             <label>API Key</label>
             <Field
-              name={`form_integrations[${lastFormIntegrationId+i}][settings][api_key]`}
+              name={`form_integrations[${currentId}][settings][api_key]`}
               component="input"
               type="text"
             />
@@ -48,7 +50,7 @@ const NewIntegrations = ({ newIntegrationFields, integrationTypes, lastFormInteg
           <div>
             <label>E-Mail Address</label>
             <Field
-              name={`form_integrations[${lastFormIntegrationId+i}][settings][email]`}
+              name={`form_integrations[${currentId}][settings][email]`}
               component="input"
               type="text"
             />

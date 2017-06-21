@@ -21,6 +21,22 @@ defmodule FormDelegate.FormController do
     render(conn, "index.json", forms: forms)
   end
 
+  def create(conn, %{"form" => form_params}) do
+    current_account = Guardian.Plug.current_resource(conn)
+    changeset = build_assoc(current_account, :forms)
+    |> Form.changeset(form_params)
+
+    case Repo.insert(changeset) do
+      {:ok, _form} ->
+        conn
+        |> redirect(to: form_path(conn, :index))
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(FormDelegate.ChangesetView, "error.json", changeset: changeset)
+    end
+  end
+
   def show(conn, %{"id" => id}) do
     query = from f in Form,
       where: f.id == ^id,
@@ -32,7 +48,6 @@ defmodule FormDelegate.FormController do
         integrations: integrations
       ]
     form = Repo.one!(query)
-
 
     render(conn, "show.json", form: form)
   end
