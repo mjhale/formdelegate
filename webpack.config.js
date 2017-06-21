@@ -1,5 +1,6 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const path = require('path');
 
 module.exports = {
   devtool: 'source-map',
@@ -21,19 +22,25 @@ module.exports = {
         }
       }, {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract({
+        use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: 'css-loader?sourceMap' +
-                  '!postcss-loader' +
-                  '!sass-loader?sourceMap' +
-                    '&includePaths[]=' + require('bourbon').includePaths +
-                    '&includePaths[]=' + require('bourbon-neat').includePaths
+          use: [
+            { loader: 'css-loader', options: { sourceMap: true } },
+            { loader: 'postcss-loader', options: { sourceMap: true } },
+            { loader: 'sass-loader', options: {
+              sourceMap: true,
+              includePaths: [
+                require('bourbon').includePaths,
+                require('bourbon-neat').includePaths
+              ]
+            } },
+          ]
         })
       }
     ]
   },
   output: {
-    path: './priv/static',
+    path: path.resolve(__dirname, 'priv/static'),
     filename: 'js/app.js'
   },
   plugins: [
