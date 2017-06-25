@@ -1,11 +1,16 @@
+import * as types from '../constants/actionTypes';
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 import { reducer as reduxFormReducer } from 'redux-form';
 import { keyBy, map, merge, union } from 'lodash';
+import { removeItem, updateObjectInArray } from '../utility';
 
-import { FORM_REQUEST, FORM_SUCCESS, FORM_FAILURE } from '../actions/forms';
-import { FORMS_REQUEST, FORMS_SUCCESS, FORMS_FAILURE } from '../actions/forms';
-import { INTEGRATIONS_REQUEST, INTEGRATIONS_SUCCESS, INTEGRATIONS_FAILURE } from '../actions/forms';
+import { FORM_REQUEST, FORM_SUCCESS, FORM_FAILURE } from '../constants/actionTypes';
+import { FORM_CREATE_REQUEST, FORM_CREATE_SUCCESS, FORM_CREATE_FAILURE } from '../constants/actionTypes';
+import { FORM_DELETE_REQUEST, FORM_DELETE_SUCCESS, FORM_DELETE_FAILURE } from '../constants/actionTypes';
+import { FORM_UPDATE_REQUEST, FORM_UPDATE_SUCCESS, FORM_UPDATE_FAILURE } from '../constants/actionTypes';
+import { FORMS_REQUEST, FORMS_SUCCESS, FORMS_FAILURE } from '../constants/actionTypes';
+import { INTEGRATIONS_REQUEST, INTEGRATIONS_SUCCESS, INTEGRATIONS_FAILURE } from '../constants/actionTypes';
 
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/sessions';
 import { LOGOUT_REQUEST, LOGOUT_SUCCESS, LOGOUT_FAILURE } from '../actions/sessions';
@@ -17,7 +22,6 @@ import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from '../actions/message';
 
 import { REQUEST_ACCOUNT, RECEIVE_ACCOUNT, UPDATE_ACCOUNT } from '../actions/account';
 import { REQUEST_ACCOUNTS, RECEIVE_ACCOUNTS } from '../actions/accounts';
-
 
 const accountReducer = (state = {
   account: {},
@@ -124,11 +128,29 @@ const formsReducer = (state = {
 }, action) => {
   switch (action.type) {
     case FORM_REQUEST:
+    case FORM_CREATE_REQUEST:
+    case FORM_DELETE_REQUEST:
+    case FORM_UPDATE_REQUEST:
     case FORMS_REQUEST:
     case INTEGRATIONS_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
       });
+
+    case FORM_CREATE_SUCCESS:
+      return {
+        ...state,
+        allIds: [...state.allIds, action.payload.result]
+      };
+
+    case FORM_DELETE_SUCCESS:
+      return {
+        ...state,
+        allIds: state.allIds.filter((form) =>
+          form !== action.id,
+        ),
+      };
+
     case FORM_FAILURE:
     case FORM_SUCCESS:
     case FORMS_FAILURE:
@@ -137,11 +159,14 @@ const formsReducer = (state = {
       return Object.assign({}, state, {
         isFetching: false,
       });
+
     case FORMS_SUCCESS:
       return Object.assign({}, state, {
         allIds: action.payload.result,
         isFetching: false,
       });
+    case FORM_DELETE_REQUEST:
+
     default:
       return state;
   }
