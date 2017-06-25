@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
-import { fetchForms } from '../actions/forms';
+import { fetchForms, formDeletionRequest } from '../actions/forms';
 import { getOrderedForms } from '../selectors';
 import FormList from '../components/FormList';
 
@@ -16,7 +16,7 @@ class FormsContainer extends React.Component {
   }
 
   render() {
-    const { forms, isFetching } = this.props;
+    const { forms, isFetching, onDeleteClick } = this.props;
 
     return (
       <div className="forms">
@@ -25,6 +25,7 @@ class FormsContainer extends React.Component {
         <FormList
           forms={forms}
           isFetching={isFetching}
+          onDeleteClick={onDeleteClick}
         />
       </div>
     );
@@ -44,6 +45,10 @@ const mapDispatchToProps = (dispatch) => ({
   loadForms() {
     dispatch(fetchForms());
   },
+
+  onDeleteClick(formId) {
+    dispatch(formDeletionRequest(formId));
+  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(FormsContainer);

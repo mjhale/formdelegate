@@ -22,13 +22,19 @@ const callApi = (endpoint, schema, authenticated, config) => {
   }
 
   return fetch(fullUrl, config)
-    .then((response) =>
-      response.json().then((json) => ({ json, response }))
-    ).then(({ json, response }) => {
+    .then((response) => {
       if (!response.ok) {
         return Promise.reject(json);
       }
 
+      const noResponseStatusCodes = [204, 205];
+
+      if (noResponseStatusCodes.includes(response.status)) {
+        return { json: null, response };
+      } else {
+        return response.json().then((json) => ({ json, response }));
+      }
+    }).then(({ json, response }) => {
       return {
         headers: new Headers(response.headers),
         payload: ((schema) ? normalize(json.data, schema) : json),

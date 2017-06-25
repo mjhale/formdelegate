@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import CopyToClipboard from 'react-copy-to-clipboard';
 
-let FormList = ({ forms, isFetching }) => {
+let FormList = ({ forms, isFetching, onDeleteClick }) => {
   if (isFetching) {
     return null;
   }
@@ -10,13 +10,17 @@ let FormList = ({ forms, isFetching }) => {
   return (
     <div className="form-list">
       {forms.map((form) => (
-        <FormSimpleView key={form.id} form={form} />
+        <FormSimpleView
+          key={form.id}
+          form={form}
+          onDeleteClick={onDeleteClick}
+        />
       ))}
     </div>
   );
 };
 
-const FormSimpleView = ({ form }) => {
+const FormSimpleView = ({ form, onDeleteClick }) => {
   return (
     <div className="form">
       <div className="header">
@@ -36,7 +40,13 @@ const FormSimpleView = ({ form }) => {
         </CopyToClipboard>
         <div className="actions">
           <Link to={`/forms/${form.id}/edit`} className="btn">Edit Form</Link>
-          <Link to={``} className="btn delete">Delete Form</Link>
+          <Link
+            to={null}
+            onClick={() => onDeleteClick(form.id)}
+            className="btn delete"
+          >
+            Delete Form
+          </Link>
         </div>
       </div>
     </div>

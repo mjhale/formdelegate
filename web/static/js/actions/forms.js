@@ -1,21 +1,11 @@
 import { CALL_API } from '../middleware/api';
 import { formSchema, integrationListSchema } from '../schema';
-
-export const FORM_REQUEST = 'FORM_REQUEST';
-export const FORM_SUCCESS = 'FORM_SUCCESS';
-export const FORM_FAILURE = 'FORM_FAILURE';
-export const FORM_CREATE_REQUEST = 'FORM_CREATE_REQUEST';
-export const FORM_CREATE_SUCCESS = 'FORM_CREATE_SUCCESS';
-export const FORM_CREATE_FAILURE = 'FORM_CREATE_FAILURE';
-export const FORM_UPDATE_REQUEST = 'FORM_UPDATE_REQUEST';
-export const FORM_UPDATE_SUCCESS = 'FORM_UPDATE_SUCCESS';
-export const FORM_UPDATE_FAILURE = 'FORM_UPDATE_FAILURE';
-export const FORMS_REQUEST = 'FORMS_REQUEST';
-export const FORMS_SUCCESS = 'FORMS_SUCCESS';
-export const FORMS_FAILURE = 'FORMS_FAILURE';
-export const INTEGRATIONS_REQUEST = 'INTEGRATIONS_REQUEST';
-export const INTEGRATIONS_SUCCESS = 'INTEGRATIONS_SUCCESS';
-export const INTEGRATIONS_FAILURE = 'INTEGRATIONS_FAILURE';
+import { FORM_REQUEST, FORM_SUCCESS, FORM_FAILURE } from '../constants/actionTypes';
+import { FORM_CREATE_REQUEST, FORM_CREATE_SUCCESS, FORM_CREATE_FAILURE } from '../constants/actionTypes';
+import { FORM_DELETE_REQUEST, FORM_DELETE_SUCCESS, FORM_DELETE_FAILURE } from '../constants/actionTypes';
+import { FORM_UPDATE_REQUEST, FORM_UPDATE_SUCCESS, FORM_UPDATE_FAILURE } from '../constants/actionTypes';
+import { FORMS_REQUEST, FORMS_SUCCESS, FORMS_FAILURE } from '../constants/actionTypes';
+import { INTEGRATIONS_REQUEST, INTEGRATIONS_SUCCESS, INTEGRATIONS_FAILURE } from '../constants/actionTypes';
 
 export const fetchForms = () => ({
   [CALL_API]: {
@@ -58,7 +48,7 @@ export function createForm(form) {
           method: 'POST',
         },
         endpoint: 'forms',
-        schema: null,
+        schema: formSchema,
         types: [FORM_CREATE_REQUEST, FORM_CREATE_SUCCESS, FORM_CREATE_FAILURE],
       }
     });
@@ -85,7 +75,7 @@ export function updateForm(form) {
           method: 'PUT',
         },
         endpoint: `forms/${form.id}`,
-        schema: null,
+        schema: formSchema,
         types: [FORM_UPDATE_REQUEST, FORM_UPDATE_SUCCESS, FORM_UPDATE_FAILURE],
       }
     });
@@ -95,5 +85,34 @@ export function updateForm(form) {
     }
 
     return actionResponse;
+  };
+}
+
+function deleteForm(formId) {
+  return {
+    type: FORM_DELETE_SUCCESS,
+    id: formId,
+  };
+}
+
+export function formDeletionRequest(formId) {
+  return async(dispatch, getState) => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        authenticated: true,
+        config: {
+          method: 'DELETE',
+        },
+        endpoint: `forms/${formId}`,
+        schema: null,
+        types: [FORM_DELETE_REQUEST, FORM_DELETE_SUCCESS, FORM_DELETE_FAILURE],
+      }
+    });
+
+    if (actionResponse.error) {
+      throw new Error('Promise flow received action error', actionResponse);
+    }
+
+    return dispatch(deleteForm(formId));
   };
 }
