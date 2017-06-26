@@ -1,13 +1,8 @@
 import { CALL_API } from '../middleware/api';
 import { reset } from 'redux-form';
 
-export const LOGIN_FAILURE = 'LOGIN_FAILURE';
-export const LOGIN_RECEIVED = 'LOGIN_RECEIVED';
-export const LOGIN_REQUEST = 'LOGIN_REQUEST';
-export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
-export const LOGOUT_FAILURE = 'LOGOUT_FAILURE';
-export const LOGOUT_REQUEST = 'LOGOUT_REQUEST';
-export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
+import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from  '../constants/actionTypes';
+import { LOGOUT_REQUEST, LOGOUT_SUCCESS, LOGOUT_FAILURE } from  '../constants/actionTypes';
 
 export function loginAccount(credentials) {
   return async(dispatch) => {

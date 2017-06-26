@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import { syncHistoryWithStore } from 'react-router-redux';
 
 import api from './middleware/api';
+import App from './containers/App';
 import reducer from './reducers';
 import { RootRouter } from './router';
 
@@ -25,7 +26,9 @@ const history = syncHistoryWithStore(browserHistory, store);
 
 ReactDOM.render(
   <Provider store={store}>
-    <RootRouter history={history} />
+    <RootRouter history={history}>
+      <App />
+    </RootRouter>
   </Provider>,
   document.getElementById('root')
 );

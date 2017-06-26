@@ -1,9 +1,8 @@
 import { CALL_API } from '../middleware/api';
 import { messageSchema } from '../schema';
 
-export const MESSAGE_FAILURE = 'MESSAGE_FAILURE';
-export const MESSAGE_REQUEST = 'MESSAGE_REQUEST';
-export const MESSAGE_SUCCESS = 'MESSAGE_SUCCESS';
+import { MESSAGE_FAILURE, MESSAGE_REQUEST, MESSAGE_SUCCESS } from '../constants/actionTypes';
+
 
 export function fetchMessage(messageId) {
   return async(dispatch) => {

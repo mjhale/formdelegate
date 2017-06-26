@@ -1,15 +1,10 @@
 import { CALL_API } from '../middleware/api';
 import { messageListSchema } from '../schema';
 
-export const MESSAGE_SEARCH_FAILURE = 'MESSAGE_SEARCH_FAILURE';
-export const MESSAGE_SEARCH_QUERY = 'MESSAGE_SEARCH_QUERY';
-export const MESSAGE_SEARCH_REQUEST = 'MESSAGE_SEARCH_REQUEST';
-export const MESSAGE_SEARCH_RESULTS = 'MESSAGE_SEARCH_RESULTS';
-export const MESSAGE_SEARCH_SUCCESS = 'MESSAGE_SEARCH_SUCCESS';
-export const MESSAGES_FAILURE = 'MESSAGES_FAILURE';
-export const MESSAGES_REQUEST = 'MESSAGES_REQUEST';
-export const MESSAGES_RESULTS = 'MESSAGES_RESULTS';
-export const MESSAGES_SUCCESS = 'MESSAGES_SUCCESS';
+import { MESSAGE_SEARCH_RESULTS, MESSAGE_SEARCH_QUERY } from '../constants/actionTypes';
+import { MESSAGE_SEARCH_REQUEST, MESSAGE_SEARCH_SUCCESS, MESSAGE_SEARCH_FAILURE } from '../constants/actionTypes';
+import { MESSAGES_FAILURE, MESSAGES_REQUEST, MESSAGES_RESULTS, MESSAGES_SUCCESS } from '../constants/actionTypes';
+import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from '../constants/actionTypes';
 
 function receiveMessages(payload, limit, offset, total) {
   return {
