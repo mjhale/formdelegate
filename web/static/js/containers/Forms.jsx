@@ -46,8 +46,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(fetchForms());
   },
 
-  onDeleteClick(formId) {
-    dispatch(formDeletionRequest(formId));
+  onDeleteClick(formId, evt) {
+    evt.preventDefault();
+    let confirm = window.confirm('Are you sure you want to delete this form?');
+    if (confirm) dispatch(formDeletionRequest(formId));
   }
 });
 

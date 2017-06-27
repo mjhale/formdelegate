@@ -42,8 +42,9 @@ const FormSimpleView = ({ form, onDeleteClick }) => {
           <Link to={`/forms/${form.id}/edit`} className="btn">Edit Form</Link>
           <Link
             to={null}
-            onClick={() => onDeleteClick(form.id)}
             className="btn delete"
+            data-confirm="Are you positive you want to delete this Gist?"
+            onClick={(evt) => onDeleteClick(form.id, evt)}
           >
             Delete Form
           </Link>
