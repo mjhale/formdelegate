@@ -5,14 +5,21 @@ import entityReducer from 'reducers/entity';
 import formReducer from 'reducers/form';
 import messageReducer from 'reducers/message';
 
-import { REQUEST_ACCOUNT, RECEIVE_ACCOUNT, UPDATE_ACCOUNT } from '../actions/account';
+import {
+  REQUEST_ACCOUNT,
+  RECEIVE_ACCOUNT,
+  UPDATE_ACCOUNT,
+} from '../actions/account';
 import { REQUEST_ACCOUNTS, RECEIVE_ACCOUNTS } from '../actions/accounts';
 
 /* @TODO: Combine and refactor account reducers */
-const accountReducer = (state = {
-  account: {},
-  isFetching: false,
-}, action) => {
+const accountReducer = (
+  state = {
+    account: {},
+    isFetching: false,
+  },
+  action
+) => {
   switch (action.type) {
     case RECEIVE_ACCOUNT:
       return Object.assign({}, state, {
@@ -33,10 +40,13 @@ const accountReducer = (state = {
   }
 };
 
-const accountsReducer = (state = {
-  isFetching: false,
-  items: [],
-}, action) => {
+const accountsReducer = (
+  state = {
+    isFetching: false,
+    items: [],
+  },
+  action
+) => {
   switch (action.type) {
     case RECEIVE_ACCOUNTS:
       return Object.assign({}, state, {

@@ -20,15 +20,13 @@ class AdminAccountContainer extends React.Component {
   }
 
   render() {
-    return (
-      <Account {...this.props} />
-    );
+    return <Account {...this.props} />;
   }
 }
 
 AdminAccountContainer.propTypes = propTypes;
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const { account, isFetching, lastUpdated } = state.account;
   return {
     account,

@@ -1,12 +1,23 @@
-import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from  '../constants/actionTypes';
-import { LOGOUT_REQUEST, LOGOUT_SUCCESS, LOGOUT_FAILURE } from  '../constants/actionTypes';
+import {
+  LOGIN_REQUEST,
+  LOGIN_SUCCESS,
+  LOGIN_FAILURE,
+} from '../constants/actionTypes';
+import {
+  LOGOUT_REQUEST,
+  LOGOUT_SUCCESS,
+  LOGOUT_FAILURE,
+} from '../constants/actionTypes';
 
 /* @TODO Check if fd_token is expired. */
-export default (state = {
-  isAuthenticated: localStorage.getItem('fd_token') ? true : false,
-  isFetching: false,
-  errorMessage: '',
-}, action) => {
+export default (
+  state = {
+    isAuthenticated: localStorage.getItem('fd_token') ? true : false,
+    isFetching: false,
+    errorMessage: '',
+  },
+  action
+) => {
   switch (action.type) {
     case LOGIN_FAILURE:
       return Object.assign({}, state, {
@@ -43,4 +54,3 @@ export default (state = {
       return state;
   }
 };
-

@@ -9,26 +9,33 @@ const propTypes = {
   messages: PropTypes.array.isRequired,
 };
 
-const MessageList = ({ handleViewChange, isFetching, messages, openedMessageId }) => {
+const MessageList = ({
+  handleViewChange,
+  isFetching,
+  messages,
+  openedMessageId,
+}) => {
   if (isFetching) {
-    return (
-      <p>Loading messages...</p>
-    );
+    return <p>Loading messages...</p>;
   }
 
   if (!isFetching && messages.length === 0) {
-    return (
-      <p>No messages found.</p>
-    );
+    return <p>No messages found.</p>;
   }
 
   return (
     <div className="table">
       <div className="table-content">
-        {map(Object.keys(messages), (key) => {
+        {map(Object.keys(messages), key => {
           return (
-            <a key={messages[key].id} onClick={(evt) => handleViewChange(messages[key], evt)}>
-              <Message message={messages[key]} openedMessageId={openedMessageId} />
+            <a
+              key={messages[key].id}
+              onClick={evt => handleViewChange(messages[key], evt)}
+            >
+              <Message
+                message={messages[key]}
+                openedMessageId={openedMessageId}
+              />
             </a>
           );
         })}

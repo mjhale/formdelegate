@@ -35,18 +35,27 @@ class AdminAccountsContainer extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {isEmpty && !isFetching &&
+            {isEmpty &&
+              !isFetching &&
               <tr>
                 <td colSpan="4">No accounts found.</td>
-              </tr>
-            }
-            {!isEmpty && items.map((account) => (
-              <tr key={account.id}>
-                <td><Link to={`/admin/accounts/${account.id}`}>{account.email}</Link></td>
-                <td>{account.form_count}</td>
-                <td>{account.verified ? 'Verified' : 'Unverified'}</td>
-              </tr>
-            ))}
+              </tr>}
+            {!isEmpty &&
+              items.map(account =>
+                <tr key={account.id}>
+                  <td>
+                    <Link to={`/admin/accounts/${account.id}`}>
+                      {account.email}
+                    </Link>
+                  </td>
+                  <td>
+                    {account.form_count}
+                  </td>
+                  <td>
+                    {account.verified ? 'Verified' : 'Unverified'}
+                  </td>
+                </tr>
+              )}
           </tbody>
         </table>
       </div>
@@ -58,7 +67,7 @@ AdminAccountsContainer.propTypes = propTypes;
 AdminAccountsContainer.defaultProps = defaultProps;
 
 /* @TODO: Memoize to improve performance */
-const sortById = (accounts) => {
+const sortById = accounts => {
   return accounts.sort((a, b) => {
     if (a.hasOwnProperty('id') && b.hasOwnProperty('id')) {
       return a.id - b.id;
@@ -66,7 +75,7 @@ const sortById = (accounts) => {
   });
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     items: sortById(state.accounts.items),
     isFetching: state.accounts.isFetching,

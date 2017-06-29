@@ -17,11 +17,7 @@ export default class Logout extends React.Component {
     const { onLogoutClick, logoutText, className, to } = this.props;
 
     return (
-      <a
-        className={className}
-        href={to}
-        onClick={onLogoutClick}
-      >
+      <a className={className} href={to} onClick={onLogoutClick}>
         {logoutText}
       </a>
     );

@@ -1,10 +1,10 @@
 module.exports = {
-  plugins: ["babel", "import", "jsx-a11y", "prettier", "react"],
-  extends: ["prettier", "prettier/react"],
-  parser: "babel-eslint",
+  plugins: ['babel', 'import', 'jsx-a11y', 'prettier', 'react'],
+  extends: ['prettier', 'prettier/react'],
+  parser: 'babel-eslint',
   parserOptions: {
     emcaVersion: 7,
-    sourceType: "module",
+    sourceType: 'module',
     ecmaFeatures: {
       arrowFunctions: true,
       binaryLiterals: true,
@@ -27,26 +27,26 @@ module.exports = {
       superInFunctions: true,
       templateStrings: true,
       unicodeCodePointEscapes: true,
-      globalReturn: true
-    }
+      globalReturn: true,
+    },
   },
   rules: {
-    "babel/new-cap": 1,
-    "no-await-in-loop": 1,
-    "no-console": 0,
-    "object-shorthand": 1,
-    "prettier/prettier": "error",
+    'babel/new-cap': 1,
+    'no-await-in-loop': 1,
+    'no-console': 0,
+    'object-shorthand': 1,
+    'prettier/prettier': ['error', {'singleQuote': true, 'trailingComma': 'es5'}],
     // Prevent usage of .bind() in JSX props
-    "react/jsx-no-bind": [
-      "error",
+    'react/jsx-no-bind': [
+      'error',
       {
         ignoreRefs: true,
         allowArrowFunctions: true,
-        allowBind: false
-      }
+        allowBind: false,
+      },
     ],
     // Require stateless functions when not using lifecycle methods, setState or ref
-    "react/prefer-stateless-function": "error",
-    strict: 0
-  }
+    'react/prefer-stateless-function': 'error',
+    strict: 0,
+  },
 };

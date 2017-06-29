@@ -25,7 +25,7 @@ class SearchContainer extends React.Component {
       </form>
     );
   }
-};
+}
 
 SearchContainer.propTypes = propTypes;
 
@@ -44,6 +44,5 @@ const mapStateToProps = (state, ownProps) => {
     },
   };
 };
-
 
 export default connect(mapStateToProps)(SearchContainer);

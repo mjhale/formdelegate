@@ -1,16 +1,19 @@
 import React, { PropTypes } from 'react';
 import { Field } from 'redux-form';
 
-const renderIntegrationTypeSelector = (props) => {
+const renderIntegrationTypeSelector = props => {
   const { integrationTypes } = props;
 
   return (
     <div>
       <select {...props.input}>
-        <option value=""></option>
-        {Object.keys(integrationTypes).map((key) => {
+        <option value="" />
+        {Object.keys(integrationTypes).map(key => {
           return (
-            <option value={integrationTypes[key].id} key={integrationTypes[key].id}>
+            <option
+              value={integrationTypes[key].id}
+              key={integrationTypes[key].id}
+            >
               {integrationTypes[key].type}
             </option>
           );
@@ -20,7 +23,11 @@ const renderIntegrationTypeSelector = (props) => {
   );
 };
 
-const NewIntegrations = ({ newIntegrationFields, integrationTypes, lastFormIntegrationId }) => {
+const NewIntegrations = ({
+  newIntegrationFields,
+  integrationTypes,
+  lastFormIntegrationId,
+}) => {
   if (!newIntegrationFields) return null;
   if (!lastFormIntegrationId) lastFormIntegrationId = -1;
 

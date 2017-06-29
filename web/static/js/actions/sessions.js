@@ -1,11 +1,19 @@
 import { CALL_API } from '../middleware/api';
 import { reset } from 'redux-form';
 
-import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from  '../constants/actionTypes';
-import { LOGOUT_REQUEST, LOGOUT_SUCCESS, LOGOUT_FAILURE } from  '../constants/actionTypes';
+import {
+  LOGIN_REQUEST,
+  LOGIN_SUCCESS,
+  LOGIN_FAILURE,
+} from '../constants/actionTypes';
+import {
+  LOGOUT_REQUEST,
+  LOGOUT_SUCCESS,
+  LOGOUT_FAILURE,
+} from '../constants/actionTypes';
 
 export function loginAccount(credentials) {
-  return async(dispatch) => {
+  return async dispatch => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         config: {
@@ -15,19 +23,15 @@ export function loginAccount(credentials) {
             },
           }),
           headers: {
-            'Accept': 'application/json',
+            Accept: 'application/json',
             'Content-Type': 'application/json',
           },
           method: 'POST',
         },
         endpoint: 'sessions',
         schema: null,
-        types: [
-          LOGIN_REQUEST,
-          LOGIN_SUCCESS,
-          LOGIN_FAILURE
-        ],
-      }
+        types: [LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE],
+      },
     });
 
     if (actionResponse.error) {
@@ -38,8 +42,8 @@ export function loginAccount(credentials) {
   };
 }
 
-const loginSuccess = (account) => {
-  return async (dispatch) => {
+const loginSuccess = account => {
+  return async dispatch => {
     try {
       await localStorage.setItem('fd_token', account.jwt);
       await dispatch(reset('loginForm'));
@@ -52,7 +56,7 @@ const loginSuccess = (account) => {
 };
 
 export function logoutAccount() {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(logoutRequest());
     localStorage.removeItem('fd_token');
     dispatch(logoutReceived());

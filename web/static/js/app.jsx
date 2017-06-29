@@ -12,14 +12,7 @@ import reducer from './reducers';
 
 const logger = createLogger();
 
-const store = createStore(
-  reducer,
-  applyMiddleware(
-    thunk,
-    api,
-    logger
-  )
-);
+const store = createStore(reducer, applyMiddleware(thunk, api, logger));
 
 ReactDOM.render(
   <Provider store={store}>

@@ -54,9 +54,9 @@ class MessagesContainer extends React.Component {
     } else {
       loadSearchResults(query, requestedPage);
     }
-  }
+  };
 
-  handleSearch = (values) => {
+  handleSearch = values => {
     const { history, loadSearchResults } = this.props;
     const searchQuery = values.search;
 
@@ -65,14 +65,15 @@ class MessagesContainer extends React.Component {
     } else {
       history.push();
     }
-  }
+  };
 
   handleViewChange = (message, evt) => {
     evt.preventDefault();
     this.setState((prevState, props) => ({
-      openedMessageId: (prevState.openedMessageId !== message.id) ? message.id : null
+      openedMessageId:
+        prevState.openedMessageId !== message.id ? message.id : null,
     }));
-  }
+  };
 
   render() {
     const { isFetching, messages, openedMessageId, pagination } = this.props;
@@ -82,10 +83,7 @@ class MessagesContainer extends React.Component {
       <div className="messages">
         <ul className="actions">
           <li>
-            <SearchContainer
-              {...this.props}
-              handleSearch={this.handleSearch}
-            />
+            <SearchContainer {...this.props} handleSearch={this.handleSearch} />
           </li>
           <li>
             <Pagination
@@ -110,7 +108,7 @@ class MessagesContainer extends React.Component {
 
 MessagesContainer.propTypes = propTypes;
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const messages = state.messages;
 
   return {
@@ -131,7 +129,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
   loadSearchResults(query, requestedPage) {
     dispatch(messageSearchFetch(query, requestedPage));
-  }
+  },
 });
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MessagesContainer));
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(MessagesContainer)
+);

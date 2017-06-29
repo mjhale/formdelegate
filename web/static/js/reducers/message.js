@@ -1,20 +1,35 @@
-import { MESSAGE_SEARCH_RESULTS, MESSAGE_SEARCH_QUERY } from '../constants/actionTypes';
-import { MESSAGES_FAILURE, MESSAGES_REQUEST, MESSAGES_RESULTS, MESSAGES_SUCCESS } from '../constants/actionTypes';
-import { MESSAGE_FAILURE, MESSAGE_REQUEST, MESSAGE_SUCCESS } from '../constants/actionTypes';
+import {
+  MESSAGE_SEARCH_RESULTS,
+  MESSAGE_SEARCH_QUERY,
+} from '../constants/actionTypes';
+import {
+  MESSAGES_FAILURE,
+  MESSAGES_REQUEST,
+  MESSAGES_RESULTS,
+  MESSAGES_SUCCESS,
+} from '../constants/actionTypes';
+import {
+  MESSAGE_FAILURE,
+  MESSAGE_REQUEST,
+  MESSAGE_SUCCESS,
+} from '../constants/actionTypes';
 import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from '../constants/actionTypes';
 
-export default (state = {
-  isFetching: false,
-  pagination: {
-    offset: 0,
-    limit: 0,
-    total: 0,
+export default (
+  state = {
+    isFetching: false,
+    pagination: {
+      offset: 0,
+      limit: 0,
+      total: 0,
+    },
+    search: {
+      query: '',
+    },
+    visibleIds: [],
   },
-  search: {
-    query: '',
-  },
-  visibleIds: [],
-}, action) => {
+  action
+) => {
   switch (action.type) {
     case MESSAGE_SUCCESS:
       return Object.assign({}, state, {

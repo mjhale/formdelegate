@@ -19,16 +19,12 @@ class MessageContainer extends React.Component {
     const { isFetching, message, params } = this.props;
 
     if (isFetching || !message) {
-      return (
-        <p>Loading message...</p>
-      );
+      return <p>Loading message...</p>;
     }
 
-    return (
-      <Message message={message} />
-    );
+    return <Message message={message} />;
   }
-};
+}
 
 MessageContainer.propTypes = propTypes;
 

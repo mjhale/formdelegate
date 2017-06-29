@@ -9,13 +9,13 @@ let FormList = ({ forms, isFetching, onDeleteClick }) => {
 
   return (
     <div className="form-list">
-      {forms.map((form) => (
+      {forms.map(form =>
         <FormSimpleView
           key={form.id}
           form={form}
           onDeleteClick={onDeleteClick}
         />
-      ))}
+      )}
     </div>
   );
 };
@@ -24,7 +24,9 @@ const FormSimpleView = ({ form, onDeleteClick }) => {
   return (
     <div className="form">
       <div className="header">
-        <span className="form-name">{form.form}</span>
+        <span className="form-name">
+          {form.form}
+        </span>
       </div>
 
       <div className="card">
@@ -33,17 +35,17 @@ const FormSimpleView = ({ form, onDeleteClick }) => {
         >
           <div className="address tooltip-item">
             https://www.formdelegate.com/api/requests/{form.id}
-            <div className="tooltip">
-              Copy to Clipboard
-            </div>
+            <div className="tooltip">Copy to Clipboard</div>
           </div>
         </CopyToClipboard>
         <div className="actions">
-          <Link to={`/forms/${form.id}/edit`} className="btn">Edit Form</Link>
+          <Link to={`/forms/${form.id}/edit`} className="btn">
+            Edit Form
+          </Link>
           <a
             className="btn delete"
             data-confirm="Are you positive you want to delete this Gist?"
-            onClick={(evt) => onDeleteClick(form.id, evt)}
+            onClick={evt => onDeleteClick(form.id, evt)}
           >
             Delete Form
           </a>

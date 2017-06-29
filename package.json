@@ -1,4 +1,6 @@
 {
+  "name": "form-delegate",
+  "version": "0.0.1",
   "repository": {},
   "dependencies": {
     "babel-polyfill": "^6.16.0",
@@ -61,8 +63,8 @@
     "webpack": "^3.0.0"
   },
   "lint-staged": {
-    "*.js": [
-      "prettier --write --print-width 80 --single-quote --trailing-comma es5",
+    "web/static/**/*.{js,jsx,json,css}": [
+      "prettier --print-width 80 --single-quote --trailing-comma es5 --write",
       "git add"
     ]
   },

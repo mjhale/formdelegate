@@ -40,9 +40,7 @@ class FormEdit extends React.Component {
     const integrationTypes = this.props.integrations;
 
     if (isFetching || !formData) {
-      return (
-        <div>Loading form...</div>
-      );
+      return <div>Loading form...</div>;
     }
 
     return (
@@ -50,7 +48,9 @@ class FormEdit extends React.Component {
         <a
           className="btn add-integration"
           onClick={() => {
-            this.setState({ newIntegrationFields: this.state.newIntegrationFields + 1 });
+            this.setState({
+              newIntegrationFields: this.state.newIntegrationFields + 1,
+            });
             animateScroll.scrollToBottom();
           }}
         >
@@ -60,27 +60,18 @@ class FormEdit extends React.Component {
         <form onSubmit={handleSubmit} className="form">
           <div className="header">
             <div className="verified">
-              {(formData.verified) ? 'Verified' : 'Unverified'}
+              {formData.verified ? 'Verified' : 'Unverified'}
             </div>
             {formData.form}
           </div>
           <div className="card">
             <div>
               <label>Form Name</label>
-              <Field
-                name="form"
-                component="input"
-                type="text"
-              />
+              <Field name="form" component="input" type="text" />
             </div>
             <div>
               <label>Form ID</label>
-              <Field
-                name="id"
-                component="input"
-                type="text"
-                disabled
-              />
+              <Field name="id" component="input" type="text" disabled />
             </div>
             <div>
               <label>Number of Messages</label>
@@ -99,7 +90,9 @@ class FormEdit extends React.Component {
             />
           </div>
           <div>
-            <button type="submit" className="btn" disabled={submitting}>Save Form</button>
+            <button type="submit" className="btn" disabled={submitting}>
+              Save Form
+            </button>
           </div>
         </form>
       </div>
@@ -110,16 +103,18 @@ class FormEdit extends React.Component {
 FormEdit.propTypes = propTypes;
 
 const mapStateToProps = (state, ownProps) => {
-  const denormalizedForm = (state.entities.forms)
+  const denormalizedForm = state.entities.forms
     ? denormalize(ownProps.match.params.formId, formSchema, state.entities)
     : null;
 
   return {
     formData: denormalizedForm,
-    initialValues: denormalizedForm, /* initialize redux form values */
+    initialValues: denormalizedForm /* initialize redux form values */,
     integrations: state.entities.integrations,
     isFetching: state.forms.isFetching,
-    lastFormIntegrationId: (denormalizedForm) ? findLastIndex(denormalizedForm.form_integrations) : 0,
+    lastFormIntegrationId: denormalizedForm
+      ? findLastIndex(denormalizedForm.form_integrations)
+      : 0,
   };
 };
 

@@ -18,7 +18,7 @@ function receiveAccounts(json) {
 }
 
 function fetchAccounts() {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(requestAccounts());
 
     let token = localStorage.getItem('fd_token') || null;
@@ -26,11 +26,11 @@ function fetchAccounts() {
     if (token) {
       return fetch('/api/admin/accounts', {
         headers: {
-          'Authorization': `Bearer ${token}`,
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
-      .then((response) => response.json())
-      .then((json) => dispatch(receiveAccounts(json)));
+        .then(response => response.json())
+        .then(json => dispatch(receiveAccounts(json)));
     } else {
       throw 'No token found.';
     }
@@ -39,7 +39,7 @@ function fetchAccounts() {
 
 function shouldFetchAccounts(state) {
   const accounts = state.accounts;
-  if (accounts.items !== "undefined" && accounts.items.length === 0) {
+  if (accounts.items !== 'undefined' && accounts.items.length === 0) {
     return true;
   } else if (accounts.isFetching) {
     return false;

@@ -19,19 +19,31 @@ class NavContainer extends React.Component {
 
     return (
       <ul className="nav-links" role="nav">
-        <li><NavLink to="/messages" activeClassName="active">messages</NavLink></li>
-        <li><NavLink to="/forms" activeClassName="active">forms</NavLink></li>
-        <li><NavLink to="/admin/accounts" activeClassName="active">accounts</NavLink></li>
-        { !isAuthenticated &&
-          <li><NavLink to="/login" activeClassName="active">login</NavLink></li>
-        }
-        { isAuthenticated &&
+        <li>
+          <NavLink to="/messages" activeClassName="active">
+            messages
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/forms" activeClassName="active">
+            forms
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/admin/accounts" activeClassName="active">
+            accounts
+          </NavLink>
+        </li>
+        {!isAuthenticated &&
           <li>
-            <Logout
-              onLogoutClick={onLogoutClick}
-            />
-          </li>
-        }
+            <NavLink to="/login" activeClassName="active">
+              login
+            </NavLink>
+          </li>}
+        {isAuthenticated &&
+          <li>
+            <Logout onLogoutClick={onLogoutClick} />
+          </li>}
       </ul>
     );
   }
@@ -40,7 +52,7 @@ class NavContainer extends React.Component {
 NavContainer.propTypes = propTypes;
 NavContainer.defaultProps = defaultProps;
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const { isAuthenticated } = state.authentication;
 
   return {
@@ -53,7 +65,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     evt.preventDefault();
     dispatch(logoutAccount());
     ownProps.history.push(`/`);
-  }
+  },
 });
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(NavContainer));
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(NavContainer)
+);

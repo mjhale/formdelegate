@@ -6,7 +6,7 @@ import { loginAccount, logoutAccount } from '../actions/sessions';
 import LoginForm from '../components/LoginForm';
 import Logout from '../components/Logout';
 
-const validate = (values) => {
+const validate = values => {
   const errors = {};
 
   if (!values.email) {
@@ -52,11 +52,10 @@ class LoginContainer extends React.Component {
     } else {
       return (
         <div className="logout-prompt">
-          You are currently logged in. Would you like to
-          {' '}
+          You are currently logged in. Would you like to{' '}
           <Logout
             logoutText="logout"
-            onLogoutClick={(evt) => {
+            onLogoutClick={evt => {
               evt.preventDefault();
               dispatch(logoutAccount());
             }}
@@ -74,7 +73,7 @@ LoginContainer = reduxForm({
   validate,
 })(LoginContainer);
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const { isAuthenticated } = state.authentication;
 
   return {
@@ -82,7 +81,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  { onSubmit: loginAccount }
-)(LoginContainer);
+export default connect(mapStateToProps, { onSubmit: loginAccount })(
+  LoginContainer
+);

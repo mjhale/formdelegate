@@ -4,7 +4,7 @@ import { last } from 'lodash';
 import FormIntegrationList from '../components/FormIntegrationList';
 import NewIntegrations from '../components/NewIntegrations';
 
-const FormEdit = (props) => {
+const FormEdit = props => {
   const {
     form,
     handleSubmit,
@@ -13,7 +13,7 @@ const FormEdit = (props) => {
     newIntegrationFields,
     pristine,
     reset,
-    submitting
+    submitting,
   } = props;
 
   if (!form) return null;
@@ -22,36 +22,22 @@ const FormEdit = (props) => {
     <form onSubmit={handleSubmit} className="form">
       <div className="header">
         <div className="verified">
-          {(form.verified) ? 'Verified' : 'Unverified'}
+          {form.verified ? 'Verified' : 'Unverified'}
         </div>
         {form.form}
       </div>
       <div className="card">
         <div>
           <label>Form Name</label>
-          <Field
-            name="form"
-            component="input"
-            type="text"
-          />
+          <Field name="form" component="input" type="text" />
         </div>
         <div>
           <label>Form ID</label>
-          <Field
-            name="id"
-            component="input"
-            type="text"
-            disabled
-          />
+          <Field name="id" component="input" type="text" disabled />
         </div>
         <div>
           <label>Number of Messages</label>
-          <Field
-            name="message_count"
-            component="input"
-            type="text"
-            disabled
-          />
+          <Field name="message_count" component="input" type="text" disabled />
         </div>
         <FormIntegrationList integrations={form.form_integrations} />
         <NewIntegrations
@@ -61,7 +47,9 @@ const FormEdit = (props) => {
         />
       </div>
       <div>
-        <button type="submit" className="btn" disabled={submitting}>Save Form</button>
+        <button type="submit" className="btn" disabled={submitting}>
+          Save Form
+        </button>
       </div>
     </form>
   );

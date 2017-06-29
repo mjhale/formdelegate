@@ -5,33 +5,60 @@ const propTypes = {
   ...reduxFormPropTypes,
 };
 
-const defaultProps = {
-};
+const defaultProps = {};
 
-const AccountForm = (props) => {
+const AccountForm = props => {
   const { error, handleSubmit, onSubmit, pristine, submitting, reset } = props;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
         <label htmlFor="email">E-Mail</label>
-        <Field name="email" component="input" type="text" placeholder="E-mail Address" />
+        <Field
+          name="email"
+          component="input"
+          type="text"
+          placeholder="E-mail Address"
+        />
       </div>
 
       <div>
         <label htmlFor="name">Full Name</label>
-        <Field name="name" component="input" type="text" placeholder="Full Name" />
+        <Field
+          name="name"
+          component="input"
+          type="text"
+          placeholder="Full Name"
+        />
       </div>
 
       <div>
         <label htmlFor="password">Password</label>
-        <Field name="password" component="input" type="password" placeholder="Password" />
+        <Field
+          name="password"
+          component="input"
+          type="password"
+          placeholder="Password"
+        />
       </div>
 
-      {error && <p><strong>{error}</strong></p>}
+      {error &&
+        <p>
+          <strong>
+            {error}
+          </strong>
+        </p>}
 
-      <div><button type="submit" disabled={submitting}>Save Changes</button></div>
-      <div><button type="reset" disabled={pristine || submitting} onClick={reset}>Reset Changes</button></div>
+      <div>
+        <button type="submit" disabled={submitting}>
+          Save Changes
+        </button>
+      </div>
+      <div>
+        <button type="reset" disabled={pristine || submitting} onClick={reset}>
+          Reset Changes
+        </button>
+      </div>
     </form>
   );
 };

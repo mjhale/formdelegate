@@ -14,24 +14,30 @@ import ReceiveSuccessContainer from './containers/ReceiveSuccess';
 import requireAuth from './containers/RequireAuth';
 import Welcome from './components/Welcome';
 
-export const RootRouter = () => (
+export const RootRouter = () =>
   <BrowserRouter>
     <Route path="/" component={AppContainer} />
-  </BrowserRouter>
-);
+  </BrowserRouter>;
 
-export const Routes = () => (
-    <Switch>
-      <Route exact path="/forms" component={requireAuth(FormsContainer)}/>
-      <Route exact path="/forms/new" component={requireAuth(FormNewContainer)}/>
-      <Route exact path="/forms/:formId/edit" component={requireAuth(FormEditContainer)}/>
-      <Route exact path="/messages" component={requireAuth(MessagesContainer)}/>
-      <Route exact path="/messages/:messageId" component={requireAuth(MessageContainer)}/>
-      <Route path="/admin" component={requireAuth(AdminContainer)}/>
-      <Route exact path="/login" component={LoginContainer}/>
-      <Route exact path="/success" component={ReceiveSuccessContainer}/>
-      <Route exact path="/failure" component={ReceiveFailureContainer}/>
-      <Route exact path="/" component={Welcome}/>
-      <Route path="*" component={InvalidRoute}/>
-    </Switch>
-);
+export const Routes = () =>
+  <Switch>
+    <Route exact path="/forms" component={requireAuth(FormsContainer)} />
+    <Route exact path="/forms/new" component={requireAuth(FormNewContainer)} />
+    <Route
+      exact
+      path="/forms/:formId/edit"
+      component={requireAuth(FormEditContainer)}
+    />
+    <Route exact path="/messages" component={requireAuth(MessagesContainer)} />
+    <Route
+      exact
+      path="/messages/:messageId"
+      component={requireAuth(MessageContainer)}
+    />
+    <Route path="/admin" component={requireAuth(AdminContainer)} />
+    <Route exact path="/login" component={LoginContainer} />
+    <Route exact path="/success" component={ReceiveSuccessContainer} />
+    <Route exact path="/failure" component={ReceiveFailureContainer} />
+    <Route exact path="/" component={Welcome} />
+    <Route path="*" component={InvalidRoute} />
+  </Switch>;

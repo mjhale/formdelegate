@@ -20,7 +20,9 @@ class FormsContainer extends React.Component {
 
     return (
       <div className="forms">
-        <Link to="/forms/new" className="add-form btn">Create New Form</Link>
+        <Link to="/forms/new" className="add-form btn">
+          Create New Form
+        </Link>
         <h1>My Forms</h1>
         <FormList
           forms={forms}
@@ -34,14 +36,14 @@ class FormsContainer extends React.Component {
 
 FormsContainer.propTypes = propTypes;
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     forms: getOrderedForms(state),
     isFetching: state.forms.isFetching,
   };
 };
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   loadForms() {
     dispatch(fetchForms());
   },
@@ -50,7 +52,7 @@ const mapDispatchToProps = (dispatch) => ({
     evt.preventDefault();
     let confirm = window.confirm('Are you sure you want to delete this form?');
     if (confirm) dispatch(formDeletionRequest(formId));
-  }
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(FormsContainer);

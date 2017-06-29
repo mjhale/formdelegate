@@ -5,25 +5,33 @@ import { findIndex } from 'lodash';
 const FormIntegrationList = ({ integrations }) => {
   if (!integrations || integrations.length === 0) return null;
 
-  return(
+  return (
     <div>
       <h3>Integrations</h3>
-      {integrations.map((integration) => (
+      {integrations.map(integration =>
         <div key={integration.id} className="integration">
           <label className="label-switch status">
             <Field
-              name={`form_integrations[${findIndex(integrations, ['id', integration.id])}][enabled]`}
+              name={`form_integrations[${findIndex(integrations, [
+                'id',
+                integration.id,
+              ])}][enabled]`}
               component="input"
               type="checkbox"
             />
-            <div className="checkbox"></div>
+            <div className="checkbox" />
           </label>
-          <div className="type">{integration.integration.type}</div>
+          <div className="type">
+            {integration.integration.type}
+          </div>
           <div className="settings">
             <div>
               <label>API Key</label>
               <Field
-                name={`form_integrations[${findIndex(integrations, ['id', integration.id])}][settings][api_key]`}
+                name={`form_integrations[${findIndex(integrations, [
+                  'id',
+                  integration.id,
+                ])}][settings][api_key]`}
                 component="input"
                 type="text"
               />
@@ -31,14 +39,17 @@ const FormIntegrationList = ({ integrations }) => {
             <div>
               <label>E-Mail Address</label>
               <Field
-                name={`form_integrations[${findIndex(integrations, ['id', integration.id])}][settings][email]`}
+                name={`form_integrations[${findIndex(integrations, [
+                  'id',
+                  integration.id,
+                ])}][settings][email]`}
                 component="input"
                 type="text"
               />
             </div>
           </div>
         </div>
-      ))}
+      )}
     </div>
   );
 };

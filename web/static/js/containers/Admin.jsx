@@ -21,9 +21,21 @@ class AdminContainer extends React.Component {
     return (
       <div className="admin">
         <Switch>
-          <Route exact path="/admin/accounts" component={AdminAccountsContainer}/>
-          <Route exact path="/admin/accounts/:accountId" component={AdminAccountContainer}/>
-          <Route exact path="/admin/accounts/:accountId/edit" component={AdminAccountFormContainer}/>
+          <Route
+            exact
+            path="/admin/accounts"
+            component={AdminAccountsContainer}
+          />
+          <Route
+            exact
+            path="/admin/accounts/:accountId"
+            component={AdminAccountContainer}
+          />
+          <Route
+            exact
+            path="/admin/accounts/:accountId/edit"
+            component={AdminAccountFormContainer}
+          />
         </Switch>
       </div>
     );
@@ -33,7 +45,7 @@ class AdminContainer extends React.Component {
 AdminContainer.propTypes = propTypes;
 AdminContainer.defaultProps = defaultProps;
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const { isAuthenticated } = state.authentication;
 
   return {

@@ -29,7 +29,7 @@ export default function(ComposedComponent) {
 
   Authentication.propTypes = propTypes;
 
-  const mapStateToProps = (state) => {
+  const mapStateToProps = state => {
     const { isAuthenticated } = state.authentication;
 
     return {

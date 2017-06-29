@@ -36,13 +36,12 @@ export function updateAccount(account) {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          account
+          account,
         }),
-      })
-      .catch((error) => console.log(error));
+      }).catch(error => console.log(error));
     } else {
       throw 'No token found.';
     }
@@ -50,7 +49,7 @@ export function updateAccount(account) {
 }
 
 export function fetchAccount(accountId) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(requestAccount());
 
     let token = localStorage.getItem('fd_token') || null;
@@ -58,11 +57,11 @@ export function fetchAccount(accountId) {
     if (token) {
       return fetch(`/api/admin/accounts/${accountId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
-      .then((response) => response.json())
-      .then((json) => dispatch(receiveAccount(json)));
+        .then(response => response.json())
+        .then(json => dispatch(receiveAccount(json)));
     } else {
       throw 'No token found.';
     }

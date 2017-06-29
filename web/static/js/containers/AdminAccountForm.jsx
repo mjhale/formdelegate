@@ -13,8 +13,17 @@ class AdminAccountFormContainer extends React.Component {
   }
 
   render() {
-    {/* @TODO: Explicitly define required props */}
-    const { error, onSubmit, pristine, submitting, reset, ...rest } = this.props;
+    {
+      /* @TODO: Explicitly define required props */
+    }
+    const {
+      error,
+      onSubmit,
+      pristine,
+      submitting,
+      reset,
+      ...rest
+    } = this.props;
 
     return (
       <AccountForm
@@ -34,7 +43,7 @@ AdminAccountFormContainer = reduxForm({
   enableReinitialize: true,
 })(AdminAccountFormContainer);
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const { account } = state.account;
   return {
     account,
@@ -46,10 +55,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   onSubmit(data) {
     dispatch(updateAccount(data));
     ownProps.history.push(`/admin/accounts/${data.id}`);
-  }
+  },
 });
 
-export default withRouter(connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(AdminAccountFormContainer));
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(AdminAccountFormContainer)
+);

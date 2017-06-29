@@ -5,7 +5,7 @@ import { createForm } from '../actions/forms';
 import { fetchIntegrations } from '../actions/forms';
 import { Field } from 'redux-form';
 import { reduxForm } from 'redux-form';
-import { withRouter } from "react-router-dom";
+import { withRouter } from 'react-router-dom';
 import Form from '../components/Form';
 import NewIntegrations from '../components/NewIntegrations';
 
@@ -27,12 +27,14 @@ class FormNewContainer extends React.Component {
     const { handleSubmit, submitting } = this.props;
     const integrationTypes = this.props.integrations;
 
-    return(
+    return (
       <div>
         <a
           className="add-integration btn"
           onClick={() => {
-            this.setState({ newIntegrationFields: this.state.newIntegrationFields + 1 });
+            this.setState({
+              newIntegrationFields: this.state.newIntegrationFields + 1,
+            });
             animateScroll.scrollToBottom();
           }}
         >
@@ -43,11 +45,7 @@ class FormNewContainer extends React.Component {
           <div className="card">
             <div>
               <label>Form Name</label>
-              <Field
-                name="form"
-                component="input"
-                type="text"
-              />
+              <Field name="form" component="input" type="text" />
             </div>
             <NewIntegrations
               integrationTypes={integrationTypes}
@@ -55,16 +53,17 @@ class FormNewContainer extends React.Component {
             />
           </div>
           <div>
-            <button type="submit" className="btn" disabled={submitting}>Save Form</button>
+            <button type="submit" className="btn" disabled={submitting}>
+              Save Form
+            </button>
           </div>
         </form>
-
       </div>
     );
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   integrations: state.entities.integrations,
 });
 
@@ -80,7 +79,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 });
 
 FormNewContainer = reduxForm({
-  form: 'formForm'
+  form: 'formForm',
 })(FormNewContainer);
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(FormNewContainer));
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(FormNewContainer)
+);

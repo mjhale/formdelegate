@@ -16,7 +16,9 @@ class AppContainer extends React.Component {
     return (
       <div className="home">
         <nav className="navigation">
-          <Link to="/" className="logo">form delegate</Link>
+          <Link to="/" className="logo">
+            form delegate
+          </Link>
           <Nav isAuthenticated={isAuthenticated} />
         </nav>
         <div className="content-container">
@@ -31,7 +33,7 @@ class AppContainer extends React.Component {
 
 AppContainer.propTypes = propTypes;
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {};
 };
 

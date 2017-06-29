@@ -8,7 +8,7 @@ const propTypes = {
   pristine: React.PropTypes.bool.isRequired,
 };
 
-const LoginForm = (props) => {
+const LoginForm = props => {
   const { handleSubmit, submitting, pristine } = props;
 
   return (
@@ -34,7 +34,9 @@ const LoginForm = (props) => {
       </div>
 
       <div>
-        <button type="submit" disabled={submitting | pristine}>Login</button>
+        <button type="submit" disabled={submitting | pristine}>
+          Login
+        </button>
       </div>
     </form>
   );
