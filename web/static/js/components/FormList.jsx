@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import CopyToClipboard from 'react-copy-to-clipboard';
 
 let FormList = ({ forms, isFetching, onDeleteClick }) => {
@@ -40,14 +40,13 @@ const FormSimpleView = ({ form, onDeleteClick }) => {
         </CopyToClipboard>
         <div className="actions">
           <Link to={`/forms/${form.id}/edit`} className="btn">Edit Form</Link>
-          <Link
-            to={null}
+          <a
             className="btn delete"
             data-confirm="Are you positive you want to delete this Gist?"
             onClick={(evt) => onDeleteClick(form.id, evt)}
           >
             Delete Form
-          </Link>
+          </a>
         </div>
       </div>
     </div>

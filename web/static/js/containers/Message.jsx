@@ -10,8 +10,8 @@ const propTypes = {
 
 class MessageContainer extends React.Component {
   componentDidMount() {
-    const { dispatch, params } = this.props;
-    const { messageId } = params;
+    const { dispatch } = this.props;
+    const { messageId } = match.params;
     dispatch(fetchMessage(messageId));
   }
 

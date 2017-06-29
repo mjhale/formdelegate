@@ -1,15 +1,21 @@
 import React, { PropTypes } from 'react';
+
 import { connect } from 'react-redux';
 import { fetchMessages, messageSearchFetch } from '../actions/messages';
 import { getVisibleMessages } from '../selectors';
+import { parse } from 'query-string';
+import { withRouter } from 'react-router-dom';
 import MessageList from '../components/MessageList';
 import SearchContainer from '../containers/Search';
 import Pagination from '../components/Paginator';
 
 const propTypes = {
+  history: PropTypes.object.isRequired,
   isFetching: PropTypes.bool.isRequired,
   loadMessages: PropTypes.func.isRequired,
   loadSearchResults: PropTypes.func.isRequired,
+  location: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
   messages: PropTypes.array.isRequired,
   pagination: PropTypes.shape({
     limit: PropTypes.number.isRequired,
@@ -26,12 +32,20 @@ class MessagesContainer extends React.Component {
   }
 
   componentDidMount() {
-    this.props.loadMessages(1); /* begin with first page */
+    const { loadMessages, loadSearchResults, location } = this.props;
+    const query = parse(location.search);
+    const startingPage = 1; /* the first page of paginated results */
+
+    if (query) {
+      loadSearchResults(query.search, startingPage);
+    } else {
+      loadMessages(startingPage);
+    }
   }
 
   handlePageChange = (requestedPage, evt) => {
-    const { loadMessages, loadSearchResults, messages, search } = this.props;
-    const { query } = search;
+    const { loadMessages, loadSearchResults, location, messages } = this.props;
+    const { query } = parse(location.search);
 
     evt.preventDefault();
 
@@ -43,19 +57,14 @@ class MessagesContainer extends React.Component {
   }
 
   handleSearch = (values) => {
-    const { loadSearchResults, router } = this.props;
-    const location = Object.assign({}, router.getCurrentLocation());
+    const { history, loadSearchResults } = this.props;
     const searchQuery = values.search;
-    const requestedPage = 1; /* begin with first page */
 
-    /* collapse any opened message */
-    this.setState({openedMessageId: null});
-
-    /* add search query to location params */
-    Object.assign(location.query, values);
-    router.push(location);
-
-    loadSearchResults(searchQuery, requestedPage);
+    if (searchQuery) {
+      history.push('?search=' + searchQuery);
+    } else {
+      history.push();
+    }
   }
 
   handleViewChange = (message, evt) => {
@@ -112,9 +121,6 @@ const mapStateToProps = (state) => {
       offset: messages.pagination.offset,
       total: messages.pagination.total,
     },
-    search: {
-      query: messages.search.query,
-    },
   };
 };
 
@@ -128,4 +134,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(MessagesContainer);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MessagesContainer));

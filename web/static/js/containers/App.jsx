@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
+import { Routes } from '../router';
 import Nav from './Nav';
 
 const propTypes = {
@@ -20,7 +21,7 @@ class AppContainer extends React.Component {
         </nav>
         <div className="content-container">
           <div className="content">
-            {children}
+            <Routes />
           </div>
         </div>
       </div>

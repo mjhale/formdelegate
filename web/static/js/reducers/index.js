@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux';
-import { routerReducer } from 'react-router-redux';
 import { reducer as reduxFormReducer } from 'redux-form';
 import authenticationReducer from 'reducers/authentication';
 import entityReducer from 'reducers/entity';
@@ -61,7 +60,6 @@ const reducers = {
   entities: entityReducer,
   forms: formReducer,
   messages: messageReducer,
-  routing: routerReducer,
 
   /* redux-form, must be the final reducer */
   form: reduxFormReducer,

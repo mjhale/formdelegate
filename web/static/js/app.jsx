@@ -1,19 +1,17 @@
 import 'phoenix_html';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import thunk from 'redux-thunk';
 import { createLogger } from 'redux-logger';
 import { createStore, applyMiddleware } from 'redux';
-import { browserHistory } from 'react-router';
 import { Provider } from 'react-redux';
-import { syncHistoryWithStore } from 'react-router-redux';
-
+import { RootRouter } from './router';
 import api from './middleware/api';
 import App from './containers/App';
+import thunk from 'redux-thunk';
 import reducer from './reducers';
-import { RootRouter } from './router';
 
 const logger = createLogger();
+
 const store = createStore(
   reducer,
   applyMiddleware(
@@ -22,13 +20,10 @@ const store = createStore(
     logger
   )
 );
-const history = syncHistoryWithStore(browserHistory, store);
 
 ReactDOM.render(
   <Provider store={store}>
-    <RootRouter history={history}>
-      <App />
-    </RootRouter>
+    <RootRouter />
   </Provider>,
   document.getElementById('root')
 );

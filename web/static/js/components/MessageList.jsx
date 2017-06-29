@@ -1,8 +1,7 @@
 import React, { PropTypes } from 'react';
-import moment from 'moment';
-import { Link } from 'react-router';
 import { map } from 'lodash';
 import Message from '../components/Message';
+import moment from 'moment';
 
 const propTypes = {
   handleViewChange: PropTypes.func.isRequired,
@@ -28,9 +27,9 @@ const MessageList = ({ handleViewChange, isFetching, messages, openedMessageId }
       <div className="table-content">
         {map(Object.keys(messages), (key) => {
           return (
-            <Link key={messages[key].id} onClick={(evt) => handleViewChange(messages[key], evt)}>
+            <a key={messages[key].id} onClick={(evt) => handleViewChange(messages[key], evt)}>
               <Message message={messages[key]} openedMessageId={openedMessageId} />
-            </Link>
+            </a>
           );
         })}
       </div>

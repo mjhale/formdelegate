@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { fetchAccountsIfNeeded } from 'actions/accounts';
 
 const propTypes = {
@@ -31,7 +31,6 @@ class AdminAccountsContainer extends React.Component {
             <tr>
               <th>E-Mail Address</th>
               <th>Forms Count</th>
-              <th>Messages Count</th>
               <th>Verified Status</th>
             </tr>
           </thead>

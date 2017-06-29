@@ -1,8 +1,6 @@
 import React, { PropTypes } from 'react';
-import FormIntegrationList from '../components/FormIntegrationList';
-import NewIntegrations from '../components/NewIntegrations';
 import { animateScroll } from 'react-scroll';
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { denormalize } from 'normalizr';
 import { fetchForm, fetchIntegrations, updateForm } from '../actions/forms';
@@ -10,8 +8,9 @@ import { Field } from 'redux-form';
 import { findLastIndex } from 'lodash';
 import { formSchema } from '../schema';
 import { getForm } from '../selectors';
-import { Link } from 'react-router';
 import { reduxForm } from 'redux-form';
+import FormIntegrationList from '../components/FormIntegrationList';
+import NewIntegrations from '../components/NewIntegrations';
 
 const propTypes = {
   initialValues: PropTypes.object,
@@ -48,8 +47,7 @@ class FormEdit extends React.Component {
 
     return (
       <div>
-        <Link
-          to={null}
+        <a
           className="btn add-integration"
           onClick={() => {
             this.setState({ newIntegrationFields: this.state.newIntegrationFields + 1 });
@@ -57,7 +55,7 @@ class FormEdit extends React.Component {
           }}
         >
           Add Integration To Form
-        </Link>
+        </a>
         <h1>Edit Form</h1>
         <form onSubmit={handleSubmit} className="form">
           <div className="header">
@@ -113,7 +111,7 @@ FormEdit.propTypes = propTypes;
 
 const mapStateToProps = (state, ownProps) => {
   const denormalizedForm = (state.entities.forms)
-    ? denormalize(ownProps.params.formId, formSchema, state.entities)
+    ? denormalize(ownProps.match.params.formId, formSchema, state.entities)
     : null;
 
   return {
@@ -127,7 +125,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   loadForm() {
-    dispatch(fetchForm(ownProps.params.formId));
+    dispatch(fetchForm(ownProps.match.params.formId));
   },
 
   loadIntegrationTypes() {
@@ -136,7 +134,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
   onSubmit(values) {
     dispatch(updateForm(values));
-    browserHistory.push('/forms/');
+    ownProps.history.push('/forms/');
   },
 });
 

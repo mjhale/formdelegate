@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react';
-import { Link } from 'react-router';
 import classNames from 'classnames';
 
 const propTypes = {
@@ -32,14 +31,14 @@ const Paginator = ({ handlePageChange, limit, offset, total }) => {
         {itemIndexFloor}{'-'}{itemIndexCeiling} of {total}
       </li>
       <li>
-        <Link className={prevBtnClasses} onClick={(evt) => handlePageChange(currentPage - 1, evt)}>
+        <a className={prevBtnClasses} onClick={(evt) => handlePageChange(currentPage - 1, evt)}>
           {'<'}
-        </Link>
+        </a>
       </li>
       <li>
-        <Link className={nextBtnClasses} onClick={(evt) => handlePageChange(currentPage + 1, evt)}>
+        <a className={nextBtnClasses} onClick={(evt) => handlePageChange(currentPage + 1, evt)}>
           {'>'}
-        </Link>
+        </a>
       </li>
     </ul>
   );

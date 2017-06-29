@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
-import { browserHistory } from 'react-router';
+import { NavLink, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
 import { logoutAccount } from '../actions/sessions';
 import Logout from '../components/Logout';
 
@@ -14,21 +13,17 @@ const defaultProps = {
   isAuthenticated: false,
 };
 
-const contextTypes = {
-  router: React.PropTypes.object.isRequired,
-};
-
 class NavContainer extends React.Component {
   render() {
     const { isAuthenticated, onLogoutClick } = this.props;
 
     return (
       <ul className="nav-links" role="nav">
-        <li><Link to="/messages" activeClassName="active">messages</Link></li>
-        <li><Link to="/forms" activeClassName="active">forms</Link></li>
-        <li><Link to="/admin/accounts" activeClassName="active">accounts</Link></li>
+        <li><NavLink to="/messages" activeClassName="active">messages</NavLink></li>
+        <li><NavLink to="/forms" activeClassName="active">forms</NavLink></li>
+        <li><NavLink to="/admin/accounts" activeClassName="active">accounts</NavLink></li>
         { !isAuthenticated &&
-          <li><Link to="/login" activeClassName="active">login</Link></li>
+          <li><NavLink to="/login" activeClassName="active">login</NavLink></li>
         }
         { isAuthenticated &&
           <li>
@@ -44,7 +39,6 @@ class NavContainer extends React.Component {
 
 NavContainer.propTypes = propTypes;
 NavContainer.defaultProps = defaultProps;
-NavContainer.contextTypes = contextTypes;
 
 const mapStateToProps = (state) => {
   const { isAuthenticated } = state.authentication;
@@ -54,12 +48,12 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  onLogoutClick(e) {
-    e.preventDefault();
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  onLogoutClick(evt) {
+    evt.preventDefault();
     dispatch(logoutAccount());
-    browserHistory.push(`/`);
+    ownProps.history.push(`/`);
   }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(NavContainer);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(NavContainer));

@@ -1,13 +1,10 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 export default function(ComposedComponent) {
   const propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
-  };
-
-  const contextTypes = {
-    router: React.PropTypes.object.isRequired
   };
 
   class Authentication extends React.Component {
@@ -21,7 +18,7 @@ export default function(ComposedComponent) {
 
     redirectIfNotAuthenticated() {
       if (!this.props.isAuthenticated) {
-        this.context.router.push('/login');
+        this.props.history.push('/login');
       }
     }
 
@@ -30,7 +27,6 @@ export default function(ComposedComponent) {
     }
   }
 
-  Authentication.contextTypes = contextTypes;
   Authentication.propTypes = propTypes;
 
   const mapStateToProps = (state) => {
@@ -41,5 +37,5 @@ export default function(ComposedComponent) {
     };
   };
 
-  return connect(mapStateToProps)(Authentication);
+  return withRouter(connect(mapStateToProps)(Authentication));
 }

@@ -38,22 +38,12 @@ export function loginAccount(credentials) {
   };
 }
 
-function loginReceived(account) {
-  return {
-    isAuthenticated: true,
-    isFetching: false,
-    token: account.jwt,
-    type: LOGIN_RECEIVED,
-  };
-}
-
 const loginSuccess = (account) => {
   return async (dispatch) => {
     try {
       await localStorage.setItem('fd_token', account.jwt);
       await dispatch(reset('loginForm'));
-      await dispatch(loginReceived(account));
-    } catch(error) {
+    } catch (error) {
       throw new Error('Promise flow received error', error);
     }
 

@@ -3,7 +3,6 @@ import { messageSchema } from '../schema';
 
 import { MESSAGE_FAILURE, MESSAGE_REQUEST, MESSAGE_SUCCESS } from '../constants/actionTypes';
 
-
 export function fetchMessage(messageId) {
   return async(dispatch) => {
     const actionResponse = await dispatch({

@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { loginAccount, logoutAccount } from '../actions/sessions';
 import LoginForm from '../components/LoginForm';
 import Logout from '../components/Logout';
@@ -56,8 +56,8 @@ class LoginContainer extends React.Component {
           {' '}
           <Logout
             logoutText="logout"
-            onLogoutClick={(e) => {
-              e.preventDefault();
+            onLogoutClick={(evt) => {
+              evt.preventDefault();
               dispatch(logoutAccount());
             }}
           />?

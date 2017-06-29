@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, propTypes as reduxFormPropTypes } from 'redux-form';
+import { parse } from 'query-string';
 
 const propTypes = {
   handleSearch: PropTypes.func.isRequired,
@@ -9,7 +10,8 @@ const propTypes = {
 
 class SearchContainer extends React.Component {
   render() {
-    const { handleSearch, handleSubmit, error, pristine, submitting, reset } = this.props;
+    const { handleSearch, handleSubmit, location } = this.props;
+    const { query } = parse(location.search);
 
     return (
       <form onSubmit={handleSubmit(handleSearch)}>
@@ -32,4 +34,16 @@ SearchContainer = reduxForm({
   enableReinitialize: true,
 })(SearchContainer);
 
-export default SearchContainer;
+const mapStateToProps = (state, ownProps) => {
+  const { location } = ownProps;
+  const query = parse(location.search);
+
+  return {
+    initialValues: {
+      search: query.search,
+    },
+  };
+};
+
+
+export default connect(mapStateToProps)(SearchContainer);
