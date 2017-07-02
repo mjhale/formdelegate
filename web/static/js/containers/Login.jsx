@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
-import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { loginAccount, logoutAccount } from '../actions/sessions';
 import LoginForm from '../components/LoginForm';
 import Logout from '../components/Logout';
@@ -35,6 +35,7 @@ class LoginContainer extends React.Component {
       fields,
       handleSubmit,
       isAuthenticated,
+      logout,
       onSubmit,
       pristine,
       submitting,
@@ -53,13 +54,7 @@ class LoginContainer extends React.Component {
       return (
         <div className="logout-prompt">
           You are currently logged in. Would you like to{' '}
-          <Logout
-            logoutText="logout"
-            onLogoutClick={evt => {
-              evt.preventDefault();
-              dispatch(logoutAccount());
-            }}
-          />?
+          <Logout logoutText="logout" onLogoutClick={logout} />?
         </div>
       );
     }
@@ -81,6 +76,18 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { onSubmit: loginAccount })(
-  LoginContainer
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  logout(evt) {
+    evt.preventDefault();
+    dispatch(logoutAccount());
+  },
+
+  onSubmit(values) {
+    dispatch(loginAccount(values));
+    ownProps.history.push('/');
+  },
+});
+
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(LoginContainer)
 );

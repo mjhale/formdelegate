@@ -13,38 +13,86 @@ const defaultProps = {
   isAuthenticated: false,
 };
 
+const Nav = ({ isAuthenticated, onLogoutClick }) => {
+  if (isAuthenticated) {
+    return <AuthenticatedNav onLogoutClick={onLogoutClick} />;
+  } else {
+    return <UnauthenticatedNav />;
+  }
+};
+
+const UnauthenticatedNav = () =>
+  <ul className="nav-links" role="nav">
+    <li>
+      <NavLink exact to="/" activeClassName="active">
+        home
+      </NavLink>
+    </li>
+    <li>
+      <NavLink to="/examples" activeClassName="active">
+        examples
+      </NavLink>
+    </li>
+    <li>
+      <NavLink to="/documentation" activeClassName="active">
+        documentation
+      </NavLink>
+    </li>
+    <li>
+      <NavLink to="/contact" activeClassName="active">
+        contact us
+      </NavLink>
+    </li>
+    <li>
+      <NavLink to="/register" activeClassName="active">
+        create account
+      </NavLink>
+    </li>
+    <li>
+      <NavLink to="/login" activeClassName="active">
+        login
+      </NavLink>
+    </li>
+  </ul>;
+
+const AuthenticatedNav = ({ onLogoutClick }) =>
+  <ul className="nav-links" role="nav">
+    <li>
+      <NavLink to="/dashboard" activeClassName="active">
+        dashboard
+      </NavLink>
+    </li>
+    <li>
+      <NavLink to="/messages" activeClassName="active">
+        messages
+      </NavLink>
+    </li>
+    <li>
+      <NavLink to="/forms" activeClassName="active">
+        forms
+      </NavLink>
+    </li>
+    <li>
+      <NavLink to="/settings" activeClassName="active">
+        settings
+      </NavLink>
+    </li>
+    <li>
+      <NavLink to="/admin/accounts" activeClassName="active">
+        accounts
+      </NavLink>
+    </li>
+    <li>
+      <Logout onLogoutClick={onLogoutClick} />
+    </li>
+  </ul>;
+
 class NavContainer extends React.Component {
   render() {
     const { isAuthenticated, onLogoutClick } = this.props;
 
     return (
-      <ul className="nav-links" role="nav">
-        <li>
-          <NavLink to="/messages" activeClassName="active">
-            messages
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/forms" activeClassName="active">
-            forms
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/admin/accounts" activeClassName="active">
-            accounts
-          </NavLink>
-        </li>
-        {!isAuthenticated &&
-          <li>
-            <NavLink to="/login" activeClassName="active">
-              login
-            </NavLink>
-          </li>}
-        {isAuthenticated &&
-          <li>
-            <Logout onLogoutClick={onLogoutClick} />
-          </li>}
-      </ul>
+      <Nav isAuthenticated={isAuthenticated} onLogoutClick={onLogoutClick} />
     );
   }
 }
