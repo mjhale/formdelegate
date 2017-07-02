@@ -1,12 +1,14 @@
+import { accountSchema } from '../schema';
 import { CALL_API } from '../middleware/api';
+import { normalize } from 'normalizr';
 import { reset } from 'redux-form';
 
+// action type constants
+import { ACCOUNT_SUCCESS } from '../constants/actionTypes';
 import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
-} from '../constants/actionTypes';
-import {
   LOGOUT_REQUEST,
   LOGOUT_SUCCESS,
   LOGOUT_FAILURE,
@@ -38,43 +40,45 @@ export function loginAccount(credentials) {
       throw new Error('Promise flow received action error', actionResponse);
     }
 
-    return dispatch(loginSuccess(actionResponse.payload));
+    return dispatch(loginSuccess(actionResponse));
   };
 }
 
-const loginSuccess = account => {
+const loginSuccess = response => {
   return async dispatch => {
     try {
-      await localStorage.setItem('fd_token', account.jwt);
       await dispatch(reset('loginForm'));
+      await localStorage.setItem('fd_token', response.payload.jwt);
+      await dispatch({
+        headers: response.headers,
+        isFetching: false,
+        payload: normalize(response.payload.account.data, accountSchema),
+        type: ACCOUNT_SUCCESS,
+      });
     } catch (error) {
       throw new Error('Promise flow received error', error);
     }
 
-    return Promise.resolve(account);
+    return Promise.resolve(response);
   };
 };
 
 export function logoutAccount() {
   return dispatch => {
-    dispatch(logoutRequest());
-    localStorage.removeItem('fd_token');
-    dispatch(logoutReceived());
-  };
-}
-
-function logoutReceived() {
-  return {
-    type: LOGOUT_SUCCESS,
-    isFetching: false,
-    isAuthenticated: false,
-  };
-}
-
-function logoutRequest() {
-  return {
-    type: LOGOUT_REQUEST,
-    isFetching: true,
-    isAuthenticated: true,
+    try {
+      dispatch({
+        type: LOGOUT_REQUEST,
+        isFetching: true,
+        isAuthenticated: true,
+      });
+      localStorage.removeItem('fd_token');
+      dispatch({
+        type: LOGOUT_SUCCESS,
+        isFetching: false,
+        isAuthenticated: false,
+      });
+    } catch (error) {
+      throw new Error('Promise flow received error', error);
+    }
   };
 }

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { fetchMessage } from '../actions/message';
+import { fetchMessage } from '../actions/messages';
 import { getMessage } from '../selectors';
 import Message from '../components/Message';
 
@@ -10,13 +10,14 @@ const propTypes = {
 
 class MessageContainer extends React.Component {
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { loadMessage, match } = this.props;
     const { messageId } = match.params;
-    dispatch(fetchMessage(messageId));
+
+    loadMessage(messageId);
   }
 
   render() {
-    const { isFetching, message, params } = this.props;
+    const { isFetching, message } = this.props;
 
     if (isFetching || !message) {
       return <p>Loading message...</p>;
@@ -35,4 +36,10 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps)(MessageContainer);
+const mapDispatchToProps = dispatch => ({
+  loadMessage(messageId) {
+    dispatch(fetchMessage(messageId));
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MessageContainer);

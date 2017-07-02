@@ -2,14 +2,17 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { browserHistory } from 'react-router-dom';
-import { fetchAccount, updateAccount } from 'actions/account';
+import { fetchAccount, updateAccount } from 'actions/accounts';
+import { getAccount } from '../selectors';
 import { withRouter } from 'react-router-dom';
 import AccountForm from 'components/AccountForm';
 
 class AdminAccountFormContainer extends React.Component {
   componentDidMount() {
-    const { accountId } = this.props.match.params;
-    this.props.dispatch(fetchAccount(accountId));
+    const { loadAccount, match } = this.props;
+    const { accountId } = match.params;
+
+    loadAccount(accountId);
   }
 
   render() {
@@ -43,15 +46,19 @@ AdminAccountFormContainer = reduxForm({
   enableReinitialize: true,
 })(AdminAccountFormContainer);
 
-const mapStateToProps = state => {
-  const { account } = state.account;
+const mapStateToProps = (state, ownProps) => {
   return {
-    account,
-    initialValues: account,
+    account: getAccount(state, ownProps),
+    initialValues: getAccount(state, ownProps),
+    isFetching: state.accounts.isFetching,
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
+  loadAccount(accountId) {
+    dispatch(fetchAccount(accountId));
+  },
+
   onSubmit(data) {
     dispatch(updateAccount(data));
     ownProps.history.push(`/admin/accounts/${data.id}`);

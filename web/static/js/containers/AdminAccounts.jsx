@@ -1,7 +1,8 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { fetchAccountsIfNeeded } from 'actions/accounts';
+import { fetchAccounts } from 'actions/accounts';
+import { getOrderedAccounts } from '../selectors';
 
 const propTypes = {
   lastUpdated: PropTypes.number,
@@ -16,7 +17,8 @@ const defaultProps = {
 
 class AdminAccountsContainer extends React.Component {
   componentDidMount() {
-    this.props.dispatch(fetchAccountsIfNeeded());
+    const { loadAccounts } = this.props;
+    loadAccounts();
   }
 
   render() {
@@ -66,21 +68,20 @@ class AdminAccountsContainer extends React.Component {
 AdminAccountsContainer.propTypes = propTypes;
 AdminAccountsContainer.defaultProps = defaultProps;
 
-/* @TODO: Memoize to improve performance */
-const sortById = accounts => {
-  return accounts.sort((a, b) => {
-    if (a.hasOwnProperty('id') && b.hasOwnProperty('id')) {
-      return a.id - b.id;
-    }
-  });
-};
-
 const mapStateToProps = state => {
   return {
-    items: sortById(state.accounts.items),
+    items: getOrderedAccounts(state),
     isFetching: state.accounts.isFetching,
     lastUpdated: state.accounts.lastUpdated,
   };
 };
 
-export default connect(mapStateToProps)(AdminAccountsContainer);
+const mapDispatchToProps = dispatch => ({
+  loadAccounts() {
+    dispatch(fetchAccounts());
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+  AdminAccountsContainer
+);

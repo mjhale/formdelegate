@@ -6,17 +6,19 @@ import AdminAccountFormContainer from '../containers/AdminAccountForm';
 import AdminAccountsContainer from '../containers/AdminAccounts';
 
 const propTypes = {
-  children: PropTypes.node,
+  isAdmin: PropTypes.bool.isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
+  children: PropTypes.node,
 };
 
 const defaultProps = {
+  isAdmin: false,
   isAuthenticated: false,
 };
 
 class AdminContainer extends React.Component {
   render() {
-    const { children, isAuthenticated } = this.props;
+    const { children, isAuthenticated, isAdmin } = this.props;
 
     return (
       <div className="admin">

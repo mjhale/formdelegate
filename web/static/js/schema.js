@@ -1,7 +1,8 @@
 import { schema } from 'normalizr';
 
-const integrationSchema = new schema.Entity('integrations');
-export const integrationListSchema = new schema.Array(integrationSchema);
+export const accountSchema = new schema.Entity('accounts');
+
+export const integrationSchema = new schema.Entity('integrations');
 
 const formIntegrationSchema = new schema.Entity('form_integrations', {
   integration: integrationSchema,
@@ -12,4 +13,3 @@ export const formSchema = new schema.Entity('forms', {
 });
 
 export const messageSchema = new schema.Entity('messages');
-export const messageListSchema = new schema.Array(messageSchema);

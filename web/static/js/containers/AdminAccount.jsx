@@ -1,38 +1,49 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { fetchAccount } from '../actions/account';
+import { getAccount } from '../selectors';
+import { fetchAccount } from '../actions/accounts';
 import Account from '../components/Account';
 
 const propTypes = {
-  account: PropTypes.object.isRequired,
+  account: PropTypes.object,
   isFetching: PropTypes.bool.isRequired,
-  lastUpdated: PropTypes.number,
-  dispatch: PropTypes.func.isRequired,
   match: PropTypes.object.isRequired,
 };
 
 class AdminAccountContainer extends React.Component {
   componentDidMount() {
-    const { dispatch, match } = this.props;
+    const { loadAccount, match } = this.props;
     const { accountId } = match.params;
-    dispatch(fetchAccount(accountId));
+
+    loadAccount(accountId);
   }
 
   render() {
+    const { isFetching, account } = this.props;
+
+    if (isFetching || !account) {
+      return <p>Loading account...</p>;
+    }
+
     return <Account {...this.props} />;
   }
 }
 
 AdminAccountContainer.propTypes = propTypes;
 
-const mapStateToProps = state => {
-  const { account, isFetching, lastUpdated } = state.account;
+const mapStateToProps = (state, ownProps) => {
   return {
-    account,
-    isFetching,
-    lastUpdated,
+    account: getAccount(state, ownProps),
+    isFetching: state.accounts.isFetching,
   };
 };
 
-export default connect(mapStateToProps)(AdminAccountContainer);
+const mapDispatchToProps = dispatch => ({
+  loadAccount(accountId) {
+    dispatch(fetchAccount(accountId));
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+  AdminAccountContainer
+);

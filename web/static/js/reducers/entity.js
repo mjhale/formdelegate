@@ -2,6 +2,7 @@ import { merge } from 'lodash';
 
 export default (
   state = {
+    accounts: {},
     form_integrations: {},
     forms: {},
     integrations: {},

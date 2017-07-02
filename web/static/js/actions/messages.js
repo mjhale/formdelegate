@@ -1,16 +1,16 @@
 import { CALL_API } from '../middleware/api';
-import { messageListSchema } from '../schema';
+import { messageSchema } from '../schema';
 
+// action type constants
 import {
+  MESSAGE_FAILURE,
+  MESSAGE_REQUEST,
+  MESSAGE_SUCCESS,
   MESSAGE_SEARCH_RESULTS,
   MESSAGE_SEARCH_QUERY,
-} from '../constants/actionTypes';
-import {
   MESSAGE_SEARCH_REQUEST,
   MESSAGE_SEARCH_SUCCESS,
   MESSAGE_SEARCH_FAILURE,
-} from '../constants/actionTypes';
-import {
   MESSAGES_FAILURE,
   MESSAGES_REQUEST,
   MESSAGES_RESULTS,
@@ -18,13 +18,22 @@ import {
 } from '../constants/actionTypes';
 import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from '../constants/actionTypes';
 
-function receiveMessages(payload, limit, offset, total) {
-  return {
-    limit,
-    offset,
-    payload,
-    total,
-    type: MESSAGES_RESULTS,
+export function fetchMessage(messageId) {
+  return async dispatch => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        authenticated: true,
+        endpoint: `messages/${messageId}`,
+        schema: messageSchema,
+        types: [MESSAGE_REQUEST, MESSAGE_SUCCESS, MESSAGE_FAILURE],
+      },
+    });
+
+    if (actionResponse.error) {
+      throw new Error('Promise flow received action error', actionResponse);
+    }
+
+    return actionResponse.payload;
   };
 }
 
@@ -55,7 +64,7 @@ export function messageSearchFetch(query, requestedPage) {
       [CALL_API]: {
         authenticated: true,
         endpoint: `search/messages?query=${query}&page=${requestedPage}`,
-        schema: messageListSchema,
+        schema: [messageSchema],
         types: [
           MESSAGE_SEARCH_REQUEST,
           MESSAGE_SEARCH_SUCCESS,
@@ -108,7 +117,7 @@ export function fetchMessages(requestedPage) {
       [CALL_API]: {
         authenticated: true,
         endpoint: `messages?page=${requestedPage}`,
-        schema: messageListSchema,
+        schema: [messageSchema],
         types: [MESSAGES_REQUEST, MESSAGES_SUCCESS, MESSAGES_FAILURE],
       },
     });
@@ -126,5 +135,15 @@ export function fetchMessages(requestedPage) {
     return dispatch(
       receiveMessages(actionResponse.payload, limit, offset, total)
     );
+  };
+}
+
+function receiveMessages(payload, limit, offset, total) {
+  return {
+    limit,
+    offset,
+    payload,
+    total,
+    type: MESSAGES_RESULTS,
   };
 }

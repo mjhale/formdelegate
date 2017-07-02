@@ -1,57 +1,63 @@
-import fetch from 'isomorphic-fetch';
+import { CALL_API } from '../middleware/api';
+import { accountSchema } from '../schema';
 
-export const REQUEST_ACCOUNTS = 'REQUEST_ACCOUNTS';
-export const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
+import {
+  ACCOUNT_REQUEST,
+  ACCOUNT_SUCCESS,
+  ACCOUNT_FAILURE,
+  ACCOUNT_UPDATE_REQUEST,
+  ACCOUNT_UPDATE_SUCCESS,
+  ACCOUNT_UPDATE_FAILURE,
+  ACCOUNTS_REQUEST,
+  ACCOUNTS_SUCCESS,
+  ACCOUNTS_FAILURE,
+} from '../constants/actionTypes';
 
-function requestAccounts() {
-  return {
-    type: REQUEST_ACCOUNTS,
-  };
-}
+export const fetchAccount = accountId => ({
+  [CALL_API]: {
+    authenticated: true,
+    endpoint: `admin/accounts/${accountId}`,
+    schema: accountSchema,
+    types: [ACCOUNT_REQUEST, ACCOUNT_SUCCESS, ACCOUNT_FAILURE],
+  },
+});
 
-function receiveAccounts(json) {
-  return {
-    type: RECEIVE_ACCOUNTS,
-    items: json.data,
-    receivedAt: Date.now(),
-  };
-}
+export const fetchAccounts = () => ({
+  [CALL_API]: {
+    authenticated: true,
+    endpoint: 'admin/accounts',
+    schema: [accountSchema],
+    types: [ACCOUNTS_REQUEST, ACCOUNTS_SUCCESS, ACCOUNTS_FAILURE],
+  },
+});
 
-function fetchAccounts() {
-  return dispatch => {
-    dispatch(requestAccounts());
-
-    let token = localStorage.getItem('fd_token') || null;
-
-    if (token) {
-      return fetch('/api/admin/accounts', {
-        headers: {
-          Authorization: `Bearer ${token}`,
+export const updateAccount = account => {
+  return async (dispatch, getState) => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        authenticated: true,
+        config: {
+          body: JSON.stringify({ account }),
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          method: 'PUT',
         },
-      })
-        .then(response => response.json())
-        .then(json => dispatch(receiveAccounts(json)));
-    } else {
-      throw 'No token found.';
-    }
-  };
-}
+        endpoint: `admin/accounts/${account.id}`,
+        schema: accountSchema,
+        types: [
+          ACCOUNT_UPDATE_REQUEST,
+          ACCOUNT_UPDATE_SUCCESS,
+          ACCOUNT_UPDATE_FAILURE,
+        ],
+      },
+    });
 
-function shouldFetchAccounts(state) {
-  const accounts = state.accounts;
-  if (accounts.items !== 'undefined' && accounts.items.length === 0) {
-    return true;
-  } else if (accounts.isFetching) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-export function fetchAccountsIfNeeded() {
-  return (dispatch, getState) => {
-    if (shouldFetchAccounts(getState())) {
-      return dispatch(fetchAccounts());
+    if (actionResponse.error) {
+      throw new Error('Promise flow received action error', actionResponse);
     }
+
+    return actionResponse;
   };
-}
+};

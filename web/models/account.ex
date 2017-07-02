@@ -18,18 +18,16 @@ defmodule FormDelegate.Account do
     timestamps()
   end
 
-  @required_fields ~w(email)
-  @optional_fields ~w(password name)
-
   @doc """
   Builds a changeset based on the `struct` and `params`.
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, [:name, :email, :password, :verified, :admin])
     |> cast_assoc(:messages, required: false)
     |> validate_length(:email, min: 3, max: 128)
-    |> validate_length(:password, min: 10, max: 128)
+    |> validate_length(:password, min: 8, max: 128)
+    |> unique_constraint(:email)
     |> put_password_hash()
   end
 

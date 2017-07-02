@@ -4,7 +4,7 @@ defmodule FormDelegate.SessionView do
   def render("show.json", %{jwt: jwt, account: account}) do
     %{
       jwt: jwt,
-      account: account
+      account: render_one(account, FormDelegate.AccountView, "show.json")
     }
   end
 

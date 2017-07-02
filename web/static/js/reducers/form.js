@@ -1,29 +1,21 @@
+import { indexOf } from 'lodash';
+
 import {
   FORM_REQUEST,
   FORM_SUCCESS,
   FORM_FAILURE,
-} from '../constants/actionTypes';
-import {
   FORM_CREATE_REQUEST,
   FORM_CREATE_SUCCESS,
   FORM_CREATE_FAILURE,
-} from '../constants/actionTypes';
-import {
   FORM_DELETE_REQUEST,
   FORM_DELETE_SUCCESS,
   FORM_DELETE_FAILURE,
-} from '../constants/actionTypes';
-import {
   FORM_UPDATE_REQUEST,
   FORM_UPDATE_SUCCESS,
   FORM_UPDATE_FAILURE,
-} from '../constants/actionTypes';
-import {
   FORMS_REQUEST,
   FORMS_SUCCESS,
   FORMS_FAILURE,
-} from '../constants/actionTypes';
-import {
   INTEGRATIONS_REQUEST,
   INTEGRATIONS_SUCCESS,
   INTEGRATIONS_FAILURE,
@@ -63,11 +55,23 @@ export default (
 
     case FORM_DELETE_FAILURE:
     case FORM_FAILURE:
-    case FORM_SUCCESS:
     case FORMS_FAILURE:
     case INTEGRATIONS_FAILURE:
+      return Object.assign({}, state, {
+        isFetching: false,
+      });
+
     case INTEGRATIONS_SUCCESS:
       return Object.assign({}, state, {
+        isFetching: false,
+      });
+
+    case FORM_SUCCESS:
+      return Object.assign({}, state, {
+        allIds:
+          indexOf(state.allIds, action.payload.result) > -1
+            ? state.allIds
+            : [...state.allIds, action.payload.result],
         isFetching: false,
       });
 
@@ -76,7 +80,6 @@ export default (
         allIds: action.payload.result,
         isFetching: false,
       });
-    case FORM_DELETE_REQUEST:
 
     default:
       return state;
