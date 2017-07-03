@@ -150,7 +150,9 @@ label {
   text-transform: uppercase;
 }
 
-input[type="text"], select {
+input[type="text"],
+input[type="password"],
+select {
   border: 1px solid #CCC;
   box-sizing: border-box;
   display: block;
@@ -267,6 +269,15 @@ input[type="text"], select {
   border-top: 1px solid $border-color;
   padding: .5rem;
   margin-bottom: .5rem;
+}
+
+.login {
+  margin: 0 auto;
+  max-width: 320px;
+
+  .register {
+    float: right;
+  }
 }
 
 .table {

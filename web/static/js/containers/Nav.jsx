@@ -44,11 +44,6 @@ const UnauthenticatedNav = () =>
       </NavLink>
     </li>
     <li>
-      <NavLink to="/register" activeClassName="active">
-        create account
-      </NavLink>
-    </li>
-    <li>
       <NavLink to="/login" activeClassName="active">
         login
       </NavLink>

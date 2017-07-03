@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Field } from 'redux-form';
+import { Link } from 'react-router-dom';
 import renderField from '../components/Field.jsx';
 
 const propTypes = {
@@ -12,33 +13,29 @@ const LoginForm = props => {
   const { handleSubmit, submitting, pristine } = props;
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="email">E-Mail</label>
+    <div className="login card">
+      <form onSubmit={handleSubmit}>
         <Field
+          component={renderField}
           name="email"
-          component={renderField}
+          label="E-Mail Address"
           type="text"
-          placeholder="E-mail Address"
         />
-      </div>
 
-      <div>
-        <label htmlFor="password">Password</label>
         <Field
-          name="password"
           component={renderField}
+          name="password"
+          label="Password"
           type="password"
-          placeholder="Password"
         />
-      </div>
-
-      <div>
-        <button type="submit" disabled={submitting | pristine}>
+        <button className="btn" type="submit" disabled={submitting | pristine}>
           Login
         </button>
-      </div>
-    </form>
+        <Link className="btn register" to="/register">
+          Create New Account
+        </Link>
+      </form>
+    </div>
   );
 };
 

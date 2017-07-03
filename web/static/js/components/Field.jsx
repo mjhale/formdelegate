@@ -1,12 +1,18 @@
 import React from 'react';
 
-const renderField = ({ input, label, type, meta: { touched, error } }) =>
+const renderField = ({
+  input,
+  label,
+  meta: { touched, error },
+  placeholder,
+  type,
+}) =>
   <div>
     <label>
       {label}
     </label>
     <div>
-      <input {...input} placeholder={label} type={type} />
+      <input {...input} placeholder={placeholder} type={type} />
 
       {touched &&
         error &&

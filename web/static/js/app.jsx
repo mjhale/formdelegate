@@ -6,7 +6,6 @@ import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import { RootRouter } from './router';
 import api from './middleware/api';
-import App from './containers/App';
 import thunk from 'redux-thunk';
 import reducer from './reducers';
 
