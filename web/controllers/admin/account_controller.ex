@@ -17,7 +17,7 @@ defmodule FormDelegate.Admin.AccountController do
       {:ok, account} ->
         conn
         |> put_status(:created)
-        |> put_resp_header("location", account_path(conn, :show, account))
+        |> put_resp_header("location", admin_account_path(conn, :show, account))
         |> render("show.json", account: account)
       {:error, changeset} ->
         conn

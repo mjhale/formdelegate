@@ -8,7 +8,7 @@ defmodule FormDelegate.AccountView do
       name: account.name,
       form_count: account.form_count,
       verified: account.verified,
-      admin: account.admin,
+      is_admin: account.is_admin,
     }
   end
 

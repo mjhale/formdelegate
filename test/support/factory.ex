@@ -18,6 +18,6 @@ defmodule FormDelegate.Factory do
   end
 
   def make_admin(account) do
-    %{account | admin: true}
+    %{account | is_admin: true}
   end
 end

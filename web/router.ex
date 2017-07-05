@@ -15,6 +15,10 @@ defmodule FormDelegate.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :admin_required do
+    plug FormDelegate.CheckAdmin
+  end
+
   if Mix.env == :dev do
     forward "/sent_emails", Bamboo.EmailPreviewPlug
   end
@@ -35,7 +39,11 @@ defmodule FormDelegate.Router do
 
     get "/search/messages", SearchMessageController, :index
 
-    resources "/admin/accounts", Admin.AccountController
+    scope "/admin", Admin, as: :admin do
+      pipe_through [:admin_required]
+
+      resources "/accounts", AccountController
+    end
 
     post "/sessions", SessionController, :create
     delete "/sessions", SessionController, :delete

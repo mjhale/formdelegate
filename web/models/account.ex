@@ -10,7 +10,7 @@ defmodule FormDelegate.Account do
     field :password_hash, :string, null: false
     field :form_count, :integer, default: 0, null: false
     field :verified, :boolean, null: false
-    field :admin, :boolean, null: false
+    field :is_admin, :boolean, null: false
 
     has_many :messages, FormDelegate.Message, on_delete: :delete_all
     has_many :forms, FormDelegate.Form, on_delete: :delete_all
@@ -23,7 +23,7 @@ defmodule FormDelegate.Account do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :email, :password, :verified, :admin])
+    |> cast(params, [:name, :email, :password, :verified, :is_admin])
     |> cast_assoc(:messages, required: false)
     |> validate_length(:email, min: 3, max: 128)
     |> validate_length(:password, min: 8, max: 128)
