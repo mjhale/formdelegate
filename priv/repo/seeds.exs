@@ -20,7 +20,7 @@ Repo.insert! %Account{
   name: "The Administrator",
   email: "admin@admin.com",
   password_hash: Comeonin.Pbkdf2.hashpwsalt("admin"),
-  form_count: 1, # pre-set the counter cache
+  form_count: 2, # pre-set the counter cache
   verified: true,
   is_admin: true,
 }

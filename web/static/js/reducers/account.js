@@ -10,11 +10,15 @@ import {
   ACCOUNTS_REQUEST,
   ACCOUNTS_SUCCESS,
   ACCOUNTS_FAILURE,
+  CURRENT_ACCOUNT_REQUEST,
+  CURRENT_ACCOUNT_SUCCESS,
+  CURRENT_ACCOUNT_FAILURE,
 } from '../constants/actionTypes';
 
 export default (
   state = {
     allIds: [],
+    currentAccountId: null,
     isFetching: false,
   },
   action
@@ -23,12 +27,14 @@ export default (
     case ACCOUNT_REQUEST:
     case ACCOUNT_UPDATE_REQUEST:
     case ACCOUNTS_REQUEST:
+    case CURRENT_ACCOUNT_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
       });
     case ACCOUNT_FAILURE:
     case ACCOUNT_UPDATE_FAILURE:
     case ACCOUNTS_FAILURE:
+    case CURRENT_ACCOUNT_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
       });
@@ -47,6 +53,11 @@ export default (
     case ACCOUNTS_SUCCESS:
       return Object.assign({}, state, {
         allIds: action.payload.result,
+        isFetching: false,
+      });
+    case CURRENT_ACCOUNT_SUCCESS:
+      return Object.assign({}, state, {
+        currentAccountId: action.payload.result,
         isFetching: false,
       });
     default:

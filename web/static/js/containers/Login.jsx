@@ -83,8 +83,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
 
   onSubmit(values) {
-    dispatch(loginAccount(values));
-    ownProps.history.push('/');
+    dispatch(loginAccount(values)).then(() =>
+      ownProps.history.push('/dashboard')
+    );
   },
 });
 

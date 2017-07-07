@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { fetchAccounts } from 'actions/accounts';
+import { adminFetchAccounts } from 'actions/accounts';
 import { getOrderedAccounts } from '../selectors';
 
 const propTypes = {
@@ -27,7 +27,6 @@ class AdminAccountsContainer extends React.Component {
 
     return (
       <div>
-        <h1>Accounts</h1>
         <table className="accounts table-minimal">
           <thead>
             <tr>
@@ -78,7 +77,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
   loadAccounts() {
-    dispatch(fetchAccounts());
+    dispatch(adminFetchAccounts());
   },
 });
 

@@ -26,6 +26,8 @@ defmodule FormDelegate.Router do
   scope "/api", FormDelegate do
     pipe_through :api
 
+    get "/accounts/:id", AccountController, :show
+
     post "/requests/:id", RequestController, :process_request
 
     resources "/forms", FormController

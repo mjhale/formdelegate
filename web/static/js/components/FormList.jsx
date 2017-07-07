@@ -23,12 +23,11 @@ let FormList = ({ forms, isFetching, onDeleteClick }) => {
 const FormSimpleView = ({ form, onDeleteClick }) => {
   return (
     <div className="form">
-      <div className="header">
+      <div className="card-header">
         <span className="form-name">
           {form.form}
         </span>
       </div>
-
       <div className="card">
         <CopyToClipboard
           text={`https://www.formdelegate.com/api/requests/${form.id}`}

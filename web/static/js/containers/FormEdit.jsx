@@ -58,7 +58,7 @@ class FormEdit extends React.Component {
         </a>
         <h1>Edit Form</h1>
         <form onSubmit={handleSubmit} className="form">
-          <div className="header">
+          <div className="card-header">
             <div className="verified">
               {formData.verified ? 'Verified' : 'Unverified'}
             </div>

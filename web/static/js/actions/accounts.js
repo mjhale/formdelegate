@@ -11,9 +11,25 @@ import {
   ACCOUNTS_REQUEST,
   ACCOUNTS_SUCCESS,
   ACCOUNTS_FAILURE,
+  CURRENT_ACCOUNT_REQUEST,
+  CURRENT_ACCOUNT_SUCCESS,
+  CURRENT_ACCOUNT_FAILURE,
 } from '../constants/actionTypes';
 
 export const fetchAccount = accountId => ({
+  [CALL_API]: {
+    authenticated: true,
+    endpoint: `accounts/${accountId}`,
+    schema: accountSchema,
+    types: [
+      CURRENT_ACCOUNT_REQUEST,
+      CURRENT_ACCOUNT_SUCCESS,
+      CURRENT_ACCOUNT_FAILURE,
+    ],
+  },
+});
+
+export const adminFetchAccount = accountId => ({
   [CALL_API]: {
     authenticated: true,
     endpoint: `admin/accounts/${accountId}`,
@@ -22,7 +38,7 @@ export const fetchAccount = accountId => ({
   },
 });
 
-export const fetchAccounts = () => ({
+export const adminFetchAccounts = () => ({
   [CALL_API]: {
     authenticated: true,
     endpoint: 'admin/accounts',
@@ -31,7 +47,7 @@ export const fetchAccounts = () => ({
   },
 });
 
-export const updateAccount = account => {
+export const adminUpdateAccount = account => {
   return async (dispatch, getState) => {
     const actionResponse = await dispatch({
       [CALL_API]: {

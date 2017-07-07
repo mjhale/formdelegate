@@ -20,7 +20,7 @@ const FormEdit = props => {
 
   return (
     <form onSubmit={handleSubmit} className="form">
-      <div className="header">
+      <div className="card-header">
         <div className="verified">
           {form.verified ? 'Verified' : 'Unverified'}
         </div>

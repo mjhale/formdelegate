@@ -1,7 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import AccessError from './components/AccessError';
 import AdminContainer from './containers/Admin';
 import AppContainer from './containers/App';
+import DashboardContainer from './containers/Dashboard';
 import FormEditContainer from './containers/FormEdit';
 import FormNewContainer from './containers/FormNew';
 import FormsContainer from './containers/Forms';
@@ -21,6 +23,11 @@ export const RootRouter = () =>
 
 export const Routes = () =>
   <Switch>
+    <Route
+      exact
+      path="/dashboard"
+      component={requireAuth(DashboardContainer)}
+    />
     <Route exact path="/forms" component={requireAuth(FormsContainer)} />
     <Route exact path="/forms/new" component={requireAuth(FormNewContainer)} />
     <Route
@@ -38,6 +45,7 @@ export const Routes = () =>
     <Route exact path="/login" component={LoginContainer} />
     <Route exact path="/success" component={ReceiveSuccessContainer} />
     <Route exact path="/failure" component={ReceiveFailureContainer} />
+    <Route exact path="/access-error" component={AccessError} />
     <Route exact path="/" component={Welcome} />
     <Route path="*" component={InvalidRoute} />
   </Switch>;

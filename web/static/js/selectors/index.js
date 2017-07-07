@@ -4,6 +4,7 @@ import { filter, find, map } from 'lodash';
 const getAccountIds = state => state.accounts.allIds;
 const getAccountId = (_state, props) => props.match.params.accountId;
 const getAccounts = state => state.entities.accounts;
+const getCurrentAccountId = state => state.accounts.currentAccountId;
 const getFormId = (_state, props) => props.match.params.formId;
 const getFormIds = state => state.forms.allIds;
 const getForms = state => state.entities.forms;
@@ -13,6 +14,15 @@ const getMessages = state => state.entities.messages;
 
 export const getAccount = createSelector(
   [getAccounts, getAccountId],
+  (accounts, accountId) => {
+    return find(accounts, function(object) {
+      return object.id == accountId;
+    });
+  }
+);
+
+export const getCurrentAccount = createSelector(
+  [getAccounts, getCurrentAccountId],
   (accounts, accountId) => {
     return find(accounts, function(object) {
       return object.id == accountId;

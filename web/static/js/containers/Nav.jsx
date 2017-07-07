@@ -73,8 +73,8 @@ const AuthenticatedNav = ({ onLogoutClick }) =>
       </NavLink>
     </li>
     <li>
-      <NavLink to="/admin/accounts" activeClassName="active">
-        accounts
+      <NavLink to="/admin" activeClassName="active">
+        admin
       </NavLink>
     </li>
     <li>

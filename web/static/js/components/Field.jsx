@@ -7,7 +7,7 @@ const renderField = ({
   placeholder,
   type,
 }) =>
-  <div>
+  <div className="input-container">
     <label>
       {label}
     </label>

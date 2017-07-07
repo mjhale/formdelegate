@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { getAccount } from '../selectors';
-import { fetchAccount } from '../actions/accounts';
+import { adminFetchAccount } from '../actions/accounts';
 import Account from '../components/Account';
 
 const propTypes = {
@@ -40,7 +40,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => ({
   loadAccount(accountId) {
-    dispatch(fetchAccount(accountId));
+    dispatch(adminFetchAccount(accountId));
   },
 });
 

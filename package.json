@@ -9,6 +9,7 @@
     "classnames": "^2.2.5",
     "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
+    "jwt-decode": "^2.2.0",
     "lodash": "^4.17.4",
     "moment": "^2.15.2",
     "normalizr": "^3.0.0",

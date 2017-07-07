@@ -150,13 +150,18 @@ label {
   text-transform: uppercase;
 }
 
+.input-container {
+  font-size: .8rem;
+  margin-bottom: 1rem;
+}
+
 input[type="text"],
 input[type="password"],
 select {
   border: 1px solid #CCC;
   box-sizing: border-box;
   display: block;
-  margin: .25rem 0 .5rem 0;
+  margin: .25rem 0 .25rem 0;
   padding: .4rem;
   width: 20rem;
 
@@ -166,7 +171,11 @@ select {
   }
 }
 
-.form .header {
+.input-error {
+  font-style: italic;
+}
+
+.card-header {
   background: $off-white;
   border-left: 1px solid $border-color;
   border-right: 1px solid $border-color;
@@ -180,13 +189,13 @@ select {
   text-transform: uppercase;
 }
 
-.form .header .verified {
+.form .verified {
   color: #3eb529;
   float: right;
   text-transform: none;
 }
 
-.form .header .edit {
+.form .edit {
   float: right;
 }
 
@@ -274,6 +283,7 @@ select {
 .login {
   margin: 0 auto;
   max-width: 320px;
+  padding: 1rem;
 
   .register {
     float: right;
@@ -404,4 +414,25 @@ select {
 
 .forms .actions {
   padding-top: .5rem;
+}
+
+.admin-links {
+    display: flex;
+    justify-content: flex-start;
+    list-style-type: none;
+    margin: 0 1rem 1rem 1rem;
+    padding: 0;
+}
+
+.admin-links li {
+  font-size: .8rem;
+  text-transform: uppercase;
+}
+
+.admin-links li:not(:first-child) {
+  margin-left: 1.5rem;
+}
+
+.admin-links .active {
+  font-weight: 900;
 }

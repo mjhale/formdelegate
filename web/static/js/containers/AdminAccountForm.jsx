@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { browserHistory } from 'react-router-dom';
-import { fetchAccount, updateAccount } from 'actions/accounts';
+import { adminFetchAccount, adminUpdateAccount } from 'actions/accounts';
 import { getAccount } from '../selectors';
 import { withRouter } from 'react-router-dom';
 import AccountForm from 'components/AccountForm';
@@ -56,11 +56,11 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   loadAccount(accountId) {
-    dispatch(fetchAccount(accountId));
+    dispatch(adminFetchAccount(accountId));
   },
 
   onSubmit(data) {
-    dispatch(updateAccount(data));
+    dispatch(adminUpdateAccount(data));
     ownProps.history.push(`/admin/accounts/${data.id}`);
   },
 });
