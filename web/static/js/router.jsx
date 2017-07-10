@@ -13,6 +13,7 @@ import MessageContainer from './containers/Message';
 import MessagesContainer from './containers/Messages';
 import ReceiveFailureContainer from './containers/ReceiveFailure';
 import ReceiveSuccessContainer from './containers/ReceiveSuccess';
+import RegisterContainer from './containers/RegisterAccount';
 import requireAuth from './containers/RequireAuth';
 import Welcome from './components/Welcome';
 
@@ -43,6 +44,7 @@ export const Routes = () =>
     />
     <Route path="/admin" component={requireAuth(AdminContainer)} />
     <Route exact path="/login" component={LoginContainer} />
+    <Route exact path="/register" component={RegisterContainer} />
     <Route exact path="/success" component={ReceiveSuccessContainer} />
     <Route exact path="/failure" component={ReceiveFailureContainer} />
     <Route exact path="/access-error" component={AccessError} />

@@ -23,7 +23,6 @@ AdminDashboardContainer.propTypes = propTypes;
 
 const mapStateToProps = (state, ownProps) => ({
   account: getAccount(state, ownProps),
-  isAuthenticated: state.accounts.isFetching,
   isFetching: state.accounts.isFetching,
 });
 

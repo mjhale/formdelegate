@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import { getCurrentAccount } from '../selectors';
 import { NavLink, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logoutAccount } from '../actions/sessions';
@@ -95,7 +96,7 @@ class NavContainer extends React.Component {
 NavContainer.propTypes = propTypes;
 NavContainer.defaultProps = defaultProps;
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, ownProps) => {
   const { isAuthenticated } = state.authentication;
 
   return {

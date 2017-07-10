@@ -6,7 +6,6 @@ import Nav from './Nav';
 
 const propTypes = {
   isAuthenticated: PropTypes.bool,
-  children: PropTypes.node,
 };
 
 class AppContainer extends React.Component {
@@ -34,7 +33,11 @@ class AppContainer extends React.Component {
 AppContainer.propTypes = propTypes;
 
 const mapStateToProps = state => {
-  return {};
+  const { isAuthenticated } = state.authentication;
+
+  return {
+    isAuthenticated,
+  };
 };
 
 export default connect(mapStateToProps)(AppContainer);

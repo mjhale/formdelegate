@@ -26,33 +26,23 @@ defmodule FormDelegate.Router do
   scope "/api", FormDelegate do
     pipe_through :api
 
-    get "/accounts/:id", AccountController, :show
-
-    post "/requests/:id", RequestController, :process_request
-
+    resources "/accounts", AccountController, only: [:create, :show]
     resources "/forms", FormController
-
     get "/integrations", IntegrationController, :index
-
-    get "/messages", MessageController, :index
-    get "/messages/:id", MessageController, :show
-    post "/messages", MessageController, :create
-    delete "/messages/:id", MessageController, :delete
-
+    resources "/messages", MessageController, only: [:index, :show, :create, :delete]
+    post "/requests/:id", RequestController, :process_request
     get "/search/messages", SearchMessageController, :index
+    resources "/sessions", SessionController, only: [:create, :delete]
 
     scope "/admin", Admin, as: :admin do
-      pipe_through [:admin_required]
+      pipe_through :admin_required
 
       resources "/accounts", AccountController
     end
-
-    post "/sessions", SessionController, :create
-    delete "/sessions", SessionController, :delete
   end
 
   scope "/", FormDelegate do
-    pipe_through [:browser]
+    pipe_through :browser
 
     get "/*path", PageController, :index
   end
