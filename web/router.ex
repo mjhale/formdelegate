@@ -26,7 +26,7 @@ defmodule FormDelegate.Router do
   scope "/api", FormDelegate do
     pipe_through :api
 
-    resources "/accounts", AccountController, only: [:create, :show]
+    resources "/accounts", AccountController, only: [:create, :show, :update]
     resources "/forms", FormController
     get "/integrations", IntegrationController, :index
     resources "/messages", MessageController, only: [:index, :show, :create, :delete]

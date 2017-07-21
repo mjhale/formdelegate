@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react';
-
 import { connect } from 'react-redux';
 import { fetchMessages, messageSearchFetch } from '../actions/messages';
 import { getVisibleMessages } from '../selectors';
@@ -13,7 +12,6 @@ const propTypes = {
   history: PropTypes.object.isRequired,
   isFetching: PropTypes.bool.isRequired,
   loadMessages: PropTypes.func.isRequired,
-  loadSearchResults: PropTypes.func.isRequired,
   location: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   messages: PropTypes.array.isRequired,
@@ -36,11 +34,7 @@ class MessagesContainer extends React.Component {
     const query = parse(location.search);
     const startingPage = 1; /* the first page of paginated results */
 
-    if (query) {
-      loadSearchResults(query.search, startingPage);
-    } else {
-      loadMessages(startingPage);
-    }
+    loadMessages(startingPage, query && query.search);
   }
 
   handlePageChange = (requestedPage, evt) => {
@@ -48,12 +42,7 @@ class MessagesContainer extends React.Component {
     const { query } = parse(location.search);
 
     evt.preventDefault();
-
-    if (!query || 0 === query.length) {
-      loadMessages(requestedPage);
-    } else {
-      loadSearchResults(query, requestedPage);
-    }
+    loadMessages(requestedPage, query && query.search);
   };
 
   handleSearch = values => {
@@ -122,13 +111,13 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  loadMessages(requestedPage) {
-    dispatch(fetchMessages(requestedPage));
-  },
-
-  loadSearchResults(query, requestedPage) {
-    dispatch(messageSearchFetch(query, requestedPage));
+const mapDispatchToProps = dispatch => ({
+  loadMessages: (requestedPage, searchQuery) => {
+    if (searchQuery) {
+      dispatch(messageSearchFetch(searchQuery, requestedPage));
+    } else {
+      dispatch(fetchMessages(requestedPage));
+    }
   },
 });
 

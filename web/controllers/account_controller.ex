@@ -22,6 +22,20 @@ defmodule FormDelegate.AccountController do
     end
   end
 
+  def update(conn, %{"account" => account_params}) do
+    current_account = Guardian.Plug.current_resource(conn)
+    changeset = Account.changeset(current_account, account_params)
+
+    case Repo.update(changeset) do
+      {:ok, account} ->
+        render(conn, "show.json", account: account)
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(FormDelegate.ChangesetView, "error.json", changeset: changeset)
+    end
+  end
+
   def show(conn, %{"id" => id}) do
     current_account = Guardian.Plug.current_resource(conn)
 

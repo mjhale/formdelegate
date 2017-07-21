@@ -1,14 +1,10 @@
 import {
   MESSAGE_SEARCH_RESULTS,
   MESSAGE_SEARCH_QUERY,
-} from '../constants/actionTypes';
-import {
   MESSAGES_FAILURE,
   MESSAGES_REQUEST,
   MESSAGES_RESULTS,
   MESSAGES_SUCCESS,
-} from '../constants/actionTypes';
-import {
   MESSAGE_FAILURE,
   MESSAGE_REQUEST,
   MESSAGE_SUCCESS,
@@ -35,9 +31,12 @@ export default (
       return Object.assign({}, state, {
         isFetching: false,
       });
-    case MESSAGES_RESULTS:
+    case MESSAGES_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
+      });
+    case MESSAGES_RESULTS:
+      return Object.assign({}, state, {
         pagination: Object.assign({}, state.pagination, {
           limit: action.limit,
           offset: action.offset,

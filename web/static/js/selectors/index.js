@@ -23,9 +23,9 @@ export const getAccount = createSelector(
 
 export const getCurrentAccount = createSelector(
   [getAccounts, getCurrentAccountId],
-  (accounts, accountId) => {
+  (accounts, currentAccountId) => {
     return find(accounts, function(object) {
-      return object.id == accountId;
+      return object.id == currentAccountId;
     });
   }
 );

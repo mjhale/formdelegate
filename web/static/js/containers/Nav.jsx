@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
-import { getCurrentAccount } from '../selectors';
-import { NavLink, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { NavLink, withRouter } from 'react-router-dom';
 import { logoutAccount } from '../actions/sessions';
 import Logout from '../components/Logout';
 
@@ -12,14 +11,6 @@ const propTypes = {
 
 const defaultProps = {
   isAuthenticated: false,
-};
-
-const Nav = ({ isAuthenticated, onLogoutClick }) => {
-  if (isAuthenticated) {
-    return <AuthenticatedNav onLogoutClick={onLogoutClick} />;
-  } else {
-    return <UnauthenticatedNav />;
-  }
 };
 
 const UnauthenticatedNav = () =>
@@ -74,11 +65,6 @@ const AuthenticatedNav = ({ onLogoutClick }) =>
       </NavLink>
     </li>
     <li>
-      <NavLink to="/admin" activeClassName="active">
-        admin
-      </NavLink>
-    </li>
-    <li>
       <Logout onLogoutClick={onLogoutClick} />
     </li>
   </ul>;
@@ -87,16 +73,18 @@ class NavContainer extends React.Component {
   render() {
     const { isAuthenticated, onLogoutClick } = this.props;
 
-    return (
-      <Nav isAuthenticated={isAuthenticated} onLogoutClick={onLogoutClick} />
-    );
+    if (isAuthenticated) {
+      return <AuthenticatedNav onLogoutClick={onLogoutClick} />;
+    } else {
+      return <UnauthenticatedNav />;
+    }
   }
 }
 
 NavContainer.propTypes = propTypes;
 NavContainer.defaultProps = defaultProps;
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = state => {
   const { isAuthenticated } = state.authentication;
 
   return {
@@ -104,11 +92,11 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  onLogoutClick(evt) {
+const mapDispatchToProps = dispatch => ({
+  onLogoutClick: evt => {
     evt.preventDefault();
     dispatch(logoutAccount());
-    ownProps.history.push(`/`);
+    ownProps.history.push('/');
   },
 });
 

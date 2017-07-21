@@ -1,40 +1,17 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { fetchAccount } from '../actions/accounts';
 import { getCurrentAccount } from '../selectors';
-import { getCurrentAccountId } from '../utils';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import AdminDashboardContainer from '../containers/AdminDashboard';
 import AdminAccountContainer from '../containers/AdminAccount';
 import AdminAccountFormContainer from '../containers/AdminAccountForm';
 import AdminAccountsContainer from '../containers/AdminAccounts';
 
-const propTypes = {};
-
-const defaultProps = {
-  currentAccount: {
-    is_admin: true,
-  },
+const propTypes = {
+  account: PropTypes.object,
 };
 
 class AdminContainer extends React.Component {
-  componentDidMount() {
-    const currentAccountId = getCurrentAccountId();
-    this.props.dispatch(fetchAccount(currentAccountId)).then(() => {
-      this.redirectIfNotAdmin();
-    });
-  }
-
-  componentWillUpdate(nextProps) {
-    this.redirectIfNotAdmin();
-  }
-
-  redirectIfNotAdmin() {
-    if (!this.props.currentAccount.is_admin) {
-      this.props.history.push('/access-error');
-    }
-  }
-
   render() {
     return (
       <div className="admin">
@@ -80,10 +57,9 @@ class AdminContainer extends React.Component {
 }
 
 AdminContainer.propTypes = propTypes;
-AdminContainer.defaultProps = defaultProps;
 
-const mapStateToProps = (state, ownProps) => ({
-  currentAccount: getCurrentAccount(state, ownProps),
+const mapStateToProps = state => ({
+  account: getCurrentAccount(state),
 });
 
 export default connect(mapStateToProps)(AdminContainer);

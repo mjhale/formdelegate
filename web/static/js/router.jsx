@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import AccessError from './components/AccessError';
+import AccountSettingsContainer from './containers/AccountSettings';
 import AdminContainer from './containers/Admin';
 import AppContainer from './containers/App';
 import DashboardContainer from './containers/Dashboard';
@@ -45,6 +46,7 @@ export const Routes = () =>
     <Route path="/admin" component={requireAuth(AdminContainer)} />
     <Route exact path="/login" component={LoginContainer} />
     <Route exact path="/register" component={RegisterContainer} />
+    <Route exact path="/settings" component={AccountSettingsContainer} />
     <Route exact path="/success" component={ReceiveSuccessContainer} />
     <Route exact path="/failure" component={ReceiveFailureContainer} />
     <Route exact path="/access-error" component={AccessError} />

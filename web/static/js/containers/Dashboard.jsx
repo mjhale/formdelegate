@@ -1,10 +1,14 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { fetchAccount } from '../actions/accounts';
 import { getCurrentAccount } from '../selectors';
 import { getCurrentAccountId } from '../utils';
-import { fetchAccount } from '../actions/accounts';
 
-const propTypes = {};
+const propTypes = {
+  account: PropTypes.object,
+  isFetching: PropTypes.bool.isRequired,
+  loadAccount: PropTypes.func.isRequired,
+};
 
 const UnverifiedAlert = isVerified => {
   if (!isVerified) {
@@ -49,9 +53,8 @@ class DashboardContainer extends React.Component {
 
 DashboardContainer.propTypes = propTypes;
 
-const mapStateToProps = (state, ownProps) => ({
-  account: getCurrentAccount(state, ownProps),
-  isAuthenticated: state.accounts.isFetching,
+const mapStateToProps = state => ({
+  account: getCurrentAccount(state),
   isFetching: state.accounts.isFetching,
 });
 

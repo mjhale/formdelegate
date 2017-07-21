@@ -111,3 +111,34 @@ export const fetchAccount = accountId => ({
     ],
   },
 });
+
+export const updateAccount = account => {
+  return async (dispatch, getState) => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        authenticated: true,
+        config: {
+          body: JSON.stringify({ account }),
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          method: 'PUT',
+        },
+        endpoint: `accounts/${account.id}`,
+        schema: accountSchema,
+        types: [
+          ACCOUNT_UPDATE_REQUEST,
+          ACCOUNT_UPDATE_SUCCESS,
+          ACCOUNT_UPDATE_FAILURE,
+        ],
+      },
+    });
+
+    if (actionResponse.error) {
+      throw new Error('Promise flow received action error', actionResponse);
+    }
+
+    return actionResponse;
+  };
+};

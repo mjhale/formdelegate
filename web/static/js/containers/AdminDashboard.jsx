@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { getAccount } from '../selectors';
+import { getCurrentAccount } from '../selectors';
 import { getCurrentAccountId } from '../utils';
 import { fetchAccount } from '../actions/accounts';
 
@@ -21,13 +21,9 @@ class AdminDashboardContainer extends React.Component {
 
 AdminDashboardContainer.propTypes = propTypes;
 
-const mapStateToProps = (state, ownProps) => ({
-  account: getAccount(state, ownProps),
+const mapStateToProps = state => ({
+  account: getCurrentAccount(state),
   isFetching: state.accounts.isFetching,
 });
 
-const mapDispatchToProps = dispatch => ({});
-
-export default connect(mapStateToProps, mapDispatchToProps)(
-  AdminDashboardContainer
-);
+export default connect(mapStateToProps)(AdminDashboardContainer);

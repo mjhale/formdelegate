@@ -4,11 +4,10 @@ import { browserHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { denormalize } from 'normalizr';
 import { fetchForm, fetchIntegrations, updateForm } from '../actions/forms';
-import { Field } from 'redux-form';
+import { Field, reduxForm } from 'redux-form';
 import { findLastIndex } from 'lodash';
 import { formSchema } from '../schema';
 import { getForm } from '../selectors';
-import { reduxForm } from 'redux-form';
 import FormIntegrationList from '../components/FormIntegrationList';
 import NewIntegrations from '../components/NewIntegrations';
 
