@@ -1,6 +1,7 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
   devtool: 'source-map',
@@ -50,6 +51,11 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin([{ from: './web/static/assets' }]),
     new ExtractTextPlugin('css/app.css'),
+    new webpack.DefinePlugin({
+      API_HOST: JSON.stringify(
+        process.env.API_HOST || 'http://localhost:4000/api/'
+      ),
+    }),
   ],
   resolve: {
     extensions: ['.js', '.jsx'],

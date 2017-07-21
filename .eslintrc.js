@@ -1,6 +1,8 @@
 module.exports = {
-  plugins: ['babel', 'import', 'jsx-a11y', 'prettier', 'react'],
   extends: ['prettier', 'prettier/react'],
+  globals: {
+    'API_HOST': true,
+  },
   parser: 'babel-eslint',
   parserOptions: {
     emcaVersion: 7,
@@ -30,6 +32,7 @@ module.exports = {
       globalReturn: true,
     },
   },
+  plugins: ['babel', 'import', 'jsx-a11y', 'prettier', 'react'],
   rules: {
     'babel/new-cap': 1,
     'no-await-in-loop': 1,

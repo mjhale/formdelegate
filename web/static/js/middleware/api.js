@@ -1,13 +1,13 @@
+/* global API_HOST */
 import fetch from 'isomorphic-fetch';
 import { normalize } from 'normalizr';
 import { merge } from 'lodash';
 
-const API_ROOT = 'http://localhost:4000/api/';
 export const CALL_API = Symbol('Call API');
 
 const callApi = (endpoint, schema, authenticated, config) => {
   const fullUrl =
-    endpoint.indexOf(API_ROOT) === -1 ? API_ROOT + endpoint : endpoint;
+    endpoint.indexOf(API_HOST) === -1 ? API_HOST + endpoint : endpoint;
   const token = localStorage.getItem('fd_token') || null;
 
   if (authenticated) {
