@@ -5,6 +5,7 @@ import authenticationReducer from 'reducers/authentication';
 import entityReducer from 'reducers/entity';
 import formReducer from 'reducers/form';
 import messageReducer from 'reducers/message';
+import notificationReducer from 'reducers/notification';
 
 const reducers = {
   accounts: accountReducer,
@@ -12,6 +13,7 @@ const reducers = {
   entities: entityReducer,
   forms: formReducer,
   messages: messageReducer,
+  notifications: notificationReducer,
 
   /* redux-form, must be the final reducer */
   form: reduxFormReducer,

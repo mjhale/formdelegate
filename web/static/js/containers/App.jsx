@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router-dom';
 import { Routes } from '../router';
 import Nav from './Nav';
+import Notifications from './Notifications';
 
 const App = () =>
   <div className="home">
@@ -13,6 +14,7 @@ const App = () =>
     </nav>
     <div className="content-container">
       <div className="content">
+        <Notifications />
         <Routes />
       </div>
     </div>
