@@ -8,6 +8,8 @@ const getCurrentAccountId = state => state.accounts.currentAccountId;
 const getFormId = (_state, props) => props.match.params.formId;
 const getFormIds = state => state.forms.allIds;
 const getForms = state => state.entities.forms;
+const getMessageActivities = state => state.entities.message_activity;
+const getMessageActivityIds = state => state.messages.messageActivityIds;
 const getMessageIds = state => state.messages.visibleIds;
 const getMessageId = (_state, props) => props.match.params.messageId;
 const getMessages = state => state.entities.messages;
@@ -45,6 +47,13 @@ export const getMessage = createSelector(
     return find(messages, function(object) {
       return object.id == messageId;
     });
+  }
+);
+
+export const getMessageActivity = createSelector(
+  [getMessageActivities, getMessageActivityIds],
+  (messageActivity, allIds) => {
+    return allIds.map(id => messageActivity[id]);
   }
 );
 

@@ -13,3 +13,10 @@ export const formSchema = new schema.Entity('forms', {
 });
 
 export const messageSchema = new schema.Entity('messages');
+export const messageActivitySchema = new schema.Entity(
+  'message_activity',
+  {},
+  {
+    idAttribute: 'day',
+  }
+);

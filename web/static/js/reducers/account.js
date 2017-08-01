@@ -4,6 +4,9 @@ import {
   ACCOUNT_REQUEST,
   ACCOUNT_SUCCESS,
   ACCOUNT_FAILURE,
+  ACCOUNT_CREATE_REQUEST,
+  ACCOUNT_CREATE_SUCCESS,
+  ACCOUNT_CREATE_FAILURE,
   ACCOUNT_UPDATE_REQUEST,
   ACCOUNT_UPDATE_SUCCESS,
   ACCOUNT_UPDATE_FAILURE,
@@ -19,12 +22,14 @@ export default (
   state = {
     allIds: [],
     currentAccountId: null,
+    errorMessage: '',
     isFetching: false,
   },
   action
 ) => {
   switch (action.type) {
     case ACCOUNT_REQUEST:
+    case ACCOUNT_CREATE_REQUEST:
     case ACCOUNT_UPDATE_REQUEST:
     case ACCOUNTS_REQUEST:
     case CURRENT_ACCOUNT_REQUEST:
@@ -46,6 +51,10 @@ export default (
             : [...state.allIds, action.payload.result],
         isFetching: false,
       });
+    case ACCOUNT_CREATE_SUCCESS:
+      return Object.assign({}, state, {
+        isFetching: false,
+      });
     case ACCOUNT_UPDATE_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
@@ -58,6 +67,11 @@ export default (
     case CURRENT_ACCOUNT_SUCCESS:
       return Object.assign({}, state, {
         currentAccountId: action.payload.result,
+        isFetching: false,
+      });
+    case ACCOUNT_CREATE_FAILURE:
+      return Object.assign({}, state, {
+        errorMessage: action.error,
         isFetching: false,
       });
     default:

@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import AccessError from './components/AccessError';
 import AccountSettingsContainer from './containers/AccountSettings';
 import AdminContainer from './containers/Admin';
 import AppContainer from './containers/App';
@@ -49,7 +48,6 @@ export const Routes = () =>
     <Route exact path="/settings" component={AccountSettingsContainer} />
     <Route exact path="/success" component={ReceiveSuccessContainer} />
     <Route exact path="/failure" component={ReceiveFailureContainer} />
-    <Route exact path="/access-error" component={AccessError} />
     <Route exact path="/" component={Welcome} />
     <Route path="*" component={InvalidRoute} />
   </Switch>;

@@ -28,24 +28,24 @@ const callApi = (endpoint, schema, authenticated, config) => {
 
   return fetch(fullUrl, config)
     .then(response => {
-      if (!response.ok) {
-        return Promise.reject(json);
-      }
-
       const noResponseStatusCodes = [204, 205];
 
       if (noResponseStatusCodes.includes(response.status)) {
         return { json: null, response };
       } else {
-        return response.json().then(json => ({ json, response }));
+        return response.json().then(json => {
+          if (!response.ok) {
+            return Promise.reject(json);
+          }
+
+          return { json, response };
+        });
       }
     })
-    .then(({ json, response }) => {
-      return {
-        headers: new Headers(response.headers),
-        payload: schema ? normalize(json.data, schema) : json,
-      };
-    });
+    .then(({ json, response }) => ({
+      headers: new Headers(response.headers),
+      payload: schema ? normalize(json.data, schema) : json,
+    }));
 };
 
 export default store => next => action => {
@@ -91,11 +91,12 @@ export default store => next => action => {
         payload: response.payload,
         type: successType,
       }),
-    error =>
-      next({
-        error: error.message || 'There was an unknown error',
+    error => {
+      return next({
+        error: error.error || 'There was an unknown error',
         isFetching: false,
         type: errorType,
-      })
+      });
+    }
   );
 };

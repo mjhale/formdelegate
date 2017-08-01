@@ -5,10 +5,12 @@ import { Field } from 'redux-form';
 import { loginAccount } from '../actions/sessions';
 import { reduxForm, propTypes as reduxPropTypes } from 'redux-form';
 import { withRouter } from 'react-router-dom';
+import Error from '../components/Error';
 import renderField from '../components/Field.jsx';
 
 const propTypes = {
   ...reduxPropTypes,
+  errorMessage: PropTypes.string,
   onSubmit: PropTypes.func.isRequired,
 };
 
@@ -32,10 +34,11 @@ const validate = values => {
 
 class RegisterAccount extends React.Component {
   render() {
-    const { handleSubmit, submitting } = this.props;
+    const { handleSubmit, errorMessage, submitting } = this.props;
 
     return (
       <div>
+        {errorMessage && <Error message={errorMessage} />}
         <h1>Register Account</h1>
         <div className="register card">
           <form onSubmit={handleSubmit}>
@@ -74,7 +77,9 @@ RegisterAccount = reduxForm({
   validate,
 })(RegisterAccount);
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+  errorMessage: state.accounts.errorMessage,
+});
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   onSubmit(values) {

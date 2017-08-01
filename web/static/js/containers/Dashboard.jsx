@@ -1,13 +1,16 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { fetchAccount } from '../actions/accounts';
-import { getCurrentAccount } from '../selectors';
+import { fetchMessageActivity } from '../actions/messages';
+import { getCurrentAccount, getMessageActivity } from '../selectors';
 import { getCurrentAccountId } from '../utils';
+import MessageActivity from '../components/MessageActivity';
 
 const propTypes = {
   account: PropTypes.object,
   isFetching: PropTypes.bool.isRequired,
   loadAccount: PropTypes.func.isRequired,
+  loadMessageActivity: PropTypes.func.isRequired,
 };
 
 const UnverifiedAlert = isVerified => {
@@ -22,23 +25,25 @@ class DashboardContainer extends React.Component {
   componentDidMount() {
     const currentAccountId = getCurrentAccountId();
     this.props.loadAccount(currentAccountId);
+    this.props.loadMessageActivity();
   }
 
   render() {
-    const { account, isFetching } = this.props;
+    const { account, isFetching, messageActivity } = this.props;
 
-    if (!account || isFetching) {
+    if (!account || !messageActivity || isFetching) {
       return <h1>Loading...</h1>;
     }
 
     return (
       <div>
-        <h1>Account Dashboard</h1>
+        <h1>
+          {account.name}'s Dashboard
+        </h1>
         <div className="dashboard">
           <UnverifiedAlert isVerified={account.verified} />
 
-          <div className="card-header">Message Activity Graph</div>
-          <div className="card activity-graph">Coming soon</div>
+          <MessageActivity activity={messageActivity} />
 
           <div className="card-header">Recent Updates</div>
           <div className="card activity-graph">Coming soon</div>
@@ -56,11 +61,16 @@ DashboardContainer.propTypes = propTypes;
 const mapStateToProps = state => ({
   account: getCurrentAccount(state),
   isFetching: state.accounts.isFetching,
+  messageActivity: getMessageActivity(state),
 });
 
 const mapDispatchToProps = dispatch => ({
   loadAccount(accountId) {
     dispatch(fetchAccount(accountId));
+  },
+
+  loadMessageActivity() {
+    dispatch(fetchMessageActivity());
   },
 });
 

@@ -436,3 +436,22 @@ select {
 .admin-links .active {
   font-weight: 900;
 }
+
+.message-activity .card {
+  text-align: center;
+}
+
+.activity-graph {
+  height: auto;
+  max-width: 100%;
+
+  .bar {
+    fill: steelblue;
+  }
+
+  .bar:hover {
+    fill: brown;
+  }
+}
+
+

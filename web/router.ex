@@ -28,6 +28,7 @@ defmodule FormDelegate.Router do
 
     resources "/accounts", AccountController, only: [:create, :show, :update]
     resources "/forms", FormController
+    get "/stats/message_activity", StatsController, :message_activity
     get "/integrations", IntegrationController, :index
     resources "/messages", MessageController, only: [:index, :show, :create, :delete]
     post "/requests/:id", RequestController, :process_request

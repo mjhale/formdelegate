@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { withRouter } from 'react-router-dom';
 import { loginAccount, logoutAccount } from '../actions/sessions';
+import Error from '../components/Error';
 import LoginForm from '../components/LoginForm';
 import Logout from '../components/Logout';
 
@@ -32,6 +33,7 @@ class LoginContainer extends React.Component {
   render() {
     const {
       dispatch,
+      errorMessage,
       fields,
       handleSubmit,
       isAuthenticated,
@@ -43,12 +45,15 @@ class LoginContainer extends React.Component {
 
     if (!isAuthenticated) {
       return (
-        <LoginForm
-          {...fields}
-          pristine={pristine}
-          submitting={submitting}
-          handleSubmit={handleSubmit(onSubmit)}
-        />
+        <div>
+          {errorMessage && <Error message={errorMessage} />}
+          <LoginForm
+            {...fields}
+            pristine={pristine}
+            submitting={submitting}
+            handleSubmit={handleSubmit(onSubmit)}
+          />
+        </div>
       );
     } else {
       return (
@@ -69,9 +74,10 @@ LoginContainer = reduxForm({
 })(LoginContainer);
 
 const mapStateToProps = state => {
-  const { isAuthenticated } = state.authentication;
+  const { errorMessage, isAuthenticated } = state.authentication;
 
   return {
+    errorMessage,
     isAuthenticated,
   };
 };

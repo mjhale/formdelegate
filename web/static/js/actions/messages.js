@@ -1,11 +1,11 @@
 import { CALL_API } from '../middleware/api';
-import { messageSchema } from '../schema';
+import { messageSchema, messageActivitySchema } from '../schema';
 
 // action type constants
 import {
-  MESSAGE_FAILURE,
-  MESSAGE_REQUEST,
-  MESSAGE_SUCCESS,
+  MESSAGE_ACTIVITY_FAILURE,
+  MESSAGE_ACTIVITY_REQUEST,
+  MESSAGE_ACTIVITY_SUCCESS,
   MESSAGE_SEARCH_RESULTS,
   MESSAGE_SEARCH_QUERY,
   MESSAGE_SEARCH_REQUEST,
@@ -26,6 +26,29 @@ export function fetchMessage(messageId) {
         endpoint: `messages/${messageId}`,
         schema: messageSchema,
         types: [MESSAGE_REQUEST, MESSAGE_SUCCESS, MESSAGE_FAILURE],
+      },
+    });
+
+    if (actionResponse.error) {
+      throw new Error('Promise flow received action error', actionResponse);
+    }
+
+    return actionResponse.payload;
+  };
+}
+
+export function fetchMessageActivity() {
+  return async dispatch => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        authenticated: true,
+        endpoint: 'stats/message_activity',
+        schema: [messageActivitySchema],
+        types: [
+          MESSAGE_ACTIVITY_REQUEST,
+          MESSAGE_ACTIVITY_SUCCESS,
+          MESSAGE_ACTIVITY_FAILURE,
+        ],
       },
     });
 

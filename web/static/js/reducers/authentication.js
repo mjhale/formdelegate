@@ -19,17 +19,19 @@ export default (
   switch (action.type) {
     case LOGIN_FAILURE:
       return Object.assign({}, state, {
+        errorMessage: action.error,
         isAuthenticated: false,
         isFetching: false,
-        errorMessage: action.error,
       });
     case LOGIN_REQUEST:
       return Object.assign({}, state, {
+        errorMessage: null,
         isAuthenticated: false,
         isFetching: true,
       });
     case LOGIN_SUCCESS:
       return Object.assign({}, state, {
+        errorMessage: null,
         isAuthenticated: true,
         isFetching: false,
       });

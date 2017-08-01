@@ -5,6 +5,9 @@ import {
   MESSAGES_REQUEST,
   MESSAGES_RESULTS,
   MESSAGES_SUCCESS,
+  MESSAGE_ACTIVITY_FAILURE,
+  MESSAGE_ACTIVITY_REQUEST,
+  MESSAGE_ACTIVITY_SUCCESS,
   MESSAGE_FAILURE,
   MESSAGE_REQUEST,
   MESSAGE_SUCCESS,
@@ -14,6 +17,7 @@ import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from '../constants/actionTypes';
 export default (
   state = {
     isFetching: false,
+    messageActivityIds: [],
     pagination: {
       offset: 0,
       limit: 0,
@@ -52,6 +56,19 @@ export default (
           total: action.total,
         }),
         visibleIds: action.payload.result,
+      });
+    case MESSAGE_ACTIVITY_REQUEST:
+      return Object.assign({}, state, {
+        isFetching: true,
+      });
+    case MESSAGE_ACTIVITY_SUCCESS:
+      return Object.assign({}, state, {
+        isFetching: false,
+        messageActivityIds: action.payload.result,
+      });
+    case MESSAGE_ACTIVITY_FAILURE:
+      return Object.assign({}, state, {
+        isFetching: false,
       });
     case MESSAGE_REQUEST:
       return Object.assign({}, state, {
