@@ -7,6 +7,7 @@
     "bourbon": "beta",
     "bourbon-neat": "^2.0.0",
     "classnames": "^2.2.5",
+    "d3": "^4.10.0",
     "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
     "jwt-decode": "^2.2.0",
@@ -24,8 +25,7 @@
     "react-router-dom": "^4.1.1",
     "react-scroll": "^1.4.7",
     "redux": "^3.6.0",
-    "redux-form": "^7.0.1",
-    "redux-form-material-ui": "^4.0.1",
+    "redux-form": "^7.0.3",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.1.0",
     "reselect": "^3.0.1"
@@ -44,7 +44,7 @@
     "css-loader": "^0.28.4",
     "eslint": "^4.0.0",
     "eslint-config-prettier": "^2.2.0",
-    "eslint-plugin-babel": "^4.0.0",
+    "eslint-plugin-babel": "^4.1.2",
     "eslint-plugin-import": "^2.1.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-prettier": "^2.1.2",
@@ -61,7 +61,7 @@
     "sass-loader": "^6.0.0",
     "style-loader": "^0.18.2",
     "url-loader": "^0.5.7",
-    "webpack": "^3.0.0"
+    "webpack": "^3.4.1"
   },
   "lint-staged": {
     "web/static/**/*.{js,jsx,json,css}": [
