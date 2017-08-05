@@ -70,7 +70,7 @@
     ]
   },
   "scripts": {
-    "compile": "webpack -p",
+    "compile": "NODE_ENV=production webpack -p",
     "eslint-check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check",
     "precommit": "lint-staged",
     "start": "webpack --watch-stdin --progress --color"
