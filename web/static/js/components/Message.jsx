@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 
 const propTypes = {
@@ -12,15 +13,9 @@ const Message = ({ message, openedMessageId }) => {
   if (message.id !== openedMessageId) {
     return (
       <div className="table-row message flattened">
-        <div className="table-cell sender">
-          {sender}
-        </div>
-        <div className="table-cell message">
-          {content}
-        </div>
-        <div className="table-cell form">
-          {form.form}
-        </div>
+        <div className="table-cell sender">{sender}</div>
+        <div className="table-cell message">{content}</div>
+        <div className="table-cell form">{form.form}</div>
         <div className="table-cell date">
           {moment.utc(inserted_at).fromNow()}
         </div>
@@ -29,16 +24,10 @@ const Message = ({ message, openedMessageId }) => {
   } else {
     return (
       <div className="message expanded">
-        <h1>
-          {sender}
-        </h1>
-        <div className="date">
-          {moment.utc(inserted_at).fromNow()}
-        </div>
-        <div className="message">
-          {content}
-        </div>
-        {unknown_fields &&
+        <h1>{sender}</h1>
+        <div className="date">{moment.utc(inserted_at).fromNow()}</div>
+        <div className="message">{content}</div>
+        {unknown_fields && (
           <div className="unknown-fields">
             <h2>Fields</h2>
             {Object.keys(unknown_fields).map((key, index) => {
@@ -48,7 +37,8 @@ const Message = ({ message, openedMessageId }) => {
                 </div>
               );
             })}
-          </div>}
+          </div>
+        )}
       </div>
     );
   }

@@ -1,12 +1,13 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { Field } from 'redux-form';
 import { Link } from 'react-router-dom';
 import renderField from '../components/Field.jsx';
 
 const propTypes = {
-  handleSubmit: React.PropTypes.func.isRequired,
-  submitting: React.PropTypes.bool.isRequired,
-  pristine: React.PropTypes.bool.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  submitting: PropTypes.bool.isRequired,
+  pristine: PropTypes.bool.isRequired,
 };
 
 const LoginForm = props => {

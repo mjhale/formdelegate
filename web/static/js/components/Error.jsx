@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const defaultProps = {
   message: 'There was an unknown error, please try again.',
@@ -11,11 +12,7 @@ const propTypes = {
 };
 
 const Error = ({ message, type }) => {
-  return (
-    <div className={`flash-${type}`}>
-      {message}
-    </div>
-  );
+  return <div className={`flash-${type}`}>{message}</div>;
 };
 
 Error.defaultProps = defaultProps;

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 const propTypes = {
@@ -18,12 +19,8 @@ class Account extends React.Component {
     return (
       <div className="account card">
         <h1>Account Management</h1>
-        <div>
-          E-Mail: {account.email}
-        </div>
-        <div>
-          Name: {account.name}
-        </div>
+        <div>E-Mail: {account.email}</div>
+        <div>Name: {account.name}</div>
         <div>
           <Link to={`/admin/accounts/${account.id}/edit`}>Edit Account</Link>
         </div>

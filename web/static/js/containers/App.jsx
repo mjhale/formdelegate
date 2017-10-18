@@ -1,10 +1,11 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Routes } from '../router';
 import Nav from './Nav';
 import Notifications from './Notifications';
 
-const App = () =>
+const App = () => (
   <div className="home">
     <nav className="navigation">
       <Link to="/" className="logo">
@@ -18,6 +19,7 @@ const App = () =>
         <Routes />
       </div>
     </div>
-  </div>;
+  </div>
+);
 
 export default App;

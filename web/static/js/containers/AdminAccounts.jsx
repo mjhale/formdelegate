@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { adminFetchAccounts } from 'actions/accounts';
@@ -37,26 +38,23 @@ class AdminAccountsContainer extends React.Component {
           </thead>
           <tbody>
             {isEmpty &&
-              !isFetching &&
-              <tr>
-                <td colSpan="4">No accounts found.</td>
-              </tr>}
+              !isFetching && (
+                <tr>
+                  <td colSpan="4">No accounts found.</td>
+                </tr>
+              )}
             {!isEmpty &&
-              items.map(account =>
+              items.map(account => (
                 <tr key={account.id}>
                   <td>
                     <Link to={`/admin/accounts/${account.id}`}>
                       {account.email}
                     </Link>
                   </td>
-                  <td>
-                    {account.form_count}
-                  </td>
-                  <td>
-                    {account.verified ? 'Verified' : 'Unverified'}
-                  </td>
+                  <td>{account.form_count}</td>
+                  <td>{account.verified ? 'Verified' : 'Unverified'}</td>
                 </tr>
-              )}
+              ))}
           </tbody>
         </table>
       </div>

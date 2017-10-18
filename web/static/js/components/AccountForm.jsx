@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { Field, reduxForm, propTypes as reduxFormPropTypes } from 'redux-form';
 
 const propTypes = {
@@ -42,12 +43,11 @@ const AccountForm = props => {
         />
       </div>
 
-      {error &&
+      {error && (
         <p>
-          <strong>
-            {error}
-          </strong>
-        </p>}
+          <strong>{error}</strong>
+        </p>
+      )}
 
       <div>
         <button type="submit" disabled={submitting}>

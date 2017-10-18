@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Field, reduxForm, propTypes as reduxFormPropTypes } from 'redux-form';
 import { parse } from 'query-string';

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { NavLink, withRouter } from 'react-router-dom';
 import { logoutAccount } from '../actions/sessions';
@@ -13,7 +14,7 @@ const defaultProps = {
   isAuthenticated: false,
 };
 
-const UnauthenticatedNav = () =>
+const UnauthenticatedNav = () => (
   <ul className="nav-links" role="nav">
     <li>
       <NavLink exact to="/" activeClassName="active">
@@ -40,9 +41,10 @@ const UnauthenticatedNav = () =>
         login
       </NavLink>
     </li>
-  </ul>;
+  </ul>
+);
 
-const AuthenticatedNav = ({ onLogoutClick }) =>
+const AuthenticatedNav = ({ onLogoutClick }) => (
   <ul className="nav-links" role="nav">
     <li>
       <NavLink to="/dashboard" activeClassName="active">
@@ -67,7 +69,8 @@ const AuthenticatedNav = ({ onLogoutClick }) =>
     <li>
       <Logout onLogoutClick={onLogoutClick} />
     </li>
-  </ul>;
+  </ul>
+);
 
 class NavContainer extends React.Component {
   render() {

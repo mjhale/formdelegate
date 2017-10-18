@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchAccount } from '../actions/accounts';
 import { fetchMessageActivity } from '../actions/messages';
@@ -37,9 +38,7 @@ class DashboardContainer extends React.Component {
 
     return (
       <div>
-        <h1>
-          {account.name}'s Dashboard
-        </h1>
+        <h1>{account.name}'s Dashboard</h1>
         <div className="dashboard">
           <UnverifiedAlert isVerified={account.verified} />
 
