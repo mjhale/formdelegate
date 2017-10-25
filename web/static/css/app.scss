@@ -53,6 +53,7 @@ body {
   margin: 0 auto;
   max-width: 960px;
   padding: 1rem;
+  width: 100%;
 }
 
 .logo {
@@ -103,41 +104,41 @@ body {
 
   a:hover,
   .active {
-    color: $mine-black;
+    color: $off-white;
     transition: all .1s;
   }
 
   a:hover:not(.active) {
-    background-color: darken($background-color, 10%);
-    border-left: .5rem solid darken($nav-highlight, 10%);
+    background-color: $carnation;
+    border-left: .5rem solid lighten($carnation, 3%);
   }
 
   .active {
-    background-color: $background-color;
-    border-left: .5rem solid $nav-highlight;
+    background-color: $carnation;
+    border-left: .5rem solid darken($carnation, 10%);
   }
 }
 
-.content h1, h2, h3 {
+h1, h2, h3 {
   color: $header-font;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-weight: 300;
   word-wrap: break-word;
 }
 
-.content h1 {
+h1 {
   font-size: 1.5rem;
   line-height: 1.5;
   margin: 0 0 .5rem;
 }
 
-.content h2 {
+h2 {
   font-size: 1.2rem;
   line-height: 1.2;
   margin: .4rem 0;
 }
 
-.content h3 {
+h3 {
   font-size: 1.1rem;
   line-height: 1.2;
   margin: .4rem 0;
@@ -464,17 +465,16 @@ select {
 
 .welcome .hero-title {
   font-size: 2.4rem;
-  margin: 0;
-  padding: 2.3rem 0 0 2.5rem;
+  margin-top: 2.3rem;
 }
 
 .welcome .hero-message {
   color: $mine-black;
-  padding: .5rem 0 0 2.5rem;
+  margin-top: .5rem;
 }
 
 .welcome .hero-action {
-  padding: 1rem 0 0 2.5rem;
+  margin-top: 1rem;
 }
 
 .welcome .action-bar {
@@ -484,7 +484,7 @@ select {
   text-align: center;
 
   a {
-    color: #f76e64;
+    color: $carnation;
   }
 
   a:hover {
@@ -493,8 +493,8 @@ select {
 }
 
 .welcome .features {
-  background-color: #fce7d7;
-  padding: 2rem 2.5rem;
+  background-color: $cinderella;
+  padding: 1rem 0;
 }
 
 .welcome .features h2 {
@@ -515,7 +515,7 @@ select {
 }
 
 .welcome .features li:before {
-  background-color: #f76e64;
+  background-color: $carnation;
   content: "";
   float: left;
   height: 3px;
@@ -533,9 +533,12 @@ select {
 
 .welcome .cards {
   background-color: $off-white;
+  padding: 1rem 0;
+}
+
+.welcome .cards .content {
   display: flex;
   flex-direction: row;
-  padding: 2rem 2.5rem;
 }
 
 .welcome .cards .item {

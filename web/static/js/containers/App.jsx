@@ -14,10 +14,8 @@ const App = () => (
       <Nav />
     </nav>
     <div className="content-container">
-      <div className="content">
-        <Notifications />
-        <Routes />
-      </div>
+      <Notifications />
+      <Routes />
     </div>
   </div>
 );
