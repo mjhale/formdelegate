@@ -20,7 +20,7 @@ class FormsContainer extends React.Component {
     const { forms, isFetching, onDeleteClick } = this.props;
 
     return (
-      <div className="forms">
+      <div className="forms fluid-container">
         <Link to="/forms/new" className="add-form btn">
           Create New Form
         </Link>

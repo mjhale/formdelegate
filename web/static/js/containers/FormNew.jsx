@@ -29,7 +29,7 @@ class FormNewContainer extends React.Component {
     const integrationTypes = this.props.integrations;
 
     return (
-      <div>
+      <div className="fluid-container">
         <a
           className="add-integration btn"
           onClick={() => {

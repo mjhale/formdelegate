@@ -22,18 +22,18 @@ const UnauthenticatedNav = () => (
       </NavLink>
     </li>
     <li>
-      <NavLink to="/examples" activeClassName="active">
-        examples
+      <NavLink to="/faq" activeClassName="active">
+        faq
       </NavLink>
     </li>
     <li>
-      <NavLink to="/documentation" activeClassName="active">
-        documentation
+      <NavLink to="/pricing" activeClassName="active">
+        pricing
       </NavLink>
     </li>
     <li>
-      <NavLink to="/contact" activeClassName="active">
-        contact us
+      <NavLink to="/support" activeClassName="active">
+        support
       </NavLink>
     </li>
     <li>
@@ -64,6 +64,11 @@ const AuthenticatedNav = ({ onLogoutClick }) => (
     <li>
       <NavLink to="/settings" activeClassName="active">
         settings
+      </NavLink>
+    </li>
+    <li>
+      <NavLink to="/support" activeClassName="active">
+        support
       </NavLink>
     </li>
     <li>

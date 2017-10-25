@@ -1,10 +1,32 @@
 import React from 'react';
 
+const CodeExample = () => {
+  return (
+    <div className="example">
+      <div className="fluid-container">
+        <h2>Take the plunge</h2>
+        <h3 className="step-one">
+          Step 1: Replace your form's action attribute.
+        </h3>
+        <code>
+          {`<form `}
+          <span className="highlight">{`action="https://www.formdelegate.com/f/########"`}</span>
+          {` method="POST">`}
+          <div className="tab">{`<input type="text" placeholder="Message">`}</div>
+          <div className="tab">{`<button type="Submit">Send</button>`}</div>
+          {`</form>`}
+        </code>
+        <h3 className="step-two">Step 2: Relax.</h3>
+      </div>
+    </div>
+  );
+};
+
 const Welcome = () => {
   return (
     <div className="welcome">
       <div className="hero">
-        <div className="content">
+        <div className="fluid-container">
           <h1 className="hero-title">Simple Form Processing</h1>
           <div className="hero-message">
             Send your forms to us. We'll handle the rest.
@@ -18,7 +40,7 @@ const Welcome = () => {
         Want to see it in action? <a href="#">Watch our demo.</a>
       </div>
       <div className="features">
-        <div className="content">
+        <div className="fluid-container">
           <h2>Give your forms flexibility</h2>
           <h3>Add powerful features to your forms. No coding required.</h3>
           <ul className="feature-list">
@@ -31,8 +53,9 @@ const Welcome = () => {
           </ul>
         </div>
       </div>
+      <CodeExample />
       <div className="cards">
-        <div className="content">
+        <div className="fluid-container">
           <div className="item">
             <h2>You own your data.</h2>
             <p>Export or permanently delete your data at any time.</p>

@@ -37,7 +37,7 @@ class DashboardContainer extends React.Component {
     }
 
     return (
-      <div>
+      <div className="fluid-container">
         <h1>{account.name}'s Dashboard</h1>
         <div className="dashboard">
           <UnverifiedAlert isVerified={account.verified} />

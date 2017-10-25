@@ -15,7 +15,7 @@ const propTypes = {
 class AdminContainer extends React.Component {
   render() {
     return (
-      <div className="admin">
+      <div className="admin fluid-container">
         <h1>Administration</h1>
         <ul className="admin-links" role="nav">
           <li>

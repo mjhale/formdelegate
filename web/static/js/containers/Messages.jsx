@@ -70,7 +70,7 @@ class MessagesContainer extends React.Component {
     const { limit, offset, total } = pagination;
 
     return (
-      <div className="messages">
+      <div className="messages fluid-container">
         <ul className="actions">
           <li>
             <SearchContainer {...this.props} handleSearch={this.handleSearch} />

@@ -38,7 +38,7 @@ class RegisterAccount extends React.Component {
     const { handleSubmit, errorMessage, submitting } = this.props;
 
     return (
-      <div>
+      <div className="fluid-container">
         {errorMessage && <Error message={errorMessage} />}
         <h1>Register Account</h1>
         <div className="register card">

@@ -46,7 +46,7 @@ class LoginContainer extends React.Component {
 
     if (!isAuthenticated) {
       return (
-        <div>
+        <div className="fluid-container">
           {errorMessage && <Error message={errorMessage} />}
           <LoginForm
             {...fields}
@@ -58,7 +58,7 @@ class LoginContainer extends React.Component {
       );
     } else {
       return (
-        <div className="logout-prompt">
+        <div className="logout-prompt fluid-container">
           You are currently logged in. Would you like to{' '}
           <Logout logoutText="logout" onLogoutClick={logout} />?
         </div>

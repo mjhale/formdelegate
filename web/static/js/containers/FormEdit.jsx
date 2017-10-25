@@ -44,7 +44,7 @@ class FormEdit extends React.Component {
     }
 
     return (
-      <div>
+      <div className="fluid-container">
         <a
           className="btn add-integration"
           onClick={() => {

@@ -49,7 +49,7 @@ body {
   padding-left: 250px;
 }
 
-.content {
+.fluid-container {
   margin: 0 auto;
   max-width: 960px;
   padding: 1rem;
@@ -531,12 +531,53 @@ select {
   padding: 0 0 1rem 0;
 }
 
+.welcome .example {
+  background-color: #fff0ef;
+  padding: 1rem 0;
+}
+
+.welcome .example h2 {
+  font-size: 1.8rem;
+  margin: 0 0 1rem 0;
+}
+
+.welcome .example h3 {
+  font-size: 1.3rem;
+}
+
+.welcome .example h3.step-one {
+  margin: 0 0 1.25rem 0;
+}
+
+.welcome .example h3.step-two {
+  margin: 0;
+}
+
+.welcome .example code {
+  background-color: $off-white;
+  border-radius: .5rem;
+  display: inline-block;
+  font-size: .8rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.welcome .example .highlight {
+  background-color: lighten($sea-pink, 10%);
+  border-radius: .2rem;
+  padding: 0 .25rem;
+}
+
+.welcome .example .tab {
+  margin-left: 1rem;
+}
+
 .welcome .cards {
   background-color: $off-white;
   padding: 1rem 0;
 }
 
-.welcome .cards .content {
+.welcome .cards .fluid-container {
   display: flex;
   flex-direction: row;
 }

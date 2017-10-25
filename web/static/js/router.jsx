@@ -4,6 +4,7 @@ import AccountSettingsContainer from './containers/AccountSettings';
 import AdminContainer from './containers/Admin';
 import AppContainer from './containers/App';
 import DashboardContainer from './containers/Dashboard';
+import Faq from './components/Faq';
 import FormEditContainer from './containers/FormEdit';
 import FormNewContainer from './containers/FormNew';
 import FormsContainer from './containers/Forms';
@@ -11,18 +12,20 @@ import InvalidRoute from './components/InvalidRoute';
 import LoginContainer from './containers/Login';
 import MessageContainer from './containers/Message';
 import MessagesContainer from './containers/Messages';
+import Pricing from './components/Pricing';
 import ReceiveFailureContainer from './containers/ReceiveFailure';
 import ReceiveSuccessContainer from './containers/ReceiveSuccess';
 import RegisterContainer from './containers/RegisterAccount';
 import requireAuth from './containers/RequireAuth';
 import Welcome from './components/Welcome';
 
-export const RootRouter = () =>
+export const RootRouter = () => (
   <BrowserRouter>
     <Route path="/" component={AppContainer} />
-  </BrowserRouter>;
+  </BrowserRouter>
+);
 
-export const Routes = () =>
+export const Routes = () => (
   <Switch>
     <Route
       exact
@@ -48,6 +51,9 @@ export const Routes = () =>
     <Route exact path="/settings" component={AccountSettingsContainer} />
     <Route exact path="/success" component={ReceiveSuccessContainer} />
     <Route exact path="/failure" component={ReceiveFailureContainer} />
+    <Route exact path="/faq" component={Faq} />
+    <Route exact path="/pricing" component={Pricing} />
     <Route exact path="/" component={Welcome} />
     <Route path="*" component={InvalidRoute} />
-  </Switch>;
+  </Switch>
+);

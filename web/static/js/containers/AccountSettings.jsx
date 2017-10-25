@@ -26,7 +26,7 @@ class AccountSettingsContainer extends React.Component {
     }
 
     return (
-      <div>
+      <div className="fluid-container">
         <h1>Account Settings</h1>
         <div className="card">
           <form onSubmit={handleSubmit}>
