@@ -2,11 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
-import { browserHistory } from 'react-router-dom';
 import { adminFetchAccount, adminUpdateAccount } from 'actions/accounts';
 import { getAccount } from '../selectors';
 import { withRouter } from 'react-router-dom';
-import AccountForm from 'components/AccountForm';
+import AdminAccountForm from 'components/AdminAccountForm';
 
 class AdminAccountFormContainer extends React.Component {
   componentDidMount() {
@@ -30,7 +29,7 @@ class AdminAccountFormContainer extends React.Component {
     } = this.props;
 
     return (
-      <AccountForm
+      <AdminAccountForm
         {...rest}
         error={error}
         onSubmit={onSubmit}

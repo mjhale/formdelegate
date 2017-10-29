@@ -8,7 +8,7 @@ const propTypes = {
 
 const defaultProps = {};
 
-const AccountForm = props => {
+const AdminAccountForm = props => {
   const { error, handleSubmit, onSubmit, pristine, submitting, reset } = props;
 
   return (
@@ -63,7 +63,7 @@ const AccountForm = props => {
   );
 };
 
-AccountForm.propTypes = propTypes;
-AccountForm.defaultProps = defaultProps;
+AdminAccountForm.propTypes = propTypes;
+AdminAccountForm.defaultProps = defaultProps;
 
-export default AccountForm;
+export default AdminAccountForm;

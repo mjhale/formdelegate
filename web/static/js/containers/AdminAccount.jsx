@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getAccount } from '../selectors';
 import { adminFetchAccount } from '../actions/accounts';
-import Account from '../components/Account';
+import AdminAccountView from '../components/AdminAccountView';
 
 const propTypes = {
   account: PropTypes.object,
@@ -26,7 +26,7 @@ class AdminAccountContainer extends React.Component {
       return <p>Loading account...</p>;
     }
 
-    return <Account {...this.props} />;
+    return <AdminAccountView {...this.props} />;
   }
 }
 

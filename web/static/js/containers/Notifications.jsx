@@ -8,35 +8,31 @@ const propTypes = {
   notifications: PropTypes.array.isRequired,
 };
 
-class NotificationsContainer extends React.Component {
-  render() {
-    const { notifications } = this.props;
+const Notifications = ({ notifications }) => {
+  if (!notifications) return null;
 
-    if (!notifications) return null;
+  return (
+    <div className="notifications">
+      {notifications.map(notification => {
+        const classes = classNames(
+          `flash-${notification.level}`,
+          'notification'
+        );
 
-    return (
-      <div className="notifications">
-        {notifications.map(notification => {
-          const classes = classNames(
-            `flash-${notification.level}`,
-            'notification'
-          );
+        return (
+          <div className={classes} key={notification.id}>
+            {notification.message} test
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
-          return (
-            <div className={classes} key={notification.id}>
-              {notification.message} test
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-}
-
-NotificationsContainer.propTypes = propTypes;
+Notifications.propTypes = propTypes;
 
 const mapStateToProps = state => ({
   notifications: state.notifications,
 });
 
-export default connect(mapStateToProps)(NotificationsContainer);
+export default connect(mapStateToProps)(Notifications);

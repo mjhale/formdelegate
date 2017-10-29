@@ -13,8 +13,8 @@ import LoginContainer from './containers/Login';
 import MessageContainer from './containers/Message';
 import MessagesContainer from './containers/Messages';
 import Pricing from './components/Pricing';
-import ReceiveFailureContainer from './containers/ReceiveFailure';
-import ReceiveSuccessContainer from './containers/ReceiveSuccess';
+import ReceiveFailure from './components/ReceiveFailure';
+import ReceiveSuccess from './components/ReceiveSuccess';
 import RegisterContainer from './containers/RegisterAccount';
 import requireAuth from './containers/RequireAuth';
 import Welcome from './components/Welcome';
@@ -49,8 +49,8 @@ export const Routes = () => (
     <Route exact path="/login" component={LoginContainer} />
     <Route exact path="/register" component={RegisterContainer} />
     <Route exact path="/settings" component={AccountSettingsContainer} />
-    <Route exact path="/success" component={ReceiveSuccessContainer} />
-    <Route exact path="/failure" component={ReceiveFailureContainer} />
+    <Route exact path="/success" component={ReceiveSuccess} />
+    <Route exact path="/failure" component={ReceiveFailure} />
     <Route exact path="/faq" component={Faq} />
     <Route exact path="/pricing" component={Pricing} />
     <Route exact path="/" component={Welcome} />

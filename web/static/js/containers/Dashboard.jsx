@@ -1,16 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { fetchAccount } from '../actions/accounts';
 import { fetchMessageActivity } from '../actions/messages';
 import { getCurrentAccount, getMessageActivity } from '../selectors';
-import { getCurrentAccountId } from '../utils';
 import MessageActivity from '../components/MessageActivity';
 
 const propTypes = {
   account: PropTypes.object,
   isFetching: PropTypes.bool.isRequired,
-  loadAccount: PropTypes.func.isRequired,
   loadMessageActivity: PropTypes.func.isRequired,
 };
 
@@ -24,17 +21,13 @@ const UnverifiedAlert = isVerified => {
 
 class DashboardContainer extends React.Component {
   componentDidMount() {
-    const currentAccountId = getCurrentAccountId();
-    this.props.loadAccount(currentAccountId);
     this.props.loadMessageActivity();
   }
 
   render() {
     const { account, isFetching, messageActivity } = this.props;
 
-    if (!account || !messageActivity || isFetching) {
-      return <h1>Loading...</h1>;
-    }
+    if (!account || isFetching || !messageActivity) return null;
 
     return (
       <div className="fluid-container">
@@ -64,10 +57,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  loadAccount(accountId) {
-    dispatch(fetchAccount(accountId));
-  },
-
   loadMessageActivity() {
     dispatch(fetchMessageActivity());
   },

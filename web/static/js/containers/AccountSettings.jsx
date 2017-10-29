@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getCurrentAccount } from '../selectors';
 import { getCurrentAccountId } from '../utils';
-import { fetchAccount, updateAccount } from '../actions/accounts';
+import { updateAccount } from '../actions/accounts';
 import { Field, reduxForm } from 'redux-form';
 import renderField from '../components/Field.jsx';
 
@@ -13,11 +13,6 @@ const propTypes = {
 };
 
 class AccountSettingsContainer extends React.Component {
-  componentDidMount() {
-    const currentAccountId = getCurrentAccountId();
-    this.props.loadAccount(currentAccountId);
-  }
-
   render() {
     const { account, handleSubmit, isFetching, submitting } = this.props;
 
@@ -74,10 +69,6 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  loadAccount(accountId) {
-    dispatch(fetchAccount(accountId));
-  },
-
   onSubmit(values) {
     // add current user's id to object
     values.id = getCurrentAccountId();

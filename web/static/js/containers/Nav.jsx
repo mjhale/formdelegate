@@ -1,16 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { getCurrentAccount } from '../selectors';
 import { NavLink, withRouter } from 'react-router-dom';
 import { logoutAccount } from '../actions/sessions';
 import Logout from '../components/Logout';
 
 const propTypes = {
+  isAdmin: PropTypes.bool.isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
   onLogoutClick: PropTypes.func.isRequired,
 };
 
 const defaultProps = {
+  isAdmin: false,
   isAuthenticated: false,
 };
 
@@ -44,7 +47,7 @@ const UnauthenticatedNav = () => (
   </ul>
 );
 
-const AuthenticatedNav = ({ onLogoutClick }) => (
+const AuthenticatedNav = ({ isAdmin, onLogoutClick }) => (
   <ul className="nav-links" role="nav">
     <li>
       <NavLink to="/dashboard" activeClassName="active">
@@ -71,31 +74,36 @@ const AuthenticatedNav = ({ onLogoutClick }) => (
         support
       </NavLink>
     </li>
+    {isAdmin && (
+      <li>
+        <NavLink to="/admin" activeClassName="active">
+          admin
+        </NavLink>
+      </li>
+    )}
     <li>
       <Logout onLogoutClick={onLogoutClick} />
     </li>
   </ul>
 );
 
-class NavContainer extends React.Component {
-  render() {
-    const { isAuthenticated, onLogoutClick } = this.props;
-
-    if (isAuthenticated) {
-      return <AuthenticatedNav onLogoutClick={onLogoutClick} />;
-    } else {
-      return <UnauthenticatedNav />;
-    }
+const Nav = ({ isAdmin, isAuthenticated, onLogoutClick, ...props }) => {
+  if (isAuthenticated) {
+    return <AuthenticatedNav isAdmin={isAdmin} onLogoutClick={onLogoutClick} />;
+  } else {
+    return <UnauthenticatedNav />;
   }
-}
+};
 
-NavContainer.propTypes = propTypes;
-NavContainer.defaultProps = defaultProps;
+Nav.propTypes = propTypes;
+Nav.defaultProps = defaultProps;
 
 const mapStateToProps = state => {
+  const account = getCurrentAccount(state);
   const { isAuthenticated } = state.authentication;
 
   return {
+    isAdmin: account && account.is_admin,
     isAuthenticated,
   };
 };
@@ -108,6 +116,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
 });
 
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(NavContainer)
-);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Nav));

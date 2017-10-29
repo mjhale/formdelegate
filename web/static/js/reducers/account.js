@@ -49,6 +49,7 @@ export default (
           indexOf(state.allIds, action.payload.result) > -1
             ? state.allIds
             : [...state.allIds, action.payload.result],
+        currentAccountId: state.currentAccountId || action.payload.result,
         isFetching: false,
       });
     case ACCOUNT_CREATE_SUCCESS:

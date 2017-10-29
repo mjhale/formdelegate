@@ -1,5 +1,6 @@
 import { CALL_API } from '../middleware/api';
 import { accountSchema } from '../schema';
+import { getCurrentAccountId } from '../utils';
 
 import {
   ACCOUNT_REQUEST,
@@ -111,6 +112,14 @@ export const fetchAccount = accountId => ({
     ],
   },
 });
+
+export const fetchCurrentAccount = () => {
+  const currentAccountId = getCurrentAccountId();
+
+  if (currentAccountId) {
+    return fetchAccount(currentAccountId);
+  }
+};
 
 export const updateAccount = account => {
   return async (dispatch, getState) => {
