@@ -30,7 +30,7 @@ const NewIntegrations = ({
   lastFormIntegrationId,
 }) => {
   if (!newIntegrationFields) return null;
-  if (!lastFormIntegrationId) lastFormIntegrationId = -1;
+  if (typeof lastFormIntegrationId === 'undefined') lastFormIntegrationId = -1;
 
   let items = [];
 
