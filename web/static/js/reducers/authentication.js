@@ -1,3 +1,5 @@
+import { combineReducers } from 'redux';
+
 import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
@@ -7,50 +9,61 @@ import {
   LOGOUT_FAILURE,
 } from '../constants/actionTypes';
 
-/* @TODO Check if fd_token is expired. */
-export default (
-  state = {
-    isAuthenticated: localStorage.getItem('fd_token') ? true : false,
-    isFetching: false,
-    errorMessage: '',
-  },
-  action
-) => {
+const errorMessage = (state = '', action) => {
   switch (action.type) {
     case LOGIN_FAILURE:
-      return Object.assign({}, state, {
-        errorMessage: action.error,
-        isAuthenticated: false,
-        isFetching: false,
-      });
-    case LOGIN_REQUEST:
-      return Object.assign({}, state, {
-        errorMessage: null,
-        isAuthenticated: false,
-        isFetching: true,
-      });
-    case LOGIN_SUCCESS:
-      return Object.assign({}, state, {
-        errorMessage: null,
-        isAuthenticated: true,
-        isFetching: false,
-      });
     case LOGOUT_FAILURE:
-      return Object.assign({}, state, {
-        isAuthenticated: false,
-        isFetching: false,
-        errorMessage: action.error,
-      });
+      return action.error;
+
+    case LOGIN_REQUEST:
+    case LOGIN_SUCCESS:
+      return '';
+
     case LOGOUT_REQUEST:
-      return Object.assign({}, state, {
-        isFetching: true,
-      });
     case LOGOUT_SUCCESS:
-      return Object.assign({}, state, {
-        isAuthenticated: false,
-        isFetching: false,
-      });
+      return '';
+
     default:
       return state;
   }
 };
+
+/* @TODO Check if fd_token is expired. */
+const isAuthenticated = (
+  state = localStorage.getItem('fd_token') ? true : false,
+  action
+) => {
+  switch (action.type) {
+    case LOGIN_SUCCESS:
+      return true;
+    case LOGOUT_SUCCESS:
+      return false;
+    default:
+      return state;
+  }
+};
+
+const isFetching = (state = false, action) => {
+  switch (action.type) {
+    case LOGIN_REQUEST:
+    case LOGOUT_REQUEST:
+      return true;
+
+    case LOGIN_FAILURE:
+    case LOGIN_SUCCESS:
+      return false;
+
+    case LOGOUT_FAILURE:
+    case LOGOUT_SUCCESS:
+      return false;
+
+    default:
+      return state;
+  }
+};
+
+export default combineReducers({
+  errorMessage,
+  isAuthenticated,
+  isFetching,
+});

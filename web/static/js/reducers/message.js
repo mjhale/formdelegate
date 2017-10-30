@@ -1,3 +1,5 @@
+import { combineReducers } from 'redux';
+
 import {
   MESSAGE_SEARCH_RESULTS,
   MESSAGE_SEARCH_QUERY,
@@ -14,77 +16,92 @@ import {
 } from '../constants/actionTypes';
 import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from '../constants/actionTypes';
 
-export default (
+const isFetching = (state = false, action) => {
+  switch (action.type) {
+    case MESSAGE_ACTIVITY_REQUEST:
+    case MESSAGE_REQUEST:
+    case MESSAGES_REQUEST:
+      return true;
+
+    case MESSAGE_SUCCESS:
+    case MESSAGE_FAILURE:
+      return false;
+
+    case MESSAGES_SUCCESS:
+    case MESSAGES_FAILURE:
+      return false;
+
+    case MESSAGE_ACTIVITY_SUCCESS:
+    case MESSAGE_ACTIVITY_FAILURE:
+      return false;
+
+    default:
+      return state;
+  }
+};
+
+const messageActivityIds = (state = [], action) => {
+  switch (action.type) {
+    case MESSAGE_ACTIVITY_SUCCESS:
+      return action.payload.result;
+    default:
+      return state;
+  }
+};
+
+const pagination = (
   state = {
-    isFetching: false,
-    messageActivityIds: [],
-    pagination: {
-      offset: 0,
-      limit: 0,
-      total: 0,
-    },
-    search: {
-      query: '',
-    },
-    visibleIds: [],
+    limit: 0,
+    offset: 0,
+    total: 0,
   },
   action
 ) => {
   switch (action.type) {
-    case MESSAGE_SUCCESS:
-      return Object.assign({}, state, {
-        isFetching: false,
-      });
-    case MESSAGES_SUCCESS:
-      return Object.assign({}, state, {
-        isFetching: false,
-      });
+    case MESSAGE_SEARCH_RESULTS:
     case MESSAGES_RESULTS:
       return Object.assign({}, state, {
-        pagination: Object.assign({}, state.pagination, {
-          limit: action.limit,
-          offset: action.offset,
-          total: action.total,
-        }),
-        visibleIds: action.payload.result,
+        limit: action.limit,
+        offset: action.offset,
+        total: action.total,
       });
-    case MESSAGE_SEARCH_RESULTS:
-      return Object.assign({}, state, {
-        pagination: Object.assign({}, state.pagination, {
-          limit: action.limit,
-          offset: action.offset,
-          total: action.total,
-        }),
-        visibleIds: action.payload.result,
-      });
-    case MESSAGE_ACTIVITY_REQUEST:
-      return Object.assign({}, state, {
-        isFetching: true,
-      });
-    case MESSAGE_ACTIVITY_SUCCESS:
-      return Object.assign({}, state, {
-        isFetching: false,
-        messageActivityIds: action.payload.result,
-      });
-    case MESSAGE_ACTIVITY_FAILURE:
-      return Object.assign({}, state, {
-        isFetching: false,
-      });
-    case MESSAGE_REQUEST:
-      return Object.assign({}, state, {
-        isFetching: true,
-      });
-    case MESSAGES_REQUEST:
-      return Object.assign({}, state, {
-        isFetching: true,
-      });
+
+    default:
+      return state;
+  }
+};
+
+const search = (
+  state = {
+    query: '',
+  },
+  action
+) => {
+  switch (action.type) {
     case MESSAGE_SEARCH_QUERY:
       return Object.assign({}, state, {
-        search: {
-          query: action.query,
-        },
+        query: action.query,
       });
     default:
       return state;
   }
 };
+
+const visibleIds = (state = [], action) => {
+  switch (action.type) {
+    case MESSAGE_SEARCH_RESULTS:
+    case MESSAGES_RESULTS:
+      return action.payload.result;
+
+    default:
+      return state;
+  }
+};
+
+export default combineReducers({
+  isFetching,
+  messageActivityIds,
+  pagination,
+  search,
+  visibleIds,
+});

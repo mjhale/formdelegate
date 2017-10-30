@@ -1,3 +1,4 @@
+import { combineReducers } from 'redux';
 import { indexOf } from 'lodash';
 
 import {
@@ -21,13 +22,24 @@ import {
   INTEGRATIONS_FAILURE,
 } from '../constants/actionTypes';
 
-export default (
-  state = {
-    allIds: [],
-    isFetching: false,
-  },
-  action
-) => {
+const allIds = (state = [], action) => {
+  switch (action.type) {
+    case FORM_CREATE_SUCCESS:
+      return [...state, action.payload.result];
+    case FORM_DELETE_SUCCESS:
+      return state.filter(form => form !== action.id);
+    case FORM_SUCCESS:
+      return indexOf(state, action.payload.result) > -1
+        ? state
+        : [...state, action.payload.result];
+    case FORMS_SUCCESS:
+      return action.payload.result;
+    default:
+      return state;
+  }
+};
+
+const isFetching = (state = false, action) => {
   switch (action.type) {
     case FORM_REQUEST:
     case FORM_CREATE_REQUEST:
@@ -35,53 +47,30 @@ export default (
     case FORM_UPDATE_REQUEST:
     case FORMS_REQUEST:
     case INTEGRATIONS_REQUEST:
-      return Object.assign({}, state, {
-        isFetching: true,
-      });
+      return true;
 
-    case FORM_CREATE_SUCCESS:
-      return {
-        ...state,
-        allIds: [...state.allIds, action.payload.result],
-        isFetching: false,
-      };
-
-    case FORM_DELETE_SUCCESS:
-      return {
-        ...state,
-        allIds: state.allIds.filter(form => form !== action.id),
-        isFetching: false,
-      };
-
-    case FORM_DELETE_FAILURE:
     case FORM_FAILURE:
+    case FORM_CREATE_FAILURE:
+    case FORM_DELETE_FAILURE:
+    case FORM_UPDATE_FAILURE:
     case FORMS_FAILURE:
     case INTEGRATIONS_FAILURE:
-      return Object.assign({}, state, {
-        isFetching: false,
-      });
-
-    case INTEGRATIONS_SUCCESS:
-      return Object.assign({}, state, {
-        isFetching: false,
-      });
+      return false;
 
     case FORM_SUCCESS:
-      return Object.assign({}, state, {
-        allIds:
-          indexOf(state.allIds, action.payload.result) > -1
-            ? state.allIds
-            : [...state.allIds, action.payload.result],
-        isFetching: false,
-      });
-
+    case FORM_CREATE_SUCCESS:
+    case FORM_DELETE_SUCCESS:
+    case FORM_UPDATE_SUCCESS:
     case FORMS_SUCCESS:
-      return Object.assign({}, state, {
-        allIds: action.payload.result,
-        isFetching: false,
-      });
+    case INTEGRATIONS_SUCCESS:
+      return false;
 
     default:
       return state;
   }
 };
+
+export default combineReducers({
+  allIds,
+  isFetching,
+});
