@@ -21,6 +21,9 @@ docs/vendor/bundle
 # Generated on crash by the VM
 erl_crash.dump
 
+# Testing
+/coverage
+
 # Static artifacts
 node_modules
 
@@ -39,5 +42,9 @@ Thumbs.db
 # Ignore static build assets
 priv/static
 
-# Secrets
+# Misc
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
