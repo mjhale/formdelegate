@@ -9,31 +9,28 @@ const propTypes = {
   ...reduxFormPropTypes,
 };
 
-class SearchContainer extends React.Component {
-  render() {
-    const { handleSearch, handleSubmit, location } = this.props;
-    const { query } = parse(location.search);
+let Search = ({ handleSearch, handleSubmit, location }) => {
+  const { query } = parse(location.search);
 
-    return (
-      <form onSubmit={handleSubmit(handleSearch)}>
-        <Field
-          name="search"
-          className="search"
-          component="input"
-          type="text"
-          placeholder="Search..."
-        />
-      </form>
-    );
-  }
-}
+  return (
+    <form onSubmit={handleSubmit(handleSearch)}>
+      <Field
+        name="search"
+        className="search"
+        component="input"
+        type="text"
+        placeholder="Search..."
+      />
+    </form>
+  );
+};
 
-SearchContainer.propTypes = propTypes;
+Search.propTypes = propTypes;
 
-SearchContainer = reduxForm({
+Search = reduxForm({
   form: 'messagesSearchForm',
   enableReinitialize: true,
-})(SearchContainer);
+})(Search);
 
 const mapStateToProps = (state, ownProps) => {
   const { location } = ownProps;
@@ -46,4 +43,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps)(SearchContainer);
+export default connect(mapStateToProps)(Search);

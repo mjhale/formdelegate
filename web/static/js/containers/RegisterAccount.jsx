@@ -33,43 +33,37 @@ const validate = values => {
   return errors;
 };
 
-class RegisterAccount extends React.Component {
-  render() {
-    const { handleSubmit, errorMessage, submitting } = this.props;
-
-    return (
-      <div className="fluid-container">
-        {errorMessage && <Error message={errorMessage} />}
-        <h1>Register Account</h1>
-        <div className="register card">
-          <form onSubmit={handleSubmit}>
-            <Field
-              name="email"
-              component={renderField}
-              type="text"
-              label="E-mail Address"
-            />
-            <Field
-              name="name"
-              component={renderField}
-              type="text"
-              label="Full Name"
-            />
-            <Field
-              name="password"
-              component={renderField}
-              type="password"
-              label="Password"
-            />
-            <button type="submit" className="btn" disabled={submitting}>
-              Create Account
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
-}
+let RegisterAccount = ({ handleSubmit, errorMessage, submitting }) => (
+  <div className="fluid-container">
+    {errorMessage && <Error message={errorMessage} />}
+    <h1>Register Account</h1>
+    <div className="register card">
+      <form onSubmit={handleSubmit}>
+        <Field
+          name="email"
+          component={renderField}
+          type="text"
+          label="E-mail Address"
+        />
+        <Field
+          name="name"
+          component={renderField}
+          type="text"
+          label="Full Name"
+        />
+        <Field
+          name="password"
+          component={renderField}
+          type="password"
+          label="Password"
+        />
+        <button type="submit" className="btn" disabled={submitting}>
+          Create Account
+        </button>
+      </form>
+    </div>
+  </div>
+);
 
 RegisterAccount.propTypes = propTypes;
 

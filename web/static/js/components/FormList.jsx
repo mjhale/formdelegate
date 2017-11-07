@@ -9,13 +9,13 @@ let FormList = ({ forms, isFetching, onDeleteClick }) => {
 
   return (
     <div className="form-list">
-      {forms.map(form =>
+      {forms.map(form => (
         <FormSimpleView
           key={form.id}
           form={form}
           onDeleteClick={onDeleteClick}
         />
-      )}
+      ))}
     </div>
   );
 };
@@ -24,9 +24,7 @@ const FormSimpleView = ({ form, onDeleteClick }) => {
   return (
     <div className="form">
       <div className="card-header">
-        <span className="form-name">
-          {form.form}
-        </span>
+        <span className="form-name">{form.form}</span>
       </div>
       <div className="card">
         <CopyToClipboard

@@ -8,7 +8,7 @@ const FormIntegrationList = ({ integrations }) => {
   return (
     <div>
       <h3>Integrations</h3>
-      {integrations.map(integration =>
+      {integrations.map(integration => (
         <div key={integration.id} className="integration">
           <label className="label-switch status">
             <Field
@@ -21,9 +21,7 @@ const FormIntegrationList = ({ integrations }) => {
             />
             <div className="checkbox" />
           </label>
-          <div className="type">
-            {integration.integration.type}
-          </div>
+          <div className="type">{integration.integration.type}</div>
           <div className="settings">
             <div>
               <label>API Key</label>
@@ -49,7 +47,7 @@ const FormIntegrationList = ({ integrations }) => {
             </div>
           </div>
         </div>
-      )}
+      ))}
     </div>
   );
 };

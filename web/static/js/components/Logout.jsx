@@ -13,17 +13,13 @@ const defaultProps = {
   to: '/',
 };
 
-export default class Logout extends React.Component {
-  render() {
-    const { onLogoutClick, logoutText, className, to } = this.props;
-
-    return (
-      <a className={className} href={to} onClick={onLogoutClick}>
-        {logoutText}
-      </a>
-    );
-  }
-}
+const Logout = ({ onLogoutClick, logoutText, className, to }) => (
+  <a className={className} href={to} onClick={onLogoutClick}>
+    {logoutText}
+  </a>
+);
 
 Logout.propTypes = propTypes;
 Logout.defaultProps = defaultProps;
+
+export default Logout;
