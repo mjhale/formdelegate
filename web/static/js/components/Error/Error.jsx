@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { string } from 'prop-types';
 
 const defaultProps = {
   message: 'There was an unknown error, please try again.',
@@ -7,8 +7,8 @@ const defaultProps = {
 };
 
 const propTypes = {
-  message: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
+  message: string.isRequired,
+  type: string.isRequired,
 };
 
 const Error = ({ message, type }) => {
