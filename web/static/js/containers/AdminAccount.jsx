@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getAccount } from '../selectors';
-import { adminFetchAccount } from '../actions/accounts';
-import AdminAccountView from '../components/AdminAccountView';
+import { getAccount } from 'selectors';
+import { adminFetchAccount } from 'actions/accounts';
+import AdminAccountView from 'components/AdminAccountView';
 
 const propTypes = {
   account: PropTypes.object,

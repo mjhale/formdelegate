@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { fetchMessageActivity } from '../actions/messages';
-import { getCurrentAccount, getMessageActivity } from '../selectors';
-import MessageActivity from '../components/MessageActivity';
+import { fetchMessageActivity } from 'actions/messages';
+import { getCurrentAccount, getMessageActivity } from 'selectors';
+import MessageActivity from 'components/MessageActivity';
 
 const propTypes = {
   account: PropTypes.object,

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { adminFetchAccount, adminUpdateAccount } from 'actions/accounts';
-import { getAccount } from '../selectors';
+import { getAccount } from 'selectors';
 import { withRouter } from 'react-router-dom';
 import AdminAccountForm from 'components/AdminAccountForm';
 

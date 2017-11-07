@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getCurrentAccount } from '../selectors';
-import { getCurrentAccountId } from '../utils';
-import { updateAccount } from '../actions/accounts';
+import { getCurrentAccount } from 'selectors';
+import { getCurrentAccountId } from 'utils';
+import { updateAccount } from 'actions/accounts';
 import { Field, reduxForm } from 'redux-form';
-import renderField from '../components/Field.jsx';
+import renderField from 'components/Field.jsx';
 
 const propTypes = {
   account: PropTypes.object,

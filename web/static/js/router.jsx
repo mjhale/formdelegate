@@ -1,23 +1,23 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import AccountSettingsContainer from './containers/AccountSettings';
-import AdminContainer from './containers/Admin';
-import AppContainer from './containers/App';
-import DashboardContainer from './containers/Dashboard';
-import Faq from './components/Faq';
-import FormEditContainer from './containers/FormEdit';
-import FormNewContainer from './containers/FormNew';
-import FormsContainer from './containers/Forms';
-import InvalidRoute from './components/InvalidRoute';
-import LoginContainer from './containers/Login';
-import MessageContainer from './containers/Message';
-import MessagesContainer from './containers/Messages';
-import Pricing from './components/Pricing';
-import ReceiveFailure from './components/ReceiveFailure';
-import ReceiveSuccess from './components/ReceiveSuccess';
-import RegisterContainer from './containers/RegisterAccount';
-import requireAuth from './containers/RequireAuth';
-import Welcome from './components/Welcome';
+import AccountSettingsContainer from 'containers/AccountSettings';
+import AdminContainer from 'containers/Admin';
+import AppContainer from 'containers/App';
+import DashboardContainer from 'containers/Dashboard';
+import Faq from 'components/Faq';
+import FormEditContainer from 'containers/FormEdit';
+import FormNewContainer from 'containers/FormNew';
+import FormsContainer from 'containers/Forms';
+import InvalidRoute from 'components/InvalidRoute';
+import LoginContainer from 'containers/Login';
+import MessageContainer from 'containers/Message';
+import MessagesContainer from 'containers/Messages';
+import Pricing from 'components/Pricing';
+import ReceiveFailure from 'components/ReceiveFailure';
+import ReceiveSuccess from 'components/ReceiveSuccess';
+import RegisterContainer from 'containers/RegisterAccount';
+import requireAuth from 'containers/RequireAuth';
+import Welcome from 'components/Welcome';
 
 export const RootRouter = () => (
   <BrowserRouter>

@@ -1,5 +1,5 @@
-import { CALL_API } from '../middleware/api';
-import { messageSchema, messageActivitySchema } from '../schema';
+import { CALL_API } from 'middleware/api';
+import { messageSchema, messageActivitySchema } from 'schema';
 
 // action type constants
 import {
@@ -15,8 +15,8 @@ import {
   MESSAGES_REQUEST,
   MESSAGES_RESULTS,
   MESSAGES_SUCCESS,
-} from '../constants/actionTypes';
-import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from '../constants/actionTypes';
+} from 'constants/actionTypes';
+import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from 'constants/actionTypes';
 
 export function fetchMessage(messageId) {
   return async dispatch => {

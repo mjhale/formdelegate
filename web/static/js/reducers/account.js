@@ -17,7 +17,7 @@ import {
   CURRENT_ACCOUNT_REQUEST,
   CURRENT_ACCOUNT_SUCCESS,
   CURRENT_ACCOUNT_FAILURE,
-} from '../constants/actionTypes';
+} from 'constants/actionTypes';
 
 const allIds = (state = [], action) => {
   switch (action.type) {

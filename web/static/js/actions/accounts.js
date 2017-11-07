@@ -1,6 +1,6 @@
-import { CALL_API } from '../middleware/api';
-import { accountSchema } from '../schema';
-import { getCurrentAccountId } from '../utils';
+import { CALL_API } from 'middleware/api';
+import { accountSchema } from 'schema';
+import { getCurrentAccountId } from 'utils';
 
 import {
   ACCOUNT_REQUEST,
@@ -18,7 +18,7 @@ import {
   CURRENT_ACCOUNT_REQUEST,
   CURRENT_ACCOUNT_SUCCESS,
   CURRENT_ACCOUNT_FAILURE,
-} from '../constants/actionTypes';
+} from 'constants/actionTypes';
 
 export const adminFetchAccount = accountId => ({
   [CALL_API]: {

@@ -20,7 +20,7 @@ import {
   INTEGRATIONS_REQUEST,
   INTEGRATIONS_SUCCESS,
   INTEGRATIONS_FAILURE,
-} from '../constants/actionTypes';
+} from 'constants/actionTypes';
 
 const allIds = (state = [], action) => {
   switch (action.type) {

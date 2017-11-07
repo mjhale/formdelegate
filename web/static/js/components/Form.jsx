@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Field } from 'redux-form';
 import { last } from 'lodash';
-import FormIntegrationList from '../components/FormIntegrationList';
-import NewIntegrations from '../components/NewIntegrations';
+import FormIntegrationList from 'components/FormIntegrationList';
+import NewIntegrations from 'components/NewIntegrations';
 
 const FormEdit = props => {
   const {

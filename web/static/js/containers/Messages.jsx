@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { fetchMessages, messageSearchFetch } from '../actions/messages';
-import { getVisibleMessages } from '../selectors';
+import { fetchMessages, messageSearchFetch } from 'actions/messages';
+import { getVisibleMessages } from 'selectors';
 import { parse } from 'query-string';
 import { withRouter } from 'react-router-dom';
-import MessageList from '../components/MessageList';
-import SearchContainer from '../containers/Search';
-import Pagination from '../components/Paginator';
+import MessageList from 'components/MessageList';
+import SearchContainer from 'containers/Search';
+import Pagination from 'components/Paginator';
 
 const propTypes = {
   history: PropTypes.object.isRequired,

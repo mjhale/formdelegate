@@ -1,4 +1,4 @@
-import { NOTIFICATION_SHOW, NOTIFICATION_HIDE } from '../constants/actionTypes';
+import { NOTIFICATION_SHOW, NOTIFICATION_HIDE } from 'constants/actionTypes';
 
 const showNotification = ({ id, level, message }) => {
   return {

@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { createAccount } from '../actions/accounts';
+import { createAccount } from 'actions/accounts';
 import { Field } from 'redux-form';
-import { loginAccount } from '../actions/sessions';
+import { loginAccount } from 'actions/sessions';
 import { reduxForm, propTypes as reduxPropTypes } from 'redux-form';
 import { withRouter } from 'react-router-dom';
-import Error from '../components/Error';
-import renderField from '../components/Field.jsx';
+import Error from 'components/Error';
+import renderField from 'components/Field.jsx';
 
 const propTypes = {
   ...reduxPropTypes,

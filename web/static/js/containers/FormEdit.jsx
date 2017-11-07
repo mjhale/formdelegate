@@ -4,13 +4,13 @@ import { animateScroll } from 'react-scroll';
 import { browserHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { denormalize } from 'normalizr';
-import { fetchForm, fetchIntegrations, updateForm } from '../actions/forms';
+import { fetchForm, fetchIntegrations, updateForm } from 'actions/forms';
 import { Field, reduxForm } from 'redux-form';
 import { findLastIndex } from 'lodash';
-import { formSchema } from '../schema';
-import { getForm } from '../selectors';
-import FormIntegrationList from '../components/FormIntegrationList';
-import NewIntegrations from '../components/NewIntegrations';
+import { formSchema } from 'schema';
+import { getForm } from 'selectors';
+import FormIntegrationList from 'components/FormIntegrationList';
+import NewIntegrations from 'components/NewIntegrations';
 
 const propTypes = {
   initialValues: PropTypes.object,

@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getCurrentAccount } from '../selectors';
+import { getCurrentAccount } from 'selectors';
 import { NavLink, Route, Switch } from 'react-router-dom';
-import AdminDashboardContainer from '../containers/AdminDashboard';
-import AdminAccountContainer from '../containers/AdminAccount';
-import AdminAccountFormContainer from '../containers/AdminAccountForm';
-import AdminAccountsContainer from '../containers/AdminAccounts';
-import Error from '../components/Error';
+import AdminDashboardContainer from 'containers/AdminDashboard';
+import AdminAccountContainer from 'containers/AdminAccount';
+import AdminAccountFormContainer from 'containers/AdminAccountForm';
+import AdminAccountsContainer from 'containers/AdminAccounts';
+import Error from 'components/Error';
 
 const propTypes = {
   account: PropTypes.object,

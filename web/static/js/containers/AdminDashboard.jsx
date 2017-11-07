@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCurrentAccount } from '../selectors';
+import { getCurrentAccount } from 'selectors';
 
 const AdminDashboard = () => {
   return (

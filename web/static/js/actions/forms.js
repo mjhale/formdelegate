@@ -1,5 +1,5 @@
-import { CALL_API } from '../middleware/api';
-import { formSchema, integrationSchema } from '../schema';
+import { CALL_API } from 'middleware/api';
+import { formSchema, integrationSchema } from 'schema';
 
 // action type constants
 import {
@@ -21,7 +21,7 @@ import {
   INTEGRATIONS_REQUEST,
   INTEGRATIONS_SUCCESS,
   INTEGRATIONS_FAILURE,
-} from '../constants/actionTypes';
+} from 'constants/actionTypes';
 
 export function createForm(form) {
   return async (dispatch, getState) => {

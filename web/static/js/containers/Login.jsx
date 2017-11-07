@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { withRouter } from 'react-router-dom';
-import { loginAccount, logoutAccount } from '../actions/sessions';
-import Error from '../components/Error';
-import LoginForm from '../components/LoginForm';
-import Logout from '../components/Logout';
+import { loginAccount, logoutAccount } from 'actions/sessions';
+import Error from 'components/Error';
+import LoginForm from 'components/LoginForm';
+import Logout from 'components/Logout';
 
 const validate = values => {
   const errors = {};
@@ -30,49 +30,47 @@ const propTypes = {
   submitting: PropTypes.bool.isRequired,
 };
 
-class LoginContainer extends React.Component {
-  render() {
-    const {
-      dispatch,
-      errorMessage,
-      fields,
-      handleSubmit,
-      isAuthenticated,
-      logout,
-      onSubmit,
-      pristine,
-      submitting,
-    } = this.props;
+let Login = props => {
+  const {
+    dispatch,
+    errorMessage,
+    fields,
+    handleSubmit,
+    isAuthenticated,
+    logout,
+    onSubmit,
+    pristine,
+    submitting,
+  } = props;
 
-    if (!isAuthenticated) {
-      return (
-        <div className="fluid-container">
-          {errorMessage && <Error message={errorMessage} />}
-          <LoginForm
-            {...fields}
-            pristine={pristine}
-            submitting={submitting}
-            handleSubmit={handleSubmit(onSubmit)}
-          />
-        </div>
-      );
-    } else {
-      return (
-        <div className="logout-prompt fluid-container">
-          You are currently logged in. Would you like to{' '}
-          <Logout logoutText="logout" onLogoutClick={logout} />?
-        </div>
-      );
-    }
+  if (!isAuthenticated) {
+    return (
+      <div className="fluid-container">
+        {errorMessage && <Error message={errorMessage} />}
+        <LoginForm
+          {...fields}
+          pristine={pristine}
+          submitting={submitting}
+          handleSubmit={handleSubmit(onSubmit)}
+        />
+      </div>
+    );
+  } else {
+    return (
+      <div className="logout-prompt fluid-container">
+        You are currently logged in. Would you like to{' '}
+        <Logout logoutText="logout" onLogoutClick={logout} />?
+      </div>
+    );
   }
-}
+};
 
-LoginContainer.propTypes = propTypes;
+Login.propTypes = propTypes;
 
-LoginContainer = reduxForm({
+Login = reduxForm({
   form: 'loginForm',
   validate,
-})(LoginContainer);
+})(Login);
 
 const mapStateToProps = state => {
   const { errorMessage, isAuthenticated } = state.authentication;
@@ -96,6 +94,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
 });
 
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(LoginContainer)
-);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Login));

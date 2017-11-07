@@ -7,7 +7,7 @@ import {
   LOGOUT_REQUEST,
   LOGOUT_SUCCESS,
   LOGOUT_FAILURE,
-} from '../constants/actionTypes';
+} from 'constants/actionTypes';
 
 const errorMessage = (state = '', action) => {
   switch (action.type) {

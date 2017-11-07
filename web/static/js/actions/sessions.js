@@ -1,10 +1,10 @@
-import { accountSchema } from '../schema';
-import { CALL_API } from '../middleware/api';
+import { accountSchema } from 'schema';
+import { CALL_API } from 'middleware/api';
 import { normalize } from 'normalizr';
 import { reset } from 'redux-form';
 
 // action type constants
-import { ACCOUNT_SUCCESS } from '../constants/actionTypes';
+import { ACCOUNT_SUCCESS } from 'constants/actionTypes';
 import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
@@ -12,7 +12,7 @@ import {
   LOGOUT_REQUEST,
   LOGOUT_SUCCESS,
   LOGOUT_FAILURE,
-} from '../constants/actionTypes';
+} from 'constants/actionTypes';
 
 export function loginAccount(credentials) {
   return async dispatch => {
