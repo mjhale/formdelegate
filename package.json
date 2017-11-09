@@ -59,6 +59,7 @@
     "husky": "^0.14.1",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^21.2.1",
+    "jest-localstorage-mock": "^2.0.1",
     "lint-staged": "^4.3.0",
     "node-sass": "^4.6.0",
     "postcss-loader": "^2.0.6",
@@ -71,18 +72,18 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "web/static/js/**/*.{js,jsx}"
+      "<rootDir>/web/static/js/**/*.{js,jsx}"
     ],
     "moduleDirectories": [
-      "node_modules"
-    ],
-    "moduleFileExtensions": [
-      "js",
-      "jsx"
+      "<rootDir>/node_modules",
+      "<rootDir>/web/static/js"
     ],
     "moduleNameMapper": {
       "\\.(css|scss)$": "identity-obj-proxy"
     },
+    "setupFiles": [
+      "jest-localstorage-mock"
+    ],
     "setupTestFrameworkScriptFile": "<rootDir>/web/static/js/setupTests.js",
     "testEnvironment": "node",
     "testMatch": [
@@ -93,7 +94,9 @@
       "<rootDir>/node_modules/"
     ],
     "transform": {
-      "^.+\\.(js|jsx)$": "babel-jest"
+      "^.+\\.(js|jsx)$": "babel-jest",
+      "^.+\\.(css|scss)$": "<rootDir>/config/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|css|scss|json)$)": "<rootDir>/config/jest/fileTransform.js"
     },
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
