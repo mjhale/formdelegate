@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import AccountSettingsContainer from 'containers/AccountSettings';
 import AdminContainer from 'containers/Admin';
-import AppContainer from 'containers/App';
+import App from 'components/App';
 import DashboardContainer from 'containers/Dashboard';
 import Faq from 'components/Faq';
 import FormEditContainer from 'containers/FormEdit';
@@ -21,7 +21,7 @@ import Welcome from 'components/Welcome';
 
 export const RootRouter = () => (
   <BrowserRouter>
-    <Route path="/" component={AppContainer} />
+    <Route path="/" component={App} />
   </BrowserRouter>
 );
 

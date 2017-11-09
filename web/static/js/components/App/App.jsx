@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchCurrentAccount } from 'actions/accounts';
-import { getCurrentAccountId } from 'utils/';
+import { getCurrentAccountId } from 'utils';
 import { Link } from 'react-router-dom';
 import { Routes } from 'router';
-import Nav from './Nav';
-import Notifications from './Notifications';
+import Nav from 'containers/Nav';
+import Notifications from 'containers/Notifications';
 
 class App extends React.Component {
   componentDidMount() {
