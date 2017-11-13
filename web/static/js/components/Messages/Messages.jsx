@@ -5,8 +5,8 @@ import { fetchMessages, messageSearchFetch } from 'actions/messages';
 import { getVisibleMessages } from 'selectors';
 import { parse } from 'query-string';
 import { withRouter } from 'react-router-dom';
-import MessageList from 'components/MessageList';
-import SearchContainer from 'containers/Search';
+import MessageList from 'components/Messages/MessageList';
+import Search from 'components/Search';
 import Pagination from 'components/Paginator';
 
 const propTypes = {
@@ -73,7 +73,7 @@ class MessagesContainer extends React.Component {
       <div className="messages fluid-container">
         <ul className="actions">
           <li>
-            <SearchContainer {...this.props} handleSearch={this.handleSearch} />
+            <Search {...this.props} handleSearch={this.handleSearch} />
           </li>
           <li>
             <Pagination

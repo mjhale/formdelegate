@@ -7,7 +7,7 @@ import { loginAccount } from 'actions/sessions';
 import { reduxForm, propTypes as reduxPropTypes } from 'redux-form';
 import { withRouter } from 'react-router-dom';
 import Error from 'components/Error';
-import renderField from 'components/Field.jsx';
+import renderField from 'components/Field';
 
 const propTypes = {
   ...reduxPropTypes,

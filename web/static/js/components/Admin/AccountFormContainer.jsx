@@ -5,7 +5,7 @@ import { reduxForm } from 'redux-form';
 import { adminFetchAccount, adminUpdateAccount } from 'actions/accounts';
 import { getAccount } from 'selectors';
 import { withRouter } from 'react-router-dom';
-import AdminAccountForm from 'components/AdminAccountForm';
+import AdminAccountForm from 'components/Admin/AccountForm';
 
 class AdminAccountFormContainer extends React.Component {
   componentDidMount() {

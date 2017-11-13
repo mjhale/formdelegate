@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Field } from 'redux-form';
 import { Link } from 'react-router-dom';
-import renderField from 'components/Field.jsx';
+import renderField from 'components/Field';
 
 const propTypes = {
   handleSubmit: PropTypes.func.isRequired,

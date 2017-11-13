@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getCurrentAccount } from 'selectors';
 import { NavLink, Route, Switch } from 'react-router-dom';
-import AdminDashboardContainer from 'containers/AdminDashboard';
-import AdminAccountContainer from 'containers/AdminAccount';
-import AdminAccountFormContainer from 'containers/AdminAccountForm';
-import AdminAccountsContainer from 'containers/AdminAccounts';
+import AccountFormContainer from 'components/Admin/AccountFormContainer';
+import AccountList from 'components/Admin/AccountList';
+import AccountView from 'components/Admin/AccountView';
+import Dashboard from 'components/Admin/Dashboard';
 import Error from 'components/Error';
 
 const propTypes = {
@@ -41,21 +41,17 @@ const Admin = ({ account, isAdmin }) => {
         </li>
       </ul>
       <Switch>
-        <Route exact path="/admin" component={AdminDashboardContainer} />
-        <Route
-          exact
-          path="/admin/accounts"
-          component={AdminAccountsContainer}
-        />
+        <Route exact path="/admin" component={Dashboard} />
+        <Route exact path="/admin/accounts" component={AccountList} />
         <Route
           exact
           path="/admin/accounts/:accountId"
-          component={AdminAccountContainer}
+          component={AccountView}
         />
         <Route
           exact
           path="/admin/accounts/:accountId/edit"
-          component={AdminAccountFormContainer}
+          component={AccountFormContainer}
         />
       </Switch>
     </div>

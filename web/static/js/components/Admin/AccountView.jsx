@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getAccount } from 'selectors';
+import { Link } from 'react-router-dom';
+
 import { adminFetchAccount } from 'actions/accounts';
-import AdminAccountView from 'components/AdminAccountView';
+import { getAccount } from 'selectors';
 
 const propTypes = {
   account: PropTypes.object,
@@ -11,12 +12,11 @@ const propTypes = {
   match: PropTypes.object.isRequired,
 };
 
-class AdminAccountContainer extends React.Component {
+class AdminAccountView extends React.Component {
   componentDidMount() {
     const { loadAccount, match } = this.props;
-    const { accountId } = match.params;
 
-    loadAccount(accountId);
+    loadAccount(match.params.accountId);
   }
 
   render() {
@@ -26,11 +26,20 @@ class AdminAccountContainer extends React.Component {
       return <p>Loading account...</p>;
     }
 
-    return <AdminAccountView {...this.props} />;
+    return (
+      <div className="account card">
+        <h1>Account Management</h1>
+        <div>E-Mail: {account.email}</div>
+        <div>Name: {account.name}</div>
+        <div>
+          <Link to={`/admin/accounts/${account.id}/edit`}>Edit Account</Link>
+        </div>
+      </div>
+    );
   }
 }
 
-AdminAccountContainer.propTypes = propTypes;
+AdminAccountView.propTypes = propTypes;
 
 const mapStateToProps = (state, ownProps) => {
   return {
@@ -45,6 +54,4 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(
-  AdminAccountContainer
-);
+export default connect(mapStateToProps, mapDispatchToProps)(AdminAccountView);

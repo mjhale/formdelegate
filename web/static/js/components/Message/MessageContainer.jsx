@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchMessage } from 'actions/messages';
 import { getMessage } from 'selectors';
-import Message from 'components/Message';
+import Message from 'components/Message/Message';
 
 const propTypes = {
   message: PropTypes.object,

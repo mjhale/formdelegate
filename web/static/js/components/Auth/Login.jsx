@@ -5,8 +5,8 @@ import { reduxForm } from 'redux-form';
 import { withRouter } from 'react-router-dom';
 import { loginAccount, logoutAccount } from 'actions/sessions';
 import Error from 'components/Error';
-import LoginForm from 'components/LoginForm';
-import Logout from 'components/Logout';
+import LoginForm from 'components/Auth/LoginForm';
+import Logout from 'components/Auth/Logout';
 
 const validate = values => {
   const errors = {};

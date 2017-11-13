@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { fetchForms, formDeletionRequest } from 'actions/forms';
 import { getOrderedForms } from 'selectors';
-import FormList from 'components/FormList';
+import FormList from 'components/Forms/FormList';
 
 const propTypes = {
   forms: PropTypes.array.isRequired,

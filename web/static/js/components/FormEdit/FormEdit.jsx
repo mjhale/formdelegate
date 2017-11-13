@@ -9,8 +9,8 @@ import { Field, reduxForm } from 'redux-form';
 import { findLastIndex } from 'lodash';
 import { formSchema } from 'schema';
 import { getForm } from 'selectors';
-import FormIntegrationList from 'components/FormIntegrationList';
-import NewIntegrations from 'components/NewIntegrations';
+import FormIntegrationList from 'components/FormIntegrations/IntegrationList';
+import NewIntegrations from 'components/FormIntegrations/NewIntegrations';
 
 const propTypes = {
   initialValues: PropTypes.object,

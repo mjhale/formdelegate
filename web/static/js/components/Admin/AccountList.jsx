@@ -16,7 +16,7 @@ const defaultProps = {
   items: [],
 };
 
-class AdminAccountsContainer extends React.Component {
+class AdminAccountList extends React.Component {
   componentDidMount() {
     const { loadAccounts } = this.props;
     loadAccounts();
@@ -62,8 +62,8 @@ class AdminAccountsContainer extends React.Component {
   }
 }
 
-AdminAccountsContainer.propTypes = propTypes;
-AdminAccountsContainer.defaultProps = defaultProps;
+AdminAccountList.propTypes = propTypes;
+AdminAccountList.defaultProps = defaultProps;
 
 const mapStateToProps = state => {
   return {
@@ -79,6 +79,4 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(
-  AdminAccountsContainer
-);
+export default connect(mapStateToProps, mapDispatchToProps)(AdminAccountList);

@@ -7,8 +7,7 @@ import { fetchIntegrations } from 'actions/forms';
 import { Field } from 'redux-form';
 import { reduxForm } from 'redux-form';
 import { withRouter } from 'react-router-dom';
-import Form from 'components/Form';
-import NewIntegrations from 'components/NewIntegrations';
+import NewIntegrations from 'components/FormIntegrations/NewIntegrations';
 
 const propTypes = {
   message: PropTypes.object,

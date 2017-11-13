@@ -5,7 +5,7 @@ import { getCurrentAccount } from 'selectors';
 import { getCurrentAccountId } from 'utils';
 import { updateAccount } from 'actions/accounts';
 import { Field, reduxForm } from 'redux-form';
-import renderField from 'components/Field.jsx';
+import renderField from 'components/Field';
 
 const propTypes = {
   account: PropTypes.object,

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { getCurrentAccount } from 'selectors';
 import { NavLink, withRouter } from 'react-router-dom';
 import { logoutAccount } from 'actions/sessions';
-import Logout from 'components/Logout';
+import Logout from 'components/Auth/Logout';
 
 const propTypes = {
   isAdmin: PropTypes.bool.isRequired,
