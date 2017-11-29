@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Field } from 'redux-form';
 
-const renderIntegrationTypeSelector = ({ integrationTypes }) => (
+const renderIntegrationTypeSelector = ({ integrationTypes, ...props }) => (
   <div>
     <select {...props.input}>
       <option value="" />

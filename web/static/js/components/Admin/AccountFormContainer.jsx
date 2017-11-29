@@ -41,15 +41,16 @@ class AdminAccountFormContainer extends React.Component {
   }
 }
 
-AdminAccountFormContainer = reduxForm({
-  form: 'accountForm',
-  enableReinitialize: true,
-})(AdminAccountFormContainer);
-
 const mapStateToProps = (state, ownProps) => {
+  const account = getAccount(state, ownProps);
+
   return {
-    account: getAccount(state, ownProps),
-    initialValues: getAccount(state, ownProps),
+    account,
+    initialValues: {
+      id: account && account.id,
+      email: account && account.email,
+      name: account && account.name,
+    },
     isFetching: state.accounts.isFetching,
   };
 };
@@ -64,6 +65,11 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     ownProps.history.push(`/admin/accounts/${data.id}`);
   },
 });
+
+AdminAccountFormContainer = reduxForm({
+  form: 'accountForm',
+  enableReinitialize: true,
+})(AdminAccountFormContainer);
 
 export default withRouter(
   connect(mapStateToProps, mapDispatchToProps)(AdminAccountFormContainer)

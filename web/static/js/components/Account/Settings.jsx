@@ -59,6 +59,7 @@ const mapStateToProps = state => {
   return {
     account,
     initialValues: {
+      id: account && account.id,
       name: account && account.name,
       email: account && account.email,
     },
@@ -67,10 +68,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  onSubmit(values) {
-    // @TODO: Remove add id behavior
-    values.id = getCurrentAccountId(localStorage.getItem('fd_token'));
-    dispatch(updateAccount(values));
+  onSubmit(data) {
+    dispatch(updateAccount(data));
   },
 });
 
