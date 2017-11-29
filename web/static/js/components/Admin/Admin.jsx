@@ -8,6 +8,8 @@ import AccountList from 'components/Admin/AccountList';
 import AccountView from 'components/Admin/AccountView';
 import Dashboard from 'components/Admin/Dashboard';
 import Error from 'components/Error';
+import IntegrationList from 'components/Admin/IntegrationList';
+import IntegrationForm from 'components/Admin/IntegrationForm';
 
 const propTypes = {
   account: PropTypes.object,
@@ -35,8 +37,8 @@ const Admin = ({ account, isAdmin }) => {
           </NavLink>
         </li>
         <li>
-          <NavLink to="/admin/forms" activeClassName="active">
-            Forms
+          <NavLink to="/admin/integrations" activeClassName="active">
+            Integrations
           </NavLink>
         </li>
       </ul>
@@ -52,6 +54,12 @@ const Admin = ({ account, isAdmin }) => {
           exact
           path="/admin/accounts/:accountId/edit"
           component={AccountFormContainer}
+        />
+        <Route exact path="/admin/integrations" component={IntegrationList} />
+        <Route
+          exact
+          path="/admin/integrations/:integrationId"
+          component={IntegrationForm}
         />
       </Switch>
     </div>

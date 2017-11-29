@@ -6,6 +6,9 @@ import {
   INTEGRATION_REQUEST,
   INTEGRATION_SUCCESS,
   INTEGRATION_FAILURE,
+  INTEGRATION_UPDATE_REQUEST,
+  INTEGRATION_UPDATE_SUCCESS,
+  INTEGRATION_UPDATE_FAILURE,
   INTEGRATIONS_REQUEST,
   INTEGRATIONS_SUCCESS,
   INTEGRATIONS_FAILURE,
@@ -28,6 +31,37 @@ export const adminFetchIntegration = integrationId => ({
     types: [INTEGRATION_REQUEST, INTEGRATION_SUCCESS, INTEGRATION_FAILURE],
   },
 });
+
+export const adminUpdateIntegration = integration => {
+  return async (dispatch, getState) => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        authenticated: true,
+        config: {
+          body: JSON.stringify({ integration }),
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          method: 'PUT',
+        },
+        endpoint: `admin/integrations/${integration.id}`,
+        schema: integrationSchema,
+        types: [
+          INTEGRATION_UPDATE_REQUEST,
+          INTEGRATION_UPDATE_SUCCESS,
+          INTEGRATION_UPDATE_FAILURE,
+        ],
+      },
+    });
+
+    if (actionResponse.error) {
+      throw new Error('Promise flow received action error', actionResponse);
+    }
+
+    return actionResponse;
+  };
+};
 
 export const adminFetchIntegrations = () => ({
   [CALL_API]: {

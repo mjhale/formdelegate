@@ -418,11 +418,11 @@ select {
 }
 
 .admin-links {
-    display: flex;
-    justify-content: flex-start;
-    list-style-type: none;
-    margin: 0 1rem 1rem 1rem;
-    padding: 0;
+  background-color: $mojo-red;
+  display: flex;
+  justify-content: flex-start;
+  list-style-type: none;
+  padding: 1rem;
 }
 
 .admin-links li {
@@ -434,8 +434,18 @@ select {
   margin-left: 1.5rem;
 }
 
+.admin-links a {
+  color: $sea-pink;
+  text-decoration: none;
+
+  &:hover {
+    color: $off-white;
+  }
+}
+
 .admin-links .active {
-  font-weight: 900;
+  border-bottom: 3px solid $carnation;
+  color: $off-white;
 }
 
 .message-activity .card {

@@ -39,6 +39,7 @@ defmodule FormDelegate.Router do
       pipe_through :admin_required
 
       resources "/accounts", AccountController
+      resources "/integrations", IntegrationController, only: [:index, :show, :update]
     end
   end
 

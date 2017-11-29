@@ -5,6 +5,9 @@ import {
   INTEGRATION_REQUEST,
   INTEGRATION_SUCCESS,
   INTEGRATION_FAILURE,
+  INTEGRATION_UPDATE_REQUEST,
+  INTEGRATION_UPDATE_SUCCESS,
+  INTEGRATION_UPDATE_FAILURE,
   INTEGRATIONS_REQUEST,
   INTEGRATIONS_SUCCESS,
   INTEGRATIONS_FAILURE,
@@ -26,14 +29,17 @@ const allIds = (state = [], action) => {
 const isFetching = (state = false, action) => {
   switch (action.type) {
     case INTEGRATION_REQUEST:
+    case INTEGRATION_UPDATE_REQUEST:
     case INTEGRATIONS_REQUEST:
       return true;
 
     case INTEGRATION_FAILURE:
+    case INTEGRATION_UPDATE_FAILURE:
     case INTEGRATIONS_FAILURE:
       return false;
 
     case INTEGRATION_SUCCESS:
+    case INTEGRATION_UPDATE_SUCCESS:
     case INTEGRATIONS_SUCCESS:
       return false;
 
