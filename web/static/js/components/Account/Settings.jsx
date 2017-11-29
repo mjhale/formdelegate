@@ -68,8 +68,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   onSubmit(values) {
-    // add current user's id to object
-    values.id = getCurrentAccountId();
+    // @TODO: Remove add id behavior
+    values.id = getCurrentAccountId(localStorage.getItem('fd_token'));
     dispatch(updateAccount(values));
   },
 });

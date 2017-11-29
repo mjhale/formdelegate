@@ -114,7 +114,9 @@ export const fetchAccount = accountId => ({
 });
 
 export const fetchCurrentAccount = () => {
-  const currentAccountId = getCurrentAccountId();
+  const currentAccountId = getCurrentAccountId(
+    localStorage.getItem('fd_token')
+  );
 
   if (currentAccountId) {
     return fetchAccount(currentAccountId);

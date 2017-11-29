@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchCurrentAccount } from 'actions/accounts';
-import { getCurrentAccountId } from 'utils';
+import { isTokenCurrent } from 'utils';
 import { Link } from 'react-router-dom';
 import { Routes } from 'router';
 import Nav from 'components/Nav';
@@ -10,7 +10,10 @@ import Notifications from 'components/Notifications';
 
 class App extends React.Component {
   componentDidMount() {
-    if (getCurrentAccountId()) this.props.loadCurrentAccount();
+    const encodedJWT = localStorage.getItem('fd_token');
+    if (isTokenCurrent(encodedJWT)) {
+      this.props.loadCurrentAccount();
+    }
   }
 
   render() {

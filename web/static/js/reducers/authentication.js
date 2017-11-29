@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import { isTokenCurrent } from 'utils';
 
 import {
   LOGIN_REQUEST,
@@ -28,9 +29,8 @@ const errorMessage = (state = '', action) => {
   }
 };
 
-/* @TODO Check if fd_token is expired. */
 const isAuthenticated = (
-  state = localStorage.getItem('fd_token') ? true : false,
+  state = isTokenCurrent(localStorage.getItem('fd_token')),
   action
 ) => {
   switch (action.type) {
