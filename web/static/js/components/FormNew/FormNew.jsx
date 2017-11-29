@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { animateScroll } from 'react-scroll';
 import { connect } from 'react-redux';
 import { createForm } from 'actions/forms';
-import { fetchIntegrations } from 'actions/forms';
+import { fetchIntegrations } from 'actions/integrations';
 import { Field } from 'redux-form';
 import { reduxForm } from 'redux-form';
 import { withRouter } from 'react-router-dom';

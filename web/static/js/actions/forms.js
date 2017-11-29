@@ -1,5 +1,5 @@
 import { CALL_API } from 'middleware/api';
-import { formSchema, integrationSchema } from 'schema';
+import { formSchema } from 'schema';
 
 // action type constants
 import {
@@ -18,9 +18,6 @@ import {
   FORMS_REQUEST,
   FORMS_SUCCESS,
   FORMS_FAILURE,
-  INTEGRATIONS_REQUEST,
-  INTEGRATIONS_SUCCESS,
-  INTEGRATIONS_FAILURE,
 } from 'constants/actionTypes';
 
 export function createForm(form) {
@@ -72,15 +69,6 @@ export const fetchForms = () => ({
     endpoint: 'forms',
     schema: [formSchema],
     types: [FORMS_REQUEST, FORMS_SUCCESS, FORMS_FAILURE],
-  },
-});
-
-export const fetchIntegrations = () => ({
-  [CALL_API]: {
-    authenticated: true,
-    endpoint: 'integrations',
-    schema: [integrationSchema],
-    types: [INTEGRATIONS_REQUEST, INTEGRATIONS_SUCCESS, INTEGRATIONS_FAILURE],
   },
 });
 

@@ -8,6 +8,9 @@ const getCurrentAccountId = state => state.accounts.currentAccountId;
 const getFormId = (_state, props) => props.match.params.formId;
 const getFormIds = state => state.forms.allIds;
 const getForms = state => state.entities.forms;
+const getIntegrations = state => state.entities.integrations;
+const getIntegrationId = (_state, props) => props.match.params.integrationId;
+const getIntegrationIds = state => state.integrations.allIds;
 const getMessageActivities = state => state.entities.message_activity;
 const getMessageActivityIds = state => state.messages.messageActivityIds;
 const getMessageIds = state => state.messages.visibleIds;
@@ -41,6 +44,15 @@ export const getForm = createSelector(
   }
 );
 
+export const getIntegration = createSelector(
+  [getIntegrations, getIntegrationId],
+  (integrations, integrationId) => {
+    return find(integrations, function(object) {
+      return object.id == integrationId;
+    });
+  }
+);
+
 export const getMessage = createSelector(
   [getMessages, getMessageId],
   (messages, messageId) => {
@@ -68,6 +80,13 @@ export const getOrderedForms = createSelector(
   [getForms, getFormIds],
   (forms, allIds) => {
     return allIds.map(id => forms[id]);
+  }
+);
+
+export const getOrderedIntegrations = createSelector(
+  [getIntegrations, getIntegrationIds],
+  (integrations, integrationIds) => {
+    return integrationIds.map(id => integrations[id]);
   }
 );
 
