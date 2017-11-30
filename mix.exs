@@ -29,7 +29,11 @@ defmodule FormDelegate.Mixfile do
          :postgrex,
          :comeonin,
          :bamboo,
-         :scrivener_ecto]]
+         :pbkdf2_elixir,
+         :guardian,
+         :scrivener_ecto,
+         :scrivener_headers,
+         :pbkdf2_elixir]]
   end
 
   # Specifies which paths to compile per environment.
