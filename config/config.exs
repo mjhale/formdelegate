@@ -10,10 +10,10 @@ config :form_delegate,
   ecto_repos: [FormDelegate.Repo]
 
 # Configures the endpoint
-config :form_delegate, FormDelegate.Endpoint,
+config :form_delegate, FormDelegateWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "GkaatwxvDjnh98SB762NswtanDoaBP0/cyeLPl0G/dUoHNKvd70FMXGSrJjH/y5q",
-  render_errors: [view: FormDelegate.ErrorView, accepts: ~w(html json)],
+  render_errors: [view: FormDelegateWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: FormDelegate.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
@@ -22,17 +22,15 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-config :guardian, Guardian,
+config :form_delegate, FormDelegateWeb.Guardian,
   allowed_algos: ["HS512"],
-  issuer: "FormDelegate",
+  issuer: "form_delegate_web",
   secret_key: %{
-    "k" => System.get_env("GUARDIAN_SECRET") || "5Fn8i7r5cRWZW_yyr9Flkg",
+    "k" => System.get_env("GUARDIAN_SECRET") || "EBz9UGZXtQNUTsW5pAFMARky3_AhjSYZd5GEAUqunrBiph0zEieEQSJ6sX3W4mFEFu8u_TZxO0jTygAfvL5c4Q",
     "kty" => "oct"
   },
-  serializer: FormDelegate.GuardianSerializer,
   ttl: { 14, :days },
-  verify_issuer: true,
-  verify_module: Guardian.JWT
+  verify_issuer: true
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

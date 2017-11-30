@@ -1,4 +1,4 @@
-defmodule FormDelegate.ChannelCase do
+defmodule FormDelegateWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -27,7 +27,7 @@ defmodule FormDelegate.ChannelCase do
 
 
       # The default endpoint for testing
-      @endpoint FormDelegate.Endpoint
+      @endpoint FormDelegateWeb.Endpoint
     end
   end
 

@@ -1,4 +1,4 @@
-defmodule FormDelegate.ConnCase do
+defmodule FormDelegateWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -25,11 +25,11 @@ defmodule FormDelegate.ConnCase do
       import Ecto.Changeset
       import Ecto.Query
 
-      import FormDelegate.Router.Helpers
+      import FormDelegateWeb.Router.Helpers
       import FormDelegate.TestHelpers
 
       # The default endpoint for testing
-      @endpoint FormDelegate.Endpoint
+      @endpoint FormDelegateWeb.Endpoint
     end
   end
 

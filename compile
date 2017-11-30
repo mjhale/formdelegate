@@ -1,3 +1,11 @@
 info "Building Phoenix static assets"
+
 npm run compile
-mix phoenix.digest
+
+cd $phoenix_dir
+
+mix "${phoenix_ex}.digest"
+
+if mix help "${phoenix_ex}.digest.clean" 1>/dev/null 2>&1; then
+  mix "${phoenix_ex}.digest.clean"
+fi

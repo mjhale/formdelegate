@@ -10,11 +10,11 @@ defmodule FormDelegate.Repo.Migrations.CreateForm do
       add :verified, :boolean, null: false, default: false
       add :message_count, :integer, null: false, default: 0
 
-      add :account_id, references(:accounts, on_delete: :delete_all)
+      add :user_id, references(:users, on_delete: :delete_all)
 
       timestamps()
     end
 
-    create index(:forms, [:account_id])
+    create index(:forms, [:user_id])
   end
 end

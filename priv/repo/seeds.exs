@@ -4,19 +4,19 @@
 #
 
 alias FormDelegate.Repo
-alias FormDelegate.Account
+alias FormDelegate.Accounts.User
 alias FormDelegate.Form
 alias FormDelegate.Integration
 alias FormDelegate.FormIntegration
 alias FormDelegate.Message
 
 # Scrub prior data before seeding
-Repo.delete_all(Account)
+Repo.delete_all(User)
 Repo.delete_all(Message)
 Repo.delete_all(Form)
 
-# Seed Accounts
-Repo.insert! %Account{
+# Seed Users
+Repo.insert! %User{
   name: "The Administrator",
   email: "admin@admin.com",
   password_hash: Comeonin.Pbkdf2.hashpwsalt("admin"),
@@ -24,19 +24,19 @@ Repo.insert! %Account{
   verified: true,
   is_admin: true,
 }
-admin_account = Repo.get_by!(Account, email: "admin@admin.com")
+admin_user = Repo.get_by!(User, email: "admin@admin.com")
 
-Repo.insert! %Account{
+Repo.insert! %User{
   name: "Joshua Fern",
   email: "josh.f@gmail.com",
   password_hash: Comeonin.Pbkdf2.hashpwsalt("securepass"),
 }
-user_account = Repo.get_by!(Account, email: "josh.f@gmail.com")
+user = Repo.get_by!(User, email: "josh.f@gmail.com")
 
 # Seed Forms
 Repo.insert! %Form{
   form: "Contact Form",
-  account: admin_account,
+  user: admin_user,
   verified: true,
   message_count: 2, # pre-set the counter cache
 }
@@ -44,7 +44,7 @@ admin_contact_form = Repo.get_by!(Form, form: "Contact Form")
 
 Repo.insert! %Form{
   form: "Error Form",
-  account: admin_account,
+  user: admin_user,
   verified: true,
   message_count: 1, # pre-set the counter cache
 }
@@ -53,7 +53,7 @@ admin_error_form = Repo.get_by!(Form, form: "Error Form")
 
 Repo.insert! %Form{
   form: "More Info Form",
-  account: user_account,
+  user: user,
   verified: false,
 }
 user_form = Repo.get_by!(Form, form: "More Info Form")
@@ -90,28 +90,28 @@ Repo.insert! %FormIntegration{
 # Seed Messages
 Repo.insert! %Message{
   content: "We need more tests!",
-  account: admin_account,
+  user: admin_user,
   form: admin_contact_form,
   sender: "Anonymous",
 }
 
 Repo.insert! %Message{
   content: "There's a bug in some code.",
-  account: admin_account,
+  user: admin_user,
   form: admin_error_form,
   sender: "Merk",
 }
 
 Repo.insert! %Message{
   content: "And also better architecture.",
-  account: admin_account,
+  user: admin_user,
   form: admin_contact_form,
   sender: "Anonymous",
 }
 
 Repo.insert! %Message{
   content: "Let's meet at 6:30 pm at the coffee shop.",
-  account: user_account,
+  user: user,
   form: user_form,
   sender: "sam@gmail.com",
 }

@@ -33,29 +33,29 @@ defmodule FormDelegate.Mixfile do
   end
 
   # Specifies which paths to compile per environment.
-  defp elixirc_paths(:test), do: ["lib", "web", "test/support"]
-  defp elixirc_paths(_),     do: ["lib", "web"]
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_),     do: ["lib"]
 
   # Specifies your project dependencies.
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    [{:phoenix, "~> 1.2.4"},
+    [{:phoenix, "~> 1.3.0"},
      {:phoenix_pubsub, "~> 1.0"},
-     {:phoenix_ecto, "~> 3.0"},
+     {:phoenix_ecto, "~> 3.3.0"},
      {:postgrex, ">= 0.0.0"},
-     {:phoenix_html, "~> 2.10.3"},
-     {:phoenix_live_reload, "~> 1.0.8", only: :dev},
+     {:phoenix_html, "~> 2.10.5"},
+     {:phoenix_live_reload, "~> 1.1.3", only: :dev},
      {:gettext, "~> 0.13"},
      {:cowboy, "~> 1.1.2"},
-     {:guardian, "~> 0.14.5"},
-     {:comeonin, "~> 4.0.0"},
-     {:pbkdf2_elixir, "~> 0.12"},
-     {:ex_machina, "~> 2.0", only: :test},
+     {:guardian, "~> 1.0.0"},
+     {:comeonin, "~> 4.0.3"},
+     {:pbkdf2_elixir, "~> 0.12.3"},
+     {:ex_machina, "~> 2.1.0", only: :test},
      {:bamboo, "~> 0.8"},
      {:bamboo_sparkpost, "~> 0.8.0"},
-     {:scrivener_ecto, "~> 1.2.2"},
-     {:scrivener_headers, "~> 3.1"}]
+     {:scrivener_ecto, "~> 1.3.0"},
+     {:scrivener_headers, "~> 3.1.1"}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

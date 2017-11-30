@@ -1,0 +1,65 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { fetchMessageActivity } from 'actions/messages';
+import { getCurrentUser, getMessageActivity } from 'selectors';
+import MessageActivity from 'components/MessageActivity';
+
+const propTypes = {
+  user: PropTypes.object,
+  isFetching: PropTypes.bool.isRequired,
+  loadMessageActivity: PropTypes.func.isRequired,
+};
+
+const UnverifiedAlert = isVerified => {
+  if (!isVerified) {
+    return <div>Please verify your user's e-mail address.</div>;
+  }
+
+  return null;
+};
+
+class DashboardContainer extends React.Component {
+  componentDidMount() {
+    this.props.loadMessageActivity();
+  }
+
+  render() {
+    const { user, isFetching, messageActivity } = this.props;
+
+    if (!user || isFetching || !messageActivity) return null;
+
+    return (
+      <div className="fluid-container">
+        <h1>{user.name}'s Dashboard</h1>
+        <div className="dashboard">
+          <UnverifiedAlert isVerified={user.verified} />
+
+          <MessageActivity activity={messageActivity} />
+
+          <div className="card-header">Recent Updates</div>
+          <div className="card activity-graph">Coming soon</div>
+
+          <div className="card-header">Feedback</div>
+          <div className="card activity-graph">Coming soon</div>
+        </div>
+      </div>
+    );
+  }
+}
+
+DashboardContainer.propTypes = propTypes;
+
+const mapStateToProps = state => ({
+  user: getCurrentUser(state),
+  isFetching: state.users.isFetching,
+  messageActivity: getMessageActivity(state),
+});
+
+const mapDispatchToProps = dispatch => ({
+  loadMessageActivity() {
+    dispatch(fetchMessageActivity());
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(DashboardContainer);

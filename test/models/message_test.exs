@@ -6,7 +6,7 @@ defmodule FormDelegate.MessageTest do
   @valid_attrs %{
     content: "A brief message.",
     sender: "M. Stark",
-    account_id: 1,
+    user_id: 1,
   }
   @invalid_attrs %{
     content: "A brief message.",

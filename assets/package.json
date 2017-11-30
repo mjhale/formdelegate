@@ -1,0 +1,110 @@
+{
+  "name": "form-delegate",
+  "version": "0.0.1",
+  "repository": {},
+  "license": "GPL-3.0",
+  "dependencies": {
+    "babel-polyfill": "^6.16.0",
+    "bourbon": "beta",
+    "bourbon-neat": "^2.0.0",
+    "classnames": "^2.2.5",
+    "d3": "^4.10.0",
+    "immutable": "^3.8.1",
+    "isomorphic-fetch": "^2.2.1",
+    "jwt-decode": "^2.2.0",
+    "lodash": "^4.17.4",
+    "moment": "^2.15.2",
+    "normalizr": "^3.0.0",
+    "phoenix": "file:../deps/phoenix",
+    "phoenix_html": "file:../deps/phoenix_html",
+    "query-string": "^5.0.1",
+    "react": "^16.0.0",
+    "react-copy-to-clipboard": "^5.0.0",
+    "react-dom": "^16.0.0",
+    "react-helmet": "^5.1.3",
+    "react-redux": "^5.0.1",
+    "react-router-dom": "^4.1.1",
+    "react-scroll": "^1.6.4",
+    "redux": "^3.6.0",
+    "redux-form": "^7.1.2",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.1.0",
+    "reselect": "^3.0.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^7.1.6",
+    "babel-core": "^6.9.1",
+    "babel-eslint": "^8.0.2",
+    "babel-jest": "^21.2.0",
+    "babel-loader": "^7.1.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-polyfill": "^6.16.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.16.0",
+    "copy-webpack-plugin": "^4.2.0",
+    "css-loader": "^0.28.4",
+    "enzyme": "^3.1.1",
+    "enzyme-adapter-react-16": "^1.0.4",
+    "eslint": "^4.10.0",
+    "eslint-config-prettier": "^2.7.0",
+    "eslint-plugin-babel": "^4.1.2",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-prettier": "^2.1.2",
+    "eslint-plugin-react": "^7.1.0",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "file-loader": "^1.1.5",
+    "husky": "^0.14.1",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^21.2.1",
+    "jest-localstorage-mock": "^2.0.1",
+    "lint-staged": "^5.0.0",
+    "node-sass": "^4.6.0",
+    "postcss-loader": "^2.0.6",
+    "prettier": "^1.8.0",
+    "react-test-renderer": "^16.0.0",
+    "sass-loader": "^6.0.0",
+    "style-loader": "^0.19.0",
+    "url-loader": "^0.6.2",
+    "webpack": "^3.4.1"
+  },
+  "jest": {
+    "collectCoverageFrom": ["<rootDir>/js/**/*.{js,jsx}"],
+    "moduleDirectories": ["<rootDir>/node_modules", "<rootDir>/js"],
+    "moduleNameMapper": {
+      "\\.(css|scss)$": "identity-obj-proxy"
+    },
+    "setupFiles": ["jest-localstorage-mock"],
+    "setupTestFrameworkScriptFile": "<rootDir>/js/setupTests.js",
+    "testEnvironment": "node",
+    "testMatch": [
+      "<rootDir>/js/**/__tests__/**/*.{js,jsx}",
+      "<rootDir>/js/**/?(*.)(spec|test).{js,jsx}"
+    ],
+    "testPathIgnorePatterns": ["<rootDir>/node_modules/"],
+    "transform": {
+      "^.+\\.(js|jsx)$": "babel-jest",
+      "^.+\\.(css|scss)$": "<rootDir>/cssTransform.js",
+      "^(?!.*\\.(js|jsx|css|scss|json)$)": "<rootDir>/fileTransform.js"
+    },
+    "transformIgnorePatterns": ["[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"]
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,json,css}": [
+      "prettier --print-width 80 --single-quote --trailing-comma es5 --write",
+      "git add"
+    ]
+  },
+  "scripts": {
+    "compile": "NODE_ENV=production webpack -p",
+    "eslint-check":
+      "eslint --print-config .eslintrc.js | eslint-config-prettier-check",
+    "precommit": "lint-staged",
+    "start": "webpack --watch-stdin --progress --color",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  }
+}

@@ -11,7 +11,7 @@ defmodule FormDelegate do
       # Start the Ecto repository
       supervisor(FormDelegate.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(FormDelegate.Endpoint, []),
+      supervisor(FormDelegateWeb.Endpoint, []),
       # Start your own worker by calling: FormDelegate.Worker.start_link(arg1, arg2, arg3)
       # worker(FormDelegate.Worker, [arg1, arg2, arg3]),
     ]
@@ -25,7 +25,7 @@ defmodule FormDelegate do
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
   def config_change(changed, _new, removed) do
-    FormDelegate.Endpoint.config_change(changed, removed)
+    FormDelegateWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 end

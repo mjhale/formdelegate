@@ -6,7 +6,7 @@ use Mix.Config
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
-config :form_delegate, FormDelegate.Endpoint,
+config :form_delegate, FormDelegateWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
   code_reloader: true,
@@ -15,18 +15,18 @@ config :form_delegate, FormDelegate.Endpoint,
     node: [
       "node_modules/webpack/bin/webpack.js",
       "--watch", "--color",
-      cd: Path.expand("../", __DIR__)
+      cd: Path.expand("../assets", __DIR__)
     ]
   ]
 
 # Watch static and templates for browser reloading.
-config :form_delegate, FormDelegate.Endpoint,
+config :form_delegate, FormDelegateWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
-      ~r{web/views/.*(ex)$},
-      ~r{web/templates/.*(eex)$}
+      ~r{lib/form_delegate_web/views/.*(ex)$},
+      ~r{lib/form_delegate_web/templates/.*(eex)$}
     ]
   ]
 

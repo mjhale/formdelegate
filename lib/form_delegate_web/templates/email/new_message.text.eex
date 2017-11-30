@@ -1,0 +1,9 @@
+<%= @user.name %>, you've received a new message via Form Delegate!
+
+<%= for {key, value} <- @message.unknown_fields do %>
+  <%= key %>: <%= value %>
+<% end %>
+
+--
+
+FormDelegate.com

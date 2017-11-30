@@ -1,3 +1,3 @@
 defmodule FormDelegate.LayoutViewTest do
-  use FormDelegate.ConnCase, async: true
+  use FormDelegateWeb.ConnCase, async: true
 end
