@@ -1,6 +1,6 @@
 info "Building Phoenix static assets"
 
-npm run compile
+API_HOST="https://www.formdelegate.com/api/" yarn run compile
 
 cd $phoenix_dir
 

@@ -22,11 +22,12 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# Configures the defaults for Guardian
 config :form_delegate, FormDelegateWeb.Guardian,
   allowed_algos: ["HS512"],
   issuer: "form_delegate_web",
   secret_key: %{
-    "k" => System.get_env("GUARDIAN_SECRET") || "EBz9UGZXtQNUTsW5pAFMARky3_AhjSYZd5GEAUqunrBiph0zEieEQSJ6sX3W4mFEFu8u_TZxO0jTygAfvL5c4Q",
+    "k" => "EBz9UGZXtQNUTsW5pAFMARky3_AhjSYZd5GEAUqunrBiph0zEieEQSJ6sX3W4mFEFu8u_TZxO0jTygAfvL5c4Q",
     "kty" => "oct"
   },
   ttl: { 14, :days },

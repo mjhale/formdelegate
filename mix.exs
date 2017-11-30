@@ -55,7 +55,8 @@ defmodule FormDelegate.Mixfile do
      {:bamboo, "~> 0.8"},
      {:bamboo_sparkpost, "~> 0.8.0"},
      {:scrivener_ecto, "~> 1.3.0"},
-     {:scrivener_headers, "~> 3.1.1"}]
+     {:scrivener_headers, "~> 3.1.1"},
+     {:distillery, "~> 1.5", runtime: false}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

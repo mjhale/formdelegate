@@ -13,15 +13,19 @@ use Mix.Config
 # which you typically run after static files are built.
 config :form_delegate, FormDelegateWeb.Endpoint,
   load_from_system_env: true,
-  url: [scheme: "https", host: "formdelegate.herokuapp.com", port: 443],
+  http: [port: "${PORT}"],
+  root: ".",
+  version: Application.spec(:phoenix_distillery, :vsn),
+  url: [scheme: "https", host: "www.formdelegate.com", port: "${PORT}"],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json",
-  secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE")
+  secret_key_base: "${SECRET_KEY_BASE}",
+  server: true
 
 config :form_delegate, FormDelegate.Repo,
   adapter: Ecto.Adapters.Postgres,
-  url: Map.fetch!(System.get_env(), "DATABASE_URL"),
-  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+  url: "${DATABASE_URL}",
+  pool_size: 1,
   ssl: true
 
 # Do not print debug messages in production
@@ -71,7 +75,18 @@ config :logger, level: :info
 # Configures Bamboo mailer
 config :form_delegate, FormDelegate.Mailer,
   adapter: Bamboo.SparkPostAdapter,
-  api_key: Map.fetch!(System.get_env(), "SPARKPOST_KEY")
+  api_key: "${SPARKPOST_KEY}"
+
+# Configures Guardian
+config :form_delegate, FormDelegateWeb.Guardian,
+  allowed_algos: ["HS512"],
+  issuer: "form_delegate_web",
+  secret_key: %{
+    "k" => "${GUARDIAN_SECRET}",
+    "kty" => "oct"
+  },
+  ttl: { 14, :days },
+  verify_issuer: true
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
