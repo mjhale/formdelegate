@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { getCurrentUser } from 'selectors';
 import { NavLink, withRouter } from 'react-router-dom';
 import { logoutUser } from 'actions/sessions';
-import Logout from 'components/Auth/Logout';
+import theme from 'constants/theme';
 
 const propTypes = {
   isAdmin: PropTypes.bool.isRequired,
@@ -17,74 +18,60 @@ const defaultProps = {
   isAuthenticated: false,
 };
 
+const NavContainer = styled.nav`
+  overflow: hidden;
+  padding: 0;
+`;
+
+const NavItem = styled(NavLink).attrs({ activeClassName: 'active' })`
+  color: ${theme.navTextColor};
+  display: block;
+  font-family: ${theme.systemFont};
+  font-size: 1rem;
+  padding: 1rem;
+  text-decoration: none;
+
+  &:hover,
+  &.${props => props.activeClassName} {
+    color: ${theme.offWhite};
+    transition: all 0.1s;
+  }
+
+  &:hover:not(.${props => props.activeClassName}) {
+    background-color: ${theme.navHighlightColor};
+    border-left: 0.5rem solid ${theme.lightCarnation};
+  }
+
+  &.${props => props.activeClassName} {
+    background-color: ${theme.navHighlightColor};
+    border-left: 0.5rem solid ${theme.darkCarnation};
+  }
+`;
+
 const UnauthenticatedNav = () => (
-  <ul className="nav-links" role="nav">
-    <li>
-      <NavLink exact to="/" activeClassName="active">
-        home
-      </NavLink>
-    </li>
-    <li>
-      <NavLink to="/faq" activeClassName="active">
-        faq
-      </NavLink>
-    </li>
-    <li>
-      <NavLink to="/pricing" activeClassName="active">
-        pricing
-      </NavLink>
-    </li>
-    <li>
-      <NavLink to="/support" activeClassName="active">
-        support
-      </NavLink>
-    </li>
-    <li>
-      <NavLink to="/login" activeClassName="active">
-        login
-      </NavLink>
-    </li>
-  </ul>
+  <NavContainer role="nav">
+    <NavItem exact to="/">
+      home
+    </NavItem>
+    <NavItem to="/faq">faq</NavItem>
+    <NavItem to="/pricing">pricing</NavItem>
+    <NavItem to="/support">support</NavItem>
+    <NavItem to="/login">login</NavItem>
+  </NavContainer>
 );
 
 const AuthenticatedNav = ({ isAdmin, onLogoutClick }) => (
-  <ul className="nav-links" role="nav">
-    <li>
-      <NavLink to="/dashboard" activeClassName="active">
-        dashboard
-      </NavLink>
-    </li>
-    <li>
-      <NavLink to="/messages" activeClassName="active">
-        messages
-      </NavLink>
-    </li>
-    <li>
-      <NavLink to="/forms" activeClassName="active">
-        forms
-      </NavLink>
-    </li>
-    <li>
-      <NavLink to="/settings" activeClassName="active">
-        settings
-      </NavLink>
-    </li>
-    <li>
-      <NavLink to="/support" activeClassName="active">
-        support
-      </NavLink>
-    </li>
-    {isAdmin && (
-      <li>
-        <NavLink to="/admin" activeClassName="active">
-          admin
-        </NavLink>
-      </li>
-    )}
-    <li>
-      <Logout onLogoutClick={onLogoutClick} />
-    </li>
-  </ul>
+  <NavContainer role="nav">
+    <NavItem to="/dashboard">dashboard</NavItem>
+    <NavItem to="/messages">messages</NavItem>
+    <NavItem to="/forms">forms</NavItem>
+    <NavItem to="/settings">settings</NavItem>
+    <NavItem to="/support">support</NavItem>
+    {isAdmin && <NavItem to="/admin">admin</NavItem>}
+    <NavItem to="/logout" onClick={onLogoutClick}>
+      logout
+    </NavItem>
+  </NavContainer>
 );
 
 const Nav = ({ isAdmin, isAuthenticated, onLogoutClick, ...props }) => {

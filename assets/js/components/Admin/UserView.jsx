@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
+import Card from 'components/Card';
 import { adminFetchUser } from 'actions/users';
 import { getUser } from 'selectors';
 
@@ -27,14 +28,13 @@ class AdminUserView extends React.Component {
     }
 
     return (
-      <div className="user card">
-        <h1>User Management</h1>
+      <Card header="User Management">
         <div>E-Mail: {user.email}</div>
         <div>Name: {user.name}</div>
         <div>
           <Link to={`/admin/users/${user.id}/edit`}>Edit User</Link>
         </div>
-      </div>
+      </Card>
     );
   }
 }

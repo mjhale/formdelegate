@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchMessageActivity } from 'actions/messages';
 import { getCurrentUser, getMessageActivity } from 'selectors';
+import Card from 'components/Card';
 import MessageActivity from 'components/MessageActivity';
 
 const propTypes = {
@@ -30,18 +31,15 @@ class DashboardContainer extends React.Component {
     if (!user || isFetching || !messageActivity) return null;
 
     return (
-      <div className="fluid-container">
+      <div>
         <h1>{user.name}'s Dashboard</h1>
         <div className="dashboard">
           <UnverifiedAlert isVerified={user.verified} />
 
           <MessageActivity activity={messageActivity} />
 
-          <div className="card-header">Recent Updates</div>
-          <div className="card activity-graph">Coming soon</div>
-
-          <div className="card-header">Feedback</div>
-          <div className="card activity-graph">Coming soon</div>
+          <Card header="Recent Updates">Coming soon</Card>
+          <Card header="Feedback">Coming soon</Card>
         </div>
       </div>
     );

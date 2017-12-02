@@ -6,6 +6,8 @@ import { Field } from 'redux-form';
 import { loginUser } from 'actions/sessions';
 import { reduxForm, propTypes as reduxPropTypes } from 'redux-form';
 import { withRouter } from 'react-router-dom';
+import Button from 'components/Button';
+import Card from 'components/Card';
 import Error from 'components/Error';
 import renderField from 'components/Field';
 
@@ -34,10 +36,10 @@ const validate = values => {
 };
 
 let RegisterUser = ({ handleSubmit, errorMessage, submitting }) => (
-  <div className="fluid-container">
+  <div>
     {errorMessage && <Error message={errorMessage} />}
-    <h1>Register User</h1>
-    <div className="register card">
+    <h2>Register User</h2>
+    <Card>
       <form onSubmit={handleSubmit}>
         <Field
           name="email"
@@ -57,11 +59,11 @@ let RegisterUser = ({ handleSubmit, errorMessage, submitting }) => (
           type="password"
           label="Password"
         />
-        <button type="submit" className="btn" disabled={submitting}>
+        <Button type="submit" disabled={submitting}>
           Create User
-        </button>
+        </Button>
       </form>
-    </div>
+    </Card>
   </div>
 );
 

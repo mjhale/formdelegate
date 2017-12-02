@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Faq = () => (
-  <div className="faq fluid-container">
+  <div>
     <h1>Frequently Asked Questions</h1>
   </div>
 );

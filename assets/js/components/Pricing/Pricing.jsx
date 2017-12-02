@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Pricing = () => (
-  <div className="pricing fluid-container">
+  <div>
     <h1>Pricing</h1>
   </div>
 );

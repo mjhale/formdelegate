@@ -3,10 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { withRouter } from 'react-router-dom';
-import { loginUser, logoutUser } from 'actions/sessions';
+import { loginUser } from 'actions/sessions';
 import Error from 'components/Error';
 import LoginForm from 'components/Auth/LoginForm';
-import Logout from 'components/Auth/Logout';
 
 const validate = values => {
   const errors = {};
@@ -37,7 +36,6 @@ let Login = props => {
     fields,
     handleSubmit,
     isAuthenticated,
-    logout,
     onSubmit,
     pristine,
     submitting,
@@ -45,7 +43,7 @@ let Login = props => {
 
   if (!isAuthenticated) {
     return (
-      <div className="fluid-container">
+      <div>
         {errorMessage && <Error message={errorMessage} />}
         <LoginForm
           {...fields}
@@ -55,14 +53,9 @@ let Login = props => {
         />
       </div>
     );
-  } else {
-    return (
-      <div className="logout-prompt fluid-container">
-        You are currently logged in. Would you like to{' '}
-        <Logout logoutText="logout" onLogoutClick={logout} />?
-      </div>
-    );
   }
+
+  return null;
 };
 
 Login.propTypes = propTypes;
@@ -82,11 +75,6 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  logout(evt) {
-    evt.preventDefault();
-    dispatch(logoutUser());
-  },
-
   onSubmit(values) {
     dispatch(loginUser(values)).then(() => ownProps.history.push('/dashboard'));
   },

@@ -7,11 +7,18 @@ import { fetchIntegrations } from 'actions/integrations';
 import { Field } from 'redux-form';
 import { reduxForm } from 'redux-form';
 import { withRouter } from 'react-router-dom';
+import styled from 'styled-components';
+import Button from 'components/Button';
+import Card from 'components/Card';
 import NewIntegrations from 'components/FormIntegrations/NewIntegrations';
 
 const propTypes = {
   message: PropTypes.object,
 };
+
+const AddIntegrationButton = styled(Button)`
+  float: right;
+`;
 
 class FormNewContainer extends React.Component {
   constructor() {
@@ -28,9 +35,8 @@ class FormNewContainer extends React.Component {
     const integrationTypes = this.props.integrations;
 
     return (
-      <div className="fluid-container">
-        <a
-          className="add-integration btn"
+      <div>
+        <AddIntegrationButton
           onClick={() => {
             this.setState({
               newIntegrationFields: this.state.newIntegrationFields + 1,
@@ -39,10 +45,10 @@ class FormNewContainer extends React.Component {
           }}
         >
           Add Integration To Form
-        </a>
+        </AddIntegrationButton>
         <h1>Add New Form</h1>
-        <form onSubmit={handleSubmit} className="form">
-          <div className="card">
+        <form onSubmit={handleSubmit}>
+          <Card>
             <div>
               <label>Form Name</label>
               <Field name="form" component="input" type="text" />
@@ -51,12 +57,10 @@ class FormNewContainer extends React.Component {
               integrationTypes={integrationTypes}
               newIntegrationFields={this.state.newIntegrationFields}
             />
-          </div>
-          <div>
-            <button type="submit" className="btn" disabled={submitting}>
-              Save Form
-            </button>
-          </div>
+          </Card>
+          <Button type="submit" disabled={submitting}>
+            Save Form
+          </Button>
         </form>
       </div>
     );

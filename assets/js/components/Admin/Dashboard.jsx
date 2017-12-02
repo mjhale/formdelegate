@@ -1,13 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCurrentUser } from 'selectors';
+import Card from 'components/Card';
 
 const AdminDashboard = () => (
   <div>
-    <div className="card-header">Metric graphs</div>
-    <div className="card">Coming soon</div>
-    <div className="card-header">Newest users</div>
-    <div className="card">Coming soon</div>
+    <Card header="Metric Graphs">Coming soon</Card>
+    <Card header="Newest Users">Coming soon</Card>
   </div>
 );
 

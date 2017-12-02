@@ -1,7 +1,7 @@
 import React from 'react';
 
 const InvalidRoute = () => (
-  <div className="invalid-route fluid-container">
+  <div>
     <h1>Wrong turn!</h1>
     <p>
       We can't seem to find the page you're looking for... this is likely our

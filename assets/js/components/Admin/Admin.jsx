@@ -23,7 +23,7 @@ const Admin = ({ user, isAdmin }) => {
     return <Error message="You are not authorized to access this area." />;
 
   return (
-    <div className="admin fluid-container">
+    <div>
       <h1>Administration</h1>
       <ul className="admin-links" role="nav">
         <li>

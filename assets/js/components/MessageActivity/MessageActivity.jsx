@@ -1,5 +1,16 @@
 import React from 'react';
+import styled from 'styled-components';
 import * as d3 from 'd3';
+import Card from 'components/Card';
+
+const GraphContainer = styled.div`
+  text-align: center;
+`;
+
+const Graph = styled.svg`
+  height: auto;
+  max-width: 100%;
+`;
 
 class MessageActivity extends React.Component {
   componentDidMount() {
@@ -80,17 +91,16 @@ class MessageActivity extends React.Component {
 
   render() {
     return (
-      <div className="message-activity">
-        <div className="card-header">Message Activity Graph</div>
-        <div className="card">
-          <svg
+      <Card header="Message Activity Graph">
+        <GraphContainer>
+          <Graph
             className="activity-graph"
             width="700"
             height="200"
             viewBox="0 0 700 200"
           />
-        </div>
-      </div>
+        </GraphContainer>
+      </Card>
     );
   }
 }

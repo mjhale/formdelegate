@@ -2,14 +2,20 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import styled from 'styled-components';
 import { fetchForms, formDeletionRequest } from 'actions/forms';
 import { getOrderedForms } from 'selectors';
+import Button from 'components/Button';
 import FormList from 'components/Forms/FormList';
 
 const propTypes = {
   forms: PropTypes.array.isRequired,
   isFetching: PropTypes.bool.isRequired,
 };
+
+const NewFormLink = styled(Link)`
+  float: right;
+`;
 
 class FormsContainer extends React.Component {
   componentDidMount() {
@@ -20,10 +26,10 @@ class FormsContainer extends React.Component {
     const { forms, isFetching, onDeleteClick } = this.props;
 
     return (
-      <div className="forms fluid-container">
-        <Link to="/forms/new" className="add-form btn">
-          Create New Form
-        </Link>
+      <div>
+        <NewFormLink to="/forms/new">
+          <Button tabIndex="-1">Create New Form</Button>
+        </NewFormLink>
         <h1>My Forms</h1>
         <FormList
           forms={forms}

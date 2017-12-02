@@ -1,8 +1,9 @@
 import React from 'react';
+import FluidContainer from 'components/FluidContainer';
 
 const CodeExample = () => (
   <div className="example">
-    <div className="fluid-container">
+    <FluidContainer>
       <h2>Take the plunge</h2>
       <h3 className="step-one">
         Step 1: Replace your form's action attribute.
@@ -16,14 +17,14 @@ const CodeExample = () => (
         {`</form>`}
       </code>
       <h3 className="step-two">Step 2: Relax.</h3>
-    </div>
+    </FluidContainer>
   </div>
 );
 
 const Welcome = () => (
   <div className="welcome">
     <div className="hero">
-      <div className="fluid-container">
+      <FluidContainer>
         <h1 className="hero-title">Simple Form Processing</h1>
         <div className="hero-message">
           Send your forms to us. We'll handle the rest.
@@ -31,13 +32,13 @@ const Welcome = () => (
         <div className="hero-action">
           <button className="btn signup">Try It For Free</button>
         </div>
-      </div>
+      </FluidContainer>
     </div>
     <div className="action-bar">
       Want to see it in action? <a href="#">Watch our demo.</a>
     </div>
     <div className="features">
-      <div className="fluid-container">
+      <FluidContainer>
         <h2>Give your forms flexibility</h2>
         <h3>Add powerful features to your forms. No coding required.</h3>
         <ul className="feature-list">
@@ -46,11 +47,11 @@ const Welcome = () => (
           <li>Create endless integrations with Zappier.</li>
           <li>Keep spam out of your life with our automatic filtering.</li>
         </ul>
-      </div>
+      </FluidContainer>
     </div>
     <CodeExample />
     <div className="cards">
-      <div className="fluid-container">
+      <FluidContainer>
         <div className="item">
           <h2>You own your data.</h2>
           <p>Export or permanently delete your data at any time.</p>
@@ -75,7 +76,7 @@ const Welcome = () => (
             submissions.
           </p>
         </div>
-      </div>
+      </FluidContainer>
     </div>
   </div>
 );

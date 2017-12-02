@@ -10,6 +10,9 @@ import { Field, reduxForm } from 'redux-form';
 import { findLastIndex } from 'lodash';
 import { formSchema } from 'schema';
 import { getForm } from 'selectors';
+import styled from 'styled-components';
+import Button from 'components/Button';
+import Card from 'components/Card';
 import FormIntegrationList from 'components/FormIntegrations/IntegrationList';
 import NewIntegrations from 'components/FormIntegrations/NewIntegrations';
 
@@ -17,6 +20,22 @@ const propTypes = {
   initialValues: PropTypes.object,
   isFetching: PropTypes.bool.isRequired,
 };
+
+const AddIntegrationButton = styled(Button)`
+  float: right;
+`;
+
+const VerifiedStatus = styled.div`
+  float: right;
+  text-transform: none;
+`;
+
+const CardHeader = ({ title, isVerified }) => (
+  <div>
+    <VerifiedStatus>{isVerified ? 'Verified' : 'Unverified'}</VerifiedStatus>
+    {title}
+  </div>
+);
 
 class FormEdit extends React.Component {
   constructor() {
@@ -45,9 +64,8 @@ class FormEdit extends React.Component {
     }
 
     return (
-      <div className="fluid-container">
-        <a
-          className="btn add-integration"
+      <div>
+        <AddIntegrationButton
           onClick={() => {
             this.setState({
               newIntegrationFields: this.state.newIntegrationFields + 1,
@@ -56,16 +74,17 @@ class FormEdit extends React.Component {
           }}
         >
           Add Integration To Form
-        </a>
+        </AddIntegrationButton>
         <h1>Edit Form</h1>
-        <form onSubmit={handleSubmit} className="form">
-          <div className="card-header">
-            <div className="verified">
-              {formData.verified ? 'Verified' : 'Unverified'}
-            </div>
-            {formData.form}
-          </div>
-          <div className="card">
+        <form onSubmit={handleSubmit}>
+          <Card
+            header={
+              <CardHeader
+                title={formData.form}
+                isVerified={formData.verified}
+              />
+            }
+          >
             <div>
               <label>Form Name</label>
               <Field name="form" component="input" type="text" />
@@ -89,12 +108,10 @@ class FormEdit extends React.Component {
               lastFormIntegrationId={lastFormIntegrationId}
               newIntegrationFields={this.state.newIntegrationFields}
             />
-          </div>
-          <div>
-            <button type="submit" className="btn" disabled={submitting}>
-              Save Form
-            </button>
-          </div>
+          </Card>
+          <Button type="submit" disabled={submitting}>
+            Save Form
+          </Button>
         </form>
       </div>
     );

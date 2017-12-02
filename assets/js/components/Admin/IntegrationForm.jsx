@@ -8,6 +8,8 @@ import {
   adminUpdateIntegration,
 } from 'actions/integrations';
 import { getIntegration } from 'selectors';
+import Button from 'components/Button';
+import Card from 'components/Card';
 import renderField from 'components/Field';
 
 const propTypes = {
@@ -26,7 +28,7 @@ class AdminIntegrationForm extends React.Component {
     const { handleSubmit, integration, submitting } = this.props;
 
     return (
-      <div className="integration-form card">
+      <Card>
         <form onSubmit={handleSubmit}>
           <Field
             component={renderField}
@@ -34,11 +36,11 @@ class AdminIntegrationForm extends React.Component {
             label="Type Name"
             type="text"
           />
-          <button type="submit" className="btn" disabled={submitting}>
+          <Button type="submit" disabled={submitting}>
             Update Integration
-          </button>
+          </Button>
         </form>
-      </div>
+      </Card>
     );
   }
 }

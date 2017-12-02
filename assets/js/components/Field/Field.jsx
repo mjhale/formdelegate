@@ -1,20 +1,31 @@
 import React from 'react';
+import styled from 'styled-components';
+import theme from 'constants/theme';
 
-const renderField = ({
+const InputContainer = styled.div`
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+`;
+
+const InputError = styled.span`
+  font-style: italic;
+`;
+
+export const renderInputField = ({
   input,
   label,
   meta: { touched, error },
   placeholder,
   type,
 }) => (
-  <div className="input-container">
+  <InputContainer>
     <label>{label}</label>
     <div>
       <input {...input} placeholder={placeholder} type={type} />
 
-      {touched && error && <span className="input-error">{error}</span>}
+      {touched && error && <InputError>{error}</InputError>}
     </div>
-  </div>
+  </InputContainer>
 );
 
-export default renderField;
+export default renderInputField;

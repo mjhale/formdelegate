@@ -20,7 +20,7 @@ let UserSettings = props => {
   }
 
   return (
-    <div className="fluid-container">
+    <div>
       <h1>User Settings</h1>
       <div className="card">
         <form onSubmit={handleSubmit}>

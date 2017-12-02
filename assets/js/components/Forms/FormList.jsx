@@ -1,6 +1,39 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import styled from 'styled-components';
+import Button from 'components/Button';
+import Card from 'components/Card';
+import theme from 'constants/theme';
+
+const FormAddress = styled.div`
+  background-color: #4e4d5a;
+  border: 1px solid ${theme.mineBlack};
+  box-shadow: 0 0 10px #403c3c inset, 0px 0px 0px ${theme.solidWhite};
+  color: #e2eaea;
+  font-family: ${theme.codeFont};
+  font-size: 0.85rem;
+  font-weight: 300;
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.25s linear;
+  user-select: none;
+  word-break: break-all;
+
+  &:hover {
+    cursor: hand;
+    cursor: pointer;
+  }
+
+  &:active {
+    box-shadow: 0 0 10px #403c3c inset, 0 0.2rem ${theme.primaryColor};
+    transition: all 0s;
+  }
+`;
+
+const FormActions = styled.div`
+  padding-top: 0.5rem;
+`;
 
 let FormList = ({ forms, isFetching, onDeleteClick }) => {
   if (isFetching) {
@@ -8,7 +41,7 @@ let FormList = ({ forms, isFetching, onDeleteClick }) => {
   }
 
   return (
-    <div className="form-list">
+    <div>
       {forms.map(form => (
         <FormSimpleView
           key={form.id}
@@ -22,33 +55,27 @@ let FormList = ({ forms, isFetching, onDeleteClick }) => {
 
 const FormSimpleView = ({ form, onDeleteClick }) => {
   return (
-    <div className="form">
-      <div className="card-header">
-        <span className="form-name">{form.form}</span>
-      </div>
-      <div className="card">
+    <Card header={form.form}>
+      <FormAddress>
         <CopyToClipboard
           text={`https://www.formdelegate.com/api/requests/${form.id}`}
         >
-          <div className="address tooltip-item">
-            https://www.formdelegate.com/api/requests/{form.id}
-            <div className="tooltip">Copy to Clipboard</div>
-          </div>
+          <span>{`https://www.formdelegate.com/api/requests/${form.id}`}</span>
         </CopyToClipboard>
-        <div className="actions">
-          <Link to={`/forms/${form.id}/edit`} className="btn">
-            Edit Form
-          </Link>
-          <a
-            className="btn delete"
-            data-confirm="Are you positive you want to delete this Gist?"
-            onClick={evt => onDeleteClick(form.id, evt)}
-          >
-            Delete Form
-          </a>
-        </div>
-      </div>
-    </div>
+      </FormAddress>
+      <FormActions>
+        <Link to={`/forms/${form.id}/edit`}>
+          <Button tabIndex="-1">Edit Form</Button>
+        </Link>
+        <Button
+          data-confirm="Are you positive you want to delete this Gist?"
+          type="delete"
+          onClick={evt => onDeleteClick(form.id, evt)}
+        >
+          Delete Form
+        </Button>
+      </FormActions>
+    </Card>
   );
 };
 
