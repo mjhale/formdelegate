@@ -22,7 +22,7 @@ docs/vendor/bundle
 erl_crash.dump
 
 # Testing
-/coverage
+coverage
 
 # Static artifacts
 node_modules
