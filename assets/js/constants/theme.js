@@ -1,12 +1,14 @@
 const colors = {
   carnation: '#f76e64',
   chathamBlue: '#16476d',
+  cinderella: '#fce7d7',
   darkCarnation: '#f44133',
   ghostGray: '#c3c6ce',
   lightCarnation: '#f87c73',
   mineBlack: '#2d2929',
   offWhite: '#fbfbfb',
   porcelainGray: '#f1f2f3',
+  seaPink: '#efa19a',
   solidWhite: '#ffffff',
 
   backgroundColor: '#f1f2f3',

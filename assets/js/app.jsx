@@ -2,17 +2,14 @@ import 'phoenix_html';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { injectGlobal } from 'styled-components';
+import { normalize } from 'polished';
 import { Provider } from 'react-redux';
 import { RootRouter } from 'router';
 import theme from 'constants/theme';
 import store from 'store';
 
 injectGlobal`
-  html,
-  body {
-    height: 100%;
-    margin: 0;
-  }
+  ${normalize()}
 
   body {
     background-color: ${theme.backgroundColor};
@@ -24,8 +21,6 @@ injectGlobal`
   }
 
   h1, h2, h3 {
-    color: $header-font;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     font-weight: 300;
     word-wrap: break-word;
   }

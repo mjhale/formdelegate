@@ -8,7 +8,6 @@ import Routes from 'router';
 import styled, { keyframes } from 'styled-components';
 import theme from 'constants/theme';
 import Nav from 'components/Nav';
-import Notifications from 'components/Notifications';
 
 const ContentContainer = styled.div`
   display: block;
@@ -86,7 +85,6 @@ class App extends React.Component {
           <Nav />
         </NavBar>
         <ContentContainer>
-          <Notifications />
           <Routes />
         </ContentContainer>
       </div>

@@ -10,7 +10,6 @@
     <title>Form Delegate</title>
 
     <link href="https://fonts.googleapis.com/css?family=Old+Standard+TT|Lato:900i" rel="stylesheet">
-    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
 
   <body>

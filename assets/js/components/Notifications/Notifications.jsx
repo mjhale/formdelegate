@@ -2,27 +2,27 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { map } from 'lodash';
-import classNames from 'classnames';
+import styled from 'styled-components';
+import Flash from 'components/Flash';
 
 const propTypes = {
   notifications: PropTypes.array.isRequired,
 };
 
+const FlashNotification = styled(Flash)`
+  margin-bottom: 1rem;
+`;
+
 const Notifications = ({ notifications }) => {
   if (!notifications) return null;
 
   return (
-    <div className="notifications">
+    <div>
       {notifications.map(notification => {
-        const classes = classNames(
-          `flash-${notification.level}`,
-          'notification'
-        );
-
         return (
-          <div className={classes} key={notification.id}>
-            {notification.message} test
-          </div>
+          <FlashNotification key={notification.id} type={notification.level}>
+            {notification.message}
+          </FlashNotification>
         );
       })}
     </div>

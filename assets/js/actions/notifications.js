@@ -17,6 +17,14 @@ const hideNotification = id => {
 };
 
 let nextNotificationid = 0;
+
+export const addNotification = payload => {
+  return dispatch => {
+    payload.id = nextNotificationid++;
+    dispatch(showNotification(payload));
+  };
+};
+
 export const addNotificationWithTimeout = payload => {
   return dispatch => {
     payload.id = nextNotificationid++;

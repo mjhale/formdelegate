@@ -27,21 +27,21 @@ class AdminIntegrationList extends React.Component {
     if (isFetching) return null;
 
     return (
-      <div className="table integrations">
-        <div className="table-header">
-          <div className="table-cell">Integrations</div>
+      <div>
+        <div>
+          <div>Integrations</div>
         </div>
-        <div className="table-content">
+        <div>
           {isEmpty &&
             !isFetching && (
-              <div className="table-row flattened">
-                <div className="table-cell">No integrations exist.</div>
+              <div>
+                <div>No integrations exist.</div>
               </div>
             )}
           {!isEmpty &&
             integrations.map(integration => (
-              <div className="table-row flattened" key={integration.id}>
-                <div className="table-cell">
+              <div key={integration.id}>
+                <div>
                   <Link to={`/admin/integrations/${integration.id}`}>
                     {integration.type}
                   </Link>

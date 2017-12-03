@@ -1,7 +1,7 @@
 import React from 'react';
 
 const ReceiveFailure = () => (
-  <div className="receive-failure">
+  <div>
     <h1>We're Sorry!</h1>
     <p>
       We've received your message, but delivery to the recipient may take longer

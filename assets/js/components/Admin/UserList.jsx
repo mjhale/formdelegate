@@ -28,7 +28,7 @@ class AdminUserList extends React.Component {
 
     return (
       <div>
-        <table className="users table-minimal">
+        <table>
           <thead>
             <tr>
               <th>E-Mail Address</th>

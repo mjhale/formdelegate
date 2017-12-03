@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
+import styled from 'styled-components';
+import Button from 'components/Button';
 
 const propTypes = {
   handlePageChange: PropTypes.func.isRequired,
@@ -9,6 +10,29 @@ const propTypes = {
   total: PropTypes.number.isRequired,
 };
 
+const PaginationContainer = styled.ul`
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  list-style-type: none;
+  padding: 0;
+
+  & li {
+    display: flex;
+    margin-right: 0.5rem;
+  }
+
+  & li:last-child {
+    margin-right: 0;
+  }
+`;
+
+const Status = styled.li`
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 20px;
+`;
+
 const Paginator = ({ handlePageChange, limit, offset, total }) => {
   if (!total) return null;
 
@@ -16,40 +40,30 @@ const Paginator = ({ handlePageChange, limit, offset, total }) => {
   let itemIndexCeiling = offset + limit <= total ? offset + limit : total;
   let itemIndexFloor = offset || 1;
 
-  const prevBtnClasses = classNames({
-    disabled: itemIndexFloor <= 1,
-    btn: true,
-  });
-
-  const nextBtnClasses = classNames({
-    disabled: itemIndexCeiling >= total,
-    btn: true,
-  });
-
   return (
-    <ul className="pagination">
-      <li className="status">
+    <PaginationContainer>
+      <Status>
         {itemIndexFloor}
         {'-'}
         {itemIndexCeiling} of {total}
-      </li>
+      </Status>
       <li>
-        <a
-          className={prevBtnClasses}
+        <Button
+          type={itemIndexFloor <= 1 ? 'disabled' : 'default'}
           onClick={evt => handlePageChange(currentPage - 1, evt)}
         >
           {'<'}
-        </a>
+        </Button>
       </li>
       <li>
-        <a
-          className={nextBtnClasses}
+        <Button
           onClick={evt => handlePageChange(currentPage + 1, evt)}
+          type={itemIndexCeiling >= total ? 'disabled' : 'default'}
         >
           {'>'}
-        </a>
+        </Button>
       </li>
-    </ul>
+    </PaginationContainer>
   );
 };
 

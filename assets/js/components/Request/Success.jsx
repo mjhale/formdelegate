@@ -1,7 +1,7 @@
 import React from 'react';
 
 const ReceiveSuccess = () => (
-  <div className="receive-success">
+  <div>
     <h1>Thanks!</h1>
     <p>
       Your message has been sent. Please <a href="#">click here</a> to go back

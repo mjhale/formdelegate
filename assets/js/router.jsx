@@ -13,6 +13,7 @@ import InvalidRoute from 'components/InvalidRoute';
 import Login from 'components/Auth/Login';
 import Message from 'components/Message';
 import Messages from 'components/Messages';
+import Notifications from 'components/Notifications';
 import Pricing from 'components/Pricing';
 import RequestFailure from 'components/Request/Failure';
 import RequestSuccess from 'components/Request/Success';
@@ -35,6 +36,7 @@ export const Routes = props => {
 
   return (
     <FluidContainer>
+      <Notifications />
       <Switch>
         <Route exact path="/dashboard" component={requireAuth(Dashboard)} />
         <Route exact path="/forms" component={requireAuth(Forms)} />

@@ -5,6 +5,8 @@ import { getCurrentUser } from 'selectors';
 import { getCurrentUserId } from 'utils';
 import { updateUser } from 'actions/users';
 import { Field, reduxForm } from 'redux-form';
+import Button from 'components/Button';
+import Card from 'components/Card';
 import renderField from 'components/Field';
 
 const propTypes = {
@@ -22,7 +24,7 @@ let UserSettings = props => {
   return (
     <div>
       <h1>User Settings</h1>
-      <div className="card">
+      <Card>
         <form onSubmit={handleSubmit}>
           <Field
             name="email"
@@ -42,11 +44,11 @@ let UserSettings = props => {
             type="password"
             label="Password"
           />
-          <button type="submit" className="btn" disabled={submitting}>
+          <Button type="submit" disabled={submitting}>
             Update User
-          </button>
+          </Button>
         </form>
-      </div>
+      </Card>
     </div>
   );
 };

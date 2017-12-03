@@ -3,20 +3,26 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Field, reduxForm, propTypes as reduxFormPropTypes } from 'redux-form';
 import { parse } from 'query-string';
+import styled from 'styled-components';
+import theme from 'constants/theme';
 
 const propTypes = {
   handleSearch: PropTypes.func.isRequired,
   ...reduxFormPropTypes,
 };
 
+const SearchField = styled(Field)`
+  font-family: ${theme.primaryFont};
+  font-size: 0.75rem;
+`;
+
 let Search = ({ handleSearch, handleSubmit, location }) => {
   const { query } = parse(location.search);
 
   return (
     <form onSubmit={handleSubmit(handleSearch)}>
-      <Field
+      <SearchField
         name="search"
-        className="search"
         component="input"
         type="text"
         placeholder="Search..."

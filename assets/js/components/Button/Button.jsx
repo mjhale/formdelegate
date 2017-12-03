@@ -53,10 +53,17 @@ const DeleteButton = DefaultButton.extend`
   }
 `;
 
+const DisabledButton = DefaultButton.extend`
+  background: ${theme.disabledBtnBackgroundColor};
+  pointer-events: none;
+`;
+
 const Button = props => {
   const { type, ...restProps } = props;
 
   switch (type) {
+    case 'disabled':
+      return <DisabledButton {...restProps} />;
     case 'delete':
       return <DeleteButton {...restProps} />;
     default:

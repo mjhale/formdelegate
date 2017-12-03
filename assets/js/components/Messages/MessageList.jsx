@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { map } from 'lodash';
-import Message from 'components/Message/Message';
 import moment from 'moment';
+import styled from 'styled-components';
+import Message from 'components/Message/Message';
+import Table from 'components/Table';
+import { TableContent } from 'components/Table/Table';
 
 const propTypes = {
   handleViewChange: PropTypes.func.isRequired,
@@ -25,23 +28,22 @@ const MessageList = ({
   }
 
   return (
-    <div className="table">
-      <div className="table-content">
+    <Table>
+      <TableContent>
         {map(Object.keys(messages), key => {
           return (
-            <a
+            <Message
               key={messages[key].id}
-              onClick={evt => handleViewChange(messages[key], evt)}
-            >
-              <Message
-                message={messages[key]}
-                openedMessageId={openedMessageId}
-              />
-            </a>
+              message={messages[key]}
+              onClick={evt => {
+                handleViewChange(messages[key], evt);
+              }}
+              openedMessageId={openedMessageId}
+            />
           );
         })}
-      </div>
-    </div>
+      </TableContent>
+    </Table>
   );
 };
 

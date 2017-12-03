@@ -5,6 +5,7 @@ import { fetchMessages, messageSearchFetch } from 'actions/messages';
 import { getVisibleMessages } from 'selectors';
 import { parse } from 'query-string';
 import { withRouter } from 'react-router-dom';
+import styled from 'styled-components';
 import MessageList from 'components/Messages/MessageList';
 import Search from 'components/Search';
 import Pagination from 'components/Paginator';
@@ -23,6 +24,43 @@ const propTypes = {
   }).isRequired,
   query: PropTypes.string,
 };
+
+const Header = styled.div`
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+`;
+
+const Heading = styled.h1`
+  flex: 0 1 auto;
+  margin: 0 1rem 0.5rem 0;
+`;
+
+const Actions = styled.ul`
+  display: flex;
+  flex: 0 0 auto;
+  list-style-type: none;
+  margin: 0 0 0.5rem 0;
+  padding: 0;
+
+  & li {
+    flex: 1 1 auto;
+  }
+
+  & li:first-child {
+    margin-right: 1rem;
+  }
+`;
+
+const SearchContainer = styled.li`
+  & input[name='search'] {
+    line-height: 20px;
+    margin: 0;
+    max-width: 500px;
+    padding: 6px 9px;
+  }
+`;
 
 class MessagesContainer extends React.Component {
   constructor(props) {
@@ -71,20 +109,22 @@ class MessagesContainer extends React.Component {
 
     return (
       <div>
-        <ul className="actions">
-          <li>
-            <Search {...this.props} handleSearch={this.handleSearch} />
-          </li>
-          <li>
-            <Pagination
-              handlePageChange={this.handlePageChange}
-              limit={limit}
-              offset={offset}
-              total={total}
-            />
-          </li>
-        </ul>
-        <h1>My Messages</h1>
+        <Header>
+          <Heading>My Messages</Heading>
+          <Actions>
+            <SearchContainer>
+              <Search {...this.props} handleSearch={this.handleSearch} />
+            </SearchContainer>
+            <li>
+              <Pagination
+                handlePageChange={this.handlePageChange}
+                limit={limit}
+                offset={offset}
+                total={total}
+              />
+            </li>
+          </Actions>
+        </Header>
         <MessageList
           handleViewChange={this.handleViewChange}
           isFetching={isFetching}

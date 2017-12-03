@@ -33,14 +33,12 @@ class DashboardContainer extends React.Component {
     return (
       <div>
         <h1>{user.name}'s Dashboard</h1>
-        <div className="dashboard">
-          <UnverifiedAlert isVerified={user.verified} />
+        <UnverifiedAlert isVerified={user.verified} />
 
-          <MessageActivity activity={messageActivity} />
+        <MessageActivity activity={messageActivity} />
 
-          <Card header="Recent Updates">Coming soon</Card>
-          <Card header="Feedback">Coming soon</Card>
-        </div>
+        <Card header="Recent Updates">Coming soon</Card>
+        <Card header="Feedback">Coming soon</Card>
       </div>
     );
   }
