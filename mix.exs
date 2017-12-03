@@ -29,6 +29,7 @@ defmodule FormDelegate.Mixfile do
          :postgrex,
          :comeonin,
          :bamboo,
+         :bamboo_sparkpost,
          :pbkdf2_elixir,
          :guardian,
          :scrivener_ecto,
