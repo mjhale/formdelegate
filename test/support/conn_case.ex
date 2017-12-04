@@ -20,13 +20,7 @@ defmodule FormDelegateWeb.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
 
-      alias FormDelegate.Repo
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
-
       import FormDelegateWeb.Router.Helpers
-      import FormDelegate.TestHelpers
 
       # The default endpoint for testing
       @endpoint FormDelegateWeb.Endpoint
