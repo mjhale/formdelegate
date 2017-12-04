@@ -4,10 +4,9 @@ defmodule FormDelegate.Mixfile do
   def project do
     [app: :form_delegate,
      version: "0.0.1",
-     elixir: "~> 1.2",
+     elixir: "~> 1.4",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
-     build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      aliases: aliases(),
      deps: deps()]
@@ -17,7 +16,7 @@ defmodule FormDelegate.Mixfile do
   #
   # Type `mix help compile.app` for more information.
   def application do
-    [mod: {FormDelegate, []},
+    [mod: {FormDelegate.Application, []},
       applications:
         [:phoenix,
          :phoenix_pubsub,
@@ -50,7 +49,6 @@ defmodule FormDelegate.Mixfile do
      {:phoenix_ecto, "~> 3.3.0"},
      {:postgrex, ">= 0.0.0"},
      {:phoenix_html, "~> 2.10.5"},
-     {:phoenix_live_reload, "~> 1.1.3", only: :dev},
      {:gettext, "~> 0.13"},
      {:cowboy, "~> 1.1.2"},
      {:guardian, "~> 1.0.0"},

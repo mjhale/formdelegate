@@ -7,13 +7,14 @@ use Mix.Config
 
 # General application configuration
 config :form_delegate,
+  namespace: FormDelegate,
   ecto_repos: [FormDelegate.Repo]
 
 # Configures the endpoint
 config :form_delegate, FormDelegateWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "GkaatwxvDjnh98SB762NswtanDoaBP0/cyeLPl0G/dUoHNKvd70FMXGSrJjH/y5q",
-  render_errors: [view: FormDelegateWeb.ErrorView, accepts: ~w(html json)],
+  render_errors: [view: FormDelegateWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: FormDelegate.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
