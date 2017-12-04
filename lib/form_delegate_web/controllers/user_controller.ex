@@ -3,10 +3,16 @@ defmodule FormDelegateWeb.UserController do
 
   alias FormDelegate.Accounts
   alias FormDelegate.Accounts.User
+  alias FormDelegateWeb.Authorizer
 
   action_fallback FormDelegateWeb.FallbackController
 
-  def create(conn, %{"user" => user_params}) do
+  def action(%Plug.Conn{assigns: %{current_user: current_user}} = conn, _opts) do
+    args = [conn, conn.params, current_user]
+    apply(__MODULE__, action_name(conn), args)
+  end
+
+  def create(conn, %{"user" => user_params}, _) do
     with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
       conn
       |> put_status(:created)
@@ -15,15 +21,19 @@ defmodule FormDelegateWeb.UserController do
     end
   end
 
-  def show(conn, %{"id" => _id}) do
-    current_user = FormDelegateWeb.Guardian.Plug.current_resource(conn)
-    render(conn, "show.json", user: current_user)
+  def show(conn, %{"id" => id}, current_user) do
+    with %User{} = user <- Accounts.get_user!(id),
+         :ok <- Authorizer.authorize(current_user, :show_user, user) do
+
+      render(conn, "show.json", user: user)
+    end
   end
 
-  def update(conn, %{"user" => user_params}) do
-    current_user = FormDelegateWeb.Guardian.Plug.current_resource(conn)
+  def update(conn, %{"id" => id, "user" => user_params}, current_user) do
+    with %User{} = user <- Accounts.get_user!(id),
+         :ok <- Authorizer.authorize(current_user, :update_user, user),
+         {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
 
-    with {:ok, %User{} = user} <- Accounts.update_user(current_user, user_params) do
       render(conn, "show.json", user: user)
     end
   end

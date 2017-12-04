@@ -5,7 +5,7 @@ defmodule FormDelegateWeb.Router do
     plug :accepts, ["json"]
   end
 
-  pipeline :authorized do
+  pipeline :check_authenticated do
     @claims %{typ: "access"}
 
     plug Guardian.Plug.Pipeline, otp_app: :form_delegate,
@@ -14,20 +14,20 @@ defmodule FormDelegateWeb.Router do
 
     plug Guardian.Plug.VerifySession, claims: @claims
     plug Guardian.Plug.VerifyHeader, claims: @claims, realm: "Bearer"
+
+    plug Guardian.Plug.LoadResource, ensure: true, allow_blank: true
+  end
+
+  pipeline :ensure_authenticated do
     plug Guardian.Plug.EnsureAuthenticated
-    plug Guardian.Plug.LoadResource, ensure: true
   end
 
-  pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_flash
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+  pipeline :load_user do
+    plug FormDelegateWeb.LoadUser
   end
 
-  pipeline :admin do
-    plug FormDelegateWeb.CheckAdmin
+  pipeline :ensure_admin do
+    plug FormDelegateWeb.EnsureAdmin
   end
 
   if Mix.env == :dev do
@@ -35,37 +35,34 @@ defmodule FormDelegateWeb.Router do
   end
 
   scope "/api", FormDelegateWeb do
-    pipe_through :api
+    pipe_through [:api, :check_authenticated]
 
+    # non-authenticated routes
     scope "/" do
+      pipe_through :load_user
+
       post "/requests/:id", RequestController, :process_request
-      resources "/sessions", SessionController, only: [:create]
+      resources "/sessions", SessionController, only: [:create, :delete],
+                                                singleton: true
       resources "/users", UserController, only: [:create]
     end
 
+    # authenticated routes
     scope "/" do
-      pipe_through :authorized
+      pipe_through [:ensure_authenticated, :load_user]
 
       resources "/forms", FormController
       get "/integrations", IntegrationController, :index
       resources "/messages", MessageController, only: [:index, :show, :create, :delete]
       get "/search/messages", SearchMessageController, :index
-      resources "/sessions", SessionController, only: [:delete]
       get "/stats/message_activity", StatsController, :message_activity
       resources "/users", UserController, only: [:show, :update]
+
+      scope "/admin", Admin, as: :admin do
+        pipe_through :ensure_admin
+
+        resources "/integrations", IntegrationController, only: [:index, :show, :update]
+      end
     end
-
-    scope "/admin", Admin, as: :admin do
-      pipe_through [:authorized, :admin]
-
-      resources "/users", UserController
-      resources "/integrations", IntegrationController, only: [:index, :show, :update]
-    end
-  end
-
-  scope "/", FormDelegateWeb do
-    pipe_through :browser
-
-    get "/*path", PageController, :index
   end
 end

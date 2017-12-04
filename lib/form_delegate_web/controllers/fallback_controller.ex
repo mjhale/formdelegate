@@ -17,4 +17,10 @@ defmodule FormDelegateWeb.FallbackController do
     |> put_status(:not_found)
     |> render(FormDelegateWeb.ErrorView, :"404")
   end
+
+  def call(conn, {:error, :forbidden}) do
+    conn
+    |> put_status(:forbidden)
+    |> render(FormDelegateWeb.ErrorView, :"403")
+  end
 end

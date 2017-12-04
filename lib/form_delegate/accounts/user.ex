@@ -3,8 +3,6 @@ defmodule FormDelegate.Accounts.User do
   import Ecto.Changeset
   alias FormDelegate.Accounts.User
 
-  @derive {Poison.Encoder, only: [:id, :name, :username]}
-
   schema "users" do
     field :email, :string, null: false
     field :name, :string
@@ -23,8 +21,7 @@ defmodule FormDelegate.Accounts.User do
   @doc false
   def changeset(%User{} = user, attrs) do
     user
-    |> cast(attrs, [:name, :email, :password, :verified, :is_admin])
-    |> cast_assoc(:messages, required: false)
+    |> cast(attrs, [:name, :email, :password])
     |> validate_length(:email, min: 3, max: 128)
     |> validate_length(:password, min: 8, max: 128)
     |> unique_constraint(:email)
