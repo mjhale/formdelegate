@@ -1,31 +1,25 @@
 defmodule FormDelegateWeb.SessionController do
   use FormDelegateWeb, :controller
 
-  plug :scrub_params, "session" when action in [:create]
+  alias FormDelegate.Accounts.User
+  alias FormDelegateWeb.Guardian
+  alias FormDelegateWeb.Session
 
-  def create(conn, %{"session" => session_params}) do
-    case FormDelegateWeb.Session.authenticate(session_params) do
-      {:ok, user} ->
-        {:ok, token, _claims} = FormDelegateWeb.Guardian.encode_and_sign(user, %{}, token_type: "access")
+  action_fallback FormDelegateWeb.FallbackController
+  def create(conn, %{"user" => %{"email" => email,
+                                 "password" => password}}) do
+    with {:ok, %User{} = user} <- Session.authenticate(%{email: email, password: password}),
+         {:ok, token, _claims} = Guardian.encode_and_sign(user, %{}, token_type: "access") do
 
-        conn
-        |> render("show.json", %{user: user, jwt: token})
-      :error ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render("error.json")
+      conn
+      |> render("show.json", %{session: %{token: token}})
     end
   end
 
   def delete(conn, _params) do
     conn
-    |> FormDelegateWeb.Guardian.Plug.sign_out(conn)
-    |> put_status(:no_content)
-  end
-
-  def unauthenticated(conn, _params) do
-    conn
-    |> put_status(:forbidden)
-    |> render(FormDelegate.SessionView, "forbidden.json", error: "Not Authenticated")
+    |> Guardian.Plug.sign_out
+    |> put_resp_header("content-type", "application/json")
+    |> send_resp(:no_content, "")
   end
 end

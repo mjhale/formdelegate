@@ -34,35 +34,25 @@ defmodule FormDelegateWeb.Router do
     forward "/sent_emails", Bamboo.EmailPreviewPlug
   end
 
-  scope "/api", FormDelegateWeb do
-    pipe_through [:api, :check_authenticated]
+  scope "/v1", FormDelegateWeb do
+    pipe_through :api
 
-    # non-authenticated routes
-    scope "/" do
-      pipe_through :load_user
+    post "/requests/:id", RequestController, :process_request
+    resources "/sessions", SessionController, only: [:create, :delete],
+                                              singleton: true
+  end
 
-      post "/requests/:id", RequestController, :process_request
-      resources "/sessions", SessionController, only: [:create, :delete],
-                                                singleton: true
-      resources "/users", UserController, only: [:create]
-    end
+  scope "/v1", FormDelegateWeb do
+    pipe_through [:api, :check_authenticated, :ensure_authenticated, :load_user]
 
-    # authenticated routes
-    scope "/" do
-      pipe_through [:ensure_authenticated, :load_user]
+    resources "/forms", FormController
+    resources "/messages", MessageController, only: [:index, :show, :create, :delete]
+    resources "/users", UserController
 
-      resources "/forms", FormController
-      get "/integrations", IntegrationController, :index
-      resources "/messages", MessageController, only: [:index, :show, :create, :delete]
-      get "/search/messages", SearchMessageController, :index
-      get "/stats/message_activity", StatsController, :message_activity
-      resources "/users", UserController, only: [:show, :update]
+    scope "/admin", Admin, as: :admin do
+      pipe_through :ensure_admin
 
-      scope "/admin", Admin, as: :admin do
-        pipe_through :ensure_admin
-
-        resources "/integrations", IntegrationController, only: [:index, :show, :update]
-      end
+      resources "/integrations", IntegrationController, only: [:index, :show, :update]
     end
   end
 end

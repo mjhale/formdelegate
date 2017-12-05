@@ -1,6 +1,10 @@
 defmodule FormDelegateWeb.ErrorView do
   use FormDelegateWeb, :view
 
+  def render("401.json", _assigns) do
+    %{errors: %{detail: "Login required"}}
+  end
+
   def render("403.json", _assigns) do
     %{errors: %{detail: "Forbidden"}}
   end

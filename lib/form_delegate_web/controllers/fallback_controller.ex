@@ -6,6 +6,12 @@ defmodule FormDelegateWeb.FallbackController do
   """
   use FormDelegateWeb, :controller
 
+  def call(conn, {:error, :unauthorized}) do
+    conn
+    |> put_status(:unauthorized)
+    |> render(FormDelegateWeb.ErrorView, :"401")
+  end
+
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
     conn
     |> put_status(:unprocessable_entity)

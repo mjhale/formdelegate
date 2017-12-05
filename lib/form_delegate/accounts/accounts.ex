@@ -38,6 +38,22 @@ defmodule FormDelegate.Accounts do
   def get_user!(id), do: Repo.get!(User, id)
 
   @doc """
+  Gets a single user.
+
+  Raises `Ecto.NoResultsError` if the User does not exist.
+
+  ## Examples
+
+      iex> get_by!(%{email: "me@domain.com"})
+      %User{}
+
+      iex> get_by!(%{email: "123@domain.com"})
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_by!(attrs), do: Repo.get_by!(User, attrs)
+
+  @doc """
   Creates a user.
 
   ## Examples
