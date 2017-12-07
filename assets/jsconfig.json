@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./src/",
+    "jsx": "react",
+    "module": "commonjs",
+    "target": "es2015"
+  },
+  "exclude": ["node_modules", "coverage"]
+}

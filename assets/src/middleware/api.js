@@ -1,4 +1,3 @@
-/* global API_HOST */
 import fetch from 'isomorphic-fetch';
 import { normalize } from 'normalizr';
 import { merge } from 'lodash';

@@ -31,6 +31,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.1.0",
     "reselect": "^3.0.1",
+    "source-map-explorer": "^1.5.0",
     "styled-components": "^2.2.4"
   },
   "lint-staged": {
@@ -41,6 +42,7 @@
   },
   "scripts": {
     "precommit": "lint-staged",
+    "analyze": "source-map-explorer build/static/js/main.*",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
