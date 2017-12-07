@@ -58,9 +58,9 @@ const FormSimpleView = ({ form, onDeleteClick }) => {
     <Card header={form.form}>
       <FormAddress>
         <CopyToClipboard
-          text={`https://www.formdelegate.com/api/requests/${form.id}`}
+          text={`https://api.formdelegate.com/requests/${form.id}`}
         >
-          <span>{`https://www.formdelegate.com/api/requests/${form.id}`}</span>
+          <span>{`https://api.formdelegate.com/requests/${form.id}`}</span>
         </CopyToClipboard>
       </FormAddress>
       <FormActions>

@@ -25,7 +25,7 @@ export function fetchMessage(messageId) {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        endpoint: `messages/${messageId}`,
+        endpoint: `/v1/messages/${messageId}`,
         schema: messageSchema,
         types: [MESSAGE_REQUEST, MESSAGE_SUCCESS, MESSAGE_FAILURE],
       },
@@ -44,7 +44,7 @@ export function fetchMessageActivity() {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        endpoint: 'stats/message_activity',
+        endpoint: '/v1/stats/message_activity',
         schema: [messageActivitySchema],
         types: [
           MESSAGE_ACTIVITY_REQUEST,
@@ -88,7 +88,7 @@ export function messageSearchFetch(query, requestedPage) {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        endpoint: `search/messages?query=${query}&page=${requestedPage}`,
+        endpoint: `/v1/search/messages?query=${query}&page=${requestedPage}`,
         schema: [messageSchema],
         types: [
           MESSAGE_SEARCH_REQUEST,
@@ -141,7 +141,7 @@ export function fetchMessages(requestedPage) {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        endpoint: `messages?page=${requestedPage}`,
+        endpoint: `/v1/messages?page=${requestedPage}`,
         schema: [messageSchema],
         types: [MESSAGES_REQUEST, MESSAGES_SUCCESS, MESSAGES_FAILURE],
       },

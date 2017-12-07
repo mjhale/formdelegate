@@ -2,6 +2,7 @@ import { normalize } from 'normalizr';
 import { reset } from 'redux-form';
 import { CALL_API } from 'middleware/api';
 import { userSchema } from 'schema';
+import { fetchCurrentUser } from 'actions/users';
 
 // action type constants
 import { USER_SUCCESS } from 'constants/actionTypes';
@@ -20,7 +21,7 @@ export function loginUser(credentials) {
       [CALL_API]: {
         config: {
           body: JSON.stringify({
-            session: {
+            user: {
               ...credentials,
             },
           }),
@@ -30,7 +31,7 @@ export function loginUser(credentials) {
           },
           method: 'POST',
         },
-        endpoint: 'sessions',
+        endpoint: '/v1/sessions',
         schema: null,
         types: [LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE],
       },
@@ -48,13 +49,8 @@ const loginSuccess = response => {
   return async dispatch => {
     try {
       await dispatch(reset('loginForm'));
-      await localStorage.setItem('fd_token', response.payload.jwt);
-      await dispatch({
-        headers: response.headers,
-        isFetching: false,
-        payload: normalize(response.payload.user.data, userSchema),
-        type: USER_SUCCESS,
-      });
+      await localStorage.setItem('fd_token', response.payload.data.token);
+      await dispatch(fetchCurrentUser());
     } catch (error) {
       throw new Error('Promise flow received error', error);
     }

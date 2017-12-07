@@ -17,7 +17,7 @@ import {
 export const fetchIntegrations = () => ({
   [CALL_API]: {
     authenticated: true,
-    endpoint: 'integrations',
+    endpoint: '/v1/integrations',
     schema: [integrationSchema],
     types: [INTEGRATIONS_REQUEST, INTEGRATIONS_SUCCESS, INTEGRATIONS_FAILURE],
   },
@@ -26,7 +26,7 @@ export const fetchIntegrations = () => ({
 export const adminFetchIntegration = integrationId => ({
   [CALL_API]: {
     authenticated: true,
-    endpoint: `admin/integrations/${integrationId}`,
+    endpoint: `/v1/admin/integrations/${integrationId}`,
     schema: integrationSchema,
     types: [INTEGRATION_REQUEST, INTEGRATION_SUCCESS, INTEGRATION_FAILURE],
   },
@@ -45,7 +45,7 @@ export const adminUpdateIntegration = integration => {
           },
           method: 'PUT',
         },
-        endpoint: `admin/integrations/${integration.id}`,
+        endpoint: `/v1/admin/integrations/${integration.id}`,
         schema: integrationSchema,
         types: [
           INTEGRATION_UPDATE_REQUEST,
@@ -66,7 +66,7 @@ export const adminUpdateIntegration = integration => {
 export const adminFetchIntegrations = () => ({
   [CALL_API]: {
     authenticated: true,
-    endpoint: 'admin/integrations',
+    endpoint: '/v1/admin/integrations',
     schema: [integrationSchema],
     types: [INTEGRATIONS_REQUEST, INTEGRATIONS_SUCCESS, INTEGRATIONS_FAILURE],
   },
