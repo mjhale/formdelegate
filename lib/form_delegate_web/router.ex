@@ -26,10 +26,6 @@ defmodule FormDelegateWeb.Router do
     plug FormDelegateWeb.LoadUser
   end
 
-  pipeline :ensure_admin do
-    plug FormDelegateWeb.EnsureAdmin
-  end
-
   if Mix.env == :dev do
     forward "/sent_emails", Bamboo.EmailPreviewPlug
   end
@@ -46,13 +42,8 @@ defmodule FormDelegateWeb.Router do
     pipe_through [:api, :check_authenticated, :ensure_authenticated, :load_user]
 
     resources "/forms", FormController
-    resources "/messages", MessageController, only: [:index, :show, :create, :delete]
+    resources "/integrations", IntegrationController, only: [:index, :show, :update]
+    resources "/messages", MessageController, only: [:index, :show]
     resources "/users", UserController
-
-    scope "/admin", Admin, as: :admin do
-      pipe_through :ensure_admin
-
-      resources "/integrations", IntegrationController, only: [:index, :show, :update]
-    end
   end
 end

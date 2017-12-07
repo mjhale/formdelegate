@@ -1,9 +1,10 @@
-defmodule FormDelegate.Form do
-  use FormDelegateWeb, :model
+defmodule FormDelegate.Forms.Form do
+  use Ecto.Schema
+  import Ecto.Changeset
 
   alias FormDelegate.Accounts.User
-  alias FormDelegate.FormIntegration
-  alias FormDelegate.Message
+  alias FormDelegate.Forms.{Form, Integration}
+  alias FormDelegate.Messages.Message
 
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "forms" do
@@ -14,7 +15,7 @@ defmodule FormDelegate.Form do
 
     belongs_to :user, User
     has_many :messages, Message, on_delete: :delete_all
-    has_many :form_integrations, FormIntegration, on_delete: :delete_all, on_replace: :delete
+    has_many :form_integrations, Integration, on_delete: :delete_all, on_replace: :delete
     has_many :integrations, through: [:form_integrations, :integration]
 
     timestamps()
@@ -23,10 +24,9 @@ defmodule FormDelegate.Form do
   @doc """
   Builds a changeset based on the `struct` and `params`.
   """
-  def changeset(struct, params \\ %{}) do
-    struct
-    |> cast(params, [:form, :host, :verified])
-    |> cast_assoc(:form_integrations)
+  def changeset(%Form{} = form, attrs) do
+    form
+    |> cast(attrs, [:form, :host])
     |> validate_required([:form])
   end
 end

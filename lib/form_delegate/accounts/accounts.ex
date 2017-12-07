@@ -4,9 +4,10 @@ defmodule FormDelegate.Accounts do
   """
 
   import Ecto.Query, warn: false
-  alias FormDelegate.Repo
 
-  alias FormDelegate.Accounts.User
+  alias Comeonin.Pbkdf2
+  alias FormDelegate.Repo
+  alias FormDelegate.{Accounts, Accounts.User}
 
   @doc """
   Returns the list of users.
@@ -44,14 +45,17 @@ defmodule FormDelegate.Accounts do
 
   ## Examples
 
-      iex> get_by!(%{email: "me@domain.com"})
+      iex> get_user_by_email!("me@domain.com")
       %User{}
 
-      iex> get_by!(%{email: "123@domain.com"})
+      iex> get_user_by_email!("123@domain.com")
       ** (Ecto.NoResultsError)
 
   """
-  def get_by!(attrs), do: Repo.get_by!(User, attrs)
+  def get_user_by_email!(email, preload \\ []) do
+    Repo.get_by!(User, email: email)
+    |> Repo.preload(preload)
+  end
 
   @doc """
   Creates a user.
@@ -116,5 +120,27 @@ defmodule FormDelegate.Accounts do
   """
   def change_user(%User{} = user) do
     User.changeset(user, %{})
+  end
+
+  @doc """
+  Authenticates a user based on email and password.
+
+  ## Examples
+
+      iex> authenticate_by_email_password(%{email: "me@domain.com", password: "valid"})
+      {:ok, %User{}}
+
+      iex> authenticate_by_email_password(%{email: "me@domain.com", password: "invalid"})
+      {:error, :unauthorized}
+
+  """
+  def authenticate_by_email_password(%{email: email, password: password}) do
+    with %User{} = user <- Accounts.get_user_by_email!(email),
+         {:ok, %User{} = user} <- Pbkdf2.check_pass(user, password) do
+
+      {:ok, user}
+    else
+      _ -> {:error, :unauthorized}
+    end
   end
 end

@@ -1,6 +1,8 @@
 defmodule FormDelegate.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
+
+  alias Comeonin.Pbkdf2
   alias FormDelegate.Accounts.User
 
   schema "users" do
@@ -12,8 +14,8 @@ defmodule FormDelegate.Accounts.User do
     field :verified, :boolean, default: false, null: false
     field :is_admin, :boolean, default: false, null: false
 
-    has_many :messages, FormDelegate.Message, on_delete: :delete_all
-    has_many :forms, FormDelegate.Form, on_delete: :delete_all
+    has_many :messages, FormDelegate.Messages.Message, on_delete: :delete_all
+    has_many :forms, FormDelegate.Forms.Form, on_delete: :delete_all
 
     timestamps()
   end
@@ -31,7 +33,7 @@ defmodule FormDelegate.Accounts.User do
   defp put_password_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
-        put_change(changeset, :password_hash, Comeonin.Pbkdf2.hashpwsalt(password))
+        put_change(changeset, :password_hash, Pbkdf2.hashpwsalt(password))
       _ ->
         changeset
     end

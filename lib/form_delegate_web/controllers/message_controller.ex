@@ -1,64 +1,31 @@
 defmodule FormDelegateWeb.MessageController do
   use FormDelegateWeb, :controller
 
-  alias FormDelegate.Message
+  alias FormDelegateWeb.Authorizer
+  alias FormDelegate.{Messages, Messages.Message}
 
-  def index(conn, params) do
-    current_user = FormDelegateWeb.Guardian.Plug.current_resource(conn)
+  action_fallback FormDelegateWeb.FallbackController
 
-    query = from m in Message,
-      where: m.user_id == ^current_user.id,
-      left_join: form in assoc(m, :form),
-      left_join: form_integrations in assoc(form, :form_integrations),
-      left_join: integration in assoc(form_integrations, :integration),
-      left_join: integrations in assoc(form, :integrations),
-      preload: [
-        form: {
-          form,
-          form_integrations: {form_integrations, integration: integration},
-          integrations: integrations
-        }
-      ],
-      distinct: true,
-      order_by: [desc: m.id]
-    page = query |> Repo.paginate(params)
-
-    conn
-    |> Scrivener.Headers.paginate(page)
-    |> render("index.json", messages: page.entries)
+  def action(%Plug.Conn{assigns: %{current_user: current_user}} = conn, _opts) do
+    args = [conn, conn.params, current_user]
+    apply(__MODULE__, action_name(conn), args)
   end
 
-  def create(conn, %{"message" => message_params}) do
-    current_user = FormDelegateWeb.Guardian.Plug.current_resource(conn)
+  def index(conn, params, current_user) do
+    with :ok <- Authorizer.authorize(current_user, :show_user_messages) do
+      page = Messages.list_paginated_messages_of_user(current_user, params)
 
-    changeset = build_assoc(current_user, :messages)
-    |> Message.create_changeset(message_params)
-
-    case Repo.insert(changeset) do
-      {:ok, message} ->
-        conn
-        |> put_status(:created)
-        |> put_resp_header("location", message_path(conn, :show, message))
-        |> render("show.json", message: message)
-      {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(FormDelegate.ChangesetView, "error.json", changeset: changeset)
+      conn
+      |> Scrivener.Headers.paginate(page)
+      |> render("index.json", messages: page.entries)
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    message = Message |> Repo.get!(id) |> Repo.preload([:user])
-    render(conn, "show.json", message: message)
-  end
+  def show(conn, %{"id" => id}, current_user) do
+    with %Message{} = message <- Messages.get_message!(id),
+         :ok <- Authorizer.authorize(current_user, :show_message, message) do
 
-  def delete(conn, %{"id" => id}) do
-    message = Message |> Repo.get!(id) |> Repo.preload([:user])
-
-    message
-    |> Message.delete_changeset
-    |> Repo.delete!
-
-    send_resp(conn, :no_content, "")
+      render(conn, "show.json", message: message)
+    end
   end
 end

@@ -1,89 +1,59 @@
 defmodule FormDelegateWeb.FormController do
   use FormDelegateWeb, :controller
 
-  alias FormDelegate.Form
+  alias FormDelegate.{Forms, Forms.Form}
+  alias FormDelegateWeb.Authorizer
 
-  def index(conn, _params) do
-    current_user = FormDelegateWeb.Guardian.Plug.current_resource(conn)
-    forms = Repo.all(user_forms(current_user))
-    |> preload_form_integrations
+  action_fallback FormDelegateWeb.FallbackController
 
-    render(conn, "index.json", forms: forms)
+  def action(%Plug.Conn{assigns: %{current_user: current_user}} = conn, _opts) do
+    args = [conn, conn.params, current_user]
+    apply(__MODULE__, action_name(conn), args)
   end
 
-  def create(conn, %{"form" => form_params}) do
-    current_user = FormDelegateWeb.Guardian.Plug.current_resource(conn)
-    changeset = build_assoc(current_user, :forms)
-    |> preload_form_integrations
-    |> Form.changeset(form_params)
-
-    case Repo.insert(changeset) do
-      {:ok, form} ->
-        conn
-        |> put_status(:created)
-        |> render("show.json", form: form)
-      {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(FormDelegate.ChangesetView, "error.json", changeset: changeset)
+  def index(conn, _params, current_user) do
+    with :ok <- Authorizer.authorize(current_user, :show_user_forms) do
+      forms = Forms.list_forms_of_user(current_user)
+      render(conn, "index.json", forms: forms)
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    current_user = FormDelegateWeb.Guardian.Plug.current_resource(conn)
-    form = Repo.get!(user_forms(current_user), id)
-    Repo.delete!(form)
+  def create(conn, %{"form" => form_params}, current_user) do
+    with :ok <- Authorizer.authorize(current_user, :create_form),
+         {:ok, %Form{} = form} <- Forms.create_form(form_params) do
 
-    send_resp(conn, :no_content, "")
-  end
-
-  def show(conn, %{"id" => id}) do
-    current_user = FormDelegateWeb.Guardian.Plug.current_resource(conn)
-    form = Repo.get!(user_forms(current_user), id)
-    |> preload_form_integrations
-
-    render(conn, "show.json", form: form)
-  end
-
-  def update(conn, %{"id" => id, "form" => form_params}) do
-    current_user = FormDelegateWeb.Guardian.Plug.current_resource(conn)
-    form = Repo.get!(user_forms(current_user), id)
-    |> preload_form_integrations
-
-    # Insert "form_id" field for newly submitted integrations
-    modified_params = get_and_update_in(form_params, ["form_integrations"], fn(integrations) ->
-      modified_integrations =
-        integrations
-        |> Enum.map(fn(integration) ->
-          unless Map.has_key?(integration, id) do
-            Map.put(integration, "form_id", id)
-          end
-        end)
-
-      # Return the unmodified and modified integrations list
-      {integrations, modified_integrations}
-    end)
-
-    changeset = Form.changeset(form, elem(modified_params, 1))
-
-    case Repo.update(changeset) do
-      {:ok, form} ->
-        conn
-        |> put_status(:ok)
-        |> render("show.json", form: form)
-      {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(FormDelegate.ChangesetView, "error.json", changeset: changeset)
+      conn
+      |> put_status(:created)
+      |> put_resp_header("location", form_path(conn, :show, form))
+      |> render("show.json", form: form)
     end
   end
 
-  defp preload_form_integrations(form) do
-    form
-    |> Repo.preload([:form_integrations, :integrations])
+  def show(conn, %{"id" => id}, current_user) do
+    with %Form{} = form <- Forms.get_form!(id),
+         :ok <- Authorizer.authorize(current_user, :show_form, form) do
+
+      render(conn, "show.json", form: form)
+    end
   end
 
-  defp user_forms(user) do
-    assoc(user, :forms)
+  def update(conn, %{"id" => id, "form" => form_params}, current_user) do
+    with %Form{} = form <- Forms.get_form!(id),
+         :ok <- Authorizer.authorize(current_user, :update_form, form),
+         {:ok, %Form{} = form} <- Forms.update_form(form, form_params) do
+
+      render(conn, "show.json", form: form)
+    end
+  end
+
+  def delete(conn, %{"id" => id}, current_user) do
+    with %Form{} = form <- Forms.get_form!(id),
+         :ok <- Authorizer.authorize(current_user, :delete_form, form),
+         {:ok, %Form{} = _form} <- Forms.delete_form(form) do
+
+        conn
+        |> put_resp_header("content-type", "application/json")
+        |> send_resp(:no_content, "")
+    end
   end
 end

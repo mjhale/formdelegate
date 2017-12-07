@@ -5,10 +5,9 @@
 
 alias FormDelegate.Repo
 alias FormDelegate.Accounts.User
-alias FormDelegate.Form
-alias FormDelegate.Integration
-alias FormDelegate.FormIntegration
-alias FormDelegate.Message
+alias FormDelegate.{Forms, Forms.Form}
+alias FormDelegate.Integrations.Integration
+alias FormDelegate.Messages.Message
 
 # Scrub prior data before seeding
 Repo.delete_all(User)
@@ -69,7 +68,7 @@ Repo.insert! %Integration{
 }
 ifttt_integration = Repo.get_by!(Integration, type: "Ifttt")
 
-Repo.insert! %FormIntegration{
+Repo.insert! %Forms.Integration{
   form: admin_contact_form,
   enabled: true,
   integration: ifttt_integration,
@@ -78,7 +77,7 @@ Repo.insert! %FormIntegration{
   }
 }
 
-Repo.insert! %FormIntegration{
+Repo.insert! %Forms.Integration{
   form: admin_contact_form,
   enabled: false,
   integration: email_integration,

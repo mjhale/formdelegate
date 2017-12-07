@@ -1,12 +1,13 @@
 defmodule FormDelegateWeb.MessageView do
   use FormDelegateWeb, :view
+  alias FormDelegateWeb.MessageView
 
   def render("index.json", %{messages: messages}) do
-    %{data: render_many(messages, FormDelegateWeb.MessageView, "message.json")}
+    %{data: render_many(messages, MessageView, "message.json")}
   end
 
   def render("show.json", %{message: message}) do
-    %{data: render_one(message, FormDelegateWeb.MessageView, "message.json")}
+    %{data: render_one(message, MessageView, "message.json")}
   end
 
   def render("message.json", %{message: message}) do

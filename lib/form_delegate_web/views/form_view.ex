@@ -1,12 +1,14 @@
 defmodule FormDelegateWeb.FormView do
   use FormDelegateWeb, :view
+  alias FormDelegateWeb.{FormIntegrationView, FormView}
+
 
   def render("index.json", %{forms: forms}) do
-    %{data: render_many(forms, FormDelegateWeb.FormView, "form.json")}
+    %{data: render_many(forms, FormView, "form.json")}
   end
 
   def render("show.json", %{form: form}) do
-    %{data: render_one(form, FormDelegateWeb.FormView, "form.json")}
+    %{data: render_one(form, FormView, "form.json")}
   end
 
   def render("form.json", %{form: form}) do
@@ -15,15 +17,10 @@ defmodule FormDelegateWeb.FormView do
       form: form.form,
       form_integrations: render_many(
         form.form_integrations,
-        FormDelegateWeb.FormIntegrationView,
+        FormIntegrationView,
         "form_integration.json"
       ),
       host: form.host,
-      integrations: render_many(
-        form.integrations,
-        FormDelegateWeb.IntegrationView,
-        "integration.json"
-      ),
       message_count: form.message_count,
       verified: form.verified,
       inserted_at: form.inserted_at,

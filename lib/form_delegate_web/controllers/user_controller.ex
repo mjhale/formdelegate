@@ -1,8 +1,7 @@
 defmodule FormDelegateWeb.UserController do
   use FormDelegateWeb, :controller
 
-  alias FormDelegate.Accounts
-  alias FormDelegate.Accounts.User
+  alias FormDelegate.{Accounts, Accounts.User}
   alias FormDelegateWeb.Authorizer
 
   action_fallback FormDelegateWeb.FallbackController

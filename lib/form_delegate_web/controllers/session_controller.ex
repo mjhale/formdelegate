@@ -1,14 +1,13 @@
 defmodule FormDelegateWeb.SessionController do
   use FormDelegateWeb, :controller
 
-  alias FormDelegate.Accounts.User
+  alias FormDelegate.{Accounts, Accounts.User}
   alias FormDelegateWeb.Guardian
-  alias FormDelegateWeb.Session
 
   action_fallback FormDelegateWeb.FallbackController
-  def create(conn, %{"user" => %{"email" => email,
-                                 "password" => password}}) do
-    with {:ok, %User{} = user} <- Session.authenticate(%{email: email, password: password}),
+
+  def create(conn, %{"user" => %{"email" => email, "password" => password}}) do
+    with {:ok, %User{} = user} <- Accounts.authenticate_by_email_password(%{email: email, password: password}),
          {:ok, token, _claims} = Guardian.encode_and_sign(user, %{}, token_type: "access") do
 
       conn
