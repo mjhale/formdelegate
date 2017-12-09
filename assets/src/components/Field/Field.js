@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import theme from 'constants/theme';
 
 const InputContainer = styled.div`
   font-size: 0.8rem;

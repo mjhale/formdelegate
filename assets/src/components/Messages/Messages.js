@@ -69,7 +69,7 @@ class MessagesContainer extends React.Component {
   }
 
   componentDidMount() {
-    const { loadMessages, loadSearchResults, location } = this.props;
+    const { loadMessages, location } = this.props;
     const query = parse(location.search);
     const startingPage = 1; /* the first page of paginated results */
 
@@ -77,7 +77,7 @@ class MessagesContainer extends React.Component {
   }
 
   handlePageChange = (requestedPage, evt) => {
-    const { loadMessages, loadSearchResults, location, messages } = this.props;
+    const { loadMessages, location } = this.props;
     const { query } = parse(location.search);
 
     evt.preventDefault();
@@ -85,7 +85,7 @@ class MessagesContainer extends React.Component {
   };
 
   handleSearch = values => {
-    const { history, loadSearchResults } = this.props;
+    const { history } = this.props;
     const searchQuery = values.search;
 
     if (searchQuery) {
@@ -104,7 +104,7 @@ class MessagesContainer extends React.Component {
   };
 
   render() {
-    const { isFetching, messages, openedMessageId, pagination } = this.props;
+    const { isFetching, messages, pagination } = this.props;
     const { limit, offset, total } = pagination;
 
     return (

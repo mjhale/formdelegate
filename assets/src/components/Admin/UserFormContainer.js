@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { adminFetchUser, adminUpdateUser } from 'actions/users';
@@ -16,9 +15,7 @@ class AdminUserFormContainer extends React.Component {
   }
 
   render() {
-    {
-      /* @TODO: Explicitly define required props */
-    }
+    /* @TODO: Explicitly define required props */
     const {
       error,
       onSubmit,

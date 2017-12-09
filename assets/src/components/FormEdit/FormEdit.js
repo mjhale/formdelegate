@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { animateScroll } from 'react-scroll';
-import { browserHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { denormalize } from 'normalizr';
 import { fetchForm, updateForm } from 'actions/forms';
@@ -9,7 +8,6 @@ import { fetchIntegrations } from 'actions/integrations';
 import { Field, reduxForm } from 'redux-form';
 import { findLastIndex } from 'lodash';
 import { formSchema } from 'schema';
-import { getForm } from 'selectors';
 import styled from 'styled-components';
 import Button from 'components/Button';
 import Card from 'components/Card';
@@ -54,7 +52,6 @@ class FormEdit extends React.Component {
       handleSubmit,
       isFetching,
       lastFormIntegrationId,
-      newIntegrationFields,
       submitting,
     } = this.props;
     const integrationTypes = this.props.integrations;

@@ -23,7 +23,7 @@ class AdminUserList extends React.Component {
   }
 
   render() {
-    const { items, isFetching, lastUpdated } = this.props;
+    const { items, isFetching } = this.props;
     const isEmpty = items.length === 0;
 
     return (

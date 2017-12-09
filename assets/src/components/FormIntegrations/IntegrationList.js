@@ -26,10 +26,6 @@ const Integration = styled.div`
   }
 `;
 
-const IntegrationToggle = styled(ToggleSwitch)`
-  display: flex;
-`;
-
 const Settings = styled.div`
   padding: 0.5rem;
 `;

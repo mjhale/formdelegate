@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Field } from 'redux-form';
 import styled, { keyframes } from 'styled-components';
 import renderInputField from 'components/Field';

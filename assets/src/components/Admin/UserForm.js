@@ -1,6 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Field, reduxForm, propTypes as reduxFormPropTypes } from 'redux-form';
+import { Field, propTypes as reduxFormPropTypes } from 'redux-form';
 
 const propTypes = {
   ...reduxFormPropTypes,

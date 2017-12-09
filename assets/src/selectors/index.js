@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { filter, find, map } from 'lodash';
+import { find } from 'lodash';
 
 const getUserIds = state => state.users.allIds;
 const getUserId = (_state, props) => props.match.params.userId;

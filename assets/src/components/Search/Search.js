@@ -17,8 +17,6 @@ const SearchField = styled(Field)`
 `;
 
 let Search = ({ handleSearch, handleSubmit, location }) => {
-  const { query } = parse(location.search);
-
   return (
     <form onSubmit={handleSubmit(handleSearch)}>
       <SearchField

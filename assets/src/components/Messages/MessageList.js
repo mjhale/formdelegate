@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { map } from 'lodash';
-import moment from 'moment';
-import styled from 'styled-components';
 import Message from 'components/Message/Message';
 import Table from 'components/Table';
 import { TableContent } from 'components/Table/Table';

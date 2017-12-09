@@ -1,18 +1,14 @@
-import { normalize } from 'normalizr';
 import { reset } from 'redux-form';
 import { CALL_API } from 'middleware/api';
-import { userSchema } from 'schema';
 import { fetchCurrentUser } from 'actions/users';
 
 // action type constants
-import { USER_SUCCESS } from 'constants/actionTypes';
 import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
   LOGOUT_REQUEST,
   LOGOUT_SUCCESS,
-  LOGOUT_FAILURE,
 } from 'constants/actionTypes';
 
 export function loginUser(credentials) {

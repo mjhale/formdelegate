@@ -14,7 +14,6 @@ import {
   MESSAGE_REQUEST,
   MESSAGE_SUCCESS,
 } from 'constants/actionTypes';
-import { REQUEST_MESSAGE, RECEIVE_MESSAGE } from 'constants/actionTypes';
 
 const isFetching = (state = false, action) => {
   switch (action.type) {

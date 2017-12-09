@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchCurrentUser } from 'actions/users';
 import { isTokenCurrent } from 'utils';
@@ -19,15 +18,6 @@ const ContentContainer = styled.div`
     content: '';
     display: block;
   }
-`;
-
-const Home = styled.div`
-  box-sizing: border-box;
-  display: table;
-  height: 100%;
-  overflow-x: hidden;
-  table-layout: fixed;
-  width: 100%;
 `;
 
 const LogoLink = styled(Link)`

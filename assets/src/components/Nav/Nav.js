@@ -49,7 +49,7 @@ const NavItem = styled(NavLink).attrs({ activeClassName: 'active' })`
 `;
 
 const UnauthenticatedNav = () => (
-  <NavContainer role="nav">
+  <NavContainer>
     <NavItem exact to="/">
       home
     </NavItem>
@@ -61,7 +61,7 @@ const UnauthenticatedNav = () => (
 );
 
 const AuthenticatedNav = ({ isAdmin, onLogoutClick }) => (
-  <NavContainer role="nav">
+  <NavContainer>
     <NavItem to="/dashboard">dashboard</NavItem>
     <NavItem to="/messages">messages</NavItem>
     <NavItem to="/forms">forms</NavItem>

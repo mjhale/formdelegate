@@ -58,7 +58,7 @@ const Admin = ({ user, isAdmin }) => {
   return (
     <div>
       <h1>Administration</h1>
-      <AdminNavigation role="nav">
+      <AdminNavigation>
         <li>
           <AdminLink exact to="/admin" activeClassName="active">
             Dashboard

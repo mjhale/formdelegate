@@ -25,7 +25,7 @@ class AdminIntegrationForm extends React.Component {
   }
 
   render() {
-    const { handleSubmit, integration, submitting } = this.props;
+    const { handleSubmit, submitting } = this.props;
 
     return (
       <Card>

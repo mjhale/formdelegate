@@ -1,10 +1,5 @@
-import React from 'react';
 import styled from 'styled-components';
 import theme from 'constants/theme';
-
-const TableContainer = styled.div`
-  --var: #fff;
-`;
 
 export const Table = styled.div`
   background: ${theme.solidWhite};

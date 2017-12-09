@@ -161,7 +161,7 @@ const Welcome = () => (
     </Hero>
 
     <ActionBar>
-      Want to see it in action? <a href="#">Watch our demo.</a>
+      Want to see it in action? <Link to="/demo">Watch our demo.</Link>
     </ActionBar>
 
     <Features>

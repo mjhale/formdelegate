@@ -5,7 +5,10 @@ const InvalidRoute = () => (
     <h1>Wrong turn!</h1>
     <p>
       We can't seem to find the page you're looking for... this is likely our
-      fault. 😩
+      fault.{' '}
+      <span role="img" aria-label="Sadface">
+        😩
+      </span>
     </p>
   </div>
 );
