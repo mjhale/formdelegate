@@ -13,7 +13,11 @@ defmodule FormDelegateWeb.MessageController do
 
   def index(conn, params, current_user) do
     with :ok <- Authorizer.authorize(current_user, :show_user_messages) do
-      page = Messages.list_paginated_messages_of_user(current_user, params)
+      page =
+        cond do
+          params["query"] -> Messages.list_search_messages_of_user(current_user, params)
+          true -> page = Messages.list_messages_of_user(current_user, params)
+        end
 
       conn
       |> Scrivener.Headers.paginate(page)

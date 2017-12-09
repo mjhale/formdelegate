@@ -18,9 +18,41 @@ defmodule FormDelegate.Messages do
       [%Message{}, ...]
 
   """
-  def list_paginated_messages_of_user(%User{} = user, params) do
+  def list_messages_of_user(%User{} = user, params) do
     query = from m in Message,
       where: m.user_id == ^user.id,
+      left_join: f in assoc(m, :form),
+      left_join: fi in assoc(f, :form_integrations),
+      left_join: i in assoc(fi, :integration),
+      preload: [
+        form: {
+          f,
+          form_integrations: {fi, integration: i},
+        }
+      ],
+      distinct: true,
+      order_by: [desc: m.id]
+
+    query
+    |> Repo.paginate(params)
+  end
+
+
+  @doc """
+  Returns the search result list of paginated messages.
+
+  ## Examples
+
+      iex> list_search_messages_of_user(user, params)
+      [%Message{}, ...]
+
+  """
+  def list_search_messages_of_user(%User{} = user, params) do
+    query = from m in Message,
+      where: m.user_id == ^user.id,
+      where: ilike(m.content, ^"%#{params["query"]}%") or
+             ilike(m.sender, ^"%#{params["query"]}%") or
+             fragment("?->>? ilike ?", m.unknown_fields, "user_mail",  ^"%#{params["query"]}%"),
       left_join: f in assoc(m, :form),
       left_join: fi in assoc(f, :form_integrations),
       left_join: i in assoc(fi, :integration),

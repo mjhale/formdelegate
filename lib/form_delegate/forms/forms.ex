@@ -5,8 +5,6 @@ defmodule FormDelegate.Forms do
 
   import Ecto.Query, warn: false
 
-  require IEx
-
   alias FormDelegate.Accounts.User
   alias FormDelegate.{Forms, Forms.Form}
   alias FormDelegate.Repo

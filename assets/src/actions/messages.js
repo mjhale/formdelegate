@@ -88,7 +88,7 @@ export function messageSearchFetch(query, requestedPage) {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        endpoint: `/v1/search/messages?query=${query}&page=${requestedPage}`,
+        endpoint: `/v1/messages?query=${query}&page=${requestedPage}`,
         schema: [messageSchema],
         types: [
           MESSAGE_SEARCH_REQUEST,
