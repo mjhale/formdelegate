@@ -6,8 +6,7 @@ export const CALL_API = Symbol('Call API');
 
 const callApi = (endpoint, schema, authenticated, config) => {
   const API_HOST = process.env.REACT_APP_API_HOST;
-  const fullUrl =
-    endpoint.indexOf(API_HOST) === -1 ? API_HOST + endpoint : endpoint;
+  const fullUrl = API_HOST ? API_HOST + endpoint : endpoint;
   const token = localStorage.getItem('fd_token') || null;
 
   if (authenticated) {
