@@ -5,6 +5,9 @@ import { merge } from 'lodash';
 export const CALL_API = Symbol('Call API');
 
 const callApi = (endpoint, schema, authenticated, config) => {
+  const API_HOST = process.env.REACT_APP_API_HOST;
+  const fullUrl =
+    endpoint.indexOf(API_HOST) === -1 ? API_HOST + endpoint : endpoint;
   const token = localStorage.getItem('fd_token') || null;
 
   if (authenticated) {
@@ -23,7 +26,7 @@ const callApi = (endpoint, schema, authenticated, config) => {
     }
   }
 
-  return fetch(endpoint, config)
+  return fetch(fullUrl, config)
     .then(response => {
       const noResponseStatusCodes = [204, 205];
 
