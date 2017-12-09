@@ -5,7 +5,7 @@ defmodule FormDelegate.Forms.Integration do
   alias FormDelegate.{Forms, Forms.Form}
   alias FormDelegate.Integrations
 
-  schema "forms_integrations" do
+  schema "form_integrations" do
     field :enabled, :boolean, default: false
 
     embeds_one :settings, Integrations.Settings, on_replace: :delete
@@ -21,6 +21,5 @@ defmodule FormDelegate.Forms.Integration do
     |> cast_embed(:settings)
     |> assoc_constraint(:form)
     |> assoc_constraint(:integration)
-    |> validate_required([:integration_id])
   end
 end

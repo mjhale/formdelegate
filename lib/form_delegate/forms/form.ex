@@ -15,7 +15,7 @@ defmodule FormDelegate.Forms.Form do
 
     belongs_to :user, User
     has_many :messages, Message, on_delete: :delete_all
-    has_many :form_integrations, Integration, on_delete: :delete_all, on_replace: :delete
+    has_many :form_integrations, Integration, on_delete: :delete_all
     has_many :integrations, through: [:form_integrations, :integration]
 
     timestamps()

@@ -5,6 +5,8 @@ defmodule FormDelegate.Forms do
 
   import Ecto.Query, warn: false
 
+  require IEx
+
   alias FormDelegate.Accounts.User
   alias FormDelegate.{Forms, Forms.Form}
   alias FormDelegate.Repo
@@ -60,10 +62,11 @@ defmodule FormDelegate.Forms do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_form(attrs \\ %{}) do
+  def create_form(attrs \\ %{}, %User{} = user) do
     %Form{}
     |> Form.changeset(attrs)
     |> Ecto.Changeset.cast_assoc(:form_integrations, with: &Forms.Integration.changeset/2)
+    |> Ecto.Changeset.put_assoc(:user, user)
     |> Repo.insert()
   end
 
@@ -80,23 +83,7 @@ defmodule FormDelegate.Forms do
 
   """
   def update_form(%Form{} = form, attrs) do
-    # Insert "form_id" field for newly submitted integrations
-    modified_attrs = get_and_update_in(attrs, ["form_integrations"], fn(integrations) ->
-      integrations = integrations || %{}
-
-      modified_integrations =
-        integrations
-        |> Enum.map(fn(integration) ->
-          unless Map.has_key?(integration, form.id) do
-            Map.put(integration, "form_id", form.id)
-          end
-        end)
-
-      # Return the unmodified and modified integrations list
-      {integrations, modified_integrations}
-    end)
-
-    Form.changeset(form, elem(modified_attrs, 1))
+    Form.changeset(form, attrs)
     |> Ecto.Changeset.cast_assoc(:form_integrations, with: &Forms.Integration.changeset/2)
     |> Repo.update()
   end

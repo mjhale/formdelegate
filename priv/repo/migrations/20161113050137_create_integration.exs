@@ -8,7 +8,7 @@ defmodule FormDelegate.Repo.Migrations.CreateIntegration do
       timestamps()
     end
 
-    create table(:forms_integrations) do
+    create table(:form_integrations) do
       add :form_id, references(:forms, type: :uuid)
       add :integration_id, references(:integrations)
       add :enabled, :boolean, default: false, null: false
@@ -17,6 +17,6 @@ defmodule FormDelegate.Repo.Migrations.CreateIntegration do
       timestamps()
     end
 
-    create index(:forms_integrations, [:form_id, :integration_id])
+    create index(:form_integrations, [:form_id, :integration_id])
   end
 end
