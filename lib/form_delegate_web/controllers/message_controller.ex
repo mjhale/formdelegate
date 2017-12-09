@@ -21,6 +21,14 @@ defmodule FormDelegateWeb.MessageController do
     end
   end
 
+  def recent_activity(conn, _params, current_user) do
+    with :ok <- Authorizer.authorize(current_user, :show_recent_message_activity) do
+      activity = Messages.get_message_activity_of_user(current_user)
+
+      render(conn, "recent_activity.json", activity: activity)
+    end
+  end
+
   def show(conn, %{"id" => id}, current_user) do
     with %Message{} = message <- Messages.get_message!(id),
          :ok <- Authorizer.authorize(current_user, :show_message, message) do

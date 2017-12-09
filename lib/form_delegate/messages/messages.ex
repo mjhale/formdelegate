@@ -33,8 +33,34 @@ defmodule FormDelegate.Messages do
       distinct: true,
       order_by: [desc: m.id]
 
-      query
-      |> Repo.paginate(params)
+    query
+    |> Repo.paginate(params)
+  end
+
+  @doc """
+  Returns the daily count of recent message activity of a user.
+
+  ## Examples
+
+      iex> get_message_activity_of_user(user)
+      [%{day, count}, ...]
+
+  """
+  def get_message_activity_of_user(%User{} = user) do
+    query = from m in Message,
+      right_join: day in fragment(
+        "SELECT generate_series(CURRENT_DATE - INTERVAL '10 days', CURRENT_DATE, '1 day') :: date AS d"
+      ),
+      on: day.d == fragment("date(?)", m.inserted_at),
+      on: m.user_id == ^user.id,
+      group_by: day.d,
+      order_by: day.d,
+      select: %{
+        day: fragment("date(?)", day.d),
+        message_count: count(m.id)
+      }
+
+    Repo.all(query)
   end
 
   @doc """
@@ -64,6 +90,4 @@ defmodule FormDelegate.Messages do
         }
       ]
   end
-
-
 end

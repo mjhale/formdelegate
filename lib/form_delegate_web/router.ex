@@ -43,6 +43,10 @@ defmodule FormDelegateWeb.Router do
 
     resources "/forms", FormController
     resources "/integrations", IntegrationController, only: [:index, :show, :update]
+
+    # @TODO: Move to different namespace
+    get "/messages/recent_activity", MessageController, :recent_activity
+
     resources "/messages", MessageController, only: [:index, :show]
     resources "/users", UserController
   end

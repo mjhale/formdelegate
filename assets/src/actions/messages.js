@@ -44,7 +44,7 @@ export function fetchMessageActivity() {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        endpoint: '/v1/stats/message_activity',
+        endpoint: '/v1/messages/recent_activity',
         schema: [messageActivitySchema],
         types: [
           MESSAGE_ACTIVITY_REQUEST,
