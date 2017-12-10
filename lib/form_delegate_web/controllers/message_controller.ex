@@ -16,7 +16,7 @@ defmodule FormDelegateWeb.MessageController do
       page =
         cond do
           params["query"] -> Messages.list_search_messages_of_user(current_user, params)
-          true -> page = Messages.list_messages_of_user(current_user, params)
+          true -> Messages.list_messages_of_user(current_user, params)
         end
 
       conn

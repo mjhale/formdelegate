@@ -1,5 +1,13 @@
 <%= @user.name %>, you've received a new message via Form Delegate!
 
+<%= if @message.sender do %>
+  Sender: <%= @message.sender %>
+<% end %>
+
+<%= if @message.content do %>
+  Content: <%= @message.content %>
+<% end %>
+
 <%= for {key, value} <- @message.unknown_fields do %>
   <%= key %>: <%= value %>
 <% end %>

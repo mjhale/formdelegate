@@ -16,7 +16,7 @@
                 <table border="0" cellpadding="20" cellspacing="0" width="100%" id="emailHeader">
                   <tr>
                     <td align="center" valign="top">
-                      Form Delegate Header
+                      Form Delegate
                     </td>
                   </tr>
                 </table>
@@ -31,10 +31,16 @@
                     </td>
                   </tr>
                   <tr>
-                    <td align="center">
+                    <td align="left">
+                      <%= @message.content %>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td align="left">
                       <ul>
                         <%= for {key, value} <- @message.unknown_fields do %>
-                          <%= key %>: <%= value %>
+                          <li><%= key %>: <%= value %></li>
                         <% end %>
                       </ul>
                     </td>
