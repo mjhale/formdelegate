@@ -16,9 +16,8 @@ config :form_delegate, FormDelegateWeb.Endpoint,
   http: [port: "${PORT}"],
   root: ".",
   version: Application.spec(:phoenix_distillery, :vsn),
-  url: [scheme: "https", host: "www.formdelegate.com", port: "${PORT}"],
+  url: [scheme: "https", host: "api.formdelegate.com", port: "${PORT}"],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
-  cache_static_manifest: "priv/static/cache_manifest.json",
   secret_key_base: "${SECRET_KEY_BASE}",
   server: true
 
