@@ -73,6 +73,12 @@ config :form_delegate, FormDelegate.Mailer,
   adapter: Bamboo.SparkPostAdapter,
   api_key: "${SPARKPOST_KEY}"
 
+# Configures CORS options
+config :cors_plug,
+  origin: ["https://formdelegate.com"],
+  max_age: 86400,
+  methods: ["GET", "POST", "PUT", "DELETE"]
+
 # Configures Guardian
 config :form_delegate, FormDelegateWeb.Guardian,
   allowed_algos: ["HS512"],
