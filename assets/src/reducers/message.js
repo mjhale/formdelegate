@@ -89,7 +89,7 @@ const search = (
 const visibleIds = (state = [], action) => {
   switch (action.type) {
     case MESSAGE_SEARCH_RESULTS:
-    case MESSAGES_RESULTS:
+    case MESSAGES_SUCCESS:
       return action.payload.result;
 
     default:
