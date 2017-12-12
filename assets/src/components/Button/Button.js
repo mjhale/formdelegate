@@ -45,7 +45,6 @@ const DeleteButton = DefaultButton.extend`
   background: linear-gradient(to bottom, #dd4b39 50%, #b53727 100%);
   border-color: #d73925;
   color: #f5f7ff;
-  float: right;
 
   &:hover {
     background: linear-gradient(to bottom, #b53727 100%, #b53727 100%);

@@ -6,6 +6,10 @@ import Button from 'components/Button';
 import Card from 'components/Card';
 import theme from 'constants/theme';
 
+const DeleteButton = styled(Button)`
+  float: right;
+`;
+
 const FormAddress = styled.div`
   background-color: #4e4d5a;
   border: 1px solid ${theme.mineBlack};
@@ -67,13 +71,12 @@ const FormSimpleView = ({ form, onDeleteClick }) => {
         <Link to={`/forms/${form.id}/edit`}>
           <Button tabIndex="-1">Edit Form</Button>
         </Link>
-        <Button
-          data-confirm="Are you positive you want to delete this Gist?"
+        <DeleteButton
           type="delete"
           onClick={evt => onDeleteClick(form.id, evt)}
         >
           Delete Form
-        </Button>
+        </DeleteButton>
       </FormActions>
     </Card>
   );

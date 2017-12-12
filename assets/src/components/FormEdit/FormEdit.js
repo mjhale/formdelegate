@@ -1,27 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { animateScroll } from 'react-scroll';
 import { connect } from 'react-redux';
 import { denormalize } from 'normalizr';
 import { fetchForm, updateForm } from 'actions/forms';
 import { fetchIntegrations } from 'actions/integrations';
-import { Field, reduxForm } from 'redux-form';
-import { findLastIndex } from 'lodash';
+import { change, Field, reduxForm, untouch } from 'redux-form';
 import { formSchema } from 'schema';
 import styled from 'styled-components';
 import Button from 'components/Button';
 import Card from 'components/Card';
 import FormIntegrationList from 'components/FormIntegrations/IntegrationList';
-import NewIntegrations from 'components/FormIntegrations/NewIntegrations';
 
 const propTypes = {
   initialValues: PropTypes.object,
   isFetching: PropTypes.bool.isRequired,
 };
-
-const AddIntegrationButton = styled(Button)`
-  float: right;
-`;
 
 const VerifiedStatus = styled.div`
   float: right;
@@ -51,7 +44,7 @@ class FormEdit extends React.Component {
       formData,
       handleSubmit,
       isFetching,
-      lastFormIntegrationId,
+      removeIntegration,
       submitting,
     } = this.props;
     const integrationTypes = this.props.integrations;
@@ -62,16 +55,6 @@ class FormEdit extends React.Component {
 
     return (
       <div>
-        <AddIntegrationButton
-          onClick={() => {
-            this.setState({
-              newIntegrationFields: this.state.newIntegrationFields + 1,
-            });
-            animateScroll.scrollToBottom();
-          }}
-        >
-          Add Integration To Form
-        </AddIntegrationButton>
         <h1>Edit Form</h1>
         <form onSubmit={handleSubmit}>
           <Card
@@ -99,11 +82,10 @@ class FormEdit extends React.Component {
                 disabled
               />
             </div>
-            <FormIntegrationList integrations={formData.form_integrations} />
-            <NewIntegrations
+            <FormIntegrationList
+              integrations={formData.form_integrations}
               integrationTypes={integrationTypes}
-              lastFormIntegrationId={lastFormIntegrationId}
-              newIntegrationFields={this.state.newIntegrationFields}
+              removeIntegration={removeIntegration}
             />
           </Card>
           <Button type="submit" disabled={submitting}>
@@ -127,9 +109,6 @@ const mapStateToProps = (state, ownProps) => {
     initialValues: denormalizedForm /* initialize redux form values */,
     integrations: state.entities.integrations,
     isFetching: state.forms.isFetching,
-    lastFormIntegrationId: denormalizedForm
-      ? findLastIndex(denormalizedForm.form_integrations)
-      : 0,
   };
 };
 
@@ -145,6 +124,15 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   onSubmit(values) {
     dispatch(updateForm(values));
     ownProps.history.push('/forms/');
+  },
+
+  removeIntegration(field) {
+    dispatch(change('formForm', `${field}[enabled]`, null));
+    dispatch(change('formForm', `${field}[settings][api_key]`, null));
+    dispatch(change('formForm', `${field}[settings][email]`, null));
+    dispatch(untouch('formForm', `${field}[enabled]`));
+    dispatch(untouch('formForm', `${field}[settings][api_key]`));
+    dispatch(untouch('formForm', `${field}[settings][email]`));
   },
 });
 
