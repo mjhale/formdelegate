@@ -75,7 +75,7 @@ config :form_delegate, FormDelegate.Mailer,
 
 # Configures CORS options
 config :cors_plug,
-  origin: ["https://formdelegate.com"],
+  origin: ["https://www.formdelegate.com"],
   max_age: 86400,
   methods: ["GET", "POST", "PUT", "DELETE"]
 
