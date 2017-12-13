@@ -1,6 +1,8 @@
 import { merge } from 'lodash';
 
-export default (
+import { FORM_UPDATE_SUCCESS } from 'constants/actionTypes';
+
+const entity = (
   state = {
     users: {},
     form_integrations: {},
@@ -10,9 +12,24 @@ export default (
   },
   action
 ) => {
-  if (action.payload && action.payload.entities) {
-    return merge({}, state, action.payload.entities);
-  }
+  switch (action.type) {
+    case FORM_UPDATE_SUCCESS:
+      return {
+        ...state,
+        forms: {
+          ...state.forms,
+          [action.payload.result]: {
+            ...action.payload.entities.forms[action.payload.result],
+          },
+        },
+      };
+    default:
+      if (action.payload && action.payload.entities) {
+        return merge({}, state, action.payload.entities);
+      }
 
-  return state;
+      return state;
+  }
 };
+
+export default entity;
