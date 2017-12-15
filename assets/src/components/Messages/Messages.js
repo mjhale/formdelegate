@@ -115,14 +115,16 @@ class MessagesContainer extends React.Component {
             <SearchContainer>
               <Search {...this.props} handleSearch={this.handleSearch} />
             </SearchContainer>
-            <li>
-              <Pagination
-                handlePageChange={this.handlePageChange}
-                limit={limit}
-                offset={offset}
-                total={total}
-              />
-            </li>
+            {total > 0 && (
+              <li>
+                <Pagination
+                  handlePageChange={this.handlePageChange}
+                  limit={limit}
+                  offset={offset}
+                  total={total}
+                />
+              </li>
+            )}
           </Actions>
         </Header>
         <MessageList

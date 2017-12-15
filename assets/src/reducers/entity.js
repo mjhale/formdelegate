@@ -22,6 +22,10 @@ const entity = (
             ...action.payload.entities.forms[action.payload.result],
           },
         },
+        form_integrations: {
+          ...state.form_integrations,
+          ...action.payload.entities.form_integrations,
+        },
       };
     default:
       if (action.payload && action.payload.entities) {

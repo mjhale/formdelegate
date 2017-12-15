@@ -16,7 +16,7 @@ import {
   MESSAGE_SUCCESS,
   MESSAGES_FAILURE,
   MESSAGES_REQUEST,
-  MESSAGES_RESULTS,
+  MESSAGES_PAGINATION,
   MESSAGES_SUCCESS,
 } from 'constants/actionTypes';
 
@@ -155,20 +155,15 @@ export function fetchMessages(requestedPage) {
     const offset = (requestedPage - 1) * (limit + 1);
     const total = Number(actionResponse.headers.get('total'));
 
-    if (!total) return null;
-
-    return dispatch(
-      receiveMessages(actionResponse.payload, limit, offset, total)
-    );
+    return dispatch(receiveMessagesPagination(limit, offset, total));
   };
 }
 
-function receiveMessages(payload, limit, offset, total) {
+function receiveMessagesPagination(limit, offset, total) {
   return {
     limit,
     offset,
-    payload,
     total,
-    type: MESSAGES_RESULTS,
+    type: MESSAGES_PAGINATION,
   };
 }

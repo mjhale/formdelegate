@@ -5,7 +5,7 @@ import {
   MESSAGE_SEARCH_QUERY,
   MESSAGES_FAILURE,
   MESSAGES_REQUEST,
-  MESSAGES_RESULTS,
+  MESSAGES_PAGINATION,
   MESSAGES_SUCCESS,
   MESSAGE_ACTIVITY_FAILURE,
   MESSAGE_ACTIVITY_REQUEST,
@@ -58,7 +58,7 @@ const pagination = (
 ) => {
   switch (action.type) {
     case MESSAGE_SEARCH_RESULTS:
-    case MESSAGES_RESULTS:
+    case MESSAGES_PAGINATION:
       return Object.assign({}, state, {
         limit: action.limit,
         offset: action.offset,
