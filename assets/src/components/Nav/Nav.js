@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { getCurrentUser } from 'selectors';
 import { NavLink, withRouter } from 'react-router-dom';
 import { logoutUser } from 'actions/sessions';
+import Placeholder from 'components/Placeholder';
 import theme from 'constants/theme';
 
 const propTypes = {
@@ -74,8 +75,16 @@ const AuthenticatedNav = ({ isAdmin, onLogoutClick }) => (
   </NavContainer>
 );
 
-const Nav = ({ isAdmin, isAuthenticated, onLogoutClick, ...props }) => {
-  if (isAuthenticated) {
+const Nav = ({
+  isAdmin,
+  isAuthenticated,
+  isFetching,
+  onLogoutClick,
+  ...props
+}) => {
+  if (isFetching) {
+    return <Placeholder isFetching={isFetching} rows={6} />;
+  } else if (isAuthenticated) {
     return <AuthenticatedNav isAdmin={isAdmin} onLogoutClick={onLogoutClick} />;
   } else {
     return <UnauthenticatedNav />;
@@ -87,11 +96,12 @@ Nav.defaultProps = defaultProps;
 
 const mapStateToProps = state => {
   const user = getCurrentUser(state);
-  const { isAuthenticated } = state.authentication;
+  const { isAuthenticated, isFetching } = state.authentication;
 
   return {
     isAdmin: user && user.is_admin,
     isAuthenticated,
+    isFetching,
   };
 };
 
