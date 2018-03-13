@@ -2,6 +2,9 @@ import { combineReducers } from 'redux';
 import { isTokenCurrent } from 'utils';
 
 import {
+  CURRENT_USER_REQUEST,
+  CURRENT_USER_SUCCESS,
+  CURRENT_USER_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
@@ -45,9 +48,14 @@ const isAuthenticated = (
 
 const isFetching = (state = false, action) => {
   switch (action.type) {
+    case CURRENT_USER_REQUEST:
     case LOGIN_REQUEST:
     case LOGOUT_REQUEST:
       return true;
+
+    case CURRENT_USER_SUCCESS:
+    case CURRENT_USER_FAILURE:
+      return false;
 
     case LOGIN_FAILURE:
     case LOGIN_SUCCESS:
