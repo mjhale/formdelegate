@@ -15,7 +15,6 @@ const propTypes = {
   isFetching: PropTypes.bool.isRequired,
   loadMessages: PropTypes.func.isRequired,
   location: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
   messages: PropTypes.array.isRequired,
   pagination: PropTypes.shape({
     limit: PropTypes.number.isRequired,

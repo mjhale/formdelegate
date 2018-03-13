@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Field, reduxForm, propTypes as reduxFormPropTypes } from 'redux-form';
+import { Field, reduxForm } from 'redux-form';
 import { parse } from 'query-string';
 import styled from 'styled-components';
 import theme from 'constants/theme';
 
 const propTypes = {
   handleSearch: PropTypes.func.isRequired,
-  ...reduxFormPropTypes,
+  handleSubmit: PropTypes.func.isRequired,
 };
 
 const SearchField = styled(Field)`
@@ -16,7 +16,7 @@ const SearchField = styled(Field)`
   font-size: 0.75rem;
 `;
 
-let Search = ({ handleSearch, handleSubmit, location }) => {
+let Search = ({ handleSearch, handleSubmit }) => {
   return (
     <form onSubmit={handleSubmit(handleSearch)}>
       <SearchField
@@ -33,6 +33,7 @@ Search.propTypes = propTypes;
 
 Search = reduxForm({
   form: 'messagesSearchForm',
+  destroyOnUnmount: false,
   enableReinitialize: true,
 })(Search);
 
