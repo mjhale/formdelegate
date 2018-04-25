@@ -81,7 +81,7 @@ defmodule FormDelegate.Messages do
   def get_message_activity_of_user(%User{} = user) do
     query = from m in Message,
       right_join: day in fragment(
-        "SELECT generate_series(CURRENT_DATE - INTERVAL '10 days', CURRENT_DATE, '1 day') :: date AS d"
+        "SELECT generate_series(CURRENT_DATE - INTERVAL '365 days', CURRENT_DATE, '1 day') :: date AS d"
       ),
       on: day.d == fragment("date(?)", m.inserted_at),
       on: m.user_id == ^user.id,
