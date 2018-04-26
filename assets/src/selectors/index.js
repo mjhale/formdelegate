@@ -2,14 +2,15 @@ import { createSelector } from 'reselect';
 import { find } from 'lodash';
 
 const getUserIds = state => state.users.allIds;
-const getUserId = (_state, props) => props.match.params.userId;
+const getUserId = (_state, props) => parseInt(props.match.params.userId, 10);
 const getUsers = state => state.entities.users;
 const getCurrentUserId = state => state.users.currentUserId;
 const getFormId = (_state, props) => props.match.params.formId;
 const getFormIds = state => state.forms.allIds;
 const getForms = state => state.entities.forms;
 const getIntegrations = state => state.entities.integrations;
-const getIntegrationId = (_state, props) => props.match.params.integrationId;
+const getIntegrationId = (_state, props) =>
+  parseInt(props.match.params.integrationId, 10);
 const getIntegrationIds = state => state.integrations.allIds;
 const getMessageActivities = state => state.entities.message_activity;
 const getMessageActivityIds = state => state.messages.messageActivityIds;

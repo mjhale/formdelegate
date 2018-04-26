@@ -19,7 +19,7 @@ defmodule FormDelegate.Accounts do
 
   """
   def list_users do
-    Repo.all(User)
+    User |> order_by(:id) |> Repo.all
   end
 
   @doc """

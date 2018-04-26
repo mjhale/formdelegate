@@ -23,7 +23,7 @@ import {
 export const adminFetchUser = userId => ({
   [CALL_API]: {
     authenticated: true,
-    endpoint: `/v1/admin/users/${userId}`,
+    endpoint: `/v1/users/${userId}`,
     schema: userSchema,
     types: [USER_REQUEST, USER_SUCCESS, USER_FAILURE],
   },
@@ -32,7 +32,7 @@ export const adminFetchUser = userId => ({
 export const adminFetchUsers = () => ({
   [CALL_API]: {
     authenticated: true,
-    endpoint: '/v1/admin/users',
+    endpoint: '/v1/users',
     schema: [userSchema],
     types: [USERS_REQUEST, USERS_SUCCESS, USERS_FAILURE],
   },
@@ -51,7 +51,7 @@ export const adminUpdateUser = user => {
           },
           method: 'PUT',
         },
-        endpoint: `/v1/admin/users/${user.id}`,
+        endpoint: `/v1/users/${user.id}`,
         schema: userSchema,
         types: [USER_UPDATE_REQUEST, USER_UPDATE_SUCCESS, USER_UPDATE_FAILURE],
       },

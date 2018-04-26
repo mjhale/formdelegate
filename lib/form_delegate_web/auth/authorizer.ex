@@ -1,6 +1,7 @@
 defmodule FormDelegateWeb.Authorizer do
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
+  alias FormDelegate.Integrations.Integration
   alias FormDelegate.Messages.Message
 
   # Form authorizations
@@ -38,6 +39,15 @@ defmodule FormDelegateWeb.Authorizer do
 
   def authorize(%User{} = current_user, :delete_form, %Form{} = form) do
     if form.user_id == current_user.id or current_user.is_admin do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  # Integration authorizations
+  def authorize(%User{} = current_user, :update_integration, %Integration{} = integration) do
+    if current_user.is_admin do
       :ok
     else
       {:error, :forbidden}

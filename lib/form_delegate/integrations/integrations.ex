@@ -18,7 +18,7 @@ defmodule FormDelegate.Integrations do
 
   """
   def list_integrations do
-    Repo.all(Integration)
+    Integration |> order_by(:id) |> Repo.all
   end
 
   @doc """
