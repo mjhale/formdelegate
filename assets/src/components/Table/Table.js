@@ -1,35 +1,21 @@
+import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import theme from 'constants/theme';
+import TableHeader from 'components/Table/TableHeader';
 
-export const Table = styled.div`
+export const TableContainer = styled.table`
   background: ${theme.solidWhite};
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: space-between;
-  line-height: 1.5;
-`;
-
-export const TableHeader = styled.div`
-  background: ${theme.solidWhite};
-  border: 1px solid $border-color;
-  border-bottom: 0;
-  color: ${theme.primaryFont};
-  font-size: 0.6rem;
-  font-weight: 700;
-  text-align: center;
-  text-transform: uppercase;
-  user-select: none;
-`;
-
-export const TableContent = styled.div`
   border: 1px solid ${theme.borderColor};
+  line-height: 1.5;
+  width: 100%;
 `;
 
-export const TableRow = styled.div`
+export const TableBody = styled.tbody``;
+
+export const TableRow = styled.tr`
   box-shadow: inset 0 -1px 0 0 ${theme.offWhite};
   color: ${theme.mineBlack};
-  display: flex;
-  flex-flow: row nowrap;
   text-decoration: none;
   width: 100%;
 
@@ -38,13 +24,78 @@ export const TableRow = styled.div`
   }
 `;
 
-export const TableCell = styled.div`
-  display: flex;
-  flex-basis: 0;
-  flex-flow: row nowrap;
-  flex-grow: 1;
+export const TableCell = styled.td`
   font-size: 0.8rem;
   padding: 0.5rem;
+
+  &:not(:first-of-type) {
+    text-align: center;
+  }
 `;
+
+class Table extends React.Component {
+  render() {
+    const {
+      columns,
+      data,
+      dataEmptyPlaceholder,
+      error,
+      isFetching,
+    } = this.props;
+    const isEmpty = data.length === 0;
+
+    if (isFetching) {
+      return <div>Loading...</div>;
+    }
+
+    if (!isFetching && error) {
+      return <div>Error...</div>;
+    }
+
+    if (!isFetching && !error && isEmpty) {
+      return <div>{dataEmptyPlaceholder}</div>;
+    }
+
+    return (
+      <TableContainer>
+        <TableHeader columns={columns} />
+        <TableBody>
+          {data.map((row, rowIndex) => (
+            <TableRow key={rowIndex}>
+              {columns.map((column, columnIndex) => {
+                const { displayFn, field } = column;
+                let value = row[field];
+
+                if (displayFn && value !== undefined) {
+                  value = displayFn(row, column, field);
+                }
+
+                return (
+                  <TableCell key={`${rowIndex}-${columnIndex}`}>
+                    {value}
+                  </TableCell>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableBody>
+      </TableContainer>
+    );
+  }
+}
+
+Table.defaultProps = {
+  dataEmptyPlaceholder: 'No items found',
+  error: false,
+  loading: true,
+};
+
+Table.propTypes = {
+  columns: PropTypes.arrayOf(PropTypes.shape({})),
+  data: PropTypes.arrayOf(PropTypes.shape({})),
+  dataEmptyPlaceholder: PropTypes.string,
+  error: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
+};
 
 export default Table;
