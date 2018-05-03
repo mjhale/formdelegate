@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { adminFetchUsers } from 'actions/users';
 import { getOrderedUsers } from 'selectors';
+import Table from 'components/Table';
+import translations from 'translations';
 
 const propTypes = {
   lastUpdated: PropTypes.number,
@@ -16,6 +18,35 @@ const defaultProps = {
   items: [],
 };
 
+const userListColumns = [
+  {
+    field: 'email',
+    displayName: translations['userlist_th_email'],
+  },
+  {
+    field: 'name',
+    displayName: translations['userlist_th_name'],
+  },
+  {
+    field: 'form_count',
+    displayName: translations['userlist_th_form_count'],
+  },
+  {
+    field: 'verified',
+    displayFn: (row, col, field) => (
+      <div>{row[field] ? 'Verified' : 'Unverified'}</div>
+    ),
+    displayName: translations['userlist_th_verified'],
+  },
+  {
+    field: 'edit',
+    displayFn: (row, col, field) => {
+      return <Link to={`/admin/users/${row['id']}`}>Edit</Link>;
+    },
+    displayName: translations['userlist_th_edit'],
+  },
+];
+
 class AdminUserList extends React.Component {
   componentDidMount() {
     const { loadUsers } = this.props;
@@ -23,39 +54,10 @@ class AdminUserList extends React.Component {
   }
 
   render() {
-    const { items, isFetching } = this.props;
-    const isEmpty = items.length === 0;
+    const { users, isFetching } = this.props;
 
     return (
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th>E-Mail Address</th>
-              <th>Forms Count</th>
-              <th>Verified Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isEmpty &&
-              !isFetching && (
-                <tr>
-                  <td colSpan="4">No users found.</td>
-                </tr>
-              )}
-            {!isEmpty &&
-              items.map(user => (
-                <tr key={user.id}>
-                  <td>
-                    <Link to={`/admin/users/${user.id}`}>{user.email}</Link>
-                  </td>
-                  <td>{user.form_count}</td>
-                  <td>{user.verified ? 'Verified' : 'Unverified'}</td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
+      <Table columns={userListColumns} data={users} isFetching={isFetching} />
     );
   }
 }
@@ -65,7 +67,7 @@ AdminUserList.defaultProps = defaultProps;
 
 const mapStateToProps = state => {
   return {
-    items: getOrderedUsers(state),
+    users: getOrderedUsers(state),
     isFetching: state.users.isFetching,
     lastUpdated: state.users.lastUpdated,
   };

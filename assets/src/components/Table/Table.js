@@ -66,7 +66,7 @@ class Table extends React.Component {
                 const { displayFn, field } = column;
                 let value = row[field];
 
-                if (displayFn && value !== undefined) {
+                if (displayFn) {
                   value = displayFn(row, column, field);
                 }
 

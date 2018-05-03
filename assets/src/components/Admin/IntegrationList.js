@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { adminFetchIntegrations } from 'actions/integrations';
 import { getOrderedIntegrations } from 'selectors';
+import Table from 'components/Table';
+import translations from 'translations';
 
 const propTypes = {
   integrations: PropTypes.array,
@@ -14,6 +16,20 @@ const defaultProps = {
   isFetching: false,
 };
 
+const integrationListColumns = [
+  {
+    field: 'type',
+    displayName: translations['integrationlist_th_type'],
+  },
+  {
+    field: 'edit',
+    displayFn: (row, col, field) => {
+      return <Link to={`/admin/integrations/${row['id']}`}>Edit</Link>;
+    },
+    displayName: translations['integrationlist_th_edit'],
+  },
+];
+
 class AdminIntegrationList extends React.Component {
   componentDidMount() {
     const { loadIntegrations } = this.props;
@@ -22,34 +38,15 @@ class AdminIntegrationList extends React.Component {
 
   render() {
     const { integrations, isFetching } = this.props;
-    const isEmpty = integrations.length === 0;
 
     if (isFetching) return null;
 
     return (
-      <div>
-        <div>
-          <div>Integrations</div>
-        </div>
-        <div>
-          {isEmpty &&
-            !isFetching && (
-              <div>
-                <div>No integrations exist.</div>
-              </div>
-            )}
-          {!isEmpty &&
-            integrations.map(integration => (
-              <div key={integration.id}>
-                <div>
-                  <Link to={`/admin/integrations/${integration.id}`}>
-                    {integration.type}
-                  </Link>
-                </div>
-              </div>
-            ))}
-        </div>
-      </div>
+      <Table
+        columns={integrationListColumns}
+        data={integrations}
+        isFetching={isFetching}
+      />
     );
   }
 }

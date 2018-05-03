@@ -1,0 +1,11 @@
+{
+  "integrationlist_th_edit": "Edit",
+  "integrationlist_th_type": "Integration Type",
+
+  "userlist_th_email": "Email Address",
+  "userlist_th_form_count": "Forms",
+  "userlist_th_id": "",
+  "userlist_th_is_admin": "Admin",
+  "userlist_th_name": "Name",
+  "userlist_th_verified": "Verified"
+}
