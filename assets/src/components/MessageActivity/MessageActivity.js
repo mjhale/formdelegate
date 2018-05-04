@@ -10,7 +10,6 @@ const GraphContainer = styled.div`
 
 const Graph = styled.div`
   height: auto;
-  max-width: 100%;
 `;
 
 class MessageActivity extends React.Component {
@@ -31,8 +30,8 @@ class MessageActivity extends React.Component {
    * https://github.com/DKirwan/calendar-heatmap
    */
   createHeatmap(data, startDay, endDay) {
-    const cellSize = 15;
-    const height = 160;
+    const cellSize = 12;
+    const height = 120;
     const locale = {
       months: [
         'Jan',
@@ -49,7 +48,7 @@ class MessageActivity extends React.Component {
         'Dec',
       ],
     };
-    const width = 960;
+    const width = 730;
 
     const firstDate = moment(startDay);
     const lastDate = moment(endDay);
@@ -68,12 +67,17 @@ class MessageActivity extends React.Component {
       .domain([0, data.maxCount])
       .range(['#a50026', '#d73027', '#f46d43', '#fdae61', '#fee08b']);
 
+    // Remove existing graph if it exists
+    d3.select('.activity-heatmap').remove();
+
+    // Create graph
     const svg = d3
       .select('.activity-graph')
       .append('svg')
-      .attr('width', width)
       .attr('height', height)
-      .attr('class', 'activity-heatmap');
+      .attr('width', width)
+      .attr('class', 'activity-heatmap')
+      .classed('svg-content', true);
 
     // Draw day rectangles
     svg
@@ -100,7 +104,7 @@ class MessageActivity extends React.Component {
         return result * (cellSize + cellSize * 0.15);
       })
       .attr('y', function(d, i) {
-        return 25 + d.getDay() * (cellSize + cellSize * 0.15);
+        return 20 + d.getDay() * (cellSize + cellSize * 0.15);
       });
 
     // Draw month labels
@@ -126,7 +130,7 @@ class MessageActivity extends React.Component {
 
         return Math.floor(matchIndex / 7) * (cellSize + cellSize * 0.15);
       })
-      .attr('y', 20);
+      .attr('y', 10);
   }
 
   drawChart() {
