@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { TableRow, TableCell } from 'components/Table/Table';
 import moment from 'moment';
 import styled from 'styled-components';
 import theme from 'constants/theme';
@@ -10,9 +9,28 @@ const propTypes = {
   openedMessageId: PropTypes.number,
 };
 
-const MessageRow = styled(TableRow)`
+const MessageCell = styled.div`
+  display: flex;
+  flex-basis: 0;
+  flex-flow: row nowrap;
+  flex-grow: 1;
+  font-size: 0.8rem;
+  padding: 0.5rem;
+`;
+
+const MessageRow = styled.div`
+  box-shadow: inset 0 -1px 0 0 ${theme.offWhite};
+  color: ${theme.mineBlack};
   cursor: pointer;
+  display: flex;
+  flex-flow: row nowrap;
+  text-decoration: none;
   user-select: none;
+  width: 100%;
+
+  &:hover {
+    background-color: #fafafa;
+  }
 `;
 
 const ExpandedMessageRow = styled.div`
@@ -22,16 +40,16 @@ const ExpandedMessageRow = styled.div`
   user-select: none;
 `;
 
-const SenderCell = styled(TableCell)`
+const SenderCell = styled(MessageCell)`
   flex: 0 0 15em;
 `;
 
-const FormCell = styled(TableCell)`
+const FormCell = styled(MessageCell)`
   flex: 0 0 15em;
   justify-content: center;
 `;
 
-const DateCell = styled(TableCell)`
+const DateCell = styled(MessageCell)`
   flex: 0 0 10em;
   justify-content: flex-end;
 `;
@@ -43,7 +61,7 @@ const Message = ({ message, onClick, openedMessageId }) => {
     return (
       <MessageRow onClick={onClick}>
         <SenderCell>{sender}</SenderCell>
-        <TableCell>{content}</TableCell>
+        <MessageCell>{content}</MessageCell>
         <FormCell>{form.form}</FormCell>
         <DateCell>{moment.utc(inserted_at).fromNow()}</DateCell>
       </MessageRow>

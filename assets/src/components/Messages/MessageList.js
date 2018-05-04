@@ -1,9 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { map } from 'lodash';
+import styled from 'styled-components';
+
+import theme from 'constants/theme';
+
 import Message from 'components/Message/Message';
-import Table from 'components/Table';
-import { TableContent } from 'components/Table/Table';
+
+const Messages = styled.section`
+  background: ${theme.solidWhite};
+  border: 1px solid ${theme.borderColor};
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  line-height: 1.5;
+`;
 
 const propTypes = {
   handleViewChange: PropTypes.func.isRequired,
@@ -26,22 +37,20 @@ const MessageList = ({
   }
 
   return (
-    <Table>
-      <TableContent>
-        {map(Object.keys(messages), key => {
-          return (
-            <Message
-              key={messages[key].id}
-              message={messages[key]}
-              onClick={evt => {
-                handleViewChange(messages[key], evt);
-              }}
-              openedMessageId={openedMessageId}
-            />
-          );
-        })}
-      </TableContent>
-    </Table>
+    <Messages>
+      {map(Object.keys(messages), key => {
+        return (
+          <Message
+            key={messages[key].id}
+            message={messages[key]}
+            onClick={evt => {
+              handleViewChange(messages[key], evt);
+            }}
+            openedMessageId={openedMessageId}
+          />
+        );
+      })}
+    </Messages>
   );
 };
 

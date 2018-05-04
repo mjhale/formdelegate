@@ -11,7 +11,7 @@ const TableHeaderRow = styled.tr``;
 
 const TableHeaderCell = styled.th`
   font-family: ${theme.primaryFont};
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   font-weight: 700;
   padding: 0.5rem;
   text-transform: uppercase;

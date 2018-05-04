@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { adminFetchUsers } from 'actions/users';
 import { getOrderedUsers } from 'selectors';
+import Button from 'components/Button';
 import Table from 'components/Table';
 import translations from 'translations';
 
@@ -41,7 +42,11 @@ const userListColumns = [
   {
     field: 'edit',
     displayFn: (row, col, field) => {
-      return <Link to={`/admin/users/${row['id']}`}>Edit</Link>;
+      return (
+        <Link to={`/admin/users/${row['id']}`}>
+          <Button>Edit</Button>
+        </Link>
+      );
     },
     displayName: translations['userlist_th_edit'],
   },

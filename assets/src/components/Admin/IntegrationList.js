@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { adminFetchIntegrations } from 'actions/integrations';
 import { getOrderedIntegrations } from 'selectors';
+import Button from 'components/Button';
 import Table from 'components/Table';
 import translations from 'translations';
 
@@ -23,9 +24,11 @@ const integrationListColumns = [
   },
   {
     field: 'edit',
-    displayFn: (row, col, field) => {
-      return <Link to={`/admin/integrations/${row['id']}`}>Edit</Link>;
-    },
+    displayFn: (row, col, field) => (
+      <Link to={`/admin/integrations/${row['id']}`}>
+        <Button>Edit</Button>
+      </Link>
+    ),
     displayName: translations['integrationlist_th_edit'],
   },
 ];

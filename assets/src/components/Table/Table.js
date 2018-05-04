@@ -7,6 +7,7 @@ import TableHeader from 'components/Table/TableHeader';
 export const TableContainer = styled.table`
   background: ${theme.solidWhite};
   border: 1px solid ${theme.borderColor};
+  border-collapse: collapse;
   line-height: 1.5;
   width: 100%;
 `;
@@ -25,7 +26,7 @@ export const TableRow = styled.tr`
 `;
 
 export const TableCell = styled.td`
-  font-size: 0.8rem;
+  font-size: 0.9em;
   padding: 0.5rem;
 
   &:not(:first-of-type) {
