@@ -1,5 +1,7 @@
 import { combineReducers } from 'redux';
 import { reducer as reduxFormReducer } from 'redux-form';
+import { createResponsiveStateReducer } from 'redux-responsive';
+
 import userReducer from 'reducers/user';
 import authenticationReducer from 'reducers/authentication';
 import entityReducer from 'reducers/entity';
@@ -16,6 +18,12 @@ const reducers = {
   integrations: integrationReducer,
   messages: messageReducer,
   notifications: notificationReducer,
+
+  browser: createResponsiveStateReducer(null, {
+    extraFields: () => ({
+      width: window.innerWidth,
+    }),
+  }),
 
   /* redux-form, must be the final reducer */
   form: reduxFormReducer,
