@@ -11,6 +11,7 @@ import FormNew from 'components/FormNew';
 import Forms from 'components/Forms';
 import InvalidRoute from 'components/InvalidRoute';
 import Login from 'components/Auth/Login';
+import Logout from 'components/Auth/Logout';
 import Message from 'components/Message';
 import Messages from 'components/Messages';
 import Notifications from 'components/Notifications';
@@ -54,6 +55,7 @@ export const Routes = props => {
         />
         <Route path="/admin" component={requireAuth(Admin)} />
         <Route exact path="/login" component={Login} />
+        <Route exact path="/logout" component={Logout} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/settings" component={UserSettings} />
         <Route exact path="/success" component={RequestSuccess} />
