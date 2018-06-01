@@ -27,19 +27,22 @@ const ContentContainer = styled.div`
 
 const LogoLink = styled(Link)`
   color: ${theme.logoColor};
-  display: block;
+  display: inline-block;
   font-family: 'Lato', sans-serif;
   font-size: 1.5rem;
   font-weight: 900;
   margin: 0;
   padding: 1rem;
+  position: relative;
   text-decoration: none;
+  z-index: 50;
 
-  &:hover {
+  &:active {
     color: ${theme.solidWhite};
   }
 
   ${media.md`
+    display: block;
     font-size: 2.5rem;
     font-style: italic;
     line-height: 2.2rem;
@@ -47,8 +50,9 @@ const LogoLink = styled(Link)`
     max-width: 4em;
     padding: 1.5rem 0;
     text-align: center;
+    z-index: auto;
 
-    &:hover {
+    &:active {
       animation: ${keyframes`
         0%,
         100% {
@@ -59,6 +63,10 @@ const LogoLink = styled(Link)`
           transform: scale(1.25);
         }
       `} 0.15s linear 1;
+    }
+
+    &:hover {
+      color: ${theme.solidWhite};
     }
   `};
 `;

@@ -110,14 +110,14 @@ class Nav extends React.Component {
     );
 
     return (
-      <div>
+      <React.Fragment>
         <NavToggle
           handleNavTaggle={this.handleNavToggle}
           isNavVisible={isNavVisible}
           isSmallDevice={isSmallDevice}
         />
         {isNavVisible && navItems}
-      </div>
+      </React.Fragment>
     );
   }
 }

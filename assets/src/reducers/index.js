@@ -9,6 +9,7 @@ import formReducer from 'reducers/form';
 import integrationReducer from 'reducers/integration';
 import messageReducer from 'reducers/message';
 import notificationReducer from 'reducers/notification';
+import { breakpoints } from 'utils/style';
 
 const reducers = {
   users: userReducer,
@@ -19,11 +20,19 @@ const reducers = {
   messages: messageReducer,
   notifications: notificationReducer,
 
-  browser: createResponsiveStateReducer(null, {
-    extraFields: () => ({
-      width: window.innerWidth,
-    }),
-  }),
+  browser: createResponsiveStateReducer(
+    {
+      small: breakpoints.sm,
+      medium: breakpoints.md,
+      large: breakpoints.lg,
+      extraLarge: breakpoints.xl,
+    },
+    {
+      extraFields: () => ({
+        width: window.innerWidth,
+      }),
+    }
+  ),
 
   /* redux-form, must be the final reducer */
   form: reduxFormReducer,

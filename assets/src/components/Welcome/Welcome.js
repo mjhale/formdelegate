@@ -2,10 +2,13 @@ import React from 'react';
 import styled from 'styled-components';
 import { lighten } from 'polished';
 import { Link } from 'react-router-dom';
-import Button from 'components/Button';
-import FluidContainer from 'components/FluidContainer';
+
 import heroImage from 'images/hero.jpg';
 import theme from 'constants/theme';
+import { media } from 'utils/style';
+
+import Button from 'components/Button';
+import FluidContainer from 'components/FluidContainer';
 
 const ActionBar = styled.div`
   background-color: ${theme.mineBlack};
@@ -23,8 +26,8 @@ const ActionBar = styled.div`
 `;
 
 const Card = styled.div`
-  flex: 1 1 auto;
-  width: 200px;
+  flex: 1;
+  max-width: 200px;
 `;
 
 const CardHeading = styled.h2`
@@ -40,11 +43,18 @@ const Cards = styled.div`
   & > div {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
 
   /* Card */
   & > div > div:not(:last-child) {
-    margin-right: 1.5rem;
+    margin-right: 0;
+    min-width: 125px;
+
+    ${media.md`
+      margin-right: 1.5rem;
+    `};
   }
 
   /* Card text */
@@ -60,9 +70,10 @@ const Cards = styled.div`
 const Code = styled.code`
   background-color: ${theme.offWhite};
   border-radius: 0.05rem;
-  display: inline-block;
+  display: block;
   font-size: 0.8rem;
   margin-bottom: 1rem;
+  overflow-wrap: break-word;
   padding: 1rem;
 `;
 
@@ -200,8 +211,8 @@ const Welcome = () => (
     <Cards>
       <FluidContainer>
         <Card>
-          <CardHeading>You own your data.</CardHeading>
-          <p>Export or permanently delete your data at any time.</p>
+          <CardHeading>Your data.</CardHeading>
+          <p>Export or delete your data at any time.</p>
         </Card>
         <Card>
           <CardHeading>No ads.</CardHeading>

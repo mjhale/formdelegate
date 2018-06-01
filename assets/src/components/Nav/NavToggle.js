@@ -9,6 +9,9 @@ const propTypes = {
 };
 
 const ToggleButton = styled.button`
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
   display: block;
   height: 60px;
   outline: 0;
