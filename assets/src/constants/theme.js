@@ -2,7 +2,7 @@ const colors = {
   carnation: '#f76e64',
   chathamBlue: '#16476d',
   cinderella: '#fce7d7',
-  darkCarnation: '#f44133',
+  darkCarnation: '#9a2b28',
   ghostGray: '#c3c6ce',
   lightCarnation: '#f87c73',
   mineBlack: '#2d2929',

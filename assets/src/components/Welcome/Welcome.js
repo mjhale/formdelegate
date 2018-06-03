@@ -1,9 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
-import { lighten } from 'polished';
+import { lighten, darken } from 'polished';
 import { Link } from 'react-router-dom';
 
-import heroImage from 'images/hero.jpg';
+import heroImage from 'images/hero-person-at-computer.jpg';
+import iconBlocker from 'images/icon-blocker.svg';
+import iconConnection from 'images/icon-connection.svg';
+import iconFolder from 'images/icon-folder.svg';
+import iconLock from 'images/icon-lock.svg';
 import theme from 'constants/theme';
 import { media } from 'utils/style';
 
@@ -31,8 +35,21 @@ const Card = styled.div`
 `;
 
 const CardHeading = styled.h2`
+  align-items: center;
+  display: flex;
   font-size: 1.45rem;
   margin: 0;
+`;
+
+const CardIcon = styled.span`
+  background-image: url(${props => props.icon});
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: inline-block;
+  height: 24px;
+  margin: ${props => (props.margin ? props.margin : '0 0.5rem 0 0')};
+  overflow: hidden;
+  width: 24px;
 `;
 
 const Cards = styled.div`
@@ -98,25 +115,32 @@ const Heading = styled.h2`
 `;
 
 const Hero = styled.div`
+  background-image: url(${heroImage});
+  background-position: right;
+  background-size: cover;
+  box-shadow: inset 0 0 0 1000px rgba(50, 43, 40, 0.55);
   display: flex;
   flex-direction: column;
   min-height: 400px;
-  background-image: url(${heroImage});
-  background-size: cover;
 `;
 
 const HeroAction = styled.div`
-  margin-top: 1rem;
+  margin-top: 1.25rem;
 `;
 
 const HeroHeading = styled.h1`
-  font-size: 2.4rem;
+  color: ${theme.offWhite};
+  font-family: 'Lato', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
   margin-top: 2.3rem;
+  text-shadow: ${theme.mineBlack} 1px 0 5px;
 `;
 
 const HeroMessage = styled.div`
-  color: $mine-black;
+  color: ${darken(0.1, theme.offWhite)};
   margin-top: 0.5rem;
+  text-shadow: ${theme.mineBlack} 1px 0 5px;
 `;
 
 const Features = styled.div`
@@ -165,7 +189,7 @@ const Welcome = () => (
         <HeroMessage>Send your forms to us. We'll handle the rest.</HeroMessage>
         <HeroAction>
           <Link to="/register">
-            <Button tabIndex="-1">Try It For Free</Button>
+            <Button tabIndex="-1">Sign Up For Free</Button>
           </Link>
         </HeroAction>
       </FluidContainer>
@@ -211,24 +235,36 @@ const Welcome = () => (
     <Cards>
       <FluidContainer>
         <Card>
-          <CardHeading>Your data.</CardHeading>
+          <CardHeading>
+            <CardIcon aria-hidden="true" icon={iconFolder} />
+            <span>Your data.</span>
+          </CardHeading>
           <p>Export or delete your data at any time.</p>
         </Card>
         <Card>
-          <CardHeading>No ads.</CardHeading>
+          <CardHeading>
+            <CardIcon aria-hidden="true" icon={iconBlocker} />
+            <span>No ads.</span>
+          </CardHeading>
           <p>
             Your data isn't used for our monetization. We'll never sell your
             information.
           </p>
         </Card>
         <Card>
-          <CardHeading>Strong privacy.</CardHeading>
+          <CardHeading>
+            <CardIcon aria-hidden="true" icon={iconConnection} />
+            <span>Strong privacy.</span>
+          </CardHeading>
           <p>
             Our guides help you ensure that your data is safe during transit.
           </p>
         </Card>
         <Card>
-          <CardHeading>Encryption.</CardHeading>
+          <CardHeading>
+            <CardIcon aria-hidden="true" icon={iconLock} margin="0" />
+            <span>Encryption.</span>
+          </CardHeading>
           <p>
             Enroll in our client-side PGP beta and encrypt your form
             submissions.

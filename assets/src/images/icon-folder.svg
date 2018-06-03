@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="58px" height="58px" viewBox="0 0 58 58" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>icon-folder</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="icon-folder" fill-rule="nonzero">
+            <path d="M46.324,58 L1.565,58 C0.535,58 -0.214,57.022 0.055,56.027 L10.221,28.156 C10.405,27.474 11.024,27 11.731,27 L56.49,27 C57.52,27 58,27.984 58,28.973 L47.834,56.844 C47.65,57.526 47.031,58 46.324,58 Z" id="Shape" fill="#9A2B28"></path>
+            <path d="M50.268,18 L48,18 L48,27 L52,27 L52,19.732 C52,18.775 51.224,18 50.268,18 Z" id="Shape" fill="#731D1A"></path>
+            <path d="M4,11 L1.732,11 C0.776,11 0,11.775 0,12.732 L0,55.46 C0.069,55.462 0.138,55.466 0.205,55.47 L4,45.122 L4,11 Z" id="Shape" fill="#731D1A"></path>
+            <path d="M10.221,28.156 C10.405,27.474 11.024,27 11.731,27 L13.731,27 L48,27 L48,15 L48,0 L33,0 L10,0 L10,28.761 L10.221,28.156 Z" id="Shape" fill="#F4EFDC"></path>
+            <g id="Group" transform="translate(16.000000, 7.000000)" fill="#CEC9AE">
+                <path d="M1,9 L25,9 C25.552,9 26,8.553 26,8 C26,7.447 25.552,7 25,7 L1,7 C0.448,7 0,7.447 0,8 C0,8.553 0.448,9 1,9 Z" id="Shape"></path>
+                <path d="M1,2 L11,2 C11.552,2 12,1.553 12,1 C12,0.447 11.552,0 11,0 L1,0 C0.448,0 0,0.447 0,1 C0,1.553 0.448,2 1,2 Z" id="Shape"></path>
+                <path d="M25,14 L1,14 C0.448,14 0,14.447 0,15 C0,15.553 0.448,16 1,16 L25,16 C25.552,16 26,15.553 26,15 C26,14.447 25.552,14 25,14 Z" id="Shape"></path>
+            </g>
+            <polygon id="Shape" fill="#CEC9AE" points="10 28.761 10 2 7 2 7 36.986"></polygon>
+            <polygon id="Shape" fill="#D1BF86" points="7 36.986 7 4 4 4 4 45.211"></polygon>
+        </g>
+    </g>
+</svg>

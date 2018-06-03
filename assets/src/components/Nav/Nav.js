@@ -43,13 +43,13 @@ export const NavItem = styled(NavLink).attrs({ activeClassName: 'active' })`
   }
 
   &:hover:not(.${props => props.activeClassName}) {
-    background-color: ${theme.navHighlightColor};
-    border-left: 0.5rem solid ${theme.lightCarnation};
+    background-color: ${theme.darkCarnation};
+    border-left: 0.5rem solid #b9332d;
   }
 
   &.${props => props.activeClassName} {
-    background-color: ${theme.navHighlightColor};
-    border-left: 0.5rem solid ${theme.darkCarnation};
+    background-color: rgba(154, 43, 40, 0.9);
+    border-left: 0.5rem solid #b9332d;
   }
 `;
 

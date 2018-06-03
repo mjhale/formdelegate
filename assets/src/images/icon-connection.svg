@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="53px" height="53px" viewBox="0 0 53 53" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>Untitled 3</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
+        <g id="003-connection" transform="translate(1.000000, 1.000000)" stroke="#9A2B28" stroke-width="2">
+            <path d="M23.008,12.401 L32.2,3.208 C36.478,-1.07 43.478,-1.07 47.756,3.208 C52.034,7.486 52.034,14.486 47.756,18.764 L35.735,30.786 C31.457,35.064 24.457,35.064 20.179,30.786" id="Shape"></path>
+            <path d="M26.543,39.978 L18.765,47.756 C14.487,52.034 7.487,52.034 3.209,47.756 C-1.069,43.478 -1.069,36.478 3.209,32.2 L14.523,20.886 C18.801,16.608 25.801,16.608 30.079,20.886" id="Shape"></path>
+            <path d="M32.965,44 L32.965,50" id="Shape"></path>
+            <path d="M36.722,42 L40.965,46.243" id="Shape"></path>
+            <path d="M37.965,38 L43.965,38" id="Shape"></path>
+            <path d="M14.965,9 L14.965,3" id="Shape"></path>
+            <path d="M11.207,11 L6.965,6.757" id="Shape"></path>
+            <path d="M9.965,15 L3.965,15" id="Shape"></path>
+        </g>
+    </g>
+</svg>
