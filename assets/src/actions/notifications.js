@@ -9,7 +9,7 @@ const showNotification = ({ id, level, message }) => {
   };
 };
 
-const hideNotification = id => {
+export const hideNotification = id => {
   return {
     type: NOTIFICATION_HIDE,
     id,
