@@ -2,7 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import styled from 'styled-components';
+
 import theme from 'constants/theme';
+
+import Error from 'components/Error';
 
 const propTypes = {
   message: PropTypes.shape({}),
@@ -75,12 +78,15 @@ const Message = ({ message, onClick, openedMessageId }) => {
         {unknown_fields && (
           <div>
             <h2>Fields</h2>
+
             {Object.keys(unknown_fields).map((key, index) => {
-              return (
-                <div key={index}>
-                  {key}: {unknown_fields[key]}
-                </div>
-              );
+              if (typeof unknown_fields[key] !== 'string') {
+                return (
+                  <Error message="Unable to load message field(s) which aren't strings" />
+                );
+              }
+
+              return <div key={index}>{unknown_fields[key]}</div>;
             })}
           </div>
         )}

@@ -23,6 +23,9 @@ defmodule FormDelegateWeb.RequestController do
 
     # Merge fields into messages map
     #   @TODO: Search through nested param maps
+    #   @TODO: Limit selection to one known field per key, sending the
+    #          rest to unknown_fields (e.g., name and email fields both
+    #          present in params).
     message_attrs = %{
       "content" => Enum.find_value(content_fields, &Map.get(params, &1)),
       "sender" => Enum.find_value(sender_fields, &Map.get(params, &1)),

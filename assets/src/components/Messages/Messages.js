@@ -1,11 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { fetchMessages, messageSearchFetch } from 'actions/messages';
-import { getVisibleMessages } from 'selectors';
 import { parse } from 'query-string';
 import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
+
+import { fetchMessages, messageSearchFetch } from 'actions/messages';
+import { getVisibleMessages } from 'selectors';
+
+import ErrorBoundary from 'components/ErrorBoundary';
 import MessageList from 'components/Messages/MessageList';
 import Search from 'components/Search';
 import Pagination from 'components/Paginator';
@@ -107,7 +110,7 @@ class MessagesContainer extends React.Component {
     const { limit, offset, total } = pagination;
 
     return (
-      <div>
+      <React.Fragment>
         <Header>
           <Heading>My Messages</Heading>
           <Actions>
@@ -126,13 +129,15 @@ class MessagesContainer extends React.Component {
             )}
           </Actions>
         </Header>
-        <MessageList
-          handleViewChange={this.handleViewChange}
-          isFetching={isFetching}
-          messages={messages}
-          openedMessageId={this.state.openedMessageId}
-        />
-      </div>
+        <ErrorBoundary>
+          <MessageList
+            handleViewChange={this.handleViewChange}
+            isFetching={isFetching}
+            messages={messages}
+            openedMessageId={this.state.openedMessageId}
+          />
+        </ErrorBoundary>
+      </React.Fragment>
     );
   }
 }
