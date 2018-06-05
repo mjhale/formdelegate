@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom';
 import { injectGlobal } from 'styled-components';
 import { normalize } from 'polished';
 import { Provider } from 'react-redux';
-import { RootRouter } from 'router';
+
 import theme from 'constants/theme';
 import store from 'store';
+import { RootRouter } from 'router';
 
 injectGlobal`
   ${normalize()}
@@ -46,17 +47,19 @@ injectGlobal`
     display: block;
     font-size: .8rem;
     padding-top: .1rem;
-    text-transform: uppercase;
   }
 
   input[type="text"],
   input[type="password"],
-  select {
-    border: 1px solid #CCC;
+  select,
+  textarea {
+    border: 1px solid ${theme.ghostGray};
+    border-radius: 2px;
+    box-shadow: 0 0 2px 0 #e8e8e8;
     box-sizing: border-box;
     display: block;
     margin: .25rem 0 .25rem 0;
-    max-width: 20rem;
+    max-width: 22rem;
     padding: .4rem;
     width: 100%;
 

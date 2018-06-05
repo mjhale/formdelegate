@@ -27,7 +27,7 @@ const callApi = (endpoint, schema, authenticated, config) => {
 
   return fetch(fullUrl, config)
     .then(response => {
-      const noResponseStatusCodes = [204, 205];
+      const noResponseStatusCodes = [202, 204, 205];
 
       if (noResponseStatusCodes.includes(response.status)) {
         return { json: null, response };

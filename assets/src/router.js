@@ -19,6 +19,7 @@ import Pricing from 'components/Pricing';
 import RequestFailure from 'components/Request/Failure';
 import RequestSuccess from 'components/Request/Success';
 import Register from 'components/Auth/Register';
+import Support from 'components/Support';
 import requireAuth from 'components/Auth/RequireAuth';
 import Welcome from 'components/Welcome';
 
@@ -39,7 +40,10 @@ export const Routes = props => {
     <FluidContainer>
       <Notifications />
       <Switch>
+        <Route path="/admin" component={requireAuth(Admin)} />
         <Route exact path="/dashboard" component={requireAuth(Dashboard)} />
+        <Route exact path="/failure" component={RequestFailure} />
+        <Route exact path="/faq" component={Faq} />
         <Route exact path="/forms" component={requireAuth(Forms)} />
         <Route exact path="/forms/new" component={requireAuth(FormNew)} />
         <Route
@@ -47,21 +51,19 @@ export const Routes = props => {
           path="/forms/:formId/edit"
           component={requireAuth(FormEdit)}
         />
+        <Route exact path="/login" component={Login} />
+        <Route exact path="/logout" component={Logout} />
         <Route exact path="/messages" component={requireAuth(Messages)} />
         <Route
           exact
           path="/messages/:messageId"
           component={requireAuth(Message)}
         />
-        <Route path="/admin" component={requireAuth(Admin)} />
-        <Route exact path="/login" component={Login} />
-        <Route exact path="/logout" component={Logout} />
+        <Route exact path="/pricing" component={Pricing} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/settings" component={UserSettings} />
         <Route exact path="/success" component={RequestSuccess} />
-        <Route exact path="/failure" component={RequestFailure} />
-        <Route exact path="/faq" component={Faq} />
-        <Route exact path="/pricing" component={Pricing} />
+        <Route exact path="/support" component={Support} />
         <Route path="*" component={InvalidRoute} />
       </Switch>
     </FluidContainer>
