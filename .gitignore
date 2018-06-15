@@ -43,7 +43,7 @@ Thumbs.db
 priv/static
 
 # Misc
-.env
+/.env
 .env.local
 .env.development.local
 .env.test.local
