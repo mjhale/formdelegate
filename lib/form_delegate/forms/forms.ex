@@ -21,10 +21,10 @@ defmodule FormDelegate.Forms do
   def list_forms_of_user(%User{} = user) do
     Repo.all from f in Form,
       where: f.user_id == ^user.id,
-      order_by: f.inserted_at,
-      left_join: fi in assoc(f, :form_integrations),
-      left_join: i in assoc(fi, :integration),
-      preload: [form_integrations: {fi, integration: i}]
+      preload: [{
+        :form_integrations, :integration
+      }],
+      order_by: f.inserted_at
   end
 
   @doc """
@@ -43,10 +43,10 @@ defmodule FormDelegate.Forms do
   """
   def get_form!(id) do
     Repo.one! from f in Form,
-      where: f.id == ^id,
-      left_join: fi in assoc(f, :form_integrations),
-      left_join: i in assoc(fi, :integration),
-      preload: [form_integrations: {fi, integration: i}]
+      preload: [{
+        :form_integrations, :integration
+      }],
+      where: f.id == ^id
   end
 
   @doc """
