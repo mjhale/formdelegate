@@ -80,10 +80,10 @@ class MessagesContainer extends React.Component {
 
   handlePageChange = (requestedPage, evt) => {
     const { loadMessages, location } = this.props;
-    const { query } = parse(location.search);
+    const searchParam = parse(location.search);
 
     evt.preventDefault();
-    loadMessages(requestedPage, query && query.search);
+    loadMessages(requestedPage, searchParam && searchParam.search);
   };
 
   handleSearch = values => {
@@ -169,5 +169,8 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(MessagesContainer)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(MessagesContainer)
 );

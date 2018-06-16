@@ -37,8 +37,8 @@ const Paginator = ({ handlePageChange, limit, offset, total }) => {
   if (!total) return null;
 
   let currentPage = Math.ceil(offset / limit) || 1;
-  let itemIndexCeiling = offset + limit <= total ? offset + limit : total;
-  let itemIndexFloor = offset || 1;
+  let itemIndexFloor = (currentPage - 1) * limit + 1;
+  let itemIndexCeiling = Math.min(itemIndexFloor + limit - 1, total);
 
   return (
     <PaginationContainer>
