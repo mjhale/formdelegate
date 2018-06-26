@@ -121,7 +121,11 @@ const Hero = styled.div`
   box-shadow: inset 0 0 0 1000px rgba(50, 43, 40, 0.55);
   display: flex;
   flex-direction: column;
-  min-height: 400px;
+  min-height: 275px;
+
+  ${media.md`
+    min-height: 400px;
+  `};
 `;
 
 const HeroAction = styled.div`

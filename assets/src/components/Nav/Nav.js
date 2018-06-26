@@ -2,10 +2,12 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import React from 'react';
 import { connect } from 'react-redux';
+import { darken } from 'polished';
 import { NavLink, withRouter } from 'react-router-dom';
 
 import theme from 'constants/theme';
 import { getCurrentUser } from 'selectors';
+import { media } from 'utils/style';
 
 import AuthenticatedNav from 'components/Nav/AuthenticatedNav';
 import NavToggle from 'components/Nav/NavToggle';
@@ -24,8 +26,17 @@ const defaultProps = {
 };
 
 export const NavContainer = styled.nav`
+  background-color: ${darken(0.08, theme.darkCarnation)};
+  border-top: 1px solid ${darken(0.1, theme.darkCarnation)};
+  box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
   overflow: hidden;
   padding: 0;
+
+  ${media.md`
+    background-color: transparent;
+    border-top: none;
+    box-shadow: none;
+  `};
 `;
 
 export const NavItem = styled(NavLink).attrs({ activeClassName: 'active' })`
@@ -48,7 +59,7 @@ export const NavItem = styled(NavLink).attrs({ activeClassName: 'active' })`
   }
 
   &.${props => props.activeClassName} {
-    background-color: rgba(154, 43, 40, 0.9);
+    background-color: rgba(130, 37, 35, 0.85);
     border-left: 0.5rem solid #b9332d;
   }
 `;

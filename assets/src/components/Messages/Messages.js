@@ -1,12 +1,13 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
+import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { parse } from 'query-string';
 import { withRouter } from 'react-router-dom';
-import styled from 'styled-components';
 
 import { fetchMessages, messageSearchFetch } from 'actions/messages';
 import { getVisibleMessages } from 'selectors';
+import { media } from 'utils/style';
 
 import ErrorBoundary from 'components/ErrorBoundary';
 import MessageList from 'components/Messages/MessageList';
@@ -41,21 +42,28 @@ const Heading = styled.h1`
 
 const Actions = styled.ul`
   display: flex;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  justify-content: space-between;
   list-style-type: none;
   margin: 0 0 0.5rem 0;
   padding: 0;
+  width: 100%;
 
-  & li {
-    flex: 1 1 auto;
-  }
+  ${media.md`
+      flex: 0 0 auto;
+      justify-content: normal;
+      width: auto;
+  `};
+`;
 
-  & li:first-child {
-    margin-right: 1rem;
-  }
+const PaginationContainer = styled.li`
+  flex: 0 1 auto;
 `;
 
 const SearchContainer = styled.li`
+  flex: 1 1 auto;
+  margin-right: 1rem;
+
   & input[name='search'] {
     line-height: 20px;
     margin: 0;
@@ -118,14 +126,14 @@ class MessagesContainer extends React.Component {
               <Search {...this.props} handleSearch={this.handleSearch} />
             </SearchContainer>
             {total > 0 && (
-              <li>
+              <PaginationContainer>
                 <Pagination
                   handlePageChange={this.handlePageChange}
                   limit={limit}
                   offset={offset}
                   total={total}
                 />
-              </li>
+              </PaginationContainer>
             )}
           </Actions>
         </Header>

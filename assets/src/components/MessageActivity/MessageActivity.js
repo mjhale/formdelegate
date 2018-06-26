@@ -5,11 +5,12 @@ import styled from 'styled-components';
 import Card from 'components/Card';
 
 const GraphContainer = styled.div`
-  text-align: center;
+  height: auto;
 `;
 
 const Graph = styled.div`
-  height: auto;
+  margin: 0 auto;
+  max-width: 750px;
 `;
 
 class MessageActivity extends React.Component {
@@ -31,7 +32,6 @@ class MessageActivity extends React.Component {
    */
   createHeatmap(data, startDay, endDay) {
     const cellSize = 12;
-    const height = 120;
     const locale = {
       months: [
         'Jan',
@@ -48,7 +48,6 @@ class MessageActivity extends React.Component {
         'Dec',
       ],
     };
-    const width = 730;
 
     const firstDate = moment(startDay);
     const lastDate = moment(endDay);
@@ -74,9 +73,8 @@ class MessageActivity extends React.Component {
     const svg = d3
       .select('.activity-graph')
       .append('svg')
-      .attr('height', height)
-      .attr('width', width)
       .attr('class', 'activity-heatmap')
+      .attr('viewBox', '0 0 730 115')
       .classed('svg-content', true);
 
     // Draw day rectangles

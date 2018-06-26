@@ -4,6 +4,7 @@ import moment from 'moment';
 import styled from 'styled-components';
 
 import theme from 'constants/theme';
+import { media } from 'utils/style';
 
 import Error from 'components/Error';
 
@@ -12,7 +13,7 @@ const propTypes = {
   openedMessageId: PropTypes.number,
 };
 
-const MessageCell = styled.div`
+const Cell = styled.div`
   display: flex;
   flex-basis: 0;
   flex-flow: row nowrap;
@@ -43,16 +44,33 @@ const ExpandedMessageRow = styled.div`
   user-select: none;
 `;
 
-const SenderCell = styled(MessageCell)`
-  flex: 0 0 15em;
+const MessageCell = styled(Cell)`
+  display: none;
+
+  ${media.md`
+    display: flex;
+  `};
 `;
 
-const FormCell = styled(MessageCell)`
-  flex: 0 0 15em;
-  justify-content: center;
+const SenderCell = styled(Cell)`
+  flex: 1 1 auto;
+
+  ${media.md`
+    flex: 0 0 15em;
+  `};
 `;
 
-const DateCell = styled(MessageCell)`
+const FormCell = styled(Cell)`
+  display: none;
+
+  ${media.md`
+    display: flex;
+    flex: 0 0 15em;
+    justify-content: center;
+  `};
+`;
+
+const DateCell = styled(Cell)`
   flex: 0 0 10em;
   justify-content: flex-end;
 `;
@@ -64,7 +82,11 @@ const Message = ({ message, onClick, openedMessageId }) => {
     return (
       <MessageRow onClick={onClick}>
         <SenderCell>{sender}</SenderCell>
-        <MessageCell>{content}</MessageCell>
+        <MessageCell>
+          {content && content.length > 50
+            ? `${content.substring(0, 50)}...`
+            : content}
+        </MessageCell>
         <FormCell>{form.form}</FormCell>
         <DateCell>{moment.utc(inserted_at).fromNow()}</DateCell>
       </MessageRow>
