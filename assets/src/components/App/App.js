@@ -1,16 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Routes from 'router';
 import styled, { keyframes } from 'styled-components';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import theme from 'constants/theme';
+import { addNotification } from 'actions/notifications';
 import { fetchCurrentUser } from 'actions/users';
 import { isTokenCurrent } from 'utils';
 import { media } from 'utils/style';
 
 import Nav from 'components/Nav';
+import Routes from 'router';
 
 const ContentContainer = styled.div`
   ${media.md`
@@ -91,19 +92,24 @@ const NavBar = styled.div`
 
 const propTypes = {
   loadCurrentUser: PropTypes.func.isRequired,
+  showAlphaNotice: PropTypes.func.isRequired,
 };
 
 class App extends React.Component {
   componentDidMount() {
     const encodedJWT = localStorage.getItem('fd_token');
+    const { loadCurrentUser, showAlphaNotice } = this.props;
+
     if (isTokenCurrent(encodedJWT)) {
-      this.props.loadCurrentUser();
+      loadCurrentUser();
     }
+
+    showAlphaNotice();
   }
 
   render() {
     return (
-      <div>
+      <React.Fragment>
         <NavBar>
           <LogoLink to="/">form delegate</LogoLink>
           <Nav />
@@ -111,7 +117,7 @@ class App extends React.Component {
         <ContentContainer>
           <Routes />
         </ContentContainer>
-      </div>
+      </React.Fragment>
     );
   }
 }
@@ -121,6 +127,16 @@ App.propTypes = propTypes;
 const mapDispatchToProps = dispatch => ({
   loadCurrentUser: () => {
     dispatch(fetchCurrentUser());
+  },
+
+  showAlphaNotice: () => {
+    dispatch(
+      addNotification({
+        dismissable: false,
+        level: 'notice',
+        message: 'Our service is currently in its alpha stage.',
+      })
+    );
   },
 });
 

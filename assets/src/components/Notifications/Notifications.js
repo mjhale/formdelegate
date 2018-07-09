@@ -1,18 +1,23 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React from 'react';
 import styled from 'styled-components';
+import { connect } from 'react-redux';
 
-import { hideNotification } from 'actions/notifications';
 import theme from 'constants/theme';
+import { hideNotification } from 'actions/notifications';
 
 import Flash from 'components/Flash';
 
 const propTypes = {
+  dismissable: PropTypes.bool,
   notifications: PropTypes.array.isRequired,
 };
 
-const DismissNotification = styled.button`
+const defaultProps = {
+  dismissable: true,
+};
+
+const DismissButton = styled.button`
   background: 0 0;
   border: 0;
   color: ${theme.mineBlack};
@@ -27,33 +32,42 @@ const DismissNotification = styled.button`
 `;
 
 const FlashNotification = styled(Flash)`
-  margin-bottom: 1rem;
   position: relative;
 `;
 
-const Notifications = ({ handleDismissal, notifications }) => {
-  if (!notifications) return null;
+const NotificationContainer = styled.div`
+  box-sizing: border-box;
+  margin: 1rem 0;
+`;
+
+const Notifications = ({ dismissable, handleDismissal, notifications }) => {
+  if (!Array.isArray(notifications) || notifications.length === 0) {
+    return null;
+  }
 
   return (
-    <div>
+    <NotificationContainer>
       {notifications.map(notification => {
         return (
           <FlashNotification key={notification.id} type={notification.level}>
             {notification.message}
-            <DismissNotification
-              aria-hidden="true"
-              onClick={evt => handleDismissal(notification.id, evt)}
-            >
-              ×
-            </DismissNotification>
+            {dismissable && (
+              <DismissButton
+                aria-hidden="true"
+                onClick={evt => handleDismissal(notification.id, evt)}
+              >
+                ×
+              </DismissButton>
+            )}
           </FlashNotification>
         );
       })}
-    </div>
+    </NotificationContainer>
   );
 };
 
 Notifications.propTypes = propTypes;
+Notifications.defaultProps = defaultProps;
 
 const mapStateToProps = state => ({
   notifications: state.notifications,
@@ -66,4 +80,7 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Notifications);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Notifications);

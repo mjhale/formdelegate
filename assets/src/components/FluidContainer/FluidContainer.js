@@ -2,9 +2,9 @@ import styled from 'styled-components';
 
 const FluidContainer = styled.div`
   box-sizing: border-box;
-  margin: 0 auto;
+  margin: 1rem auto;
   max-width: 960px;
-  padding: 1rem;
+  padding: 0 1rem;
   width: 100%;
 `;
 

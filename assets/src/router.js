@@ -1,5 +1,7 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { BrowserRouter, Route, Switch, withRouter } from 'react-router-dom';
+
 import UserSettings from 'components/User/Settings';
 import Admin from 'components/Admin';
 import App from 'components/App';
@@ -29,6 +31,10 @@ export const RootRouter = () => (
   </BrowserRouter>
 );
 
+/**
+ * @TODO: Fix full-width component rendering and remove rendering logic
+ * from router.
+ */
 export const Routes = props => {
   const { location } = props;
 
@@ -70,6 +76,10 @@ export const Routes = props => {
   );
 };
 
-Routes.propTypes = {};
+Routes.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+  }).isRequired,
+};
 
 export default withRouter(Routes);
