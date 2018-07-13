@@ -6,6 +6,7 @@ export default (state = [], action) => {
       return [
         ...state,
         {
+          dismissable: action.dismissable,
           id: action.id,
           level: action.level,
           message: action.message,

@@ -8,15 +8,6 @@ import { hideNotification } from 'actions/notifications';
 
 import Flash from 'components/Flash';
 
-const propTypes = {
-  dismissable: PropTypes.bool,
-  notifications: PropTypes.array.isRequired,
-};
-
-const defaultProps = {
-  dismissable: true,
-};
-
 const DismissButton = styled.button`
   background: 0 0;
   border: 0;
@@ -32,6 +23,7 @@ const DismissButton = styled.button`
 `;
 
 const FlashNotification = styled(Flash)`
+  margin: 1rem 0;
   position: relative;
 `;
 
@@ -40,18 +32,19 @@ const NotificationContainer = styled.div`
   margin: 1rem 0;
 `;
 
-const Notifications = ({ dismissable, handleDismissal, notifications }) => {
+const Notifications = ({ handleDismissal, notifications }) => {
   if (!Array.isArray(notifications) || notifications.length === 0) {
     return null;
   }
 
   return (
     <NotificationContainer>
+      {/* @TODO: Possibly give each notification its own lifecycle */}
       {notifications.map(notification => {
         return (
           <FlashNotification key={notification.id} type={notification.level}>
             {notification.message}
-            {dismissable && (
+            {notification.dismissable && (
               <DismissButton
                 aria-hidden="true"
                 onClick={evt => handleDismissal(notification.id, evt)}
@@ -66,8 +59,14 @@ const Notifications = ({ dismissable, handleDismissal, notifications }) => {
   );
 };
 
-Notifications.propTypes = propTypes;
-Notifications.defaultProps = defaultProps;
+Notifications.propTypes = {
+  dismissable: PropTypes.bool,
+  notifications: PropTypes.array.isRequired,
+};
+
+Notifications.defaultProps = {
+  dismissable: true,
+};
 
 const mapStateToProps = state => ({
   notifications: state.notifications,
