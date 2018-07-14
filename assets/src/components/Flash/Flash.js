@@ -1,14 +1,6 @@
 import PropTypes from 'prop-types';
-import { shade } from 'polished';
 import styled from 'styled-components';
-
-const propTypes = {
-  type: PropTypes.oneOf(['alert', 'error', 'notice', 'success']),
-};
-
-const defaultProps = {
-  type: 'notice',
-};
+import { shade } from 'polished';
 
 const typeColors = {
   alert: '#fff6bf',
@@ -35,7 +27,12 @@ const Flash = styled.div`
   }
 `;
 
-Flash.propTypes = propTypes;
-Flash.defaultProps = defaultProps;
+Flash.propTypes = {
+  type: PropTypes.oneOf(['alert', 'error', 'notice', 'success']),
+};
+
+Flash.defaultProps = {
+  type: 'notice',
+};
 
 export default Flash;

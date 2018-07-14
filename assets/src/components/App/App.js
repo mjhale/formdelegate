@@ -90,21 +90,26 @@ const NavBar = styled.div`
   `};
 `;
 
-const propTypes = {
-  loadCurrentUser: PropTypes.func.isRequired,
-  showAlphaNotice: PropTypes.func.isRequired,
-};
-
 class App extends React.Component {
+  static propTypes = {
+    addNotification: PropTypes.func.isRequired,
+    fetchCurrentUser: PropTypes.func.isRequired,
+  };
+
   componentDidMount() {
     const encodedJWT = localStorage.getItem('fd_token');
-    const { loadCurrentUser, showAlphaNotice } = this.props;
 
     if (isTokenCurrent(encodedJWT)) {
-      loadCurrentUser();
+      this.props.fetchCurrentUser();
     }
 
-    showAlphaNotice();
+    // Show alpha notice
+    this.props.addNotification({
+      dismissable: false,
+      level: 'notice',
+      message:
+        'Form Delegate is currently in alpha and should be considered unstable.',
+    });
   }
 
   render() {
@@ -122,23 +127,10 @@ class App extends React.Component {
   }
 }
 
-App.propTypes = propTypes;
-
-const mapDispatchToProps = dispatch => ({
-  loadCurrentUser: () => {
-    dispatch(fetchCurrentUser());
-  },
-
-  showAlphaNotice: () => {
-    dispatch(
-      addNotification({
-        dismissable: false,
-        level: 'notice',
-        message: 'Our service is currently in its alpha stage.',
-      })
-    );
-  },
-});
+const mapDispatchToProps = {
+  addNotification,
+  fetchCurrentUser,
+};
 
 export default connect(
   null,

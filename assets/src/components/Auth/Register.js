@@ -1,23 +1,19 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
-import { createUser } from 'actions/users';
 import { Field } from 'redux-form';
-import { loginUser } from 'actions/sessions';
-import { reduxForm, propTypes as reduxPropTypes } from 'redux-form';
+import { reduxForm } from 'redux-form';
 import { withRouter } from 'react-router-dom';
+
+import { createUser } from 'actions/users';
+import { loginUser } from 'actions/sessions';
+
 import Button from 'components/Button';
 import Card from 'components/Card';
-import Error from 'components/Error';
+import Flash from 'components/Flash';
 import renderField from 'components/Field';
 
-const propTypes = {
-  ...reduxPropTypes,
-  errorMessage: PropTypes.string,
-  onSubmit: PropTypes.func.isRequired,
-};
-
-const validate = values => {
+const validateForm = values => {
   const errors = {};
 
   if (!values.email) {
@@ -35,59 +31,84 @@ const validate = values => {
   return errors;
 };
 
-let RegisterUser = ({ handleSubmit, errorMessage, submitting }) => (
-  <div>
-    {errorMessage && <Error message={errorMessage} />}
-    <h2>Register User</h2>
-    <Card>
-      <form onSubmit={handleSubmit}>
-        <Field
-          name="email"
-          component={renderField}
-          type="text"
-          label="E-mail Address"
-        />
-        <Field
-          name="name"
-          component={renderField}
-          type="text"
-          label="Full Name"
-        />
-        <Field
-          name="password"
-          component={renderField}
-          type="password"
-          label="Password"
-        />
-        <Button type="submit" disabled={submitting}>
-          Create User
-        </Button>
-      </form>
-    </Card>
-  </div>
-);
+class RegisterUser extends React.Component {
+  static propTypes = {
+    createUser: PropTypes.func.isRequired,
+    handleSubmit: PropTypes.func.isRequired,
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }),
+    loginUser: PropTypes.func.isRequired,
+    registrationErrorMessage: PropTypes.string,
+  };
 
-RegisterUser.propTypes = propTypes;
+  handleRegistrationAndLogin = credentials => {
+    const { createUser, history, loginUser } = this.props;
+
+    createUser(credentials)
+      .then(() => loginUser(credentials))
+      .then(() => history.push('/dashboard/'))
+      .catch(error => console.log('error', error));
+  };
+
+  render() {
+    const { handleSubmit, registrationErrorMessage, submitting } = this.props;
+
+    return (
+      <React.Fragment>
+        {registrationErrorMessage && (
+          <Flash type="error">{registrationErrorMessage}</Flash>
+        )}
+
+        <h2>Create New Account</h2>
+
+        <Card>
+          <form onSubmit={handleSubmit(this.handleRegistrationAndLogin)}>
+            <Field
+              name="email"
+              component={renderField}
+              type="text"
+              label="E-mail Address"
+            />
+            <Field
+              name="name"
+              component={renderField}
+              type="text"
+              label="Full Name"
+            />
+            <Field
+              name="password"
+              component={renderField}
+              type="password"
+              label="Password"
+            />
+            <Button type="submit" disabled={submitting}>
+              Create User
+            </Button>
+          </form>
+        </Card>
+      </React.Fragment>
+    );
+  }
+}
 
 RegisterUser = reduxForm({
   form: 'registerForm',
-  validate,
+  validate: validateForm,
 })(RegisterUser);
 
 const mapStateToProps = state => ({
-  errorMessage: state.users.errorMessage,
+  registrationErrorMessage: state.users.errorMessage,
 });
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  onSubmit(values) {
-    return dispatch(createUser(values)).then(() =>
-      dispatch(loginUser(values)).then(() =>
-        ownProps.history.push('/dashboard/')
-      )
-    );
-  },
-});
+const mapDispatchToProps = {
+  createUser,
+  loginUser,
+};
 
 export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(RegisterUser)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(RegisterUser)
 );

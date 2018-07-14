@@ -1,22 +1,19 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { getCurrentUser } from 'selectors';
-import { NavLink, Route, Switch } from 'react-router-dom';
+import React from 'react';
 import styled from 'styled-components';
+import { connect } from 'react-redux';
+import { NavLink, Route, Switch } from 'react-router-dom';
+
+import theme from 'constants/theme';
+import { addNotification } from 'actions/notifications';
+import { getCurrentUser } from 'selectors';
+
+import Dashboard from 'components/Admin/Dashboard';
+import IntegrationForm from 'components/Admin/IntegrationForm';
+import IntegrationList from 'components/Admin/IntegrationList';
 import UserFormContainer from 'components/Admin/UserFormContainer';
 import UserList from 'components/Admin/UserList';
 import UserView from 'components/Admin/UserView';
-import Dashboard from 'components/Admin/Dashboard';
-import Error from 'components/Error';
-import IntegrationList from 'components/Admin/IntegrationList';
-import IntegrationForm from 'components/Admin/IntegrationForm';
-import theme from 'constants/theme';
-
-const propTypes = {
-  user: PropTypes.object,
-  isAdmin: PropTypes.bool,
-};
 
 const AdminNavigation = styled.ul`
   background-color: ${theme.primaryColor};
@@ -49,14 +46,18 @@ const AdminLink = styled(NavLink).attrs({ activeClassName: 'active' })`
   }
 `;
 
-const Admin = ({ user, isAdmin }) => {
-  if (!user) return null;
+const Admin = ({ isAdmin, isFetching, showAuthorizationError, user }) => {
+  if (isFetching || !user) {
+    return null;
+  }
 
-  if (!isAdmin)
-    return <Error message="You are not authorized to access this area." />;
+  if (!isAdmin) {
+    showAuthorizationError();
+    return null;
+  }
 
   return (
-    <div>
+    <React.Fragment>
       <h1>Administration</h1>
       <AdminNavigation>
         <li>
@@ -92,19 +93,40 @@ const Admin = ({ user, isAdmin }) => {
           component={IntegrationForm}
         />
       </Switch>
-    </div>
+    </React.Fragment>
   );
 };
 
-Admin.propTypes = propTypes;
+Admin.propTypes = {
+  isAdmin: PropTypes.bool,
+  showAuthorizationError: PropTypes.func.isRequired,
+  user: PropTypes.object,
+};
 
 const mapStateToProps = state => {
   const user = getCurrentUser(state);
+  const { authentication } = state;
 
   return {
-    user: getCurrentUser(state),
     isAdmin: user && user.is_admin,
+    isFetching: authentication.isFetching,
+    user: getCurrentUser(state),
   };
 };
 
-export default connect(mapStateToProps)(Admin);
+const mapDispatchToProps = dispatch => ({
+  showAuthorizationError: () => {
+    dispatch(
+      addNotification({
+        dismissable: false,
+        level: 'error',
+        message: 'You are not authorized to access this area.',
+      })
+    );
+  },
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Admin);

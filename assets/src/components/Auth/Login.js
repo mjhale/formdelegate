@@ -1,10 +1,12 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { withRouter } from 'react-router-dom';
+
 import { loginUser } from 'actions/sessions';
-import Error from 'components/Error';
+
+import Flash from 'components/Flash';
 import LoginForm from 'components/Auth/LoginForm';
 
 const validate = values => {
@@ -21,61 +23,67 @@ const validate = values => {
   return errors;
 };
 
-const propTypes = {
-  handleSubmit: PropTypes.func.isRequired,
-  isAuthenticated: PropTypes.bool.isRequired,
-  pristine: PropTypes.bool.isRequired,
-  submitting: PropTypes.bool.isRequired,
-};
+class Login extends React.Component {
+  static propTypes = {
+    authErrorMessage: PropTypes.string,
+    handleSubmit: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool.isRequired,
+    loginUser: PropTypes.func.isRequired,
+    pristine: PropTypes.bool.isRequired,
+    submitting: PropTypes.bool.isRequired,
+  };
 
-let Login = props => {
-  const {
-    errorMessage,
-    fields,
-    handleSubmit,
-    isAuthenticated,
-    onSubmit,
-    pristine,
-    submitting,
-  } = props;
+  handleLogin = credentials => {
+    this.props
+      .loginUser(credentials)
+      .then(() => this.props.history.push('/dashboard'));
+  };
 
-  if (!isAuthenticated) {
+  render() {
+    const {
+      authErrorMessage,
+      fields,
+      handleSubmit,
+      isAuthenticated,
+      pristine,
+      submitting,
+    } = this.props;
+
+    if (isAuthenticated) {
+      return null;
+    }
+
     return (
-      <div>
-        {errorMessage && <Error message={errorMessage} />}
+      <React.Fragment>
+        {authErrorMessage && <Flash type="error">{authErrorMessage}</Flash>}
         <LoginForm
           {...fields}
           pristine={pristine}
           submitting={submitting}
-          handleSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(this.handleLogin)}
         />
-      </div>
+      </React.Fragment>
     );
   }
-
-  return null;
-};
-
-Login.propTypes = propTypes;
+}
 
 Login = reduxForm({
   form: 'loginForm',
   validate,
 })(Login);
 
-const mapStateToProps = state => {
-  const { errorMessage, isAuthenticated } = state.authentication;
-
-  return {
-    errorMessage,
-    isAuthenticated,
-  };
-};
-
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  onSubmit(values) {
-    dispatch(loginUser(values)).then(() => ownProps.history.push('/dashboard'));
-  },
+const mapStateToProps = state => ({
+  authErrorMessage: state.authentication.errorMessage,
+  isAuthenticated: state.authentication.isAuthenticated,
 });
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Login));
+const mapDispatchToProps = {
+  loginUser,
+};
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(Login)
+);

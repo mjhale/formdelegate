@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Error from 'components/Error';
+import Flash from 'components/Flash';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -14,9 +14,7 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      return (
-        <Error message="Sorry, there was an unexpected error. Our team has been notified." />
-      );
+      return <Flash type="error">Sorry, there was an unexpected error.</Flash>;
     }
 
     return this.props.children;

@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import theme from 'constants/theme';
 import { media } from 'utils/style';
 
-import Error from 'components/Error';
+import Flash from 'components/Flash';
 
 const propTypes = {
   message: PropTypes.shape({}),
@@ -104,7 +104,9 @@ const Message = ({ message, onClick, openedMessageId }) => {
             {Object.keys(unknown_fields).map((key, index) => {
               if (typeof unknown_fields[key] !== 'string') {
                 return (
-                  <Error message="Unable to load message field(s) which aren't strings" />
+                  <Flash type="error">
+                    Unable to load message field(s) which aren't strings.
+                  </Flash>
                 );
               }
 
