@@ -13,6 +13,7 @@ const Flash = styled.div`
   background-color: ${props => typeColors[props.type]};
   color: ${props => props.typeColor && shade(0.6, typeColors[props.type])};
   display: block;
+  margin: 1rem 0;
   padding: 0.75em;
   text-align: center;
 

@@ -1,17 +1,11 @@
 import React from 'react';
-import { Field, propTypes as reduxFormPropTypes } from 'redux-form';
-
-const propTypes = {
-  ...reduxFormPropTypes,
-};
-
-const defaultProps = {};
+import { Field } from 'redux-form';
 
 const AdminUserForm = props => {
-  const { error, handleSubmit, onSubmit, pristine, submitting, reset } = props;
+  const { error, onSubmit, pristine, submitting, reset } = props;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={onSubmit}>
       <div>
         <label htmlFor="email">E-Mail</label>
         <Field
@@ -61,8 +55,5 @@ const AdminUserForm = props => {
     </form>
   );
 };
-
-AdminUserForm.propTypes = propTypes;
-AdminUserForm.defaultProps = defaultProps;
 
 export default AdminUserForm;

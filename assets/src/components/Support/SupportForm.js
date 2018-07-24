@@ -80,4 +80,7 @@ SupportForm = reduxForm({
   validate: submitFormValidations,
 })(SupportForm);
 
-export default connect(null, mapDispatchToProps)(SupportForm);
+export default connect(
+  null,
+  mapDispatchToProps
+)(SupportForm);

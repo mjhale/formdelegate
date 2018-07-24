@@ -1,20 +1,17 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { change, Field, reduxForm, untouch } from 'redux-form';
 import { connect } from 'react-redux';
 import { denormalize } from 'normalizr';
+import styled from 'styled-components';
+
 import { fetchForm, updateForm } from 'actions/forms';
 import { fetchIntegrations } from 'actions/integrations';
-import { change, Field, reduxForm, untouch } from 'redux-form';
 import { formSchema } from 'schema';
-import styled from 'styled-components';
+
 import Button from 'components/Button';
 import Card from 'components/Card';
 import FormIntegrationList from 'components/FormIntegrations/IntegrationList';
-
-const propTypes = {
-  initialValues: PropTypes.object,
-  isFetching: PropTypes.bool.isRequired,
-};
 
 const VerifiedStatus = styled.div`
   float: right;
@@ -22,41 +19,70 @@ const VerifiedStatus = styled.div`
 `;
 
 const CardHeader = ({ title, isVerified }) => (
-  <div>
+  <React.Fragment>
     <VerifiedStatus>{isVerified ? 'Verified' : 'Unverified'}</VerifiedStatus>
     {title}
-  </div>
+  </React.Fragment>
 );
 
 class FormEdit extends React.Component {
-  constructor() {
-    super();
-    this.state = { newIntegrationFields: 0 };
-  }
+  static propTypes = {
+    fetchForm: PropTypes.func.isRequired,
+    fetchIntegrations: PropTypes.func.isRequired,
+    formData: PropTypes.object,
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }).isRequired,
+    integrations: PropTypes.object,
+    isFetching: PropTypes.bool.isRequired,
+    match: PropTypes.shape({
+      params: PropTypes.object.isRequired,
+    }).isRequired,
+    updateForm: PropTypes.func.isRequired,
+  };
+
+  state = { newIntegrationFields: 0 };
+
+  handleFormEdit = form => {
+    const { updateForm, history } = this.props;
+
+    updateForm(form).then(() => history.push('/forms/'));
+  };
+
+  removeIntegrationField = integrationField => {
+    change('formForm', `${integrationField}[enabled]`, null);
+    change('formForm', `${integrationField}[settings][api_key]`, null);
+    change('formForm', `${integrationField}[settings][email]`, null);
+    untouch('formForm', `${integrationField}[enabled]`);
+    untouch('formForm', `${integrationField}[settings][api_key]`);
+    untouch('formForm', `${integrationField}[settings][email]`);
+  };
 
   componentDidMount() {
-    this.props.loadForm();
-    this.props.loadIntegrationTypes();
+    const { fetchForm, fetchIntegrations, match } = this.props;
+
+    fetchForm(match.params.formId);
+    fetchIntegrations();
   }
 
   render() {
     const {
       formData,
       handleSubmit,
+      integrations,
       isFetching,
-      removeIntegration,
       submitting,
     } = this.props;
-    const integrationTypes = this.props.integrations;
 
     if (isFetching || !formData) {
       return <div>Loading form...</div>;
     }
 
     return (
-      <div>
+      <React.Fragment>
         <h1>Edit Form</h1>
-        <form onSubmit={handleSubmit}>
+
+        <form onSubmit={handleSubmit(this.handleFormEdit)}>
           <Card
             header={
               <CardHeader
@@ -84,20 +110,18 @@ class FormEdit extends React.Component {
             </div>
             <FormIntegrationList
               integrations={formData.form_integrations}
-              integrationTypes={integrationTypes}
-              removeIntegration={removeIntegration}
+              integrationTypes={integrations}
+              removeIntegration={this.removeIntegrationField}
             />
           </Card>
           <Button type="submit" disabled={submitting}>
             Save Form
           </Button>
         </form>
-      </div>
+      </React.Fragment>
     );
   }
 }
-
-FormEdit.propTypes = propTypes;
 
 const mapStateToProps = (state, ownProps) => {
   const denormalizedForm = state.entities.forms
@@ -112,32 +136,19 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  loadForm() {
-    dispatch(fetchForm(ownProps.match.params.formId));
-  },
-
-  loadIntegrationTypes() {
-    dispatch(fetchIntegrations());
-  },
-
-  onSubmit(values) {
-    dispatch(updateForm(values));
-    ownProps.history.push('/forms/');
-  },
-
-  removeIntegration(field) {
-    dispatch(change('formForm', `${field}[enabled]`, null));
-    dispatch(change('formForm', `${field}[settings][api_key]`, null));
-    dispatch(change('formForm', `${field}[settings][email]`, null));
-    dispatch(untouch('formForm', `${field}[enabled]`));
-    dispatch(untouch('formForm', `${field}[settings][api_key]`));
-    dispatch(untouch('formForm', `${field}[settings][email]`));
-  },
-});
+const mapDispatchToProps = {
+  change,
+  fetchForm,
+  fetchIntegrations,
+  untouch,
+  updateForm,
+};
 
 FormEdit = reduxForm({
   form: 'formForm',
 })(FormEdit);
 
-export default connect(mapStateToProps, mapDispatchToProps)(FormEdit);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FormEdit);

@@ -13,18 +13,6 @@ import AuthenticatedNav from 'components/Nav/AuthenticatedNav';
 import NavToggle from 'components/Nav/NavToggle';
 import UnauthenticatedNav from 'components/Nav/UnauthenticatedNav';
 
-const propTypes = {
-  isAdmin: PropTypes.bool.isRequired,
-  isAuthenticated: PropTypes.bool.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  isSmallDevice: PropTypes.bool.isRequired,
-};
-
-const defaultProps = {
-  isAdmin: false,
-  isAuthenticated: false,
-};
-
 export const NavContainer = styled.nav`
   background-color: ${darken(0.08, theme.darkCarnation)};
   border-top: 1px solid ${darken(0.1, theme.darkCarnation)};
@@ -65,10 +53,19 @@ export const NavItem = styled(NavLink).attrs({ activeClassName: 'active' })`
 `;
 
 class Nav extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { isNavVisible: true };
-  }
+  static propTypes = {
+    isAdmin: PropTypes.bool.isRequired,
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    isSmallDevice: PropTypes.bool.isRequired,
+  };
+
+  static defaultProps = {
+    isAdmin: false,
+    isAuthenticated: false,
+  };
+
+  state = { isNavVisible: true };
 
   componentDidMount() {
     const { isSmallDevice } = this.props;
@@ -132,9 +129,6 @@ class Nav extends React.Component {
     );
   }
 }
-
-Nav.propTypes = propTypes;
-Nav.defaultProps = defaultProps;
 
 const mapStateToProps = state => {
   const user = getCurrentUser(state);

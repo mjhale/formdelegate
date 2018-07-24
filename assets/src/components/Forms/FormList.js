@@ -1,10 +1,12 @@
+import CopyToClipboard from 'react-copy-to-clipboard';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import CopyToClipboard from 'react-copy-to-clipboard';
+
 import styled from 'styled-components';
+import theme from 'constants/theme';
+
 import Button from 'components/Button';
 import Card from 'components/Card';
-import theme from 'constants/theme';
 
 const DeleteButton = styled(Button)`
   float: right;
@@ -45,7 +47,7 @@ let FormList = ({ forms, isFetching, onDeleteClick }) => {
   }
 
   return (
-    <div>
+    <React.Fragment>
       {forms.map(form => (
         <FormSimpleView
           key={form.id}
@@ -53,7 +55,7 @@ let FormList = ({ forms, isFetching, onDeleteClick }) => {
           onDeleteClick={onDeleteClick}
         />
       ))}
-    </div>
+    </React.Fragment>
   );
 };
 

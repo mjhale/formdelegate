@@ -1,12 +1,8 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import styled, { css } from 'styled-components';
 
 import theme from 'constants/theme';
-
-const propTypes = {
-  isSmallDevice: PropTypes.bool.isRequired,
-};
 
 const ToggleButton = styled.button`
   background-color: transparent;
@@ -110,6 +106,10 @@ const NavToggle = ({ handleNavTaggle, isNavVisible, isSmallDevice }) => {
   );
 };
 
-NavToggle.propTypes = propTypes;
+NavToggle.propTypes = {
+  handleNavTaggle: PropTypes.func.isRequired,
+  isNavVisible: PropTypes.bool.isRequired,
+  isSmallDevice: PropTypes.bool.isRequired,
+};
 
 export default NavToggle;

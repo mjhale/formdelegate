@@ -72,5 +72,7 @@ export function logoutUser() {
     } catch (error) {
       throw new Error('Promise flow received error', error);
     }
+
+    return Promise.resolve();
   };
 }

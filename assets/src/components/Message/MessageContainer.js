@@ -1,20 +1,25 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
+
 import { fetchMessage } from 'actions/messages';
 import { getMessage } from 'selectors';
+
 import Message from 'components/Message/Message';
 
-const propTypes = {
-  message: PropTypes.object,
-};
-
 class MessageContainer extends React.Component {
-  componentDidMount() {
-    const { loadMessage, match } = this.props;
-    const { messageId } = match.params;
+  static propTypes = {
+    fetchMessage: PropTypes.func.isRequired,
+    match: PropTypes.shape({
+      params: PropTypes.object.isRequired,
+    }).isRequired,
+    message: PropTypes.object,
+  };
 
-    loadMessage(messageId);
+  componentDidMount() {
+    const { fetchMessage, match } = this.props;
+
+    fetchMessage(match.messageId);
   }
 
   render() {
@@ -28,19 +33,16 @@ class MessageContainer extends React.Component {
   }
 }
 
-MessageContainer.propTypes = propTypes;
-
-const mapStateToProps = (state, ownProps) => {
-  return {
-    message: getMessage(state, ownProps),
-    isFetching: state.messages.isFetching,
-  };
-};
-
-const mapDispatchToProps = dispatch => ({
-  loadMessage(messageId) {
-    dispatch(fetchMessage(messageId));
-  },
+const mapStateToProps = (state, ownProps) => ({
+  message: getMessage(state, ownProps),
+  isFetching: state.messages.isFetching,
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(MessageContainer);
+const mapDispatchToProps = {
+  fetchMessage,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MessageContainer);

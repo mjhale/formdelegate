@@ -1,6 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { getCurrentUser } from 'selectors';
+
 import Card from 'components/Card';
 
 const AdminDashboard = () => (
@@ -10,8 +9,4 @@ const AdminDashboard = () => (
   </div>
 );
 
-const mapStateToProps = state => ({
-  user: getCurrentUser(state),
-});
-
-export default connect(mapStateToProps)(AdminDashboard);
+export default AdminDashboard;

@@ -5,13 +5,18 @@ import { withRouter } from 'react-router-dom';
 
 import { logoutUser } from 'actions/sessions';
 
-const propTypes = {
-  logoutUser: PropTypes.func.isRequired,
-};
-
 class Logout extends React.Component {
+  static propTypes = {
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }).isRequired,
+    logoutUser: PropTypes.func.isRequired,
+  };
+
   componentDidMount() {
-    this.props.logoutUser(logoutUser());
+    const { logoutUser, history } = this.props;
+
+    logoutUser().then(() => history.push('/'));
   }
 
   render() {
@@ -19,13 +24,13 @@ class Logout extends React.Component {
   }
 }
 
-Logout.propTypes = propTypes;
+const mapDispatchToProps = {
+  logoutUser,
+};
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  logoutUser: evt => {
-    dispatch(logoutUser());
-    ownProps.history.push('/');
-  },
-});
-
-export default withRouter(connect(null, mapDispatchToProps)(Logout));
+export default withRouter(
+  connect(
+    null,
+    mapDispatchToProps
+  )(Logout)
+);

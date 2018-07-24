@@ -1,9 +1,11 @@
 import React from 'react';
 import { animateScroll } from 'react-scroll';
 import { Field, FieldArray } from 'redux-form';
-import Button from 'components/Button';
 import styled from 'styled-components';
+
 import theme from 'constants/theme';
+
+import Button from 'components/Button';
 import ToggleSwitch from 'components/ToggleSwitch';
 
 const Delete = styled(Button)`
@@ -88,9 +90,7 @@ const IntegrationType = ({
 
 const renderIntegrations = ({
   fields,
-  integrations,
   integrationTypes,
-  meta: { error, submitFailed },
   removeIntegration,
 }) => {
   return (
@@ -165,7 +165,7 @@ const FormIntegrationList = ({
   removeIntegration,
 }) => {
   return (
-    <div>
+    <React.Fragment>
       <h3>Integrations</h3>
       <FieldArray
         name="form_integrations"
@@ -174,7 +174,7 @@ const FormIntegrationList = ({
         integrationTypes={integrationTypes}
         removeIntegration={removeIntegration}
       />
-    </div>
+    </React.Fragment>
   );
 };
 

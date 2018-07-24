@@ -35,10 +35,10 @@ export const renderInputField = ({
   return (
     <FieldContainer>
       <label>{label}</label>
-      <div>
+      <React.Fragment>
         {type !== 'textarea' ? inputType : textareaType}
         {touched && error && <Error>{error}</Error>}
-      </div>
+      </React.Fragment>
     </FieldContainer>
   );
 };

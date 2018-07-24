@@ -1,7 +1,9 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import styled from 'styled-components';
+
 import theme from 'constants/theme';
+
 import TableHeader from 'components/Table/TableHeader';
 
 export const TableContainer = styled.table`
@@ -35,6 +37,20 @@ export const TableCell = styled.td`
 `;
 
 class Table extends React.Component {
+  static propTypes = {
+    columns: PropTypes.arrayOf(PropTypes.shape({})),
+    data: PropTypes.arrayOf(PropTypes.shape({})),
+    dataEmptyPlaceholder: PropTypes.string,
+    error: PropTypes.bool.isRequired,
+    loading: PropTypes.bool.isRequired,
+  };
+
+  static defaultProps = {
+    dataEmptyPlaceholder: 'No items found',
+    error: false,
+    loading: true,
+  };
+
   render() {
     const {
       columns,
@@ -44,16 +60,18 @@ class Table extends React.Component {
       isFetching,
     } = this.props;
     const isEmpty = data.length === 0;
+    const shouldShowError = !isFetching && error;
+    const shouldShowPlaceholder = !isFetching && !error && isEmpty;
 
     if (isFetching) {
       return <div>Loading...</div>;
     }
 
-    if (!isFetching && error) {
+    if (shouldShowError) {
       return <div>Error...</div>;
     }
 
-    if (!isFetching && !error && isEmpty) {
+    if (shouldShowPlaceholder) {
       return <div>{dataEmptyPlaceholder}</div>;
     }
 
@@ -84,19 +102,5 @@ class Table extends React.Component {
     );
   }
 }
-
-Table.defaultProps = {
-  dataEmptyPlaceholder: 'No items found',
-  error: false,
-  loading: true,
-};
-
-Table.propTypes = {
-  columns: PropTypes.arrayOf(PropTypes.shape({})),
-  data: PropTypes.arrayOf(PropTypes.shape({})),
-  dataEmptyPlaceholder: PropTypes.string,
-  error: PropTypes.bool.isRequired,
-  loading: PropTypes.bool.isRequired,
-};
 
 export default Table;

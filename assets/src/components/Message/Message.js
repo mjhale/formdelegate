@@ -1,17 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import moment from 'moment';
+import PropTypes from 'prop-types';
+import React from 'react';
 import styled from 'styled-components';
 
 import theme from 'constants/theme';
 import { media } from 'utils/style';
 
 import Flash from 'components/Flash';
-
-const propTypes = {
-  message: PropTypes.shape({}),
-  openedMessageId: PropTypes.number,
-};
 
 const Cell = styled.div`
   display: flex;
@@ -119,6 +114,9 @@ const Message = ({ message, onClick, openedMessageId }) => {
   }
 };
 
-Message.propTypes = propTypes;
+Message.propTypes = {
+  message: PropTypes.object,
+  openedMessageId: PropTypes.number,
+};
 
 export default Message;

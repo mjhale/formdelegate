@@ -186,7 +186,7 @@ const SubheadingMarginless = Subheading.extend`
 `;
 
 const Welcome = () => (
-  <div>
+  <React.Fragment>
     <Hero>
       <FluidContainer>
         <HeroHeading>Simple Form Processing</HeroHeading>
@@ -276,7 +276,7 @@ const Welcome = () => (
         </Card>
       </FluidContainer>
     </Cards>
-  </div>
+  </React.Fragment>
 );
 
 export default Welcome;

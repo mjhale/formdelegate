@@ -27,6 +27,9 @@ class Login extends React.Component {
   static propTypes = {
     authErrorMessage: PropTypes.string,
     handleSubmit: PropTypes.func.isRequired,
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }).isRequired,
     isAuthenticated: PropTypes.bool.isRequired,
     loginUser: PropTypes.func.isRequired,
     pristine: PropTypes.bool.isRequired,
@@ -34,9 +37,9 @@ class Login extends React.Component {
   };
 
   handleLogin = credentials => {
-    this.props
-      .loginUser(credentials)
-      .then(() => this.props.history.push('/dashboard'));
+    const { history, loginUser } = this.props;
+
+    loginUser(credentials).then(() => history.push('/dashboard'));
   };
 
   render() {
@@ -58,9 +61,9 @@ class Login extends React.Component {
         {authErrorMessage && <Flash type="error">{authErrorMessage}</Flash>}
         <LoginForm
           {...fields}
+          onSubmit={handleSubmit(this.handleLogin)}
           pristine={pristine}
           submitting={submitting}
-          onSubmit={handleSubmit(this.handleLogin)}
         />
       </React.Fragment>
     );

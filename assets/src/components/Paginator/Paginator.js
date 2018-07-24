@@ -1,14 +1,8 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import styled from 'styled-components';
-import Button from 'components/Button';
 
-const propTypes = {
-  handlePageChange: PropTypes.func.isRequired,
-  limit: PropTypes.number.isRequired,
-  offset: PropTypes.number.isRequired,
-  total: PropTypes.number.isRequired,
-};
+import Button from 'components/Button';
 
 const PaginationContainer = styled.ul`
   align-items: center;
@@ -67,6 +61,11 @@ const Paginator = ({ handlePageChange, limit, offset, total }) => {
   );
 };
 
-Paginator.propTypes = propTypes;
+Paginator.propTypes = {
+  handlePageChange: PropTypes.func.isRequired,
+  limit: PropTypes.number.isRequired,
+  offset: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
+};
 
 export default Paginator;

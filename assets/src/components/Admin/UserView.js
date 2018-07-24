@@ -1,23 +1,27 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import Card from 'components/Card';
 import { adminFetchUser } from 'actions/users';
 import { getUser } from 'selectors';
 
-const propTypes = {
-  user: PropTypes.object,
-  isFetching: PropTypes.bool.isRequired,
-  match: PropTypes.object.isRequired,
-};
+import Card from 'components/Card';
 
 class AdminUserView extends React.Component {
-  componentDidMount() {
-    const { loadUser, match } = this.props;
+  static propTypes = {
+    adminFetchUser: PropTypes.func.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    match: PropTypes.shape({
+      params: PropTypes.object.isRequired,
+    }).isRequired,
+    user: PropTypes.object,
+  };
 
-    loadUser(match.params.userId);
+  componentDidMount() {
+    const { adminFetchUser, match } = this.props;
+
+    adminFetchUser(match.params.userId);
   }
 
   render() {
@@ -39,19 +43,16 @@ class AdminUserView extends React.Component {
   }
 }
 
-AdminUserView.propTypes = propTypes;
-
-const mapStateToProps = (state, ownProps) => {
-  return {
-    user: getUser(state, ownProps),
-    isFetching: state.users.isFetching,
-  };
-};
-
-const mapDispatchToProps = dispatch => ({
-  loadUser(userId) {
-    dispatch(adminFetchUser(userId));
-  },
+const mapStateToProps = (state, ownProps) => ({
+  isFetching: state.users.isFetching,
+  user: getUser(state, ownProps),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AdminUserView);
+const mapDispatchToProps = {
+  adminFetchUser,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AdminUserView);

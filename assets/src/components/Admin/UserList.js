@@ -1,23 +1,14 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+
+import translations from 'translations';
 import { adminFetchUsers } from 'actions/users';
 import { getOrderedUsers } from 'selectors';
+
 import Button from 'components/Button';
 import Table from 'components/Table';
-import translations from 'translations';
-
-const propTypes = {
-  lastUpdated: PropTypes.number,
-  isFetching: PropTypes.bool.isRequired,
-  items: PropTypes.array.isRequired,
-};
-
-const defaultProps = {
-  isFetching: false,
-  items: [],
-};
 
 const userListColumns = [
   {
@@ -41,21 +32,29 @@ const userListColumns = [
   },
   {
     field: 'edit',
-    displayFn: (row, col, field) => {
-      return (
-        <Link to={`/admin/users/${row['id']}`}>
-          <Button>Edit</Button>
-        </Link>
-      );
-    },
+    displayFn: (row, col, field) => (
+      <Link to={`/admin/users/${row['id']}`}>
+        <Button>Edit</Button>
+      </Link>
+    ),
     displayName: translations['userlist_th_edit'],
   },
 ];
 
 class AdminUserList extends React.Component {
+  static propTypes = {
+    adminFetchUsers: PropTypes.func.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    users: PropTypes.array.isRequired,
+  };
+
+  static defaultProps = {
+    isFetching: false,
+    users: [],
+  };
+
   componentDidMount() {
-    const { loadUsers } = this.props;
-    loadUsers();
+    this.props.adminFetchUsers();
   }
 
   render() {
@@ -67,21 +66,16 @@ class AdminUserList extends React.Component {
   }
 }
 
-AdminUserList.propTypes = propTypes;
-AdminUserList.defaultProps = defaultProps;
-
 const mapStateToProps = state => {
   return {
-    users: getOrderedUsers(state),
     isFetching: state.users.isFetching,
-    lastUpdated: state.users.lastUpdated,
+    users: getOrderedUsers(state),
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  loadUsers() {
-    dispatch(adminFetchUsers());
-  },
-});
+const mapDispatchToProps = { adminFetchUsers };
 
-export default connect(mapStateToProps, mapDispatchToProps)(AdminUserList);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AdminUserList);

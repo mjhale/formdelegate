@@ -1,61 +1,61 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
+
 import { fetchMessageActivity } from 'actions/messages';
 import { getCurrentUser, getMessageActivity } from 'selectors';
+
 import Card from 'components/Card';
+import Flash from 'components/Flash';
 import MessageActivity from 'components/MessageActivity';
 
-const propTypes = {
-  user: PropTypes.object,
-  isFetching: PropTypes.bool.isRequired,
-  loadMessageActivity: PropTypes.func.isRequired,
-};
-
-const UnverifiedAlert = isVerified => {
-  if (!isVerified) {
-    return <div>Please verify your user's e-mail address.</div>;
-  }
-
-  return null;
-};
+const UnverifiedAlert = () => (
+  <Flash type="alert">Please verify your e-mail address.</Flash>
+);
 
 class DashboardContainer extends React.Component {
+  static propTypes = {
+    fetchMessageActivity: PropTypes.func.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    messageActivity: PropTypes.array,
+    user: PropTypes.object,
+  };
+
   componentDidMount() {
-    this.props.loadMessageActivity();
+    this.props.fetchMessageActivity();
   }
 
   render() {
-    const { user, isFetching, messageActivity } = this.props;
+    const { isFetching, messageActivity, user } = this.props;
 
-    if (!user || isFetching || !messageActivity) return null;
+    if (isFetching || !messageActivity || !user) return null;
 
     return (
-      <div>
+      <React.Fragment>
+        {!user.verified && <UnverifiedAlert />}
+
         <h1>{user.name}'s Dashboard</h1>
-        <UnverifiedAlert isVerified={user.verified} />
 
         <MessageActivity activity={messageActivity} />
 
         <Card header="Recent Updates">Coming soon</Card>
         <Card header="Feedback">Coming soon</Card>
-      </div>
+      </React.Fragment>
     );
   }
 }
 
-DashboardContainer.propTypes = propTypes;
-
 const mapStateToProps = state => ({
-  user: getCurrentUser(state),
   isFetching: state.users.isFetching,
   messageActivity: getMessageActivity(state),
+  user: getCurrentUser(state),
 });
 
-const mapDispatchToProps = dispatch => ({
-  loadMessageActivity() {
-    dispatch(fetchMessageActivity());
-  },
-});
+const mapDispatchToProps = {
+  fetchMessageActivity,
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(DashboardContainer);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DashboardContainer);

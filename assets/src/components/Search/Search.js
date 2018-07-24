@@ -1,15 +1,11 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { parse } from 'query-string';
 import styled from 'styled-components';
-import theme from 'constants/theme';
 
-const propTypes = {
-  handleSearch: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
-};
+import theme from 'constants/theme';
 
 const SearchField = styled(Field)`
   font-family: ${theme.primaryFont};
@@ -29,7 +25,10 @@ let Search = ({ handleSearch, handleSubmit }) => {
   );
 };
 
-Search.propTypes = propTypes;
+Search.propTypes = {
+  handleSearch: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+};
 
 Search = reduxForm({
   form: 'messagesSearchForm',

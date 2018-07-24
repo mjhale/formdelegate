@@ -4,11 +4,6 @@ import React from 'react';
 import Placeholder from 'components/Placeholder';
 import { NavContainer, NavItem } from 'components/Nav/Nav';
 
-const propTypes = {
-  isAdmin: PropTypes.bool.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-};
-
 const AuthenticatedNav = ({ isAdmin, isFetching, onClick }) => {
   if (isFetching) {
     return <Placeholder isFetching={isFetching} rows={6} />;
@@ -27,6 +22,10 @@ const AuthenticatedNav = ({ isAdmin, isFetching, onClick }) => {
   );
 };
 
-AuthenticatedNav.propTypes = propTypes;
+AuthenticatedNav.propTypes = {
+  isAdmin: PropTypes.bool.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  onClick: PropTypes.func.isRequired,
+};
 
 export default AuthenticatedNav;

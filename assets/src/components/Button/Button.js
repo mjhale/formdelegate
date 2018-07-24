@@ -1,5 +1,7 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
+
 import theme from 'constants/theme';
 
 let DefaultButton = styled.button`
@@ -68,6 +70,10 @@ const Button = props => {
     default:
       return <DefaultButton {...restProps} />;
   }
+};
+
+Button.propTypes = {
+  type: PropTypes.string,
 };
 
 export default Button;

@@ -24,16 +24,16 @@ const Placeholder = ({ children, isFetching, rows, type }) => {
   }
 };
 
-Placeholder.defaultProps = {
-  isFetching: true,
-  rows: 1,
-  type: 'text',
-};
-
 Placeholder.propTypes = {
   isFetching: PropTypes.bool.isRequired,
   rows: PropTypes.number,
   type: PropTypes.oneOf(['text', 'image']),
+};
+
+Placeholder.defaultProps = {
+  isFetching: true,
+  rows: 1,
+  type: 'text',
 };
 
 export default Placeholder;

@@ -14,20 +14,6 @@ import MessageList from 'components/Messages/MessageList';
 import Search from 'components/Search';
 import Pagination from 'components/Paginator';
 
-const propTypes = {
-  history: PropTypes.object.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  loadMessages: PropTypes.func.isRequired,
-  location: PropTypes.object.isRequired,
-  messages: PropTypes.array.isRequired,
-  pagination: PropTypes.shape({
-    limit: PropTypes.number.isRequired,
-    offset: PropTypes.number.isRequired,
-    total: PropTypes.number.isRequired,
-  }).isRequired,
-  query: PropTypes.string,
-};
-
 const Header = styled.div`
   align-items: center;
   display: flex;
@@ -73,10 +59,25 @@ const SearchContainer = styled.li`
 `;
 
 class MessagesContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { openedMessageId: null };
-  }
+  static propTypes = {
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }).isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    loadMessages: PropTypes.func.isRequired,
+    location: PropTypes.shape({
+      search: PropTypes.string,
+    }).isRequired,
+    messages: PropTypes.array.isRequired,
+    pagination: PropTypes.shape({
+      limit: PropTypes.number.isRequired,
+      offset: PropTypes.number.isRequired,
+      total: PropTypes.number.isRequired,
+    }).isRequired,
+    query: PropTypes.string,
+  };
+
+  state = { openedMessageId: null };
 
   componentDidMount() {
     const { loadMessages, location } = this.props;
@@ -149,8 +150,6 @@ class MessagesContainer extends React.Component {
     );
   }
 }
-
-MessagesContainer.propTypes = propTypes;
 
 const mapStateToProps = state => {
   const messages = state.messages;

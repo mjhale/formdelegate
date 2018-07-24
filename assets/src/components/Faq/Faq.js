@@ -1,9 +1,9 @@
 import React from 'react';
 
 const Faq = () => (
-  <div>
+  <React.Fragment>
     <h1>Frequently Asked Questions</h1>
-  </div>
+  </React.Fragment>
 );
 
 export default Faq;

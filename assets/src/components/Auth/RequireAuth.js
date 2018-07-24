@@ -1,14 +1,25 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 export default function(ComposedComponent) {
-  const propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
-  };
-
   class Authentication extends React.Component {
+    static propTypes = {
+      isAuthenticated: PropTypes.bool.isRequired,
+      history: PropTypes.shape({
+        push: PropTypes.func.isRequired,
+      }).isRequired,
+    };
+
+    redirectIfNotAuthenticated() {
+      const { history, isAuthenticated } = this.props;
+
+      if (!isAuthenticated) {
+        history.push('/login');
+      }
+    }
+
     componentWillMount() {
       this.redirectIfNotAuthenticated();
     }
@@ -17,18 +28,10 @@ export default function(ComposedComponent) {
       this.redirectIfNotAuthenticated();
     }
 
-    redirectIfNotAuthenticated() {
-      if (!this.props.isAuthenticated) {
-        this.props.history.push('/login');
-      }
-    }
-
     render() {
       return <ComposedComponent {...this.props} />;
     }
   }
-
-  Authentication.propTypes = propTypes;
 
   const mapStateToProps = state => {
     const { isAuthenticated } = state.authentication;

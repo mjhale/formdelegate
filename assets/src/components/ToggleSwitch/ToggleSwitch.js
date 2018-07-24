@@ -1,6 +1,6 @@
 import React from 'react';
-import { Field } from 'redux-form';
 import styled from 'styled-components';
+import { Field } from 'redux-form';
 
 const SwitchContainer = styled.span`
   --action-color: #477dca;

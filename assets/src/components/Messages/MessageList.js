@@ -21,13 +21,6 @@ const ListContainer = styled.section`
   `};
 `;
 
-const propTypes = {
-  handleViewChange: PropTypes.func.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  messages: PropTypes.array.isRequired,
-  openedMessageId: PropTypes.number,
-};
-
 const MessageList = ({
   handleViewChange,
   isFetching,
@@ -60,6 +53,11 @@ const MessageList = ({
   );
 };
 
-MessageList.propTypes = propTypes;
+MessageList.propTypes = {
+  handleViewChange: PropTypes.func.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  messages: PropTypes.array.isRequired,
+  openedMessageId: PropTypes.number,
+};
 
 export default MessageList;

@@ -1,21 +1,14 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+
+import translations from 'translations';
 import { adminFetchIntegrations } from 'actions/integrations';
 import { getOrderedIntegrations } from 'selectors';
+
 import Button from 'components/Button';
 import Table from 'components/Table';
-import translations from 'translations';
-
-const propTypes = {
-  integrations: PropTypes.array,
-  isFetching: PropTypes.bool.isRequired,
-};
-
-const defaultProps = {
-  isFetching: false,
-};
 
 const integrationListColumns = [
   {
@@ -34,15 +27,24 @@ const integrationListColumns = [
 ];
 
 class AdminIntegrationList extends React.Component {
+  static propTypes = {
+    adminFetchIntegrations: PropTypes.func.isRequired,
+    integrations: PropTypes.array,
+    isFetching: PropTypes.bool.isRequired,
+  };
+
+  static defaultProps = {
+    isFetching: false,
+  };
+
   componentDidMount() {
-    const { loadIntegrations } = this.props;
-    loadIntegrations();
+    this.props.adminFetchIntegrations();
   }
 
   render() {
     const { integrations, isFetching } = this.props;
 
-    if (isFetching) return null;
+    if (isFetching || !integrations) return null;
 
     return (
       <Table
@@ -54,20 +56,16 @@ class AdminIntegrationList extends React.Component {
   }
 }
 
-AdminIntegrationList.propTypes = propTypes;
-AdminIntegrationList.defaultProps = defaultProps;
-
 const mapStateToProps = state => ({
   integrations: getOrderedIntegrations(state),
   isFetching: state.integrations.isFetching,
 });
 
-const mapDispatchToProps = dispatch => ({
-  loadIntegrations() {
-    dispatch(adminFetchIntegrations());
-  },
-});
+const mapDispatchToProps = {
+  adminFetchIntegrations,
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(
-  AdminIntegrationList
-);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AdminIntegrationList);

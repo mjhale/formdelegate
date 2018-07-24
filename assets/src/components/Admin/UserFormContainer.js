@@ -1,39 +1,46 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
+import { withRouter } from 'react-router-dom';
+
 import { adminFetchUser, adminUpdateUser } from 'actions/users';
 import { getUser } from 'selectors';
-import { withRouter } from 'react-router-dom';
+
 import AdminUserForm from 'components/Admin/UserForm';
 
 class AdminUserFormContainer extends React.Component {
+  static propTypes = {
+    adminFetchUser: PropTypes.func.isRequired,
+    adminUpdateUser: PropTypes.func.isRequired,
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }).isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    match: PropTypes.shape({
+      params: PropTypes.object.isRequired,
+    }).isRequired,
+    user: PropTypes.object,
+  };
+
+  handleUserEdit = user => {
+    const { adminUpdateUser, history } = this.props;
+
+    adminUpdateUser(user).then(() => history.push(`/admin/users/${user.id}`));
+  };
+
   componentDidMount() {
-    const { loadUser, match } = this.props;
+    const { adminFetchUser, match } = this.props;
     const { userId } = match.params;
 
-    loadUser(userId);
+    adminFetchUser(userId);
   }
 
   render() {
-    /* @TODO: Explicitly define required props */
-    const {
-      error,
-      onSubmit,
-      pristine,
-      submitting,
-      reset,
-      ...rest
-    } = this.props;
+    const { handleSubmit, ...rest } = this.props;
 
     return (
-      <AdminUserForm
-        {...rest}
-        error={error}
-        onSubmit={onSubmit}
-        pristine={pristine}
-        submitting={submitting}
-        reset={reset}
-      />
+      <AdminUserForm {...rest} onSubmit={handleSubmit(this.handleUserEdit)} />
     );
   }
 }
@@ -52,16 +59,10 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  loadUser(userId) {
-    dispatch(adminFetchUser(userId));
-  },
-
-  onSubmit(data) {
-    dispatch(adminUpdateUser(data));
-    ownProps.history.push(`/admin/users/${data.id}`);
-  },
-});
+const mapDispatchToProps = {
+  adminFetchUser,
+  adminUpdateUser,
+};
 
 AdminUserFormContainer = reduxForm({
   form: 'userForm',
@@ -69,5 +70,8 @@ AdminUserFormContainer = reduxForm({
 })(AdminUserFormContainer);
 
 export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(AdminUserFormContainer)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(AdminUserFormContainer)
 );
