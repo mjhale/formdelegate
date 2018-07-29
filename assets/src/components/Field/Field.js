@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import theme from 'constants/theme';
 
 const Error = styled.span`
-  color: ${theme.lightCarnation};
+  color: ${theme.darkCarnation};
   font-style: italic;
 `;
 
@@ -22,10 +22,15 @@ const Textarea = styled.textarea`
   width: 25rem;
 `;
 
+const Warning = styled.span`
+  color: ${theme.lightCarnation};
+  font-style: italic;
+`;
+
 export const renderInputField = ({
   input,
   label,
-  meta: { touched, error },
+  meta: { error, touched, warning },
   placeholder,
   type,
 }) => {
@@ -37,7 +42,9 @@ export const renderInputField = ({
       <label>{label}</label>
       <React.Fragment>
         {type !== 'textarea' ? inputType : textareaType}
-        {touched && error && <Error>{error}</Error>}
+        {touched &&
+          ((error && <Error>{error}</Error>) ||
+            (warning && <Warning>{warning}</Warning>))}
       </React.Fragment>
     </FieldContainer>
   );
