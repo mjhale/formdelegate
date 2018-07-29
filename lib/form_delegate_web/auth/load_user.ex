@@ -10,6 +10,7 @@ defmodule FormDelegateWeb.LoadUser do
       # return connection as is if :current_user exists
       user = conn.assigns[:current_user] ->
         conn
+
       # current_resource/1 assigns nil values to unloadable resources
       user = FormDelegateWeb.Guardian.Plug.current_resource(conn) ->
         assign(conn, :current_user, user)

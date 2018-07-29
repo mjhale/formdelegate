@@ -36,6 +36,7 @@ defmodule FormDelegateWeb.Router do
     post "/requests/:id", RequestController, :process_request
     resources "/sessions", SessionController, only: [:create, :delete],
                                               singleton: true
+    resources "/users", UserController, only: [:create]
   end
 
   scope "/v1", FormDelegateWeb do
@@ -48,6 +49,6 @@ defmodule FormDelegateWeb.Router do
     get "/messages/recent_activity", MessageController, :recent_activity
 
     resources "/messages", MessageController, only: [:index, :show]
-    resources "/users", UserController
+    resources "/users", UserController, except: [:create]
   end
 end

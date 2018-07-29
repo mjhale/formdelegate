@@ -6,8 +6,8 @@ defmodule FormDelegateWeb.UserController do
 
   action_fallback FormDelegateWeb.FallbackController
 
-  def action(%Plug.Conn{assigns: %{current_user: current_user}} = conn, _opts) do
-    args = [conn, conn.params, current_user]
+  def action(conn, _opts) do
+    args = [conn, conn.params, conn.assigns[:current_user] || :guest]
     apply(__MODULE__, action_name(conn), args)
   end
 
@@ -24,7 +24,7 @@ defmodule FormDelegateWeb.UserController do
 
       conn
       |> put_status(:created)
-      |> put_resp_header("location", user_path(conn, :show, user))
+      |> put_resp_header("location", user_path(conn, :show, user.id))
       |> render("show.json", user: user)
     end
   end
@@ -51,9 +51,9 @@ defmodule FormDelegateWeb.UserController do
          :ok <- Authorizer.authorize(current_user, :delete_user, user),
          {:ok, %User{} = _user} <- Accounts.delete_user(user) do
 
-        conn
-        |> put_resp_header("content-type", "application/json")
-        |> send_resp(:no_content, "")
+      conn
+      |> put_resp_header("content-type", "application/json")
+      |> send_resp(:no_content, "")
     end
   end
 end

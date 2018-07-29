@@ -104,8 +104,8 @@ defmodule FormDelegateWeb.Authorizer do
     end
   end
 
-  def authorize(%User{} = current_user, :create_user) do
-    if current_user do
+  def authorize(current_user, :create_user) do
+    if current_user == :guest do
       :ok
     else
       {:error, :forbidden}
