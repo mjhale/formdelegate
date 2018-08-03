@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { clearFix } from 'polished';
 
 import theme from 'constants/theme';
 
@@ -8,6 +9,8 @@ const CardContainer = styled.div`
   border-bottom-width: 2px;
   border-radius: 0 0 3px 3px;
   margin-bottom: 0.5rem;
+
+  ${clearFix()};
 `;
 
 const Header = styled.div`
@@ -25,6 +28,8 @@ const Header = styled.div`
 const Content = styled.div`
   background: ${theme.solidWhite};
   padding: 0.5rem;
+
+  ${clearFix()};
 `;
 
 const Card = props => (

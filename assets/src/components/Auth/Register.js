@@ -9,12 +9,19 @@ import { createUser } from 'actions/users';
 import { loginUser } from 'actions/sessions';
 
 import Button from 'components/Button';
-import Card from 'components/Card';
 import Flash from 'components/Flash';
 import renderField from 'components/Field';
 
-const validateForm = values => {
-  const errors = {};
+const isValidEmail = email => {
+  const regex = new RegExp(
+    "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+  );
+
+  return regex.test(email);
+};
+
+const checkFormErrors = values => {
+  let errors = {};
 
   if (!values.email) {
     errors.email = 'Required';
@@ -29,6 +36,16 @@ const validateForm = values => {
   }
 
   return errors;
+};
+
+const checkFormWarnings = values => {
+  let warnings = {};
+
+  if (!isValidEmail(values.email)) {
+    warnings.email = 'Warning: Your e-mail address appears invalid.';
+  }
+
+  return warnings;
 };
 
 class RegisterUser extends React.Component {
@@ -60,33 +77,34 @@ class RegisterUser extends React.Component {
           <Flash type="error">{registrationErrorMessage}</Flash>
         )}
 
-        <h2>Create New Account</h2>
+        <h2>Create Your Free Account</h2>
 
-        <Card>
-          <form onSubmit={handleSubmit(this.handleRegistrationAndLogin)}>
-            <Field
-              name="email"
-              component={renderField}
-              type="text"
-              label="E-mail Address"
-            />
-            <Field
-              name="name"
-              component={renderField}
-              type="text"
-              label="Full Name"
-            />
-            <Field
-              name="password"
-              component={renderField}
-              type="password"
-              label="Password"
-            />
-            <Button type="submit" disabled={submitting}>
-              Create User
-            </Button>
-          </form>
-        </Card>
+        <form onSubmit={handleSubmit(this.handleRegistrationAndLogin)}>
+          <Field
+            component={renderField}
+            label="Email"
+            name="email"
+            placeholder="Email"
+            type="text"
+          />
+          <Field
+            component={renderField}
+            label="Full Name"
+            name="name"
+            placeholder="Full Name"
+            type="text"
+          />
+          <Field
+            component={renderField}
+            label="Password"
+            name="password"
+            placeholder="Password"
+            type="password"
+          />
+          <Button type="submit" disabled={submitting}>
+            Create User
+          </Button>
+        </form>
       </React.Fragment>
     );
   }
@@ -94,7 +112,8 @@ class RegisterUser extends React.Component {
 
 RegisterUser = reduxForm({
   form: 'registerForm',
-  validate: validateForm,
+  validate: checkFormErrors,
+  warn: checkFormWarnings,
 })(RegisterUser);
 
 const mapStateToProps = state => ({

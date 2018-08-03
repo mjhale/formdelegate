@@ -52,6 +52,7 @@ class AdminIntegrationForm extends React.Component {
     return (
       <Card>
         <form onSubmit={handleSubmit(this.handleIntegrationUpdate)}>
+          <h2>Integration Details</h2>
           <Field
             component={renderField}
             name="type"

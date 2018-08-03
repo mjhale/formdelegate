@@ -14,7 +14,7 @@ const LoginContainer = styled.div`
   padding: 1rem;
 `;
 
-const SignUpLink = styled(Link)`
+const LoginButton = styled(Button)`
   float: right;
 `;
 
@@ -27,22 +27,21 @@ const LoginForm = props => {
         <form onSubmit={onSubmit}>
           <Field
             component={renderField}
+            label="Email"
             name="email"
-            label="E-Mail Address"
+            placeholder="Email"
             type="text"
           />
           <Field
             component={renderField}
-            name="password"
             label="Password"
+            name="password"
+            placeholder="Password"
             type="password"
           />
-          <Button type="submit" disabled={submitting | pristine}>
+          <LoginButton type="submit" disabled={submitting | pristine}>
             Login
-          </Button>
-          <SignUpLink to="/register">
-            <Button tabIndex="-1">Sign Up</Button>
-          </SignUpLink>
+          </LoginButton>
         </form>
       </Card>
     </LoginContainer>

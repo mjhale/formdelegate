@@ -36,22 +36,25 @@ class UserSettings extends React.Component {
         <Card>
           <form onSubmit={handleSubmit(this.handleUserUpdate)}>
             <Field
+              component={renderField}
+              label="Email"
               name="email"
-              component={renderField}
+              placeholder="Email"
               type="text"
-              label="E-mail Address"
             />
             <Field
-              name="name"
               component={renderField}
-              type="text"
               label="Full Name"
+              name="name"
+              placeholder="Full Name"
+              type="text"
             />
             <Field
-              name="password"
               component={renderField}
-              type="password"
               label="Password"
+              name="password"
+              placeholder="Password"
+              type="password"
             />
             <Button type="submit" disabled={submitting}>
               Update User

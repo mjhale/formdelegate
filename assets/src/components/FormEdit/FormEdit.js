@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { denormalize } from 'normalizr';
 import styled from 'styled-components';
 
+import renderField from 'components/Field';
 import { fetchForm, updateForm } from 'actions/forms';
 import { fetchIntegrations } from 'actions/integrations';
 import { formSchema } from 'schema';
@@ -91,23 +92,31 @@ class FormEdit extends React.Component {
               />
             }
           >
-            <div>
-              <label>Form Name</label>
-              <Field name="form" component="input" type="text" />
-            </div>
-            <div>
-              <label>Form ID</label>
-              <Field name="id" component="input" type="text" disabled />
-            </div>
-            <div>
-              <label>Number of Messages</label>
-              <Field
-                name="message_count"
-                component="input"
-                type="text"
-                disabled
-              />
-            </div>
+            <h2>Form Details</h2>
+            <Field
+              component={renderField}
+              label="Form Name"
+              name="form"
+              placeholder="Form Name"
+              type="text"
+            />
+            <Field
+              component={renderField}
+              disabled
+              label="Form ID"
+              name="id"
+              placeholder="Form ID"
+              type="text"
+            />
+            <Field
+              component={renderField}
+              disabled
+              label="Total Messages"
+              name="message_count"
+              placeholder="Total Messages"
+              type="text"
+            />
+
             <FormIntegrationList
               integrations={formData.form_integrations}
               integrationTypes={integrations}

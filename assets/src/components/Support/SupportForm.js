@@ -40,17 +40,25 @@ const submitFormValidations = values => {
 let SupportForm = ({ handleSubmit, submitting }) => (
   <form onSubmit={handleSubmit}>
     <Card>
-      <Field component={renderField} name="name" label="Name" type="text" />
       <Field
         component={renderField}
-        name="email"
-        label="E-mail Address"
+        label="Name"
+        name="name"
+        placeholder="Name"
         type="text"
       />
       <Field
         component={renderField}
-        name="message"
+        label="Email"
+        name="email"
+        placeholder="Email"
+        type="text"
+      />
+      <Field
+        component={renderField}
         label="Message"
+        name="message"
+        placeholder="Message"
         type="textarea"
       />
     </Card>

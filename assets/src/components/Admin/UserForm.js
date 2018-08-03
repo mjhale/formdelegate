@@ -1,40 +1,35 @@
 import React from 'react';
 import { Field } from 'redux-form';
 
+import renderField from 'components/Field';
+
 const AdminUserForm = props => {
   const { error, onSubmit, pristine, submitting, reset } = props;
 
   return (
     <form onSubmit={onSubmit}>
-      <div>
-        <label htmlFor="email">E-Mail</label>
-        <Field
-          name="email"
-          component="input"
-          type="text"
-          placeholder="E-mail Address"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="name">Full Name</label>
-        <Field
-          name="name"
-          component="input"
-          type="text"
-          placeholder="Full Name"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="password">Password</label>
-        <Field
-          name="password"
-          component="input"
-          type="password"
-          placeholder="Password"
-        />
-      </div>
+      <h2>Edit User</h2>
+      <Field
+        component={renderField}
+        label="Email"
+        name="email"
+        type="text"
+        placeholder="Email"
+      />
+      <Field
+        component={renderField}
+        label="Full Name"
+        name="name"
+        type="text"
+        placeholder="Full Name"
+      />
+      <Field
+        component={renderField}
+        label="Password"
+        name="password"
+        type="password"
+        placeholder="Password"
+      />
 
       {error && (
         <p>

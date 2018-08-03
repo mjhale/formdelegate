@@ -1,8 +1,10 @@
 import React from 'react';
-import { animateScroll } from 'react-scroll';
-import { Field, FieldArray } from 'redux-form';
 import styled from 'styled-components';
+import { animateScroll } from 'react-scroll';
+import { clearFix } from 'polished';
+import { Field, FieldArray } from 'redux-form';
 
+import renderField from 'components/Field';
 import theme from 'constants/theme';
 
 import Button from 'components/Button';
@@ -40,6 +42,8 @@ const Integration = styled.li`
 
 const Settings = styled.div`
   padding: 0.5rem;
+
+  ${clearFix()};
 `;
 
 const IntegrationsContainer = styled.ul`
@@ -125,22 +129,20 @@ const renderIntegrations = ({
               </Delete>
             </Header>
             <Settings>
-              <div>
-                <label>API Key</label>
-                <Field
-                  name={`${integration}[settings][api_key]`}
-                  component="input"
-                  type="text"
-                />
-              </div>
-              <div>
-                <label>E-Mail Address</label>
-                <Field
-                  name={`${integration}[settings][email]`}
-                  component="input"
-                  type="text"
-                />
-              </div>
+              <Field
+                component={renderField}
+                label="API Key"
+                name={`${integration}[settings][api_key]`}
+                placeholder="API Key"
+                type="text"
+              />
+              <Field
+                component={renderField}
+                label="Email"
+                name={`${integration}[settings][email]`}
+                placeholder="Email"
+                type="text"
+              />
             </Settings>
           </Integration>
         );
@@ -166,7 +168,7 @@ const FormIntegrationList = ({
 }) => {
   return (
     <React.Fragment>
-      <h3>Integrations</h3>
+      <h2>Integrations</h2>
       <FieldArray
         name="form_integrations"
         component={renderIntegrations}

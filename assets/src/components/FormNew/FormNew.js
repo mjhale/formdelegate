@@ -5,6 +5,7 @@ import { Field } from 'redux-form';
 import { reduxForm } from 'redux-form';
 import { withRouter } from 'react-router-dom';
 
+import renderField from 'components/Field';
 import { createForm } from 'actions/forms';
 import { fetchIntegrations } from 'actions/integrations';
 
@@ -18,6 +19,7 @@ class FormNewContainer extends React.Component {
     history: PropTypes.shape({
       push: PropTypes.func.isRequired,
     }).isRequired,
+    fetchIntegrations: PropTypes.func.isRequired,
     message: PropTypes.object,
   };
 
@@ -39,10 +41,14 @@ class FormNewContainer extends React.Component {
         <h1>Add New Form</h1>
         <form onSubmit={handleSubmit(this.handleFormSubmission)}>
           <Card>
-            <div>
-              <label>Form Name</label>
-              <Field name="form" component="input" type="text" />
-            </div>
+            <h2>Form Details</h2>
+            <Field
+              component={renderField}
+              label="Form Name"
+              name="form"
+              placeholder="Form Name"
+              type="text"
+            />
             <FormIntegrationList integrationTypes={integrations} />
           </Card>
           <Button type="submit" disabled={submitting}>
