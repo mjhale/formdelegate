@@ -43,7 +43,7 @@ let DefaultButton = styled.button`
   }
 `;
 
-const DeleteButton = DefaultButton.extend`
+const DeleteButton = styled(DefaultButton)`
   background: linear-gradient(to bottom, #dd4b39 50%, #b53727 100%);
   border-color: #d73925;
   color: #f5f7ff;
@@ -54,7 +54,7 @@ const DeleteButton = DefaultButton.extend`
   }
 `;
 
-const DisabledButton = DefaultButton.extend`
+const DisabledButton = styled(DefaultButton)`
   background: ${theme.disabledBtnBackgroundColor};
   pointer-events: none;
 `;

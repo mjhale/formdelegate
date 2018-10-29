@@ -181,7 +181,7 @@ const Subheading = styled.h3`
   margin: 0 0 1.25rem 0;
 `;
 
-const SubheadingMarginless = Subheading.extend`
+const SubheadingMarginless = styled(Subheading)`
   margin: 0;
 `;
 

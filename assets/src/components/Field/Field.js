@@ -35,11 +35,11 @@ const FieldMessage = styled.p`
   line-height: 1.15rem;
 `;
 
-const FieldError = FieldMessage.extend`
+const FieldError = styled(FieldMessage)`
   color: ${theme.darkCarnation};
 `;
 
-const FieldWarning = FieldMessage.extend`
+const FieldWarning = styled(FieldMessage)`
   color: ${theme.lightCarnation};
 `;
 

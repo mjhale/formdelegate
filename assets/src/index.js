@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { injectGlobal } from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 import { normalize } from 'polished';
 import { Provider } from 'react-redux';
 
@@ -8,7 +8,7 @@ import theme from 'constants/theme';
 import store from 'store';
 import { RootRouter } from 'router';
 
-injectGlobal`
+const GlobalStyle = createGlobalStyle`
   ${normalize()}
 
   body {
@@ -22,7 +22,10 @@ injectGlobal`
 
 ReactDOM.render(
   <Provider store={store}>
-    <RootRouter />
+    <React.Fragment>
+      <GlobalStyle />
+      <RootRouter />
+    </React.Fragment>
   </Provider>,
   document.getElementById('root')
 );
