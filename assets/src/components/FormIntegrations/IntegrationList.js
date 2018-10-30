@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { animateScroll } from 'react-scroll';
 import { clearFix } from 'polished';
 import { Field, FieldArray } from 'redux-form';

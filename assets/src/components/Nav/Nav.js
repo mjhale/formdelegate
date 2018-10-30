@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import React from 'react';
 import { connect } from 'react-redux';
 import { darken } from 'polished';

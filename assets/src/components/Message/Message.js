@@ -1,7 +1,7 @@
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 import theme from 'constants/theme';
 import { media } from 'utils/style';

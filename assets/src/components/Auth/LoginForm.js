@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { Field } from 'redux-form';
 import { Link } from 'react-router-dom';
 

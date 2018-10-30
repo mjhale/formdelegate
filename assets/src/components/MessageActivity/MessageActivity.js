@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import moment from 'moment';
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 import Card from 'components/Card';
 

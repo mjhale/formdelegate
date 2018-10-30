@@ -2,7 +2,7 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import theme from 'constants/theme';
 
 import Button from 'components/Button';

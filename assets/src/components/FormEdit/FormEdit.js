@@ -3,7 +3,7 @@ import React from 'react';
 import { change, Field, reduxForm, untouch } from 'redux-form';
 import { connect } from 'react-redux';
 import { denormalize } from 'normalizr';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 import renderField from 'components/Field';
 import { fetchForm, updateForm } from 'actions/forms';

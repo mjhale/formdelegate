@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { parse } from 'query-string';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 import theme from 'constants/theme';
 

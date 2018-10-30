@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 import { fetchForms, formDeletionRequest } from 'actions/forms';
 import { getOrderedForms } from 'selectors';
