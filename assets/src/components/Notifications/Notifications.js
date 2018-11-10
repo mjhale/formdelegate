@@ -23,26 +23,30 @@ const DismissButton = styled.button`
 `;
 
 const FlashNotification = styled(Flash)`
-  margin: 1rem 0;
+  margin: ${props => props.margin || '1rem 0'};
   position: relative;
 `;
 
 const NotificationContainer = styled.div`
   box-sizing: border-box;
-  margin: 1rem 0;
+  margin: ${props => props.margin || '1rem 0'};
 `;
 
-const Notifications = ({ handleDismissal, notifications }) => {
+const Notifications = ({ handleDismissal, margin, notifications }) => {
   if (!Array.isArray(notifications) || notifications.length === 0) {
     return null;
   }
 
   return (
-    <NotificationContainer>
+    <NotificationContainer margin={margin}>
       {/* @TODO: Possibly give each notification its own lifecycle */}
       {notifications.map(notification => {
         return (
-          <FlashNotification key={notification.id} type={notification.level}>
+          <FlashNotification
+            key={notification.id}
+            margin={margin}
+            type={notification.level}
+          >
             {notification.message}
             {notification.dismissable && (
               <DismissButton
