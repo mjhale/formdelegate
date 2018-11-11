@@ -1,10 +1,11 @@
 import styled, { keyframes } from 'styled-components/macro';
+import { hideVisually, showVisually } from 'polished';
 import { Link } from 'react-router-dom';
 
 import theme from 'constants/theme';
 import { media } from 'utils/style';
 
-export const ContentContainer = styled.div`
+export const ContentContainer = styled.main`
   ${media.md`
     min-height: 100%;
     padding-left: 250px;
@@ -79,4 +80,24 @@ export const NavBar = styled.div`
     top: 0;
     width: 250px;
   `};
+`;
+
+export const SkipToContent = styled.a`
+  ${hideVisually()} &:active,
+  &:focus {
+    background-color: white;
+    clip: auto;
+    clip-path: none;
+    font-size: 18px;
+    height: auto;
+    left: 3px;
+    line-height: 64px;
+    margin: 0;
+    overflow: visible;
+    padding: 0 24px;
+    position: absolute;
+    top: 3px;
+    width: auto;
+    z-index: 10000;
+  }
 `;

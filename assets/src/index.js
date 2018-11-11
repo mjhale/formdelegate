@@ -16,7 +16,6 @@ const GlobalStyle = createGlobalStyle`
     font-family: ${theme.systemFont};
     overflow-x: hidden;
     padding: 0;
-    position: relative;
   }
 `;
 
