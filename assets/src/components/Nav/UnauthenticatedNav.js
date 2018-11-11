@@ -10,7 +10,7 @@ const UnauthenticatedNav = ({ onClick }) => (
     <NavItem to="/faq">faq</NavItem>
     <NavItem to="/pricing">pricing</NavItem>
     <NavItem to="/support">support</NavItem>
-    <NavItem to="/login">login</NavItem>
+    <NavItem to="/login">sign in</NavItem>
   </NavContainer>
 );
 

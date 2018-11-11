@@ -10,11 +10,17 @@ const inputStyle = css`
   border-radius: 4px;
   box-sizing: border-box;
   display: block;
+  font-weight: bold;
   padding: ${props =>
     props.showFloatingLabel ? '1.3rem 0.75rem 0.4rem' : '0.85rem 0.75rem'};
   transition: all 0.25s ease-out;
   width: 100%;
   word-break: normal;
+
+  &::placeholder {
+    color: ${theme.mineBlack};
+    font-weight: normal;
+  }
 
   &:focus {
     border: 1px ${theme.lightCarnation} solid;
@@ -24,7 +30,6 @@ const inputStyle = css`
 `;
 
 const Field = styled.div`
-  float: left;
   padding: 0.1rem 0 0 0;
   width: 100%;
 `;
@@ -48,16 +53,16 @@ const Input = styled.input`
 `;
 
 const InputWrapper = styled.div`
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   margin-bottom: 1rem;
   position: relative;
 `;
 
 const FloatingLabel = styled.label`
   box-sizing: border-box;
-  color: ${theme.ghostGray};
+  color: ${theme.mineBlack};
   display: block;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: normal;
   margin: 0.35rem 0 0 0.075rem;
   opacity: ${props => (props.showFloatingLabel ? 1 : 0)};

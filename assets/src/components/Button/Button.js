@@ -33,10 +33,6 @@ let DefaultButton = styled.button`
     border-color: #ccc;
   }
 
-  &:focus {
-    outline: none;
-  }
-
   &:disabled {
     background: ${theme.disabledBtnBackgroundColor};
     pointer-events: none;

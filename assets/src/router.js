@@ -2,13 +2,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { BrowserRouter, Route, Switch, withRouter } from 'react-router-dom';
 
-import UserSettings from 'components/User/Settings';
 import Admin from 'components/Admin';
 import App from 'components/App';
+import AuthLayout from 'components/Layouts/AuthLayout';
 import Dashboard from 'components/Dashboard';
 import Faq from 'components/Faq';
 import FixedLayout from 'components/Layouts/FixedLayout';
-import FluidLayout from 'components/Layouts';
+import FluidLayout from 'components/Layouts/FluidLayout';
 import FormEdit from 'components/FormEdit';
 import FormNew from 'components/FormNew';
 import Forms from 'components/Forms';
@@ -22,6 +22,7 @@ import RequestFailure from 'components/Request/Failure';
 import RequestSuccess from 'components/Request/Success';
 import Register from 'components/Auth/Register';
 import Support from 'components/Support';
+import UserSettings from 'components/User/Settings';
 import requireAuth from 'components/Auth/RequireAuth';
 import Welcome from 'components/Welcome';
 
@@ -61,7 +62,7 @@ export const Routes = props => (
       path="/forms/:formId/edit"
       component={requireAuth(FormEdit)}
     />
-    <AppRoute exact path="/login" component={Login} />
+    <AppRoute exact path="/login" component={Login} layout={AuthLayout} />
     <AppRoute exact path="/logout" component={Logout} />
     <AppRoute exact path="/messages" component={requireAuth(Messages)} />
     <AppRoute

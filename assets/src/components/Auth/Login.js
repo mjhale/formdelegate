@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import styled from 'styled-components/macro';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { withRouter } from 'react-router-dom';
 
 import { loginUser } from 'actions/sessions';
 
+import Card from 'components/Card';
 import Flash from 'components/Flash';
 import LoginForm from 'components/Auth/LoginForm';
 
@@ -22,6 +24,17 @@ const validate = values => {
 
   return errors;
 };
+
+const LogInContainer = styled.div`
+  padding: 5% 15%;
+`;
+
+const LogInHeader = styled.h1`
+  font-size: 1.75rem;
+  font-weight: 300;
+  margin: 0 0 2rem 0;
+  text-align: center;
+`;
 
 class Login extends React.Component {
   static propTypes = {
@@ -57,15 +70,18 @@ class Login extends React.Component {
     }
 
     return (
-      <React.Fragment>
-        {authErrorMessage && <Flash type="error">{authErrorMessage}</Flash>}
-        <LoginForm
-          {...fields}
-          onSubmit={handleSubmit(this.handleLogin)}
-          pristine={pristine}
-          submitting={submitting}
-        />
-      </React.Fragment>
+      <Card>
+        <LogInContainer>
+          <LogInHeader>Sign In</LogInHeader>
+          {authErrorMessage && <Flash type="error">{authErrorMessage}</Flash>}
+          <LoginForm
+            {...fields}
+            onSubmit={handleSubmit(this.handleLogin)}
+            pristine={pristine}
+            submitting={submitting}
+          />
+        </LogInContainer>
+      </Card>
     );
   }
 }

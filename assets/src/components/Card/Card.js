@@ -5,6 +5,7 @@ import { clearFix } from 'polished';
 import theme from 'constants/theme';
 
 const CardContainer = styled.div`
+  background: ${theme.solidWhite};
   border: 1px solid ${theme.borderColor};
   border-bottom-width: 2px;
   border-radius: 0 0 3px 3px;
@@ -26,7 +27,6 @@ const Header = styled.div`
 `;
 
 const Content = styled.div`
-  background: ${theme.solidWhite};
   padding: 0.5rem;
 
   ${clearFix()};
