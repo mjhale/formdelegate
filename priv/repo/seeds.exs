@@ -18,7 +18,7 @@ Repo.delete_all(Form)
 Repo.insert! %User{
   name: "The Administrator",
   email: "admin@admin.com",
-  password_hash: Comeonin.Pbkdf2.hashpwsalt("admin"),
+  password_hash: Pbkdf2.hash_pwd_salt("admin"),
   form_count: 2, # pre-set the counter cache
   verified: true,
   is_admin: true,
@@ -28,7 +28,7 @@ admin_user = Repo.get_by!(User, email: "admin@admin.com")
 Repo.insert! %User{
   name: "Joshua Fern",
   email: "josh.f@gmail.com",
-  password_hash: Comeonin.Pbkdf2.hashpwsalt("securepass"),
+  password_hash: Pbkdf2.hash_pwd_salt("securepass"),
 }
 user = Repo.get_by!(User, email: "josh.f@gmail.com")
 

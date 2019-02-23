@@ -2,7 +2,6 @@ defmodule FormDelegate.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Comeonin.Pbkdf2
   alias FormDelegate.Accounts.User
 
   schema "users" do
@@ -33,7 +32,7 @@ defmodule FormDelegate.Accounts.User do
   defp put_password_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
-        put_change(changeset, :password_hash, Pbkdf2.hashpwsalt(password))
+        put_change(changeset, :password_hash, Pbkdf2.hash_pwd_salt(password))
       _ ->
         changeset
     end

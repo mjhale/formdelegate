@@ -5,7 +5,7 @@ defmodule FormDelegate.Factory do
     %FormDelegate.Accounts.User{
       email: sequence(:email, &"User #{&1}"),
       password: "securepass",
-      password_hash: Comeonin.Pbkdf2.hashpwsalt("securepass"),
+      password_hash: Pbkdf2.hash_pwd_salt("securepass"),
     }
   end
 

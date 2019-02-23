@@ -5,7 +5,6 @@ defmodule FormDelegate.Accounts do
 
   import Ecto.Query, warn: false
 
-  alias Comeonin.Pbkdf2
   alias FormDelegate.Repo
   alias FormDelegate.{Accounts, Accounts.User}
 
