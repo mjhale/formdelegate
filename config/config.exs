@@ -34,8 +34,9 @@ config :form_delegate, FormDelegateWeb.Guardian,
   ttl: { 14, :days },
   verify_issuer: true
 
-# Use Jason for JSON parsing in Phoenix
+# Use Jason for JSON parsing in Phoenix and Bamboo
 config :phoenix, :json_library, Jason
+config :bamboo, :json_library, Jason
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
