@@ -14,15 +14,13 @@ use Mix.Config
 config :form_delegate, FormDelegateWeb.Endpoint,
   load_from_system_env: true,
   http: [port: {:system, "PORT"}],
-  root: ".",
-  version: Application.spec(:phoenix_distillery, :vsn),
-  url: [scheme: "https", host: "api.formdelegate.com", port: 443],
+  url: [host: "api.formdelegate.com", port: 443],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
-  secret_key_base: "${SECRET_KEY_BASE}",
+  secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE"),
   server: true
 
 config :form_delegate, FormDelegate.Repo,
-  url: "${DATABASE_URL}",
+  url: System.get_env("DATABASE_URL"),
   pool_size: 2,
   ssl: true
 
