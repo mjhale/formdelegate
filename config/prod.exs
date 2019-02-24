@@ -68,7 +68,7 @@ config :logger, level: :info
 # Configures Bamboo mailer
 config :form_delegate, FormDelegate.Mailer,
   adapter: Bamboo.SparkPostAdapter,
-  api_key: "${SPARKPOST_KEY}"
+  api_key: System.get_env("SPARKPOST_KEY")
 
 # Configures CORS options
 config :cors_plug,
@@ -81,7 +81,7 @@ config :form_delegate, FormDelegateWeb.Guardian,
   allowed_algos: ["HS512"],
   issuer: "form_delegate_web",
   secret_key: %{
-    "k" => "${GUARDIAN_SECRET}",
+    "k" => System.get_env("GUARDIAN_SECRET"),
     "kty" => "oct"
   },
   ttl: { 14, :days },
