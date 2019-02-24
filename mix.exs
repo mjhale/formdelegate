@@ -24,6 +24,7 @@ defmodule FormDelegate.Mixfile do
          :cowboy,
          :logger,
          :gettext,
+         :ecto_sql,
          :phoenix_ecto,
          :postgrex,
          :comeonin,
@@ -45,19 +46,22 @@ defmodule FormDelegate.Mixfile do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    [{:phoenix, "~> 1.3.2"},
+    [{:phoenix, "~> 1.4.1"},
      {:phoenix_pubsub, "~> 1.0"},
-     {:phoenix_ecto, "~> 3.3.0"},
-     {:postgrex, "~> 0.13.4"},
-     {:phoenix_html, "~> 2.11.0"},
+     {:ecto_sql, "~> 3.0"},
+     {:phoenix_ecto, "~> 4.0.0"},
+     {:postgrex, "~> 0.14.1"},
+     {:phoenix_html, "~> 2.13.1"},
+     {:jason, "~> 1.0"},
      {:gettext, "~> 0.15"},
-     {:plug_cowboy, "~> 1.0"},
+     {:plug_cowboy, "~> 2.0.1"},
+     {:plug, "~> 1.7"},
      {:guardian, "~> 1.2.1"},
      {:pbkdf2_elixir, "~> 1.0.0"},
      {:ex_machina, "~> 2.2.2", only: :test},
      {:bamboo, "~> 1.2.0"},
      {:bamboo_sparkpost, "~> 1.1.1"},
-     {:scrivener_ecto, "~> 1.3.0"},
+     {:scrivener_ecto, "~> 2.0.0"},
      {:scrivener_headers, "~> 3.1.1"},
      {:cors_plug, "~> 2.0.0"},
      {:distillery, "~> 1.5", runtime: false}]
@@ -72,6 +76,6 @@ defmodule FormDelegate.Mixfile do
   defp aliases do
     ["ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
      "ecto.reset": ["ecto.drop", "ecto.setup"],
-     "test": ["ecto.create --quiet", "ecto.migrate", "test"]]
+     test: ["ecto.create --quiet", "ecto.migrate", "test"]]
   end
 end

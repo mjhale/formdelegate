@@ -22,7 +22,6 @@ config :form_delegate, FormDelegateWeb.Endpoint,
   server: true
 
 config :form_delegate, FormDelegate.Repo,
-  adapter: Ecto.Adapters.Postgres,
   url: "${DATABASE_URL}",
   pool_size: 1,
   ssl: true

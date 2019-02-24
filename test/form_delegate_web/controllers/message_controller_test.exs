@@ -3,6 +3,8 @@ defmodule FormDelegateWeb.MessageControllerTest do
 
   import FormDelegate.Factory
 
+  alias FormDelegateWeb.Router.Helpers, as: Routes
+
   setup do
     user = insert(:user)
     {:ok, jwt, full_claims} = FormDelegateWeb.Guardian.encode_and_sign(user)
@@ -11,10 +13,10 @@ defmodule FormDelegateWeb.MessageControllerTest do
 
   test "requires user authentication on all actions", %{conn: conn} do
     Enum.each([
-      get(conn, message_path(conn, :index)),
-      get(conn, message_path(conn, :show, "1")),
-      post(conn, message_path(conn, :create, %{})),
-      delete(conn, message_path(conn, :delete, "1")),
+      get(conn, Routes.message_path(conn, :index)),
+      get(conn, Routes.message_path(conn, :show, "1")),
+      post(conn, Routes.message_path(conn, :create, %{})),
+      delete(conn, Routes.message_path(conn, :delete, "1")),
     ], fn conn ->
       assert json_response(conn, 403)
       assert conn.halted

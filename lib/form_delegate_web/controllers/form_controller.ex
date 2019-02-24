@@ -25,7 +25,7 @@ defmodule FormDelegateWeb.FormController do
       form = FormDelegate.Repo.preload(form, [form_integrations: :integration])
       conn
       |> put_status(:created)
-      |> put_resp_header("location", form_path(conn, :show, form.id))
+      |> put_resp_header("location", Routes.form_path(conn, :show, form.id))
       |> render("show.json", form: form)
     end
   end

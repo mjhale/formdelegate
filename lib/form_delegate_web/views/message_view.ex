@@ -28,10 +28,7 @@ defmodule FormDelegateWeb.MessageView do
 
   def render("recent_activity.json", %{activity: activity}) do
     %{
-      data: Enum.map(activity, fn(x) ->
-        # convert date tuple to string
-        update_in(x, [:day], &(Ecto.Date.from_erl(&1)))
-      end)
+      data: activity
     }
   end
 end

@@ -11,7 +11,6 @@ config :logger, level: :warn
 
 # Configure your database
 config :form_delegate, FormDelegate.Repo,
-  adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
   database: "form_delegate_test",

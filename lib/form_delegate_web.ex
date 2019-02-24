@@ -26,7 +26,7 @@ defmodule FormDelegateWeb do
       import Ecto.Query
 
       import Plug.Conn
-      import FormDelegateWeb.Router.Helpers
+      alias FormDelegateWeb.Router.Helpers, as: Routes
       import FormDelegateWeb.Gettext
     end
   end
@@ -39,7 +39,7 @@ defmodule FormDelegateWeb do
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
 
-      import FormDelegateWeb.Router.Helpers
+      alias FormDelegateWeb.Router.Helpers, as: Routes
       import FormDelegateWeb.ErrorHelpers
       import FormDelegateWeb.Gettext
     end

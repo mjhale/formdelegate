@@ -38,10 +38,9 @@ config :phoenix, :stacktrace_depth, 20
 
 # Configure your database
 config :form_delegate, FormDelegate.Repo,
-  adapter: Ecto.Adapters.Postgres,
+  database: "form_delegate_dev",
   username: "postgres",
   password: "postgres",
-  database: "form_delegate_dev",
   hostname: "localhost",
   pool_size: 10
 
