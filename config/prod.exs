@@ -13,17 +13,17 @@ use Mix.Config
 # which you typically run after static files are built.
 config :form_delegate, FormDelegateWeb.Endpoint,
   load_from_system_env: true,
-  http: [port: "${PORT}"],
+  http: [port: {:system, "PORT"}],
   root: ".",
   version: Application.spec(:phoenix_distillery, :vsn),
-  url: [scheme: "https", host: "api.formdelegate.com", port: "${PORT}"],
+  url: [scheme: "https", host: "api.formdelegate.com", port: 443],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   secret_key_base: "${SECRET_KEY_BASE}",
   server: true
 
 config :form_delegate, FormDelegate.Repo,
   url: "${DATABASE_URL}",
-  pool_size: 1,
+  pool_size: 2,
   ssl: true
 
 # Do not print debug messages in production

@@ -4,7 +4,7 @@ defmodule FormDelegate.Mixfile do
   def project do
     [app: :form_delegate,
      version: "0.0.1",
-     elixir: "~> 1.4",
+     elixir: "~> 1.8",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
      start_permanent: Mix.env == :prod,
@@ -64,7 +64,7 @@ defmodule FormDelegate.Mixfile do
      {:scrivener_ecto, "~> 2.0.0"},
      {:scrivener_headers, "~> 3.1.1"},
      {:cors_plug, "~> 2.0.0"},
-     {:distillery, "~> 1.5", runtime: false}]
+     {:distillery, "~> 2.0.12", runtime: false}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
