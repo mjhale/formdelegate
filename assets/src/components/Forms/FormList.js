@@ -1,16 +1,12 @@
 import CopyToClipboard from 'react-copy-to-clipboard';
 import React from 'react';
-import { Link } from 'react-router-dom';
-
 import styled from 'styled-components/macro';
+
 import theme from 'constants/theme';
 
 import Button from 'components/Button';
 import Card from 'components/Card';
-
-const DeleteButton = styled(Button)`
-  float: right;
-`;
+import Link from 'components/Link';
 
 const FormAddress = styled.div`
   background-color: #4e4d5a;
@@ -38,7 +34,17 @@ const FormAddress = styled.div`
 `;
 
 const FormActions = styled.div`
+  display: flex;
+  justify-content: space-between;
   padding-top: 0.5rem;
+`;
+
+const FormActionGroup = styled.div`
+  align-self: flex-start;
+`;
+
+const FormActionDelete = styled.div`
+  align-self: flex-end;
 `;
 
 let FormList = ({ forms, isFetching, onDeleteClick }) => {
@@ -70,15 +76,19 @@ const FormSimpleView = ({ form, onDeleteClick }) => {
         </CopyToClipboard>
       </FormAddress>
       <FormActions>
-        <Link to={`/forms/${form.id}/edit`}>
-          <Button tabIndex="-1">Edit Form</Button>
-        </Link>
-        <DeleteButton
-          type="delete"
-          onClick={evt => onDeleteClick(form.id, evt)}
-        >
-          Delete Form
-        </DeleteButton>
+        <FormActionGroup>
+          <Button as={Link} href={`/forms/${form.id}/edit`}>
+            Edit Form
+          </Button>
+          <Button as={Link} href={`/messages?search=${form.form}`}>
+            View Messages
+          </Button>
+        </FormActionGroup>
+        <FormActionDelete>
+          <Button onClick={evt => onDeleteClick(form.id, evt)} variant="delete">
+            Delete Form
+          </Button>
+        </FormActionDelete>
       </FormActions>
     </Card>
   );

@@ -123,7 +123,7 @@ class FormEdit extends React.Component {
               removeIntegration={this.removeIntegrationField}
             />
           </Card>
-          <Button type="submit" disabled={submitting}>
+          <Button disabled={submitting} type="submit">
             Save Form
           </Button>
         </form>

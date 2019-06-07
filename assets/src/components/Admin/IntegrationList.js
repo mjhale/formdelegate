@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 
 import translations from 'translations';
 import { adminFetchIntegrations } from 'actions/integrations';
 import { getOrderedIntegrations } from 'selectors';
 
 import Button from 'components/Button';
+import Link from 'components/Link';
 import Table from 'components/Table';
 
 const integrationListColumns = [
@@ -18,9 +18,9 @@ const integrationListColumns = [
   {
     field: 'edit',
     displayFn: (row, col, field) => (
-      <Link to={`/admin/integrations/${row['id']}`}>
-        <Button>Edit</Button>
-      </Link>
+      <Button as={Link} href={`/admin/integrations/${row['id']}`}>
+        Edit
+      </Button>
     ),
     displayName: translations['integrationlist_th_edit'],
   },

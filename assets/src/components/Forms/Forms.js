@@ -1,18 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components/macro';
 
 import { fetchForms, formDeletionRequest } from 'actions/forms';
 import { getOrderedForms } from 'selectors';
 
 import Button from 'components/Button';
 import FormList from 'components/Forms/FormList';
-
-const NewFormLink = styled(Link)`
-  float: right;
-`;
+import Link from 'components/Link';
 
 class FormsContainer extends React.Component {
   static propTypes = {
@@ -37,9 +32,9 @@ class FormsContainer extends React.Component {
 
     return (
       <React.Fragment>
-        <NewFormLink to="/forms/new">
-          <Button tabIndex="-1">Create New Form</Button>
-        </NewFormLink>
+        <Button as={Link} href="/forms/new">
+          Create New Form
+        </Button>
         <h1>My Forms</h1>
         <FormList
           forms={forms}

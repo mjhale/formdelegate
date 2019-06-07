@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components/macro';
-import { Link } from 'react-router-dom';
 
 import theme from 'constants/theme';
 
 import FluidContainer from 'components/FluidContainer';
+import Link from 'components/Link';
 import { SkipToContent } from './Styled';
 
 const AuthLayoutContainer = styled(FluidContainer)`
@@ -34,7 +34,7 @@ const LogoLink = styled(Link)`
 const AuthLayout = props => (
   <React.Fragment>
     <SkipToContent href="#site-content">Skip to main content</SkipToContent>
-    <LogoLink to="/">form delegate</LogoLink>
+    <LogoLink href="/">form delegate</LogoLink>
     <AuthLayoutContainer id="site-content" role="main">
       {props.children}
     </AuthLayoutContainer>

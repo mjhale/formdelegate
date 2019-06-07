@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/macro';
 import { Field } from 'redux-form';
-import { Link } from 'react-router-dom';
 
 import renderField from 'components/Field';
 
 import Button from 'components/Button';
+import Link from 'components/Link';
 
 const LoginButton = styled(Button)`
   font-size: 1.166em;
@@ -64,7 +64,7 @@ const LoginForm = props => {
       </form>
       <LoginSecondaryActions>
         Remember me
-        <LoginHelp to="/LoginHelp">Need help?</LoginHelp>
+        <LoginHelp href="/LoginHelp">Need help?</LoginHelp>
       </LoginSecondaryActions>
     </React.Fragment>
   );

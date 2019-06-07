@@ -59,7 +59,7 @@ class AdminIntegrationForm extends React.Component {
             label="Type Name"
             type="text"
           />
-          <Button type="submit" disabled={submitting}>
+          <Button disabled={submitting} type="submit">
             Update Integration
           </Button>
         </form>

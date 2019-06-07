@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 
 import translations from 'translations';
 import { adminFetchUsers } from 'actions/users';
 import { getOrderedUsers } from 'selectors';
 
 import Button from 'components/Button';
+import Link from 'components/Link';
 import Table from 'components/Table';
 
 const userListColumns = [
@@ -33,9 +33,9 @@ const userListColumns = [
   {
     field: 'edit',
     displayFn: (row, col, field) => (
-      <Link to={`/admin/users/${row['id']}`}>
-        <Button>Edit</Button>
-      </Link>
+      <Button as={Link} href={`/admin/users/${row['id']}`}>
+        Edit
+      </Button>
     ),
     displayName: translations['userlist_th_edit'],
   },

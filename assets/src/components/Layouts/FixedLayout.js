@@ -8,7 +8,7 @@ const FixedLayout = props => (
   <React.Fragment>
     <SkipToContent href="#site-content">Skip to main content</SkipToContent>
     <NavBar>
-      <LogoLink to="/">form delegate</LogoLink>
+      <LogoLink href="/">form delegate</LogoLink>
       <Nav role="navigation" />
     </NavBar>
     <ContentContainer id="site-content" role="main">

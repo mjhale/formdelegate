@@ -1,9 +1,10 @@
 import styled, { keyframes } from 'styled-components/macro';
-import { hideVisually, showVisually } from 'polished';
-import { Link } from 'react-router-dom';
+import { hideVisually } from 'polished';
 
 import theme from 'constants/theme';
 import { media } from 'utils/style';
+
+import Link from 'components/Link';
 
 export const ContentContainer = styled.main`
   ${media.md`

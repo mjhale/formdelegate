@@ -4,7 +4,7 @@ import styled from 'styled-components/macro';
 
 import theme from 'constants/theme';
 
-let DefaultButton = styled.button`
+const DefaultButton = styled.button`
   background: linear-gradient(
     to bottom,
     ${theme.porcelainGray},
@@ -13,8 +13,8 @@ let DefaultButton = styled.button`
   border: 1px solid ${theme.borderColor};
   border-radius: 3px;
   color: ${theme.mineBlack};
-  display: inline-block;
   cursor: pointer;
+  display: inline-block;
   font-size: 0.65rem;
   font-weight: 600;
   line-height: 20px;
@@ -23,9 +23,6 @@ let DefaultButton = styled.button`
   text-transform: uppercase;
   white-space: nowrap;
   vertical-align: middle;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -webkit-user-select: none;
   user-select: none;
 
   &:hover {
@@ -56,20 +53,30 @@ const DisabledButton = styled(DefaultButton)`
 `;
 
 const Button = props => {
-  const { type, ...restProps } = props;
+  const { as, type, variant, ...restProps } = props;
+  const Component = as;
 
-  switch (type) {
+  switch (variant) {
     case 'disabled':
-      return <DisabledButton {...restProps} />;
+      return <DisabledButton as={Component} {...restProps} />;
     case 'delete':
-      return <DeleteButton {...restProps} />;
+      return <DeleteButton as={Component} {...restProps} />;
     default:
-      return <DefaultButton {...restProps} />;
+      return <DefaultButton as={Component} {...restProps} />;
   }
 };
 
 Button.propTypes = {
-  type: PropTypes.string,
+  as: PropTypes.element,
+  href: PropTypes.string,
+  type: PropTypes.oneOf(['button', 'reset', 'submit', null]),
+  variant: PropTypes.string,
+};
+
+Button.defaultProps = {
+  disabled: false,
+  type: 'button',
+  variant: 'primary',
 };
 
 export default Button;

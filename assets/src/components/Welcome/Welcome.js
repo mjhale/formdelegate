@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 import { lighten, darken } from 'polished';
-import { Link } from 'react-router-dom';
 
 import heroImage from 'images/hero-person-at-computer.jpg';
 import iconBlocker from 'images/icon-blocker.svg';
@@ -13,6 +12,7 @@ import { media } from 'utils/style';
 
 import Button from 'components/Button';
 import FluidContainer from 'components/FluidContainer';
+import Link from 'components/Link';
 
 const ActionBar = styled.div`
   background-color: ${theme.mineBlack};
@@ -192,7 +192,7 @@ const Welcome = () => (
         <HeroHeading>Simple Form Processing</HeroHeading>
         <HeroMessage>Send your forms to us. We'll handle the rest.</HeroMessage>
         <HeroAction>
-          <Link to="/register">
+          <Link href="/register">
             <Button tabIndex="-1">Sign Up For Free</Button>
           </Link>
         </HeroAction>
@@ -200,7 +200,7 @@ const Welcome = () => (
     </Hero>
 
     <ActionBar>
-      Want to see it in action? <Link to="/demo">Watch our demo.</Link>
+      Want to see it in action? <Link href="/demo">Watch our demo.</Link>
     </ActionBar>
 
     <Features>

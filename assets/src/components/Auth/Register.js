@@ -101,7 +101,7 @@ class RegisterUser extends React.Component {
             placeholder="Password"
             type="password"
           />
-          <Button type="submit" disabled={submitting}>
+          <Button disabled={submitting} type="submit">
             Create User
           </Button>
         </form>
