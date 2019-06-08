@@ -47,34 +47,25 @@ const DeleteButton = styled(DefaultButton)`
   }
 `;
 
-const DisabledButton = styled(DefaultButton)`
-  background: ${theme.disabledBtnBackgroundColor};
-  pointer-events: none;
-`;
-
 const Button = props => {
-  const { as, type, variant, ...restProps } = props;
-  const Component = as;
+  const { className, variant, ...restProps } = props;
 
   switch (variant) {
-    case 'disabled':
-      return <DisabledButton as={Component} {...restProps} />;
     case 'delete':
-      return <DeleteButton as={Component} {...restProps} />;
+      return <DeleteButton className={className} {...restProps} />;
     default:
-      return <DefaultButton as={Component} {...restProps} />;
+      return <DefaultButton className={className} {...restProps} />;
   }
 };
 
 Button.propTypes = {
-  as: PropTypes.element,
-  href: PropTypes.string,
+  as: PropTypes.PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
+  disabled: PropTypes.bool,
   type: PropTypes.oneOf(['button', 'reset', 'submit', null]),
   variant: PropTypes.string,
 };
 
 Button.defaultProps = {
-  disabled: false,
   type: 'button',
   variant: 'primary',
 };

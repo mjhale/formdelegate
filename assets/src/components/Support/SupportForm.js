@@ -62,7 +62,7 @@ let SupportForm = ({ handleSubmit, submitting }) => (
         type="textarea"
       />
     </Card>
-    <Button type="submit" disabled={submitting}>
+    <Button disabled={submitting} type="submit">
       Submit Ticket
     </Button>
   </form>

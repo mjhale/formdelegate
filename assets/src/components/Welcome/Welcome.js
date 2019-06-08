@@ -229,7 +229,7 @@ const Welcome = () => (
           </CodeHighlight>
           {` method="POST">`}
           <CodeTab>{`<input type="text" placeholder="Message">`}</CodeTab>
-          <CodeTab>{`<button type="Submit">Send</button>`}</CodeTab>
+          <CodeTab>{`<button type="submit">Send</button>`}</CodeTab>
           {`</form>`}
         </Code>
         <SubheadingMarginless>Step 2: Relax.</SubheadingMarginless>

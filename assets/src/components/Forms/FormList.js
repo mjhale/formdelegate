@@ -39,6 +39,10 @@ const FormActions = styled.div`
   padding-top: 0.5rem;
 `;
 
+const FormActionButton = styled(props => <Button as={Link} {...props} />)`
+  margin-right: 0.5rem;
+`;
+
 const FormActionGroup = styled.div`
   align-self: flex-start;
 `;
@@ -77,12 +81,12 @@ const FormSimpleView = ({ form, onDeleteClick }) => {
       </FormAddress>
       <FormActions>
         <FormActionGroup>
-          <Button as={Link} href={`/forms/${form.id}/edit`}>
+          <FormActionButton href={`/forms/${form.id}/edit`}>
             Edit Form
-          </Button>
-          <Button as={Link} href={`/messages?search=${form.form}`}>
+          </FormActionButton>
+          <FormActionButton href={`/messages?search=${form.form}`}>
             View Messages
-          </Button>
+          </FormActionButton>
         </FormActionGroup>
         <FormActionDelete>
           <Button onClick={evt => onDeleteClick(form.id, evt)} variant="delete">

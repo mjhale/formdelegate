@@ -1,6 +1,7 @@
 import React from 'react';
 import { Field } from 'redux-form';
 
+import Button from 'components/Button';
 import renderField from 'components/Field';
 
 const AdminUserForm = props => {
@@ -38,14 +39,14 @@ const AdminUserForm = props => {
       )}
 
       <div>
-        <button type="submit" disabled={submitting}>
+        <Button disabled={submitting} type="submit">
           Save Changes
-        </button>
+        </Button>
       </div>
       <div>
-        <button type="reset" disabled={pristine || submitting} onClick={reset}>
+        <Button disabled={pristine || submitting} onClick={reset} type="reset">
           Reset Changes
-        </button>
+        </Button>
       </div>
     </form>
   );

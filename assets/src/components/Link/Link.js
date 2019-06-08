@@ -8,7 +8,11 @@ const Link = props => {
   const { children, className, href, onPress } = props;
 
   if (href.includes('http') || href.includes('https')) {
-    return <ExternalLink {...props}>{children}</ExternalLink>;
+    return (
+      <ExternalLink className={className} {...props}>
+        {children}
+      </ExternalLink>
+    );
   }
 
   return (

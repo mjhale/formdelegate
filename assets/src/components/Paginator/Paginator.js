@@ -43,7 +43,7 @@ const Paginator = ({ handlePageChange, limit, offset, total }) => {
       </Status>
       <li>
         <Button
-          type={itemIndexFloor <= 1 ? 'disabled' : 'default'}
+          disabled={itemIndexFloor <= 1 ? true : false}
           onClick={evt => handlePageChange(currentPage - 1, evt)}
         >
           {'<'}
@@ -51,8 +51,8 @@ const Paginator = ({ handlePageChange, limit, offset, total }) => {
       </li>
       <li>
         <Button
+          disabled={itemIndexCeiling >= total ? 'disabled' : false}
           onClick={evt => handlePageChange(currentPage + 1, evt)}
-          type={itemIndexCeiling >= total ? 'disabled' : 'default'}
         >
           {'>'}
         </Button>

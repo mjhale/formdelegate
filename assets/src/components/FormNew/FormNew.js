@@ -51,7 +51,7 @@ class FormNewContainer extends React.Component {
             />
             <FormIntegrationList integrationTypes={integrations} />
           </Card>
-          <Button type="submit" disabled={submitting}>
+          <Button disabled={submitting} type="submit">
             Save Form
           </Button>
         </form>

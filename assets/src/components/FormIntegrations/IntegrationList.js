@@ -113,7 +113,6 @@ const renderIntegrations = ({
                 <ToggleSwitch name={`${integration}[enabled]`} />
               </ToggleContainer>
               <Delete
-                type="delete"
                 onClick={evt => {
                   evt.preventDefault();
                   let confirm = window.confirm(
@@ -124,6 +123,7 @@ const renderIntegrations = ({
                     fields.remove(index);
                   }
                 }}
+                variant="delete"
               >
                 x
               </Delete>

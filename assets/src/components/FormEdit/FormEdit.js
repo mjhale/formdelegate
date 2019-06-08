@@ -102,7 +102,7 @@ class FormEdit extends React.Component {
             />
             <Field
               component={renderField}
-              disabled
+              disabled={true}
               label="Form ID"
               name="id"
               placeholder="Form ID"
@@ -110,7 +110,7 @@ class FormEdit extends React.Component {
             />
             <Field
               component={renderField}
-              disabled
+              disabled={true}
               label="Total Messages"
               name="message_count"
               placeholder="Total Messages"
