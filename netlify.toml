@@ -2,6 +2,7 @@
   ID = "f75c7f76-9eb5-412d-ba74-cc00e856c1ea"
 
 [Build]
+  Base = "assets/"
   Command = "yarn run build"
-  Publish = "build/"
+  Publish = "assets/build/"
   Functions = ""
