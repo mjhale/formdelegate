@@ -17,7 +17,7 @@ defmodule FormDelegateWeb.UserView do
       name: user.name,
       form_count: user.form_count,
       verified: user.verified,
-      is_admin: user.is_admin,
+      is_admin: user.is_admin
     }
   end
 end

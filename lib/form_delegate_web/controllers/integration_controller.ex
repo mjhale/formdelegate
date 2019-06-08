@@ -24,8 +24,8 @@ defmodule FormDelegateWeb.IntegrationController do
   def update(conn, %{"id" => id, "integration" => integration_params}, current_user) do
     with %Integration{} = integration <- Integrations.get_integration!(id),
          :ok <- Authorizer.authorize(current_user, :update_integration, integration),
-         {:ok, %Integration{} = integration} <- Integrations.update_integration(integration, integration_params) do
-
+         {:ok, %Integration{} = integration} <-
+           Integrations.update_integration(integration, integration_params) do
       render(conn, "show.json", integration: integration)
     end
   end

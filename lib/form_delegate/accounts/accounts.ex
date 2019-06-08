@@ -18,7 +18,7 @@ defmodule FormDelegate.Accounts do
 
   """
   def list_users do
-    User |> order_by(:id) |> Repo.all
+    User |> order_by(:id) |> Repo.all()
   end
 
   @doc """
@@ -136,7 +136,6 @@ defmodule FormDelegate.Accounts do
   def authenticate_by_email_password(%{email: email, password: password}) do
     with %User{} = user <- Accounts.get_user_by_email!(email),
          {:ok, %User{} = user} <- Pbkdf2.check_pass(user, password) do
-
       {:ok, user}
     else
       _ -> {:error, :unauthorized}

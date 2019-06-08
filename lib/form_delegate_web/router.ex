@@ -8,7 +8,8 @@ defmodule FormDelegateWeb.Router do
   pipeline :check_authenticated do
     @claims %{typ: "access"}
 
-    plug Guardian.Plug.Pipeline, otp_app: :form_delegate,
+    plug Guardian.Plug.Pipeline,
+      otp_app: :form_delegate,
       module: FormDelegateWeb.Guardian,
       error_handler: FormDelegateWeb.AuthErrorHandler
 
@@ -26,7 +27,7 @@ defmodule FormDelegateWeb.Router do
     plug FormDelegateWeb.LoadUser
   end
 
-  if Mix.env == :dev do
+  if Mix.env() == :dev do
     forward "/sent_emails", Bamboo.SentEmailViewerPlug
   end
 
@@ -34,8 +35,11 @@ defmodule FormDelegateWeb.Router do
     pipe_through :api
 
     post "/requests/:id", RequestController, :process_request
-    resources "/sessions", SessionController, only: [:create, :delete],
-                                              singleton: true
+
+    resources "/sessions", SessionController,
+      only: [:create, :delete],
+      singleton: true
+
     resources "/users", UserController, only: [:create]
   end
 

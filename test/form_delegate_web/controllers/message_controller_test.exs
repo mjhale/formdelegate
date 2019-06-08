@@ -12,14 +12,17 @@ defmodule FormDelegateWeb.MessageControllerTest do
   end
 
   test "requires user authentication on all actions", %{conn: conn} do
-    Enum.each([
-      get(conn, Routes.message_path(conn, :index)),
-      get(conn, Routes.message_path(conn, :show, "1")),
-      post(conn, Routes.message_path(conn, :create, %{})),
-      delete(conn, Routes.message_path(conn, :delete, "1")),
-    ], fn conn ->
-      assert json_response(conn, 403)
-      assert conn.halted
-    end)
+    Enum.each(
+      [
+        get(conn, Routes.message_path(conn, :index)),
+        get(conn, Routes.message_path(conn, :show, "1")),
+        post(conn, Routes.message_path(conn, :create, %{})),
+        delete(conn, Routes.message_path(conn, :delete, "1"))
+      ],
+      fn conn ->
+        assert json_response(conn, 403)
+        assert conn.halted
+      end
+    )
   end
 end

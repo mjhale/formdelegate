@@ -2,6 +2,7 @@ defmodule FormDelegate.Repo do
   use Ecto.Repo,
     otp_app: :form_delegate,
     adapter: Ecto.Adapters.Postgres
+
   use Scrivener, page_size: 15
 
   @doc """

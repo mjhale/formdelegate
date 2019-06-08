@@ -13,16 +13,17 @@ defmodule FormDelegateWeb.MessageView do
   def render("message.json", %{message: message}) do
     %{
       id: message.id,
-      form: render_one(
-        message.form,
-        FormDelegateWeb.FormView,
-        "form.json"
-      ),
+      form:
+        render_one(
+          message.form,
+          FormDelegateWeb.FormView,
+          "form.json"
+        ),
       content: message.content,
       sender: message.sender,
       unknown_fields: message.unknown_fields,
       inserted_at: message.inserted_at,
-      updated_at: message.updated_at,
+      updated_at: message.updated_at
     }
   end
 

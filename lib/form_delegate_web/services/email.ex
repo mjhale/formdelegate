@@ -7,7 +7,7 @@ defmodule FormDelegateWeb.Services.Email do
 
   def send_email(%User{} = user, %Message{} = message) do
     new_email_message(user, message)
-    |> Mailer.deliver_later
+    |> Mailer.deliver_later()
   end
 
   defp new_email_message(%User{} = user, %Message{} = message) do

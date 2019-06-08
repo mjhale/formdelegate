@@ -8,9 +8,10 @@ defmodule FormDelegateWeb.RequestController do
 
   # @TODO: Check that form.verified is true
   def process_request(conn, %{"id" => form_id} = params) do
-    form = Form
-    |> Repo.get!(form_id)
-    |> Repo.preload([:integrations, :user])
+    form =
+      Form
+      |> Repo.get!(form_id)
+      |> Repo.preload([:integrations, :user])
 
     # Populate message fields with guessed params
     content_fields = ["message", "content", "body"]
@@ -33,13 +34,14 @@ defmodule FormDelegateWeb.RequestController do
       "unknown_fields" => unknown_fields
     }
 
-    changeset = %Message{}
-    |> Message.changeset(message_attrs)
-    |> Changeset.put_assoc(:form, form)
-    |> Changeset.put_assoc(:user, form.user)
-    |> Changeset.assoc_constraint(:form)
-    |> Changeset.assoc_constraint(:user)
-    |> update_message_count(1)
+    changeset =
+      %Message{}
+      |> Message.changeset(message_attrs)
+      |> Changeset.put_assoc(:form, form)
+      |> Changeset.put_assoc(:user, form.user)
+      |> Changeset.assoc_constraint(:form)
+      |> Changeset.assoc_constraint(:user)
+      |> update_message_count(1)
 
     # @TODO: Send to queue
     with {:ok, %Message{} = message} <- Repo.insert(changeset) do
@@ -52,18 +54,20 @@ defmodule FormDelegateWeb.RequestController do
   end
 
   defp run_integrations(%Form{} = form, %Message{} = message) do
-    Enum.each form.form_integrations, fn form_integration ->
+    Enum.each(form.form_integrations, fn form_integration ->
       if form_integration.enabled do
         case form_integration.integration.type do
           "E-mail" ->
             Email.send_email(form.user, message)
+
           "Ifttt" ->
             Ifttt.send_request(form.user, message)
+
           "Zapier" ->
             Zapier.send_request(form.user, message)
         end
       end
-    end
+    end)
   end
 
   defp update_message_count(changeset, value) do

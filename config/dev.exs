@@ -45,5 +45,4 @@ config :form_delegate, FormDelegate.Repo,
   pool_size: 10
 
 # Configures Bamboo mailer
-config :form_delegate, FormDelegate.Mailer,
-  adapter: Bamboo.LocalAdapter
+config :form_delegate, FormDelegate.Mailer, adapter: Bamboo.LocalAdapter

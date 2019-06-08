@@ -5,7 +5,7 @@ defmodule FormDelegate.Factory do
     %FormDelegate.Accounts.User{
       email: sequence(:email, &"User #{&1}"),
       password: "securepass",
-      password_hash: Pbkdf2.hash_pwd_salt("securepass"),
+      password_hash: Pbkdf2.hash_pwd_salt("securepass")
     }
   end
 
@@ -13,7 +13,7 @@ defmodule FormDelegate.Factory do
     %FormDelegate.Message{
       user: build(:user),
       sender: sequence(:sender, &"User #{&1}"),
-      content: sequence(:content, &"Content message #{&1}"),
+      content: sequence(:content, &"Content message #{&1}")
     }
   end
 

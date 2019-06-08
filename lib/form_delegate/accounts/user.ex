@@ -33,6 +33,7 @@ defmodule FormDelegate.Accounts.User do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
         put_change(changeset, :password_hash, Pbkdf2.hash_pwd_salt(password))
+
       _ ->
         changeset
     end

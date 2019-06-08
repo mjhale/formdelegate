@@ -21,7 +21,6 @@ defmodule FormDelegateWeb.UserController do
   def create(conn, %{"user" => user_params}, current_user) do
     with :ok <- Authorizer.authorize(current_user, :create_user),
          {:ok, %User{} = user} <- Accounts.create_user(user_params) do
-
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.user_path(conn, :show, user.id))
@@ -32,7 +31,6 @@ defmodule FormDelegateWeb.UserController do
   def show(conn, %{"id" => id}, current_user) do
     with %User{} = user <- Accounts.get_user!(id),
          :ok <- Authorizer.authorize(current_user, :show_user, user) do
-
       render(conn, "show.json", user: user)
     end
   end
@@ -41,7 +39,6 @@ defmodule FormDelegateWeb.UserController do
     with %User{} = user <- Accounts.get_user!(id),
          :ok <- Authorizer.authorize(current_user, :update_user, user),
          {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
-
       render(conn, "show.json", user: user)
     end
   end
@@ -50,7 +47,6 @@ defmodule FormDelegateWeb.UserController do
     with %User{} = user <- Accounts.get_user!(id),
          :ok <- Authorizer.authorize(current_user, :delete_user, user),
          {:ok, %User{} = _user} <- Accounts.delete_user(user) do
-
       conn
       |> put_resp_header("content-type", "application/json")
       |> send_resp(:no_content, "")

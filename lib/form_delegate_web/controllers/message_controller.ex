@@ -36,7 +36,6 @@ defmodule FormDelegateWeb.MessageController do
   def show(conn, %{"id" => id}, current_user) do
     with %Message{} = message <- Messages.get_message!(id),
          :ok <- Authorizer.authorize(current_user, :show_message, message) do
-
       render(conn, "show.json", message: message)
     end
   end

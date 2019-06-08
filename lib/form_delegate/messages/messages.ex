@@ -19,18 +19,20 @@ defmodule FormDelegate.Messages do
 
   """
   def list_messages_of_user(%User{} = user, params) do
-    query = from m in Message,
-      where: m.user_id == ^user.id,
-      preload: [{
-        :form,
-        [{:form_integrations, :integration}]
-      }],
-      order_by: [desc: m.id]
+    query =
+      from m in Message,
+        where: m.user_id == ^user.id,
+        preload: [
+          {
+            :form,
+            [{:form_integrations, :integration}]
+          }
+        ],
+        order_by: [desc: m.id]
 
-      query
-      |> Repo.paginate(params)
-    end
-
+    query
+    |> Repo.paginate(params)
+  end
 
   @doc """
   Returns the search result list of paginated messages.
@@ -42,16 +44,20 @@ defmodule FormDelegate.Messages do
 
   """
   def list_search_messages_of_user(%User{} = user, params) do
-    query = from m in Message,
-      where: m.user_id == ^user.id,
-      where: ilike(m.content, ^"%#{params["query"]}%") or
-             ilike(m.sender, ^"%#{params["query"]}%") or
-             fragment("?->>? ilike ?", m.unknown_fields, "user_mail",  ^"%#{params["query"]}%"),
-      preload: [{
-        :form,
-        [{:form_integrations, :integration}]
-      }],
-      order_by: [desc: m.id]
+    query =
+      from m in Message,
+        where: m.user_id == ^user.id,
+        where:
+          ilike(m.content, ^"%#{params["query"]}%") or
+            ilike(m.sender, ^"%#{params["query"]}%") or
+            fragment("?->>? ilike ?", m.unknown_fields, "user_mail", ^"%#{params["query"]}%"),
+        preload: [
+          {
+            :form,
+            [{:form_integrations, :integration}]
+          }
+        ],
+        order_by: [desc: m.id]
 
     query
     |> Repo.paginate(params)
@@ -67,18 +73,20 @@ defmodule FormDelegate.Messages do
 
   """
   def get_message_activity_of_user(%User{} = user) do
-    query = from m in Message,
-      right_join: day in fragment(
-        "SELECT generate_series(CURRENT_DATE - INTERVAL '365 days', CURRENT_DATE, '1 day') :: date AS d"
-      ),
-      on: day.d == fragment("date(?)", m.inserted_at),
-      on: m.user_id == ^user.id,
-      group_by: day.d,
-      order_by: day.d,
-      select: %{
-        day: fragment("date(?)", day.d),
-        message_count: count(m.id)
-      }
+    query =
+      from m in Message,
+        right_join:
+          day in fragment(
+            "SELECT generate_series(CURRENT_DATE - INTERVAL '365 days', CURRENT_DATE, '1 day') :: date AS d"
+          ),
+        on: day.d == fragment("date(?)", m.inserted_at),
+        on: m.user_id == ^user.id,
+        group_by: day.d,
+        order_by: day.d,
+        select: %{
+          day: fragment("date(?)", day.d),
+          message_count: count(m.id)
+        }
 
     Repo.all(query)
   end
@@ -98,11 +106,15 @@ defmodule FormDelegate.Messages do
 
   """
   def get_message!(id) do
-    Repo.one! from m in Message,
-      where: m.id == ^id,
-      preload: [{
-        :form,
-        [{:form_integrations, :integration}]
-      }]
+    Repo.one!(
+      from m in Message,
+        where: m.id == ^id,
+        preload: [
+          {
+            :form,
+            [{:form_integrations, :integration}]
+          }
+        ]
+    )
   end
 end

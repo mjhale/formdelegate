@@ -5,7 +5,7 @@ defmodule FormDelegateWeb.SettingsView do
     %{
       id: settings.id,
       api_key: settings.api_key,
-      email: settings.email,
+      email: settings.email
     }
   end
 end

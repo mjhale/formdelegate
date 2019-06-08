@@ -87,7 +87,7 @@ config :form_delegate, FormDelegateWeb.Guardian,
     "k" => System.get_env("GUARDIAN_SECRET"),
     "kty" => "oct"
   },
-  ttl: { 14, :days },
+  ttl: {14, :days},
   verify_issuer: true
 
 # Finally import the config/prod.secret.exs
