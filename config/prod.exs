@@ -17,12 +17,15 @@ config :form_delegate, FormDelegateWeb.Endpoint,
   url: [host: "api.formdelegate.com", port: 443],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE"),
-  server: true
+  server: true,
+  version: Application.spec(:phoenix_distillery, :vsn)
 
 config :form_delegate, FormDelegate.Repo,
-  url: System.get_env("DATABASE_URL"),
+  adapter: Ecto.Adapters.Postgres,
+  database: "",
   pool_size: 2,
-  ssl: true
+  ssl: true,
+  url: System.get_env("DATABASE_URL")
 
 # Do not print debug messages in production
 config :logger, level: :info

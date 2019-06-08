@@ -16,26 +16,10 @@ defmodule FormDelegate.Mixfile do
   #
   # Type `mix help compile.app` for more information.
   def application do
-    [mod: {FormDelegate.Application, []},
-      applications:
-        [:phoenix,
-         :phoenix_pubsub,
-         :phoenix_html,
-         :cowboy,
-         :logger,
-         :gettext,
-         :ecto_sql,
-         :phoenix_ecto,
-         :postgrex,
-         :comeonin,
-         :bamboo,
-         :bamboo_sparkpost,
-         :pbkdf2_elixir,
-         :guardian,
-         :scrivener_ecto,
-         :scrivener_headers,
-         :cors_plug,
-         :pbkdf2_elixir]]
+    [
+      mod: {FormDelegate.Application, []},
+      extra_applications: [:logger, :runtime_tools]
+    ]
   end
 
   # Specifies which paths to compile per environment.
@@ -46,25 +30,24 @@ defmodule FormDelegate.Mixfile do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    [{:phoenix, "~> 1.4.1"},
-     {:phoenix_pubsub, "~> 1.0"},
-     {:ecto_sql, "~> 3.0"},
+    [{:phoenix, "~> 1.4.6"},
+     {:phoenix_pubsub, "~> 1.1.2"},
+     {:ecto_sql, "~> 3.1.4"},
      {:phoenix_ecto, "~> 4.0.0"},
-     {:postgrex, "~> 0.14.1"},
-     {:phoenix_html, "~> 2.13.1"},
-     {:jason, "~> 1.0"},
+     {:postgrex, "~> 0.14.3"},
+     {:phoenix_html, "~> 2.13.3"},
+     {:jason, "~> 1.1.2"},
      {:gettext, "~> 0.15"},
-     {:plug_cowboy, "~> 2.0.1"},
-     {:plug, "~> 1.7"},
+     {:plug_cowboy, "~> 2.0.2"},
      {:guardian, "~> 1.2.1"},
-     {:pbkdf2_elixir, "~> 1.0.0"},
-     {:ex_machina, "~> 2.2.2", only: :test},
+     {:pbkdf2_elixir, "~> 1.0.2"},
+     {:ex_machina, "~> 2.3.0", only: :test},
      {:bamboo, "~> 1.2.0"},
-     {:bamboo_sparkpost, "~> 1.1.1"},
-     {:scrivener_ecto, "~> 2.0.0"},
+     {:bamboo_sparkpost, "~> 1.1.2"},
+     {:scrivener_ecto, "~> 2.2.0"},
      {:scrivener_headers, "~> 3.1.1"},
      {:cors_plug, "~> 2.0.0"},
-     {:distillery, "~> 2.0.12", runtime: false}]
+     {:distillery, "~> 2.0.14", runtime: false}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
