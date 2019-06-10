@@ -17,7 +17,7 @@ export function loginUser(credentials) {
       [CALL_API]: {
         config: {
           body: JSON.stringify({
-            user: {
+            session: {
               ...credentials,
             },
           }),

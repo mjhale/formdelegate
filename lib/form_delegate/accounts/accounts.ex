@@ -6,7 +6,7 @@ defmodule FormDelegate.Accounts do
   import Ecto.Query, warn: false
 
   alias FormDelegate.Repo
-  alias FormDelegate.{Accounts, Accounts.User}
+  alias FormDelegate.Accounts.User
 
   @doc """
   Returns the list of users.
@@ -126,19 +126,29 @@ defmodule FormDelegate.Accounts do
 
   ## Examples
 
-      iex> authenticate_by_email_password(%{email: "me@domain.com", password: "valid"})
+      iex> authenticate_user(%{email: "me@domain.com", password: "valid"})
       {:ok, %User{}}
 
-      iex> authenticate_by_email_password(%{email: "me@domain.com", password: "invalid"})
+      iex> authenticate_user(%{email: "me@domain.com", password: "invalid"})
       {:error, :unauthorized}
 
   """
-  def authenticate_by_email_password(%{email: email, password: password}) do
-    with %User{} = user <- Accounts.get_user_by_email!(email),
-         {:ok, %User{} = user} <- Pbkdf2.check_pass(user, password) do
-      {:ok, user}
-    else
-      _ -> {:error, :unauthorized}
+  def authenticate_user(%{email: email, password: password}) do
+    query = from u in User, where: u.email == ^email
+
+    case Repo.one(query) do
+      nil ->
+        Pbkdf2.no_user_verify()
+        {:error, :invalid_credentials}
+
+      user ->
+        case Pbkdf2.check_pass(user, password) do
+          {:ok, %User{} = user} ->
+            {:ok, user}
+
+          {:error, _} ->
+            {:error, :invalid_credentials}
+        end
     end
   end
 end

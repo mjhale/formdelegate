@@ -6,12 +6,15 @@ defmodule FormDelegateWeb.SessionController do
 
   action_fallback FormDelegateWeb.FallbackController
 
-  def create(conn, %{"user" => %{"email" => email, "password" => password}}) do
-    with {:ok, %User{} = user} <-
-           Accounts.authenticate_by_email_password(%{email: email, password: password}),
-         {:ok, token, _claims} = Guardian.encode_and_sign(user, %{}, token_type: "access") do
-      conn
-      |> render("show.json", %{session: %{token: token}})
+  def create(conn, %{"session" => %{"email" => email, "password" => password}}) do
+    case Accounts.authenticate_user(%{email: email, password: password}) do
+      {:ok, %User{} = user} ->
+        {:ok, token, _claims} = Guardian.encode_and_sign(user, %{}, token_type: "access")
+        render(conn, "show.json", %{session: %{token: token}})
+
+      {:error, _reason} ->
+        body = Jason.encode!(%{message: "Bad credentials"})
+        send_resp(conn, :unauthorized, body)
     end
   end
 
