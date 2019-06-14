@@ -21,6 +21,7 @@ defmodule FormDelegateWeb.ConnCase do
       use Phoenix.ConnTest
 
       import FormDelegateWeb.Router.Helpers
+      import FormDelegate.Factory
 
       # The default endpoint for testing
       @endpoint FormDelegateWeb.Endpoint
@@ -34,6 +35,19 @@ defmodule FormDelegateWeb.ConnCase do
       Ecto.Adapters.SQL.Sandbox.mode(FormDelegate.Repo, {:shared, self()})
     end
 
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    user =
+      cond do
+        tags[:as_admin] -> FormDelegate.Factory.build(:user, is_admin: true)
+        tags[:as_inserted_admin] -> FormDelegate.Factory.insert(:user, is_admin: true)
+        tags[:as_user] -> FormDelegate.Factory.build(:user, is_admin: false)
+        tags[:as_inserted_user] -> FormDelegate.Factory.insert(:user, is_admin: false)
+        true -> nil
+      end
+
+    conn =
+      Phoenix.ConnTest.build_conn()
+      |> Plug.Conn.assign(:current_user, user)
+
+    {:ok, conn: conn, user: user}
   end
 end

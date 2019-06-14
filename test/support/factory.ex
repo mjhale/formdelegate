@@ -1,6 +1,7 @@
 defmodule FormDelegate.Factory do
   use ExMachina.Ecto, repo: FormDelegate.Repo
 
+  @spec user_factory :: FormDelegate.Accounts.User.t()
   def user_factory do
     %FormDelegate.Accounts.User{
       email: sequence(:email, &"User #{&1}"),
@@ -10,7 +11,7 @@ defmodule FormDelegate.Factory do
   end
 
   def message_factory do
-    %FormDelegate.Message{
+    %FormDelegate.Messages.Message{
       user: build(:user),
       sender: sequence(:sender, &"User #{&1}"),
       content: sequence(:content, &"Content message #{&1}")
