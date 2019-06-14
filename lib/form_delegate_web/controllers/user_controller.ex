@@ -11,27 +11,37 @@ defmodule FormDelegateWeb.UserController do
     apply(__MODULE__, action_name(conn), args)
   end
 
+  @spec index(any, any, any) :: {:error, :forbidden} | Plug.Conn.t()
   def index(conn, _params, current_user) do
     with :ok <- Authorizer.authorize(current_user, :show_users) do
       users = Accounts.list_users()
-      render(conn, "index.json", users: users)
+
+      render(conn, :index, users: users)
     end
   end
 
   def create(conn, %{"user" => user_params}, current_user) do
-    with :ok <- Authorizer.authorize(current_user, :create_user),
-         {:ok, %User{} = user} <- Accounts.create_user(user_params) do
-      conn
-      |> put_status(:created)
-      |> put_resp_header("location", Routes.user_path(conn, :show, user.id))
-      |> render("show.json", user: user)
+    with :ok <- Authorizer.authorize(current_user, :create_user) do
+      case Accounts.create_user(user_params) do
+        {:ok, %User{} = user} ->
+          conn
+          |> put_status(:created)
+          |> put_resp_header("location", Routes.user_path(conn, :show, user.id))
+          |> render(:show, user: user)
+
+        {:error, %Ecto.Changeset{} = changeset} ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> put_view(FormDelegateWeb.ErrorView)
+          |> render(:error, changeset: changeset)
+      end
     end
   end
 
   def show(conn, %{"id" => id}, current_user) do
     with %User{} = user <- Accounts.get_user!(id),
          :ok <- Authorizer.authorize(current_user, :show_user, user) do
-      render(conn, "show.json", user: user)
+      render(conn, :show, user: user)
     end
   end
 
@@ -39,7 +49,7 @@ defmodule FormDelegateWeb.UserController do
     with %User{} = user <- Accounts.get_user!(id),
          :ok <- Authorizer.authorize(current_user, :update_user, user),
          {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
-      render(conn, "show.json", user: user)
+      render(conn, :show, user: user)
     end
   end
 
