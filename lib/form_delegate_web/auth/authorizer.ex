@@ -46,7 +46,7 @@ defmodule FormDelegateWeb.Authorizer do
   end
 
   # Integration authorizations
-  def authorize(%User{} = current_user, :update_integration, %Integration{} = integration) do
+  def authorize(%User{} = current_user, :update_integration, %Integration{} = _integration) do
     if current_user.is_admin do
       :ok
     else
