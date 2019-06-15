@@ -21,9 +21,9 @@ defmodule FormDelegateWeb.ErrorHelpers do
     #     dgettext "errors", "is invalid"
     #
     if count = opts[:count] do
-      Gettext.dngettext(FormDelegate.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(FormDelegateWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(FormDelegate.Gettext, "errors", msg, opts)
+      Gettext.dgettext(FormDelegateWeb.Gettext, "errors", msg, opts)
     end
   end
 end

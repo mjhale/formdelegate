@@ -8,7 +8,7 @@ defmodule FormDelegateWeb.LoadUser do
   def call(conn, _opts) do
     cond do
       # return connection as is if :current_user exists
-      user = conn.assigns[:current_user] ->
+      conn.assigns[:current_user] ->
         conn
 
       # current_resource/1 assigns nil values to unloadable resources
