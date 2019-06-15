@@ -9,21 +9,25 @@ defmodule FormDelegateWeb.IntegrationController do
     apply(__MODULE__, action_name(conn), args)
   end
 
-  def index(conn, _params, _current_user) do
-    integrations = Integrations.list_integrations()
+  def index(conn, _params, current_user) do
+    with :ok <- Authorizer.authorize(:show_integrations, current_user) do
+      integrations = Integrations.list_integrations()
 
-    render(conn, "index.json", integrations: integrations)
+      render(conn, "index.json", integrations: integrations)
+    end
   end
 
-  def show(conn, %{"id" => id}, _current_user) do
-    integration = Integrations.get_integration!(id)
+  def show(conn, %{"id" => id}, current_user) do
+    with :ok <- Authorizer.authorize(:show_integration, current_user) do
+      integration = Integrations.get_integration!(id)
 
-    render(conn, "show.json", integration: integration)
+      render(conn, "show.json", integration: integration)
+    end
   end
 
   def update(conn, %{"id" => id, "integration" => integration_params}, current_user) do
     with %Integration{} = integration <- Integrations.get_integration!(id),
-         :ok <- Authorizer.authorize(current_user, :update_integration, integration),
+         :ok <- Authorizer.authorize(:update_integration, current_user, integration),
          {:ok, %Integration{} = integration} <-
            Integrations.update_integration(integration, integration_params) do
       render(conn, "show.json", integration: integration)

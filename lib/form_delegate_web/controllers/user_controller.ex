@@ -13,7 +13,7 @@ defmodule FormDelegateWeb.UserController do
 
   @spec index(any, any, any) :: {:error, :forbidden} | Plug.Conn.t()
   def index(conn, _params, current_user) do
-    with :ok <- Authorizer.authorize(current_user, :show_users) do
+    with :ok <- Authorizer.authorize(:show_users, current_user) do
       users = Accounts.list_users()
 
       render(conn, :index, users: users)
@@ -22,7 +22,7 @@ defmodule FormDelegateWeb.UserController do
 
   def create(conn, %{"user" => user_params}, current_user) do
     with {:ok, %User{} = user} <- Accounts.create_user(user_params),
-         :ok <- Authorizer.authorize(current_user, :create_user) do
+         :ok <- Authorizer.authorize(:create_user, current_user) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.user_path(conn, :show, user.id))
@@ -33,7 +33,7 @@ defmodule FormDelegateWeb.UserController do
   def show(conn, %{"id" => id}, current_user) do
     case Accounts.get_user(id) do
       %User{} = user ->
-        with :ok <- Authorizer.authorize(current_user, :show_user, user) do
+        with :ok <- Authorizer.authorize(:show_user, current_user, user) do
           render(conn, :show, user: user)
         end
 
@@ -44,7 +44,7 @@ defmodule FormDelegateWeb.UserController do
 
   def update(conn, %{"id" => id, "user" => user_params}, current_user) do
     with %User{} = user <- Accounts.get_user!(id),
-         :ok <- Authorizer.authorize(current_user, :update_user, user),
+         :ok <- Authorizer.authorize(:update_user, current_user, user),
          {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
       render(conn, :show, user: user)
     end
@@ -52,7 +52,7 @@ defmodule FormDelegateWeb.UserController do
 
   def delete(conn, %{"id" => id}, current_user) do
     with %User{} = user <- Accounts.get_user!(id),
-         :ok <- Authorizer.authorize(current_user, :delete_user, user),
+         :ok <- Authorizer.authorize(:delete_user, current_user, user),
          {:ok, %User{} = _user} <- Accounts.delete_user(user) do
       conn
       |> put_resp_header("content-type", "application/json")

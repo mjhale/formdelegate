@@ -12,14 +12,14 @@ defmodule FormDelegateWeb.FormController do
   end
 
   def index(conn, _params, current_user) do
-    with :ok <- Authorizer.authorize(current_user, :show_user_forms) do
+    with :ok <- Authorizer.authorize(:show_user_forms, current_user) do
       forms = Forms.list_forms_of_user(current_user)
       render(conn, "index.json", forms: forms)
     end
   end
 
   def create(conn, %{"form" => form_params}, current_user) do
-    with :ok <- Authorizer.authorize(current_user, :create_form),
+    with :ok <- Authorizer.authorize(:create_form, current_user),
          {:ok, %Form{} = form} <- Forms.create_form(form_params, current_user) do
       form = FormDelegate.Repo.preload(form, form_integrations: :integration)
 
@@ -32,14 +32,14 @@ defmodule FormDelegateWeb.FormController do
 
   def show(conn, %{"id" => id}, current_user) do
     with %Form{} = form <- Forms.get_form!(id),
-         :ok <- Authorizer.authorize(current_user, :show_form, form) do
+         :ok <- Authorizer.authorize(:show_form, current_user, form) do
       render(conn, "show.json", form: form)
     end
   end
 
   def update(conn, %{"id" => id, "form" => form_params}, current_user) do
     with %Form{} = form <- Forms.get_form!(id),
-         :ok <- Authorizer.authorize(current_user, :update_form, form),
+         :ok <- Authorizer.authorize(:update_form, current_user, form),
          {:ok, %Form{} = form} <- Forms.update_form(form, form_params) do
       form = FormDelegate.Repo.preload(form, form_integrations: :integration)
       render(conn, "show.json", form: form)
@@ -48,7 +48,7 @@ defmodule FormDelegateWeb.FormController do
 
   def delete(conn, %{"id" => id}, current_user) do
     with %Form{} = form <- Forms.get_form!(id),
-         :ok <- Authorizer.authorize(current_user, :delete_form, form),
+         :ok <- Authorizer.authorize(:delete_form, current_user, form),
          {:ok, %Form{} = _form} <- Forms.delete_form(form) do
       conn
       |> put_resp_header("content-type", "application/json")

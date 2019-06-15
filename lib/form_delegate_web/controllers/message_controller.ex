@@ -12,7 +12,7 @@ defmodule FormDelegateWeb.MessageController do
   end
 
   def index(conn, params, current_user) do
-    with :ok <- Authorizer.authorize(current_user, :show_user_messages) do
+    with :ok <- Authorizer.authorize(:show_user_messages, current_user) do
       page =
         cond do
           params["query"] -> Messages.list_search_messages_of_user(current_user, params)
@@ -26,7 +26,7 @@ defmodule FormDelegateWeb.MessageController do
   end
 
   def recent_activity(conn, _params, current_user) do
-    with :ok <- Authorizer.authorize(current_user, :show_recent_message_activity) do
+    with :ok <- Authorizer.authorize(:show_recent_message_activity, current_user) do
       activity = Messages.get_message_activity_of_user(current_user)
 
       render(conn, "recent_activity.json", activity: activity)
@@ -35,7 +35,7 @@ defmodule FormDelegateWeb.MessageController do
 
   def show(conn, %{"id" => id}, current_user) do
     with %Message{} = message <- Messages.get_message!(id),
-         :ok <- Authorizer.authorize(current_user, :show_message, message) do
+         :ok <- Authorizer.authorize(:show_message, current_user, message) do
       render(conn, "show.json", message: message)
     end
   end

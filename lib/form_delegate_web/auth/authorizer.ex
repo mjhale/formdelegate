@@ -4,107 +4,11 @@ defmodule FormDelegateWeb.Authorizer do
   alias FormDelegate.Integrations.Integration
   alias FormDelegate.Messages.Message
 
-  # Form authorizations
-  def authorize(%User{} = current_user, :show_user_forms) do
-    if current_user do
-      :ok
-    else
-      {:error, :forbidden}
-    end
+  def authorize(:create_form, %User{} = _current_user) do
+    :ok
   end
 
-  def authorize(%User{} = current_user, :create_form) do
-    if current_user do
-      :ok
-    else
-      {:error, :forbidden}
-    end
-  end
-
-  def authorize(%User{} = current_user, :show_form, %Form{} = form) do
-    if form.user_id == current_user.id or current_user.is_admin do
-      :ok
-    else
-      {:error, :forbidden}
-    end
-  end
-
-  def authorize(%User{} = current_user, :update_form, %Form{} = form) do
-    if form.user_id == current_user.id or current_user.is_admin do
-      :ok
-    else
-      {:error, :forbidden}
-    end
-  end
-
-  def authorize(%User{} = current_user, :delete_form, %Form{} = form) do
-    if form.user_id == current_user.id or current_user.is_admin do
-      :ok
-    else
-      {:error, :forbidden}
-    end
-  end
-
-  # Integration authorizations
-  def authorize(%User{} = current_user, :update_integration, %Integration{} = _integration) do
-    if current_user.is_admin do
-      :ok
-    else
-      {:error, :forbidden}
-    end
-  end
-
-  # Message authorizations
-  def authorize(%User{} = current_user, :show_user_messages) do
-    if current_user do
-      :ok
-    else
-      {:error, :forbidden}
-    end
-  end
-
-  def authorize(%User{} = current_user, :show_recent_message_activity) do
-    if current_user do
-      :ok
-    else
-      {:error, :forbidden}
-    end
-  end
-
-  def authorize(%User{} = current_user, :show_message, %Message{} = message) do
-    if message.user_id == current_user.id or current_user.is_admin do
-      :ok
-    else
-      {:error, :forbidden}
-    end
-  end
-
-  def authorize(%User{} = current_user, :update_message, %Message{} = message) do
-    if message.user_id == current_user.id or current_user.is_admin do
-      :ok
-    else
-      {:error, :forbidden}
-    end
-  end
-
-  def authorize(%User{} = current_user, :delete_message, %Message{} = message) do
-    if message.user_id == current_user.id or current_user.is_admin do
-      :ok
-    else
-      {:error, :forbidden}
-    end
-  end
-
-  # User authorizations
-  def authorize(%User{} = current_user, :show_users) do
-    if current_user.is_admin do
-      :ok
-    else
-      {:error, :forbidden}
-    end
-  end
-
-  def authorize(current_user, :create_user) do
+  def authorize(:create_user, current_user) do
     if current_user == :guest do
       :ok
     else
@@ -112,7 +16,75 @@ defmodule FormDelegateWeb.Authorizer do
     end
   end
 
-  def authorize(%User{} = current_user, :show_user, %User{} = user) do
+  def authorize(:show_integration, %User{} = _current_user) do
+    :ok
+  end
+
+  def authorize(:show_integrations, %User{} = _current_user) do
+    :ok
+  end
+
+  def authorize(:show_user_forms, %User{} = _current_user) do
+    :ok
+  end
+
+  def authorize(:show_recent_message_activity, %User{} = _current_user) do
+    :ok
+  end
+
+  def authorize(:show_user_messages, %User{} = _current_user) do
+    :ok
+  end
+
+  def authorize(:show_users, %User{} = current_user) do
+    if current_user.is_admin do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  def authorize(:show_form, %User{} = current_user, %Form{} = form) do
+    if form.user_id == current_user.id or current_user.is_admin do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  def authorize(:update_form, %User{} = current_user, %Form{} = form) do
+    if form.user_id == current_user.id or current_user.is_admin do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  def authorize(:delete_form, %User{} = current_user, %Form{} = form) do
+    if form.user_id == current_user.id or current_user.is_admin do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  def authorize(:update_integration, %User{} = current_user, %Integration{} = _integration) do
+    if current_user.is_admin do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  def authorize(:show_message, %User{} = current_user, %Message{} = message) do
+    if message.user_id == current_user.id do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  def authorize(:show_user, %User{} = current_user, %User{} = user) do
     if user.id == current_user.id or current_user.is_admin do
       :ok
     else
@@ -120,7 +92,7 @@ defmodule FormDelegateWeb.Authorizer do
     end
   end
 
-  def authorize(%User{} = current_user, :update_user, %User{} = user) do
+  def authorize(:update_user, %User{} = current_user, %User{} = user) do
     if user.id == current_user.id or current_user.is_admin do
       :ok
     else
@@ -128,7 +100,7 @@ defmodule FormDelegateWeb.Authorizer do
     end
   end
 
-  def authorize(%User{} = current_user, :delete_user, %User{} = user) do
+  def authorize(:delete_user, %User{} = current_user, %User{} = user) do
     if user.id == current_user.id or current_user.is_admin do
       :ok
     else
