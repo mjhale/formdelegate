@@ -23,6 +23,7 @@ defmodule FormDelegate.Accounts.User do
   def changeset(%User{} = user, attrs) do
     user
     |> cast(attrs, [:name, :email, :password])
+    |> validate_required([:email])
     |> validate_length(:email, min: 3, max: 128)
     |> validate_length(:password, min: 8, max: 128)
     |> unique_constraint(:email)

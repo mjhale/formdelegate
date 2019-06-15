@@ -6,9 +6,15 @@ defmodule FormDelegate.AccountsTest do
   describe "users" do
     alias FormDelegate.Accounts.User
 
-    @valid_attrs %{email: "some email", is_admin: true, name: "some name"}
-    @update_attrs %{email: "some updated email", is_admin: false, name: "some updated name"}
-    @invalid_attrs %{email: nil, is_admin: nil, name: nil}
+    @valid_attrs %{
+      email: "user@formdelegate.com",
+      name: "Form User"
+    }
+    @update_attrs %{
+      email: "updateduser@formdelegate.com",
+      name: "Updated Form User"
+    }
+    @invalid_attrs %{email: nil, name: nil, password: nil}
 
     def user_fixture(attrs \\ %{}) do
       {:ok, user} =
@@ -30,29 +36,32 @@ defmodule FormDelegate.AccountsTest do
     end
 
     test "create_user/1 with valid data creates a user" do
-      assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
-      assert user.email == "some email"
-      assert user.is_admin == true
-      assert user.name == "some name"
+      assert {:ok, user} = Accounts.create_user(@valid_attrs)
+      assert user.email == "user@formdelegate.com"
+      assert user.is_admin == false
+      assert user.name == "Form User"
     end
 
     test "create_user/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Accounts.create_user(@invalid_attrs)
+      assert {:error, changeset} = Accounts.create_user(@invalid_attrs)
+      assert "can't be blank" in errors_on(changeset).email
+      assert %{email: ["can't be blank"]} = errors_on(changeset)
     end
 
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
       assert {:ok, user} = Accounts.update_user(user, @update_attrs)
       assert %User{} = user
-      assert user.email == "some updated email"
+      assert user.email == "updateduser@formdelegate.com"
       assert user.is_admin == false
-      assert user.name == "some updated name"
+      assert user.name == "Updated Form User"
     end
 
     test "update_user/2 with invalid data returns error changeset" do
       user = user_fixture()
-      assert {:error, %Ecto.Changeset{}} = Accounts.update_user(user, @invalid_attrs)
-      assert user == Accounts.get_user!(user.id)
+      assert {:error, changeset} = Accounts.update_user(user, @invalid_attrs)
+      assert "can't be blank" in errors_on(changeset).email
+      assert %{email: ["can't be blank"]} = errors_on(changeset)
     end
 
     test "delete_user/1 deletes the user" do

@@ -21,27 +21,24 @@ defmodule FormDelegateWeb.UserController do
   end
 
   def create(conn, %{"user" => user_params}, current_user) do
-    with :ok <- Authorizer.authorize(current_user, :create_user) do
-      case Accounts.create_user(user_params) do
-        {:ok, %User{} = user} ->
-          conn
-          |> put_status(:created)
-          |> put_resp_header("location", Routes.user_path(conn, :show, user.id))
-          |> render(:show, user: user)
-
-        {:error, %Ecto.Changeset{} = changeset} ->
-          conn
-          |> put_status(:unprocessable_entity)
-          |> put_view(FormDelegateWeb.ErrorView)
-          |> render(:error, changeset: changeset)
-      end
+    with {:ok, %User{} = user} <- Accounts.create_user(user_params),
+         :ok <- Authorizer.authorize(current_user, :create_user) do
+      conn
+      |> put_status(:created)
+      |> put_resp_header("location", Routes.user_path(conn, :show, user.id))
+      |> render(:show, user: user)
     end
   end
 
   def show(conn, %{"id" => id}, current_user) do
-    with %User{} = user <- Accounts.get_user!(id),
-         :ok <- Authorizer.authorize(current_user, :show_user, user) do
-      render(conn, :show, user: user)
+    case Accounts.get_user(id) do
+      %User{} = user ->
+        with :ok <- Authorizer.authorize(current_user, :show_user, user) do
+          render(conn, :show, user: user)
+        end
+
+      nil ->
+        {:error, :not_found}
     end
   end
 
