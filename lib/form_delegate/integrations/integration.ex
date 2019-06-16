@@ -14,9 +14,7 @@ defmodule FormDelegate.Integrations.Integration do
     timestamps()
   end
 
-  @doc """
-  Builds a changeset based on the `struct` and `params`.
-  """
+  @doc false
   def changeset(%Integration{} = integration, attrs) do
     integration
     |> cast(attrs, [:type])

@@ -44,6 +44,14 @@ defmodule FormDelegateWeb.Authorizer do
     end
   end
 
+  def authorize(:update_integration, %User{} = current_user) do
+    if current_user.is_admin do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
   def authorize(:show_form, %User{} = current_user, %Form{} = form) do
     if form.user_id == current_user.id or current_user.is_admin do
       :ok
@@ -62,14 +70,6 @@ defmodule FormDelegateWeb.Authorizer do
 
   def authorize(:delete_form, %User{} = current_user, %Form{} = form) do
     if form.user_id == current_user.id or current_user.is_admin do
-      :ok
-    else
-      {:error, :forbidden}
-    end
-  end
-
-  def authorize(:update_integration, %User{} = current_user, %Integration{} = _integration) do
-    if current_user.is_admin do
       :ok
     else
       {:error, :forbidden}

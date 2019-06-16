@@ -18,6 +18,12 @@ defmodule FormDelegate.Factory do
     }
   end
 
+  def integration_factory do
+    %FormDelegate.Integrations.Integration{
+      type: sequence(:type, &"Type #{&1}")
+    }
+  end
+
   def make_admin(user) do
     %{user | is_admin: true}
   end
