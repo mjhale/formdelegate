@@ -46,13 +46,13 @@ defmodule FormDelegateWeb.Router do
   scope "/v1", FormDelegateWeb do
     pipe_through [:api, :check_authenticated, :ensure_authenticated, :load_user]
 
-    resources "/forms", FormController
-    resources "/integrations", IntegrationController, only: [:index, :show, :update]
+    resources "/forms", FormController, except: [:edit, :new]
+    resources "/integrations", IntegrationController, except: [:create, :delete, :edit, :new]
 
     # @TODO: Move to different namespace
     get "/messages/recent_activity", MessageController, :recent_activity
 
     resources "/messages", MessageController, only: [:index, :show]
-    resources "/users", UserController, except: [:create]
+    resources "/users", UserController, except: [:create, :edit, :new]
   end
 end
