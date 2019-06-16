@@ -94,6 +94,22 @@ defmodule FormDelegateWeb.UserControllerTest do
 
       assert response == expected
     end
+
+    @tag :as_inserted_user
+    test "Returns an error and does not create a user if already authenticated", %{
+      conn: conn,
+      jwt: jwt
+    } do
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> post(Routes.user_path(conn, :create), user: @valid_attrs)
+        |> json_response(403)
+
+      expected = %{"errors" => %{"detail" => "Forbidden"}}
+
+      assert response == expected
+    end
   end
 
   describe "update/3" do
@@ -129,15 +145,10 @@ defmodule FormDelegateWeb.UserControllerTest do
       jwt: jwt,
       user: user
     } do
-      response =
-        conn
-        |> put_req_header("authorization", "bearer: " <> jwt)
-        |> put(Routes.user_path(conn, :update, user), user: @invalid_attrs)
-        |> json_response(422)
-
-      expected = %{"errors" => %{"email" => ["can't be blank"]}}
-
-      assert response == expected
+      conn
+      |> put_req_header("authorization", "bearer: " <> jwt)
+      |> put(Routes.user_path(conn, :update, user), user: @invalid_attrs)
+      |> json_response(:unprocessable_entity)
 
       response =
         conn
@@ -153,6 +164,38 @@ defmodule FormDelegateWeb.UserControllerTest do
           "form_count" => user.form_count,
           "verified" => user.verified,
           "is_admin" => user.is_admin
+        }
+      }
+
+      assert response == expected
+    end
+
+    test "Returns an error and does not edit the user if editing other user", %{conn: conn} do
+      user = FormDelegate.Factory.insert(:user)
+      {:ok, user_jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(user)
+
+      other_user = FormDelegate.Factory.insert(:user)
+      {:ok, other_user_jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(other_user)
+
+      conn
+      |> put_req_header("authorization", "bearer: " <> user_jwt)
+      |> put(Routes.user_path(conn, :update, other_user), user: @valid_attrs)
+      |> json_response(403)
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> other_user_jwt)
+        |> get(Routes.user_path(conn, :show, other_user))
+        |> json_response(200)
+
+      expected = %{
+        "data" => %{
+          "id" => other_user.id,
+          "email" => other_user.email,
+          "name" => other_user.name,
+          "form_count" => other_user.form_count,
+          "verified" => other_user.verified,
+          "is_admin" => other_user.is_admin
         }
       }
 
@@ -185,33 +228,98 @@ defmodule FormDelegateWeb.UserControllerTest do
 
     @tag :as_inserted_user
     test "Responds with a message indicating user not found", %{conn: conn, jwt: jwt} do
-      response =
+      assert_error_sent :not_found, fn ->
         conn
         |> put_req_header("authorization", "bearer: " <> jwt)
         |> get(Routes.user_path(conn, :show, -1))
         |> json_response(404)
+      end
+    end
 
-      expected = %{"errors" => %{"detail" => "Page not found"}}
+    test "Returns an error and does not show the user info if other user", %{conn: conn} do
+      user = FormDelegate.Factory.insert(:user)
+
+      other_user = FormDelegate.Factory.insert(:user)
+      {:ok, other_user_jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(other_user)
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> other_user_jwt)
+        |> get(Routes.user_path(conn, :show, user))
+        |> json_response(403)
+
+      expected = %{"errors" => %{"detail" => "Forbidden"}}
 
       assert response == expected
     end
   end
 
-  @tag :as_inserted_user
-  test "delete/3 and responds with :ok if the user was deleted", %{
-    conn: conn,
-    jwt: jwt,
-    user: user
-  } do
-    conn
-    |> put_req_header("authorization", "bearer: " <> jwt)
-    |> delete(Routes.user_path(conn, :delete, user.id))
-    |> response(204)
-
-    assert_error_sent 404, fn ->
+  describe "delete/3" do
+    @tag :as_inserted_user
+    test "Deletes, and returns a 404 if the user was deleted", %{
+      conn: conn,
+      jwt: jwt,
+      user: user
+    } do
       conn
       |> put_req_header("authorization", "bearer: " <> jwt)
-      |> get(Routes.user_path(conn, :show, user.id))
+      |> delete(Routes.user_path(conn, :delete, user.id))
+      |> response(204)
+
+      assert_error_sent 404, fn ->
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> get(Routes.user_path(conn, :show, user.id))
+      end
+    end
+
+    test "Returns an error and does not delete the user if other user", %{conn: conn} do
+      user = FormDelegate.Factory.insert(:user)
+      {:ok, user_jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(user)
+
+      other_user = FormDelegate.Factory.insert(:user)
+      {:ok, other_user_jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(other_user)
+
+      conn
+      |> put_req_header("authorization", "bearer: " <> other_user_jwt)
+      |> delete(Routes.user_path(conn, :delete, user.id))
+      |> json_response(403)
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> user_jwt)
+        |> get(Routes.user_path(conn, :show, user))
+        |> json_response(200)
+
+      expected = %{
+        "data" => %{
+          "id" => user.id,
+          "email" => user.email,
+          "name" => user.name,
+          "form_count" => user.form_count,
+          "verified" => user.verified,
+          "is_admin" => user.is_admin
+        }
+      }
+
+      assert response == expected
+    end
+  end
+
+  describe "without logged in user" do
+    test "requires user authentication on all actions except create/2", %{conn: conn} do
+      Enum.each(
+        [
+          get(conn, Routes.user_path(conn, :index)),
+          get(conn, Routes.user_path(conn, :show, "1")),
+          put(conn, Routes.user_path(conn, :update, "1", %{})),
+          delete(conn, Routes.user_path(conn, :delete, "1"))
+        ],
+        fn conn ->
+          assert json_response(conn, 401)
+          assert conn.halted
+        end
+      )
     end
   end
 end

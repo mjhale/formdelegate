@@ -11,11 +11,9 @@ defmodule FormDelegateWeb.UserController do
     apply(__MODULE__, action_name(conn), args)
   end
 
-  @spec index(any, any, any) :: {:error, :forbidden} | Plug.Conn.t()
   def index(conn, _params, current_user) do
     with :ok <- Authorizer.authorize(:show_users, current_user) do
       users = Accounts.list_users()
-
       render(conn, :index, users: users)
     end
   end
@@ -31,14 +29,9 @@ defmodule FormDelegateWeb.UserController do
   end
 
   def show(conn, %{"id" => id}, current_user) do
-    case Accounts.get_user(id) do
-      %User{} = user ->
-        with :ok <- Authorizer.authorize(:show_user, current_user, user) do
-          render(conn, :show, user: user)
-        end
-
-      nil ->
-        {:error, :not_found}
+    with %User{} = user <- Accounts.get_user!(id),
+         :ok <- Authorizer.authorize(:show_user, current_user, user) do
+      render(conn, :show, user: user)
     end
   end
 

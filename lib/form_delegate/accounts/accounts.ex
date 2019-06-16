@@ -22,23 +22,6 @@ defmodule FormDelegate.Accounts do
   end
 
   @doc """
-  Gets a single `%User{}` from the data store where the primary key matches the
-  given id.
-
-  Returns `nil` if no result was found.
-
-  ## Examples
-
-      iex> get_user(123)
-      %User{}
-
-      iex> get_user(456)
-      nil
-
-  """
-  def get_user(id), do: Repo.get(User, id)
-
-  @doc """
   Gets a single user.
 
   Raises `Ecto.NoResultsError` if the User does not exist.
