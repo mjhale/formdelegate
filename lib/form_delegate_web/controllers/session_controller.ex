@@ -20,11 +20,4 @@ defmodule FormDelegateWeb.SessionController do
         |> send_resp(:unauthorized, body)
     end
   end
-
-  def delete(conn, _params) do
-    conn
-    |> Guardian.Plug.sign_out()
-    |> put_resp_header("content-type", "application/json")
-    |> send_resp(:no_content, "")
-  end
 end

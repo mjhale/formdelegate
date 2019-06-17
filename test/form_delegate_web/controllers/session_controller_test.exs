@@ -17,7 +17,7 @@ defmodule FormDelegateWeb.SessionControllerTest do
   end
 
   describe "create/2" do
-    test "Creates, and responds with a newly created JWT if  email and password credentials are valid",
+    test "Creates, and responds with a newly created session if  email and password credentials are valid",
          %{conn: conn} do
       user =
         FormDelegate.Factory.build(:user)
@@ -34,7 +34,7 @@ defmodule FormDelegateWeb.SessionControllerTest do
       assert response["data"]["token"]
     end
 
-    test "Returns an error and does not create a JWT if email and password credentials are invalid",
+    test "Returns an error and does not create a session if email and password credentials are invalid",
          %{conn: conn} do
       user =
         FormDelegate.Factory.build(:user)
@@ -53,7 +53,7 @@ defmodule FormDelegateWeb.SessionControllerTest do
       assert response == expected
     end
 
-    test "Returns an error and does not create a JWT if email and password credentials are empty",
+    test "Returns an error and does not create a session if email and password credentials are empty",
          %{conn: conn} do
       _user =
         FormDelegate.Factory.build(:user)
