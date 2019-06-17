@@ -1,12 +1,12 @@
 defmodule FormDelegate.Factory do
   use ExMachina.Ecto, repo: FormDelegate.Repo
 
+  alias FormDelegate.Accounts.User
+
   @spec user_factory :: FormDelegate.Accounts.User.t()
   def user_factory do
     %FormDelegate.Accounts.User{
-      email: sequence(:email, &"User #{&1}"),
-      password: "securepass",
-      password_hash: Pbkdf2.hash_pwd_salt("securepass")
+      email: sequence(:email, &"User #{&1}")
     }
   end
 
@@ -33,5 +33,11 @@ defmodule FormDelegate.Factory do
 
   def make_admin(user) do
     %{user | is_admin: true}
+  end
+
+  def set_password(user, password) do
+    user
+    |> User.changeset(%{"password" => password})
+    |> Ecto.Changeset.apply_changes()
   end
 end

@@ -14,7 +14,10 @@ defmodule FormDelegateWeb.SessionController do
 
       {:error, _reason} ->
         body = Jason.encode!(%{message: "Bad credentials"})
-        send_resp(conn, :unauthorized, body)
+
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(:unauthorized, body)
     end
   end
 
