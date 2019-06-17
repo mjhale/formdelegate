@@ -24,6 +24,13 @@ defmodule FormDelegate.Factory do
     }
   end
 
+  def form_factory do
+    %FormDelegate.Forms.Form{
+      form: sequence(:type, &"Form #{&1}"),
+      user: build(:user)
+    }
+  end
+
   def make_admin(user) do
     %{user | is_admin: true}
   end
