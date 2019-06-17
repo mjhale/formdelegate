@@ -1,7 +1,6 @@
 defmodule FormDelegateWeb.Authorizer do
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
-  alias FormDelegate.Integrations.Integration
   alias FormDelegate.Messages.Message
 
   def authorize(:create_form, %User{} = _current_user) do

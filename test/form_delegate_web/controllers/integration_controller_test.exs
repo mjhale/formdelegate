@@ -3,7 +3,6 @@ defmodule FormDelegateWeb.IntegrationControllerTest do
 
   alias FormDelegateWeb.Router.Helpers, as: Routes
 
-  @valid_attrs %{type: "E-mail"}
   @update_attrs %{
     type: "Keybase"
   }
@@ -95,7 +94,7 @@ defmodule FormDelegateWeb.IntegrationControllerTest do
 
       conn
       |> put_req_header("authorization", "bearer: " <> jwt)
-      |> put(Routes.integration_path(conn, :update, integration), integration: @invalid_attrs)
+      |> put(Routes.integration_path(conn, :update, integration.id), integration: @invalid_attrs)
       |> json_response(:unprocessable_entity)
 
       response =

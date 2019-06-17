@@ -227,12 +227,11 @@ defmodule FormDelegateWeb.UserControllerTest do
     end
 
     @tag :as_inserted_user
-    test "Responds with a message indicating user not found", %{conn: conn, jwt: jwt} do
+    test "Responds with an error indicating user not found", %{conn: conn, jwt: jwt} do
       assert_error_sent :not_found, fn ->
         conn
         |> put_req_header("authorization", "bearer: " <> jwt)
         |> get(Routes.user_path(conn, :show, -1))
-        |> json_response(404)
       end
     end
 
