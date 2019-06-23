@@ -6,10 +6,15 @@ defmodule FormDelegate.Mixfile do
       app: :form_delegate,
       version: "0.0.1",
       elixir: "~> 1.8",
+      elixirc_options: [warnings_as_errors: true],
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
+      dialyzer: [
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+        ignore_warnings: ".dialyzer_ignore.exs"
+      ],
       deps: deps()
     ]
   end
@@ -44,12 +49,19 @@ defmodule FormDelegate.Mixfile do
       {:plug_cowboy, "~> 2.0.2"},
       {:guardian, "~> 1.2.1"},
       {:pbkdf2_elixir, "~> 1.0.2"},
-      {:ex_machina, "~> 2.3.0", only: :test},
       {:bamboo, "~> 1.2.0"},
       {:bamboo_sparkpost, "~> 1.1.2"},
       {:scrivener_ecto, "~> 2.2.0"},
       {:scrivener_headers, "~> 3.1.1"},
       {:cors_plug, "~> 2.0.0"},
+
+      # dev, test
+      {:ex_machina, "~> 2.3.0", only: :test},
+      {:credo, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.8", only: [:dev, :test], runtime: false},
+
+      # build
       {:distillery, "~> 2.0.14", runtime: false}
     ]
   end
@@ -64,6 +76,14 @@ defmodule FormDelegate.Mixfile do
     [
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
+      quality: ["format", "credo --strict", "sobelow --verbose", "dialyzer", "test"],
+      "quality.ci": [
+        "test",
+        "format --check-formatted",
+        "credo --strict",
+        "sobelow --exit",
+        "dialyzer --halt-exit-status"
+      ],
       test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end

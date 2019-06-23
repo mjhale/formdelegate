@@ -27,6 +27,13 @@ coverage
 # Static artifacts
 node_modules
 
+# Dialyzer
+/priv/plts/*.plt
+/priv/plts/*.plt.hash
+
+# Sobelow
+.sobelow
+
 # The config/prod.secret.exs file by default contains sensitive
 # data and you should not commit it into version control.
 #
