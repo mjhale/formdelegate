@@ -11,7 +11,9 @@ defmodule FormDelegate.Application do
       # Start the Ecto repository
       supervisor(FormDelegate.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(FormDelegateWeb.Endpoint, [])
+      supervisor(FormDelegateWeb.Endpoint, []),
+      # Start Rihanna job queue
+      supervisor(Rihanna.Supervisor, [[postgrex: FormDelegate.Repo.config()]])
       # Start your own worker by calling: FormDelegate.Worker.start_link(arg1, arg2, arg3)
       # worker(FormDelegate.Worker, [arg1, arg2, arg3]),
     ]

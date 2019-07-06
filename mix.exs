@@ -54,6 +54,7 @@ defmodule FormDelegate.Mixfile do
       {:scrivener_ecto, "~> 2.2.0"},
       {:scrivener_headers, "~> 3.1.1"},
       {:cors_plug, "~> 2.0.0"},
+      {:rihanna, "~> 1.3.4"},
 
       # dev, test
       {:ex_machina, "~> 2.3.0", only: :test},

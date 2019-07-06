@@ -38,6 +38,10 @@ config :form_delegate, FormDelegateWeb.Guardian,
 config :phoenix, :json_library, Jason
 config :bamboo, :json_library, Jason
 
+# Use Ecto Repo with Rihanna queue
+config :rihanna,
+  producer_postgres_connection: {Ecto, FormDelegate.Repo}
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
