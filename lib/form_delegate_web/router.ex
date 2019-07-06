@@ -34,7 +34,7 @@ defmodule FormDelegateWeb.Router do
   scope "/v1", FormDelegateWeb do
     pipe_through :api
 
-    post "/requests/:id", RequestController, :process_request
+    post "/requests/:id", RequestController, :create
 
     resources "/sessions", SessionController,
       only: [:create, :delete],
