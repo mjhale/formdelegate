@@ -8,12 +8,10 @@ defmodule FormDelegateWeb.RequestController do
   # @TODO: Check that form.verified is true
   # @TODO: Responds with /requests/:form_id/:request_id link alongside 202
   def create(conn, params) do
-    message_changeset =
-      params
-      |> create_message_changeset()
+    message_changeset = params |> create_message_changeset()
 
     with {:ok, %Message{} = message} <- Repo.insert(message_changeset) do
-      Rihanna.enqueue(FormDelegate.SubmissionQueueJob, [message.form, message])
+      Rihanna.enqueue(FormDelegate.SubmissionQueueJob, [conn, message.form, message])
     end
 
     body = Jason.encode!(%{message: "Accepted"})

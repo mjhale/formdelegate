@@ -21,6 +21,7 @@ defmodule FormDelegateWeb.MessageView do
         ),
       content: message.content,
       sender: message.sender,
+      spam_status: message.spam_status,
       unknown_fields: message.unknown_fields,
       inserted_at: message.inserted_at,
       updated_at: message.updated_at

@@ -42,6 +42,9 @@ config :bamboo, :json_library, Jason
 config :rihanna,
   producer_postgres_connection: {Ecto, FormDelegate.Repo}
 
+# HTTP client adapter for Tesla
+config :tesla, adapter: Tesla.Adapter.Hackney
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

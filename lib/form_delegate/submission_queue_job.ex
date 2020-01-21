@@ -1,17 +1,24 @@
 defmodule FormDelegate.SubmissionQueueJob do
   @behaviour Rihanna.Job
 
+  require Logger
+
   alias FormDelegate.Forms.Form
-  alias FormDelegate.Messages.Message
-  alias FormDelegateWeb.Services.{Email, Ifttt, Zapier}
+  alias FormDelegate.{Messages, Messages.Message}
+  alias FormDelegateWeb.Services.{Akismet, Email, Ifttt, Zapier}
 
-  def perform([%Form{} = form, %Message{} = message]) do
-    success? = run_integrations(form, message)
+  def perform([conn, %Form{} = form, %Message{} = message]) do
+    # @TODO: Use user-specified Akismet API key
+    case Akismet.is_spam?(System.get_env("AKISMET_API_KEY"), conn, message) do
+      {:ok, false} ->
+        run_integrations(form, message)
 
-    if success? do
-      :ok
-    else
-      {:error, :failed}
+      {:ok, true} ->
+        message
+        |> Messages.update_message(%{spam_status: "detected"})
+
+      {:error, _} ->
+        Logger.debug("FD Queue: Akisment error")
     end
   end
 
@@ -30,6 +37,7 @@ defmodule FormDelegate.SubmissionQueueJob do
 
           _ ->
             {:error, "Unknown integration type"}
+            Logger.debug("FD Queue: run_integrations error")
         end
       end
     end)

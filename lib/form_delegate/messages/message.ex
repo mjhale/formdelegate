@@ -7,8 +7,9 @@ defmodule FormDelegate.Messages.Message do
   alias FormDelegate.Messages.Message
 
   schema "messages" do
-    field :content, :string, null: false
+    field :content, :string
     field :sender, :string, null: false
+    field :spam_status, :string
     field :unknown_fields, :map
 
     belongs_to :form, Form, type: Ecto.UUID
@@ -22,6 +23,6 @@ defmodule FormDelegate.Messages.Message do
   """
   def changeset(%Message{} = message, attrs) do
     message
-    |> cast(attrs, [:content, :sender, :unknown_fields])
+    |> cast(attrs, [:content, :sender, :spam_status, :unknown_fields])
   end
 end
