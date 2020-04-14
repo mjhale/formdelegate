@@ -35,6 +35,7 @@ defmodule FormDelegateWeb.MessageControllerTest do
             "id" => message.id,
             "inserted_at" => NaiveDateTime.to_iso8601(message.inserted_at),
             "sender" => message.sender,
+            "spam_status" => nil,
             "unknown_fields" => nil,
             "updated_at" => NaiveDateTime.to_iso8601(message.updated_at)
           }
@@ -63,6 +64,7 @@ defmodule FormDelegateWeb.MessageControllerTest do
           "id" => message.id,
           "inserted_at" => NaiveDateTime.to_iso8601(message.inserted_at),
           "sender" => message.sender,
+          "spam_status" => nil,
           "unknown_fields" => nil,
           "updated_at" => NaiveDateTime.to_iso8601(message.updated_at)
         }

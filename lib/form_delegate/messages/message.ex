@@ -24,5 +24,19 @@ defmodule FormDelegate.Messages.Message do
   def changeset(%Message{} = message, attrs) do
     message
     |> cast(attrs, [:content, :sender, :spam_status, :unknown_fields])
+    |> validate_required_inclusion([:content, :sender, :unknown_fields])
+  end
+
+  def validate_required_inclusion(changeset, fields) do
+    if Enum.any?(fields, &present?(changeset, &1)) do
+      changeset
+    else
+      add_error(changeset, hd(fields), "One of these fields must be present: #{inspect(fields)}")
+    end
+  end
+
+  def present?(changeset, field) do
+    value = get_field(changeset, field)
+    value && (value != "" && value != %{})
   end
 end

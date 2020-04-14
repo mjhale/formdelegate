@@ -5,20 +5,26 @@ defmodule FormDelegateWeb.RequestController do
   alias FormDelegate.Forms.Form
   alias FormDelegate.Messages.Message
 
+  action_fallback FormDelegateWeb.FallbackController
+
+  require Logger
+
   # @TODO: Check that form.verified is true
   # @TODO: Responds with /requests/:form_id/:request_id link alongside 202
   def create(conn, params) do
-    message_changeset = params |> create_message_changeset()
+    message_changeset = create_message_changeset(params)
+
+    Logger.debug("Create request: #{inspect(message_changeset)}")
 
     with {:ok, %Message{} = message} <- Repo.insert(message_changeset) do
       Rihanna.enqueue(FormDelegate.SubmissionQueueJob, [conn, message.form, message])
+
+      body = Jason.encode!(%{message: "Accepted"})
+
+      conn
+      |> put_resp_header("content-type", "application/json")
+      |> send_resp(:accepted, body)
     end
-
-    body = Jason.encode!(%{message: "Accepted"})
-
-    conn
-    |> put_resp_header("content-type", "application/json")
-    |> send_resp(:accepted, body)
   end
 
   defp create_message_changeset(%{"id" => form_id} = params) do
@@ -43,10 +49,8 @@ defmodule FormDelegateWeb.RequestController do
     title_fields = ["title", "subject", ""]
     sender_fields = ["name", "sender", "full_name", "email"]
 
-    # Populate fields with found params
-    known_fields = ["id"] ++ sender_fields ++ title_fields ++ content_fields
-
     # Filter params into known and unknown groups based on potential field hits
+    known_fields = ["id"] ++ sender_fields ++ title_fields ++ content_fields
     unknown_fields = Map.drop(params, known_fields)
 
     # Merge fields into messages map
