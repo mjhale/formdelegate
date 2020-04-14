@@ -90,6 +90,9 @@ config :form_delegate, FormDelegateWeb.Guardian,
   ttl: {14, :days},
   verify_issuer: true
 
+# Configures Akismet module to use Tesla HTTP client
+config :form_delegate, :akismet_api, FormDelegate.Services.Akismet.Tesla
+
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
 # import_config "prod.secret.exs"

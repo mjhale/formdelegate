@@ -5,20 +5,23 @@ defmodule FormDelegate.SubmissionQueueJob do
 
   alias FormDelegate.Forms.Form
   alias FormDelegate.{Messages, Messages.Message}
-  alias FormDelegateWeb.Services.{Akismet, Email, Ifttt, Zapier}
+  alias FormDelegate.Services.{Email, Ifttt, Zapier}
 
   def perform([conn, %Form{} = form, %Message{} = message]) do
-    # @TODO: Use user-specified Akismet API key
-    case Akismet.is_spam?(System.get_env("AKISMET_API_KEY"), conn, message) do
+    # @TODO: Allow user-specified Akismet API key
+    case akismet_api().is_spam?(System.get_env("AKISMET_API_KEY"), conn, message) do
       {:ok, false} ->
         run_integrations(form, message)
+        Logger.debug("FD Queue: Integrations running. No spam detected by Akismet.")
 
       {:ok, true} ->
         message
         |> Messages.update_message(%{spam_status: "detected"})
 
-      {:error, _} ->
-        Logger.debug("FD Queue: Akisment error")
+        Logger.debug("FD Queue: Spam detected by Akismet.")
+
+      {:error, error} ->
+        Logger.error("FD Queue: Akismet error: #{inspect(error)}")
     end
   end
 
@@ -41,5 +44,9 @@ defmodule FormDelegate.SubmissionQueueJob do
         end
       end
     end)
+  end
+
+  defp akismet_api do
+    Application.get_env(:form_delegate, :akismet_api)
   end
 end

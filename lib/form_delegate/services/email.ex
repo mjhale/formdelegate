@@ -1,4 +1,4 @@
-defmodule FormDelegateWeb.Services.Email do
+defmodule FormDelegate.Services.Email do
   use Bamboo.Phoenix, view: FormDelegateWeb.EmailView
 
   alias FormDelegate.Accounts.User

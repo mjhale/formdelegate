@@ -16,3 +16,6 @@ config :form_delegate, FormDelegate.Repo,
   database: "form_delegate_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+# Configures Akismet module to use an in-memory mock
+config :form_delegate, :akismet_api, FormDelegate.Services.Akismet.InMemory
