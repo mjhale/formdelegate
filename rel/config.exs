@@ -7,15 +7,14 @@
 |> Path.wildcard()
 |> Enum.map(&Code.eval_file(&1))
 
-use Mix.Releases.Config,
-    # This sets the default release built by `mix release`
-    default_release: :default,
-    # This sets the default environment used by `mix release`
-    default_environment: Mix.env()
+use Distillery.Releases.Config,
+  # This sets the default release built by `mix release`
+  default_release: :default,
+  # This sets the default environment used by `mix release`
+  default_environment: Mix.env()
 
 # For a full list of config options for both releases
 # and environments, visit https://hexdocs.pm/distillery/config/distillery.html
-
 
 # You may define one or more environments in this file,
 # an environment's settings will override those of a release
@@ -29,16 +28,16 @@ environment :dev do
   # It is recommended that you build with MIX_ENV=prod and pass
   # the --env flag to Distillery explicitly if you want to use
   # dev mode.
-  set dev_mode: true
-  set include_erts: false
-  set cookie: :"ysm;V)B>lJ(4Uye&YN=dcwgdQWpy3j36Jp3~.>.}YvOPkmBFlxIlMQ}G(pt^K0[_"
+  set(dev_mode: true)
+  set(include_erts: false)
+  set(cookie: :"ysm;V)B>lJ(4Uye&YN=dcwgdQWpy3j36Jp3~.>.}YvOPkmBFlxIlMQ}G(pt^K0[_")
 end
 
 environment :prod do
-  set include_erts: true
-  set include_src: false
-  set cookie: :"w}|HwriMF)a/d=o*Jh)zfoAxLi^ef9C_WJ}eX}B}O7C!mXTL}l6uKV@G<~GTBy4U"
-  set vm_args: "rel/vm.args"
+  set(include_erts: true)
+  set(include_src: false)
+  set(cookie: :"w}|HwriMF)a/d=o*Jh)zfoAxLi^ef9C_WJ}eX}B}O7C!mXTL}l6uKV@G<~GTBy4U")
+  set(vm_args: "rel/vm.args")
 end
 
 # You may define one or more releases in this file.
@@ -47,12 +46,17 @@ end
 # will be used by default
 
 release :form_delegate do
-  set version: current_version(:form_delegate)
-  set applications: [
-    :runtime_tools
-  ]
-  set commands: [
-    migrate: "rel/commands/migrate.sh"
-  ]
-end
+  set(version: current_version(:form_delegate))
 
+  set(
+    applications: [
+      :runtime_tools
+    ]
+  )
+
+  set(
+    commands: [
+      migrate: "rel/commands/migrate.sh"
+    ]
+  )
+end

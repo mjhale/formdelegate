@@ -38,34 +38,35 @@ defmodule FormDelegate.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.4.6"},
+      {:phoenix, "~> 1.4.16"},
       {:phoenix_pubsub, "~> 1.1.2"},
-      {:ecto_sql, "~> 3.1.4"},
-      {:phoenix_ecto, "~> 4.0.0"},
-      {:postgrex, "~> 0.14.3"},
-      {:phoenix_html, "~> 2.13.3"},
-      {:jason, "~> 1.1.2"},
+      {:ecto_sql, "~> 3.4.2"},
+      {:phoenix_ecto, "~> 4.1.0"},
+      {:postgrex, "~> 0.15.3"},
+      {:phoenix_html, "~> 2.14.1"},
+      {:jason, "~> 1.2.0", override: true},
       {:gettext, "~> 0.15"},
-      {:plug_cowboy, "~> 2.0.2"},
-      {:guardian, "~> 1.2.1"},
-      {:pbkdf2_elixir, "~> 1.0.2"},
-      {:bamboo, "~> 1.2.0"},
-      {:bamboo_sparkpost, "~> 1.1.2"},
-      {:scrivener_ecto, "~> 2.2.0"},
+      {:plug_cowboy, "~> 2.1.3"},
+      {:guardian, "~> 2.1.1"},
+      {:pbkdf2_elixir, "~> 1.2.1"},
+      {:bamboo, "~> 1.4.0"},
+      {:bamboo_sparkpost, "~> 1.1.3"},
+      {:scrivener_ecto, "~> 2.3.0"},
       {:scrivener_headers, "~> 3.1.1"},
-      {:cors_plug, "~> 2.0.0"},
-      {:rihanna, "~> 1.3.4"},
-      {:tesla, "~> 1.3.1"},
+      {:cors_plug, "~> 2.0.2"},
+      {:rihanna, "~> 1.3.5"},
+      {:tesla, "~> 1.3.3"},
       {:hackney, "~> 1.15.2"},
 
       # dev, test
-      {:ex_machina, "~> 2.3.0", only: :test},
-      {:credo, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.8", only: [:dev, :test], runtime: false},
+      {:ex_machina, "~> 2.4.0", only: :test},
+      {:credo, "~> 1.3.2", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0.0", only: [:dev, :test], runtime: false},
+      # @TODO: Fix sobelow compilation errors
+      # {:sobelow, "~> 0.8", only: [:dev, :test], runtime: false},
 
       # build
-      {:distillery, "~> 2.0.14", runtime: false}
+      {:distillery, "~> 2.1.1", runtime: false}
     ]
   end
 
