@@ -38,3 +38,8 @@ blocks:
           commands:
             - sem-service start postgres
             - mix test
+promotions:
+  - name: Deploy to Gigalixir
+    pipeline_file: gigalixir.yml
+    auto_promote:
+      when: branch = 'master' AND result = 'passed'
