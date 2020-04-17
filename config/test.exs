@@ -17,5 +17,8 @@ config :form_delegate, FormDelegate.Repo,
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
+# Configures Bamboo mailer
+config :form_delegate, FormDelegate.Mailer, adapter: Bamboo.TestAdapter
+
 # Configures Akismet module to use an in-memory mock
 config :form_delegate, :akismet_api, FormDelegate.Services.Akismet.InMemory

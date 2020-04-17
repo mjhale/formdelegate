@@ -12,7 +12,7 @@ defmodule FormDelegate.Services.Email do
 
   defp new_email_message(%User{} = user, %Message{} = message) do
     new_email(to: user.email)
-    |> subject("New Message")
+    |> subject("New Form Message")
     |> from({"Form Delegate", "no-reply@formdelegate.com"})
     |> render(:new_message, user: user, message: message)
   end
