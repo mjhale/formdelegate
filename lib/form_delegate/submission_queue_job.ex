@@ -5,14 +5,16 @@ defmodule FormDelegate.SubmissionQueueJob do
 
   alias FormDelegate.Forms.Form
   alias FormDelegate.{Messages, Messages.Message}
+  alias FormDelegate.Accounts.User
   alias FormDelegate.Services.{Email, Ifttt, Zapier}
 
   def perform([conn, %Form{} = form, %Message{} = message]) do
     # @TODO: Allow user-specified Akismet API key
     case akismet_api().is_spam?(System.get_env("AKISMET_API_KEY"), conn, message) do
       {:ok, false} ->
-        run_integrations(form, message)
         Logger.debug("FD Queue: Integrations running. No spam detected by Akismet.")
+        run_integrations(form, message)
+        broadcast_message(message)
 
       {:ok, true} ->
         message
@@ -44,6 +46,16 @@ defmodule FormDelegate.SubmissionQueueJob do
         end
       end
     end)
+  end
+
+  defp broadcast_message(%Message{} = message) do
+    %Message{user: %User{id: form_user_id}} = message
+
+    FormDelegateWeb.Endpoint.broadcast!(
+      "form_message:" <> to_string(form_user_id),
+      "new_msg",
+      Phoenix.View.render(FormDelegateWeb.MessageView, "show.json", message: message)
+    )
   end
 
   defp akismet_api do

@@ -46,3 +46,6 @@ config :form_delegate, FormDelegate.Repo,
 
 # Configures Bamboo mailer
 config :form_delegate, FormDelegate.Mailer, adapter: Bamboo.LocalAdapter
+
+# Configures Akismet module to use an in-memory mock
+config :form_delegate, :akismet_api, FormDelegate.Services.Akismet.InMemory
