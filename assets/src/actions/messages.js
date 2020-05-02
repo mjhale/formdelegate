@@ -20,6 +20,15 @@ import {
   MESSAGES_SUCCESS,
 } from 'constants/actionTypes';
 
+export function addMessage(payload) {
+  return dispatch =>
+    dispatch({
+      isFetching: false,
+      payload: payload,
+      type: MESSAGE_SUCCESS,
+    });
+}
+
 export function fetchMessage(messageId) {
   return async dispatch => {
     const actionResponse = await dispatch({

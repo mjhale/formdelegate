@@ -2,10 +2,18 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/macro';
 import { connect } from 'react-redux';
+import { getCurrentUserId } from 'utils';
+import { normalize } from 'normalizr';
 import { parse } from 'query-string';
+import { Socket } from 'phoenix';
 import { withRouter } from 'react-router-dom';
 
-import { fetchMessages, messageSearchFetch } from 'actions/messages';
+import {
+  addMessage,
+  fetchMessages,
+  messageSearchFetch,
+} from 'actions/messages';
+import { messageSchema } from 'schema';
 import { getVisibleMessages } from 'selectors';
 import { media } from 'utils/style';
 
@@ -60,6 +68,7 @@ const SearchContainer = styled.li`
 
 class MessagesContainer extends React.Component {
   static propTypes = {
+    addMessage: PropTypes.func.isRequired,
     history: PropTypes.shape({
       push: PropTypes.func.isRequired,
     }).isRequired,
@@ -85,6 +94,7 @@ class MessagesContainer extends React.Component {
     const startingPage = 1; /* the first page of paginated results */
 
     loadMessages(startingPage, query && query.search);
+    this.messageListener();
   }
 
   handlePageChange = (requestedPage, evt) => {
@@ -112,6 +122,29 @@ class MessagesContainer extends React.Component {
       openedMessageId:
         prevState.openedMessageId !== message.id ? message.id : null,
     }));
+  };
+
+  messageListener = () => {
+    const currentUserToken = localStorage.getItem('fd_token');
+    const currentUserId = getCurrentUserId(currentUserToken);
+
+    // @TODO: Improve API host resolution
+    const API_HOST = process.env.REACT_APP_API_HOST;
+    const socketUrl = `ws://${
+      API_HOST ? 'api.formdelegate.com' : 'localhost:4000'
+    }/socket`;
+
+    const socket = new Socket(socketUrl, {
+      params: { jwt: currentUserToken },
+    });
+
+    socket.connect();
+
+    let channel = socket.channel(`form_message:${currentUserId}`, {});
+
+    channel.join().on('new_msg', payload => {
+      this.props.addMessage(normalize(payload.data, messageSchema));
+    });
   };
 
   render() {
@@ -166,6 +199,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
+  addMessage: payload => {
+    dispatch(addMessage(payload));
+  },
   loadMessages: (requestedPage, searchQuery) => {
     if (searchQuery) {
       dispatch(messageSearchFetch(searchQuery, requestedPage));
@@ -176,8 +212,5 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(MessagesContainer)
+  connect(mapStateToProps, mapDispatchToProps)(MessagesContainer)
 );

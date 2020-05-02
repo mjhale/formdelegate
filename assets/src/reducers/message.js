@@ -65,6 +65,11 @@ const pagination = (
         total: action.total,
       });
 
+    case MESSAGE_SUCCESS:
+      return Object.assign({}, state, {
+        total: state.total + 1,
+      });
+
     default:
       return state;
   }
@@ -91,6 +96,11 @@ const visibleIds = (state = [], action) => {
     case MESSAGE_SEARCH_RESULTS:
     case MESSAGES_SUCCESS:
       return action.payload.result;
+
+    case MESSAGE_SUCCESS:
+      return action.payload.result - state[0] === 1
+        ? [action.payload.result, ...state.slice(0, -1)]
+        : state;
 
     default:
       return state;
