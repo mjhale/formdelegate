@@ -16,6 +16,9 @@ config :form_delegate, FormDelegateWeb.Endpoint,
   http: [port: {:system, "PORT"}],
   url: [host: "api.formdelegate.com", port: 443],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
+  check_origin: [
+    "https://www.formdelegate.com"
+  ],
   secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE"),
   server: true,
   version: Application.spec(:phoenix_distillery, :vsn)
