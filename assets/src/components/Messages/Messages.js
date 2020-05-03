@@ -130,9 +130,9 @@ class MessagesContainer extends React.Component {
 
     // @TODO: Improve API host resolution
     const API_HOST = process.env.REACT_APP_API_HOST;
-    const socketUrl = `ws://${
-      API_HOST ? 'api.formdelegate.com' : 'localhost:4000'
-    }/socket`;
+    const socketUrl = API_HOST
+      ? 'wss://api.formdelegate.com/socket'
+      : 'ws://localhost:4000/socket';
 
     const socket = new Socket(socketUrl, {
       params: { jwt: currentUserToken },
@@ -142,7 +142,9 @@ class MessagesContainer extends React.Component {
 
     let channel = socket.channel(`form_message:${currentUserId}`, {});
 
-    channel.join().on('new_msg', payload => {
+    channel.join();
+
+    channel.on('new_msg', payload => {
       this.props.addMessage(normalize(payload.data, messageSchema));
     });
   };
