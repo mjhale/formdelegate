@@ -38,16 +38,17 @@ defmodule FormDelegate.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.4.16"},
-      {:phoenix_pubsub, "~> 1.1.2"},
-      {:ecto_sql, "~> 3.4.2"},
+      {:phoenix, "~> 1.5.1"},
+      {:phoenix_pubsub, "~> 2.0.0"},
+      {:ecto_sql, "~> 3.4.3"},
       {:phoenix_ecto, "~> 4.1.0"},
       {:postgrex, "~> 0.15.3"},
-      {:phoenix_html, "~> 2.14.1"},
+      {:phoenix_html, "~> 2.14.2"},
       {:jason, "~> 1.2.0", override: true},
-      {:gettext, "~> 0.15"},
-      {:plug_cowboy, "~> 2.1.3"},
+      {:gettext, "~> 0.17.4"},
+      {:plug_cowboy, "~> 2.2.1"},
       {:guardian, "~> 2.1.1"},
+      {:guardian_phoenix, "~> 2.0"},
       {:pbkdf2_elixir, "~> 1.2.1"},
       {:bamboo, "~> 1.4.0"},
       {:bamboo_sparkpost, "~> 1.1.3"},
@@ -60,10 +61,9 @@ defmodule FormDelegate.Mixfile do
 
       # dev, test
       {:ex_machina, "~> 2.4.0", only: :test},
-      {:credo, "~> 1.3.2", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.4.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0.0", only: [:dev, :test], runtime: false},
-      # @TODO: Fix sobelow compilation errors
-      # {:sobelow, "~> 0.8", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.8", only: [:dev, :test], runtime: false},
 
       # build
       {:distillery, "~> 2.1.1", runtime: false}

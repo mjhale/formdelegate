@@ -15,7 +15,7 @@ config :form_delegate, FormDelegateWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "GkaatwxvDjnh98SB762NswtanDoaBP0/cyeLPl0G/dUoHNKvd70FMXGSrJjH/y5q",
   render_errors: [view: FormDelegateWeb.ErrorView, accepts: ~w(json)],
-  pubsub: [name: FormDelegate.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub_server: FormDelegate.PubSub
 
 # Configures Elixir's Logger
 config :logger, :console,
