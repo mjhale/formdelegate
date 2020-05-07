@@ -4,30 +4,36 @@ defmodule FormDelegate.Messages.Message do
 
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
-  alias FormDelegate.Messages.Message
+  alias FormDelegate.Messages.{Message, FlaggedType}
 
   schema "messages" do
     field :content, :string
     field :sender, :string, null: false
-    field :spam_status, :string
+    field :flagged_at, :naive_datetime
     field :unknown_fields, :map
 
     belongs_to :form, Form, type: Ecto.UUID
     belongs_to :user, User
+    belongs_to :flagged_type, FlaggedType
 
     timestamps()
   end
 
-  @doc """
-  Builds a changeset based on the `struct` and `params`.
-  """
-  def changeset(%Message{} = message, attrs) do
+  @doc false
+  def changeset(%Message{} = message, attrs \\ %{}) do
     message
-    |> cast(attrs, [:content, :sender, :spam_status, :unknown_fields])
+    |> cast(attrs, [:content, :sender, :unknown_fields])
     |> validate_required_inclusion([:content, :sender, :unknown_fields])
   end
 
-  def validate_required_inclusion(changeset, fields) do
+  @doc false
+  def flag_message_changeset(%Message{} = message, attrs \\ %{}) do
+    message
+    |> cast(attrs, [:flagged_at])
+    |> put_assoc(:flagged_type, attrs[:flagged_type])
+  end
+
+  defp validate_required_inclusion(changeset, fields) do
     if Enum.any?(fields, &present?(changeset, &1)) do
       changeset
     else
@@ -35,7 +41,7 @@ defmodule FormDelegate.Messages.Message do
     end
   end
 
-  def present?(changeset, field) do
+  defp present?(changeset, field) do
     value = get_field(changeset, field)
     value && (value != "" && value != %{})
   end

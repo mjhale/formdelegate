@@ -31,11 +31,12 @@ defmodule FormDelegateWeb.MessageControllerTest do
         "data" => [
           %{
             "content" => message.content,
+            "flagged_at" => nil,
+            "flagged_type" => nil,
             "form" => nil,
             "id" => message.id,
             "inserted_at" => NaiveDateTime.to_iso8601(message.inserted_at),
             "sender" => message.sender,
-            "spam_status" => nil,
             "unknown_fields" => nil,
             "updated_at" => NaiveDateTime.to_iso8601(message.updated_at)
           }
@@ -60,11 +61,12 @@ defmodule FormDelegateWeb.MessageControllerTest do
       expected = %{
         "data" => %{
           "content" => message.content,
+          "flagged_at" => nil,
+          "flagged_type" => nil,
           "form" => nil,
           "id" => message.id,
           "inserted_at" => NaiveDateTime.to_iso8601(message.inserted_at),
           "sender" => message.sender,
-          "spam_status" => nil,
           "unknown_fields" => nil,
           "updated_at" => NaiveDateTime.to_iso8601(message.updated_at)
         }

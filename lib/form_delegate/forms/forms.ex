@@ -53,7 +53,8 @@ defmodule FormDelegate.Forms do
           {
             :form_integrations,
             :integration
-          }
+          },
+          :user
         ],
         where: f.id == ^id
     )

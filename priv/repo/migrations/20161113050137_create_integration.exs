@@ -3,20 +3,20 @@ defmodule FormDelegate.Repo.Migrations.CreateIntegration do
 
   def change do
     create table(:integrations) do
-      add :type, :string, null: false
+      add(:type, :string, null: false)
 
       timestamps()
     end
 
     create table(:form_integrations) do
-      add :form_id, references(:forms, type: :uuid)
-      add :integration_id, references(:integrations)
-      add :enabled, :boolean, default: false, null: false
-      add :settings, :map
+      add(:form_id, references(:forms, type: :uuid, on_delete: :delete_all), null: false)
+      add(:integration_id, references(:integrations, on_delete: :delete_all), null: false)
+      add(:enabled, :boolean, default: false, null: false)
+      add(:settings, :map)
 
       timestamps()
     end
 
-    create index(:form_integrations, [:form_id, :integration_id])
+    create(index(:form_integrations, [:form_id, :integration_id]))
   end
 end
