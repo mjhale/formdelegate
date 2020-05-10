@@ -42,28 +42,31 @@ defmodule FormDelegate.Mixfile do
       {:phoenix_pubsub, "~> 2.0.0"},
       {:ecto_sql, "~> 3.4.3"},
       {:phoenix_ecto, "~> 4.1.0"},
-      {:postgrex, "~> 0.15.3"},
+      {:postgrex, "~> 0.15.4"},
       {:phoenix_html, "~> 2.14.2"},
-      {:jason, "~> 1.2.0", override: true},
-      {:gettext, "~> 0.17.4"},
+      {:jason, "~> 1.2.1"},
+      {:gettext, "~> 0.18.0"},
       {:plug_cowboy, "~> 2.2.1"},
       {:guardian, "~> 2.1.1"},
       {:guardian_phoenix, "~> 2.0"},
       {:pbkdf2_elixir, "~> 1.2.1"},
-      {:bamboo, "~> 1.4.0"},
+      {:bamboo, "~> 1.5.0"},
       {:bamboo_sparkpost, "~> 1.1.3"},
       {:scrivener_ecto, "~> 2.3.0"},
       {:scrivener_headers, "~> 3.1.1"},
       {:cors_plug, "~> 2.0.2"},
-      {:rihanna, "~> 1.3.5"},
+      {:rihanna, "~> 2.1.1"},
       {:tesla, "~> 1.3.3"},
       {:hackney, "~> 1.15.2"},
+
+      # @TODO Remove ecto divergency override when scrivener_ecto updates
+      {:ecto, "~> 3.4.4", override: true},
 
       # dev, test
       {:ex_machina, "~> 2.4.0", only: :test},
       {:credo, "~> 1.4.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0.0", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.8", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.10.2", only: [:dev, :test], runtime: false},
 
       # build
       {:distillery, "~> 2.1.1", runtime: false}
