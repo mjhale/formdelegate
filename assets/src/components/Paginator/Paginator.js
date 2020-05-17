@@ -27,7 +27,10 @@ const Status = styled.li`
   line-height: 20px;
 `;
 
-const Paginator = ({ handlePageChange, limit, offset, total }) => {
+const Paginator = ({
+  handlePageChange,
+  paginationMetaData: { limit, offset, total },
+}) => {
   if (!total) return null;
 
   let currentPage = Math.ceil(offset / limit) || 1;
@@ -63,9 +66,11 @@ const Paginator = ({ handlePageChange, limit, offset, total }) => {
 
 Paginator.propTypes = {
   handlePageChange: PropTypes.func.isRequired,
-  limit: PropTypes.number.isRequired,
-  offset: PropTypes.number.isRequired,
-  total: PropTypes.number.isRequired,
+  paginationMetaData: PropTypes.shape({
+    limit: PropTypes.number.isRequired,
+    offset: PropTypes.number.isRequired,
+    total: PropTypes.number.isRequired,
+  }).isRequired,
 };
 
 export default Paginator;

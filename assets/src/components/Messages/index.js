@@ -1,3 +1,3 @@
-import Messages from './Messages';
+import MessagesContainer from './MessagesContainer';
 
-export default Messages;
+export default MessagesContainer;

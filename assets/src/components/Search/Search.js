@@ -28,6 +28,9 @@ let Search = ({ handleSearch, handleSubmit }) => {
 Search.propTypes = {
   handleSearch: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
+  location: PropTypes.shape({
+    search: PropTypes.string,
+  }).isRequired,
 };
 
 Search = reduxForm({

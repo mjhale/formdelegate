@@ -3,17 +3,23 @@ import { messageSchema, messageActivitySchema } from 'schema';
 
 // action type constants
 import {
+  MESSAGE_FAILURE,
+  MESSAGE_REQUEST,
+  MESSAGE_SUCCESS,
   MESSAGE_ACTIVITY_FAILURE,
   MESSAGE_ACTIVITY_REQUEST,
   MESSAGE_ACTIVITY_SUCCESS,
+  MESSAGE_MARK_HAM_FAILURE,
+  MESSAGE_MARK_HAM_REQUEST,
+  MESSAGE_MARK_HAM_SUCCESS,
+  MESSAGE_MARK_SPAM_FAILURE,
+  MESSAGE_MARK_SPAM_REQUEST,
+  MESSAGE_MARK_SPAM_SUCCESS,
   MESSAGE_SEARCH_RESULTS,
   MESSAGE_SEARCH_QUERY,
   MESSAGE_SEARCH_REQUEST,
   MESSAGE_SEARCH_SUCCESS,
   MESSAGE_SEARCH_FAILURE,
-  MESSAGE_FAILURE,
-  MESSAGE_REQUEST,
-  MESSAGE_SUCCESS,
   MESSAGES_FAILURE,
   MESSAGES_REQUEST,
   MESSAGES_PAGINATION,
@@ -174,5 +180,65 @@ function receiveMessagesPagination(limit, offset, total) {
     offset,
     total,
     type: MESSAGES_PAGINATION,
+  };
+}
+
+export function markMessageAsHam(messageId) {
+  return async (dispatch, getState) => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        authenticated: true,
+        config: {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          method: 'PUT',
+        },
+        endpoint: `/v1/messages/${messageId}/ham`,
+        schema: messageSchema,
+        types: [
+          MESSAGE_MARK_HAM_REQUEST,
+          MESSAGE_MARK_HAM_SUCCESS,
+          MESSAGE_MARK_HAM_FAILURE,
+        ],
+      },
+    });
+
+    if (actionResponse.error) {
+      throw new Error('Promise flow received action error', actionResponse);
+    }
+
+    return actionResponse;
+  };
+}
+
+export function markMessageAsSpam(messageId) {
+  return async (dispatch, getState) => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        authenticated: true,
+        config: {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          method: 'PUT',
+        },
+        endpoint: `/v1/messages/${messageId}/spam`,
+        schema: messageSchema,
+        types: [
+          MESSAGE_MARK_SPAM_REQUEST,
+          MESSAGE_MARK_SPAM_SUCCESS,
+          MESSAGE_MARK_SPAM_FAILURE,
+        ],
+      },
+    });
+
+    if (actionResponse.error) {
+      throw new Error('Promise flow received action error', actionResponse);
+    }
+
+    return actionResponse;
   };
 }
