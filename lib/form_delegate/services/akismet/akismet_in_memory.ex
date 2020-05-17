@@ -5,7 +5,7 @@ defmodule FormDelegate.Services.Akismet.InMemory do
   @behaviour Akismet
 
   @impl Akismet
-  def is_spam?(api_key, _conn, %Message{sender: sender}) do
+  def is_spam?(api_key, %Message{sender: sender}) do
     cond do
       api_key == "invalid" ->
         {:error, %Tesla.Env{body: "invalid"}}
@@ -16,6 +16,16 @@ defmodule FormDelegate.Services.Akismet.InMemory do
       true ->
         {:ok, false}
     end
+  end
+
+  @impl Akismet
+  def submit_ham(_api_key, _message = %Message{}) do
+    {:ok, true}
+  end
+
+  @impl Akismet
+  def submit_spam(_api_key, _message = %Message{}) do
+    {:ok, true}
   end
 
   @impl Akismet

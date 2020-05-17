@@ -15,15 +15,7 @@ defmodule FormDelegateWeb.MessageView do
 
   def render("message.json", %{message: message}) do
     %{
-      id: message.id,
-      form:
-        render_one(
-          message.form,
-          FormView,
-          "form.json"
-        ),
       content: message.content,
-      sender: message.sender,
       flagged_at: message.flagged_at,
       flagged_type:
         render_one(
@@ -31,6 +23,17 @@ defmodule FormDelegateWeb.MessageView do
           FlaggedTypeView,
           "flagged_type.json"
         ),
+      form:
+        render_one(
+          message.form,
+          FormView,
+          "form.json"
+        ),
+      id: message.id,
+      sender: message.sender,
+      sender_ip: message.sender_ip,
+      sender_referrer: message.sender_referrer,
+      sender_user_agent: message.sender_user_agent,
       unknown_fields: message.unknown_fields,
       inserted_at: message.inserted_at,
       updated_at: message.updated_at

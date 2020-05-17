@@ -9,14 +9,13 @@ defmodule FormDelegate.AkismetTest do
         sender: "akismet-guaranteed-spam@example.com"
       }
 
-      assert {:ok, true} = akismet_api().is_spam?("2525a0331863", %Plug.Conn{}, message)
+      assert {:ok, true} = akismet_api().is_spam?("2525a0331863", message)
     end
 
     test "Responds with error when provided an invalid API key" do
       message = %Message{}
 
-      assert {:error, %Tesla.Env{body: "invalid"}} =
-               akismet_api().is_spam?("invalid", %Plug.Conn{}, message)
+      assert {:error, %Tesla.Env{body: "invalid"}} = akismet_api().is_spam?("invalid", message)
     end
   end
 

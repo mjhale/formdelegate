@@ -83,6 +83,14 @@ defmodule FormDelegateWeb.Authorizer do
     end
   end
 
+  def authorize(:update_message_state, %User{} = current_user, %Message{} = message) do
+    if message.user_id == current_user.id do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
   def authorize(:show_user, %User{} = current_user, %User{} = user) do
     if user.id == current_user.id or current_user.is_admin do
       :ok

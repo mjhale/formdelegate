@@ -49,10 +49,18 @@ defmodule FormDelegateWeb.Router do
     resources "/forms", FormController, except: [:edit, :new]
     resources "/integrations", IntegrationController, except: [:create, :delete, :edit, :new]
 
-    # @TODO: Move to different namespace
+    # @TODO: Refactor and move to different namespace
     get "/messages/recent_activity", MessageController, :recent_activity
 
+    scope "/messages" do
+      patch "/:id/ham", MessageController, :ham, as: :message_ham
+      put "/:id/ham", MessageController, :ham, as: :message_ham
+      patch "/:id/spam", MessageController, :spam, as: :message_spam
+      put "/:id/spam", MessageController, :spam, as: :message_spam
+    end
+
     resources "/messages", MessageController, only: [:index, :show]
+
     resources "/users", UserController, except: [:create, :edit, :new]
   end
 end

@@ -16,10 +16,18 @@ defmodule FormDelegateWeb.RequestController do
   def create(conn, %{"id" => form_id} = params) do
     grouped_message_params = transform_params_to_message_map(params)
 
+    meta_params = %{
+      "sender_ip" => remote_addr(conn),
+      "sender_referrer" => Plug.Conn.get_req_header(conn, "referer") |> to_string(),
+      "sender_user_agent" => Plug.Conn.get_req_header(conn, "user-agent") |> to_string()
+    }
+
+    merged_params = Map.merge(grouped_message_params, meta_params)
+
     with %Form{} = form <- Forms.get_form!(form_id),
-         {:ok, %Message{} = message} <- Messages.create_message(form, grouped_message_params) do
+         {:ok, %Message{} = message} <- Messages.create_message(form, merged_params) do
       # @TODO: Allow user-specified Akismet API key per form
-      case akismet_api().is_spam?(System.get_env("AKISMET_API_KEY"), conn, message) do
+      case akismet_api().is_spam?(System.get_env("AKISMET_API_KEY"), message) do
         {:ok, false} ->
           Logger.info("FD: Integrations running. No spam detected by Akismet.")
           Rihanna.enqueue(FormDelegate.SubmissionQueueJob, [form, message])
@@ -51,6 +59,30 @@ defmodule FormDelegateWeb.RequestController do
     end
   end
 
+  defp akismet_api do
+    Application.get_env(:form_delegate, :akismet_api)
+  end
+
+  defp broadcast_message(%Message{} = message) do
+    %Message{user: %User{id: form_user_id}} = message
+
+    FormDelegateWeb.Endpoint.broadcast!(
+      "form_message:" <> to_string(form_user_id),
+      "new_msg",
+      Phoenix.View.render(FormDelegateWeb.MessageView, "show.json", message: message)
+    )
+  end
+
+  defp remote_addr(%Plug.Conn{remote_ip: remote_ip}) do
+    case :inet.ntoa(remote_ip) do
+      {:error, :einval} ->
+        to_string(remote_ip)
+
+      charlist ->
+        List.to_string(charlist)
+    end
+  end
+
   defp transform_params_to_message_map(params) do
     # @TODO: Allow users to map submitted form fields into sender/title/content
     potential_content_fields = ["message", "content", "body"]
@@ -59,7 +91,11 @@ defmodule FormDelegateWeb.RequestController do
 
     # Filter params into known and unknown groups based on potential field hits
     known_fields =
-      ["id"] ++ potential_sender_fields ++ potential_title_fields ++ potential_content_fields
+      ["id"] ++
+        ["sender_ip"] ++
+        ["sender_user_agent"] ++
+        ["sender_referrer"] ++
+        potential_sender_fields ++ potential_title_fields ++ potential_content_fields
 
     unknown_fields = Map.drop(params, known_fields)
 
@@ -75,19 +111,5 @@ defmodule FormDelegateWeb.RequestController do
       "title" => Enum.find_value(potential_title_fields, &Map.get(params, &1)),
       "unknown_fields" => unknown_fields
     }
-  end
-
-  defp broadcast_message(%Message{} = message) do
-    %Message{user: %User{id: form_user_id}} = message
-
-    FormDelegateWeb.Endpoint.broadcast!(
-      "form_message:" <> to_string(form_user_id),
-      "new_msg",
-      Phoenix.View.render(FormDelegateWeb.MessageView, "show.json", message: message)
-    )
-  end
-
-  defp akismet_api do
-    Application.get_env(:form_delegate, :akismet_api)
   end
 end

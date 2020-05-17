@@ -8,13 +8,19 @@ defmodule FormDelegate.Messages.Message do
 
   schema "messages" do
     field :content, :string
-    field :sender, :string, null: false
     field :flagged_at, :naive_datetime
+
+    field :sender, :string, null: false
+
+    field :sender_ip, :string
+    field :sender_referrer, :string
+    field :sender_user_agent, :string
+
     field :unknown_fields, :map
 
     belongs_to :form, Form, type: Ecto.UUID
     belongs_to :user, User
-    belongs_to :flagged_type, FlaggedType
+    belongs_to :flagged_type, FlaggedType, on_replace: :update
 
     timestamps()
   end
@@ -22,7 +28,14 @@ defmodule FormDelegate.Messages.Message do
   @doc false
   def changeset(%Message{} = message, attrs \\ %{}) do
     message
-    |> cast(attrs, [:content, :sender, :unknown_fields])
+    |> cast(attrs, [
+      :content,
+      :sender,
+      :sender_ip,
+      :sender_referrer,
+      :sender_user_agent,
+      :unknown_fields
+    ])
     |> validate_required_inclusion([:content, :sender, :unknown_fields])
   end
 
