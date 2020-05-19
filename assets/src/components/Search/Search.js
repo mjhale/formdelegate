@@ -34,7 +34,7 @@ Search.propTypes = {
 };
 
 Search = reduxForm({
-  form: 'messagesSearchForm',
+  form: 'submissionsSearchForm',
   destroyOnUnmount: false,
   enableReinitialize: true,
 })(Search);

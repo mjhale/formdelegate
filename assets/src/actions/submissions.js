@@ -1,48 +1,48 @@
 import { CALL_API } from 'middleware/api';
-import { messageSchema, messageActivitySchema } from 'schema';
+import { submissionSchema, submissionActivitySchema } from 'schema';
 
 // action type constants
 import {
-  MESSAGE_FAILURE,
-  MESSAGE_REQUEST,
-  MESSAGE_SUCCESS,
-  MESSAGE_ACTIVITY_FAILURE,
-  MESSAGE_ACTIVITY_REQUEST,
-  MESSAGE_ACTIVITY_SUCCESS,
-  MESSAGE_MARK_HAM_FAILURE,
-  MESSAGE_MARK_HAM_REQUEST,
-  MESSAGE_MARK_HAM_SUCCESS,
-  MESSAGE_MARK_SPAM_FAILURE,
-  MESSAGE_MARK_SPAM_REQUEST,
-  MESSAGE_MARK_SPAM_SUCCESS,
-  MESSAGE_SEARCH_RESULTS,
-  MESSAGE_SEARCH_QUERY,
-  MESSAGE_SEARCH_REQUEST,
-  MESSAGE_SEARCH_SUCCESS,
-  MESSAGE_SEARCH_FAILURE,
-  MESSAGES_FAILURE,
-  MESSAGES_REQUEST,
-  MESSAGES_PAGINATION,
-  MESSAGES_SUCCESS,
+  SUBMISSION_FAILURE,
+  SUBMISSION_REQUEST,
+  SUBMISSION_SUCCESS,
+  SUBMISSION_ACTIVITY_FAILURE,
+  SUBMISSION_ACTIVITY_REQUEST,
+  SUBMISSION_ACTIVITY_SUCCESS,
+  SUBMISSION_MARK_HAM_FAILURE,
+  SUBMISSION_MARK_HAM_REQUEST,
+  SUBMISSION_MARK_HAM_SUCCESS,
+  SUBMISSION_MARK_SPAM_FAILURE,
+  SUBMISSION_MARK_SPAM_REQUEST,
+  SUBMISSION_MARK_SPAM_SUCCESS,
+  SUBMISSION_SEARCH_RESULTS,
+  SUBMISSION_SEARCH_QUERY,
+  SUBMISSION_SEARCH_REQUEST,
+  SUBMISSION_SEARCH_SUCCESS,
+  SUBMISSION_SEARCH_FAILURE,
+  SUBMISSIONS_FAILURE,
+  SUBMISSIONS_REQUEST,
+  SUBMISSIONS_PAGINATION,
+  SUBMISSIONS_SUCCESS,
 } from 'constants/actionTypes';
 
-export function addMessage(payload) {
+export function addSubmission(payload) {
   return dispatch =>
     dispatch({
       isFetching: false,
       payload: payload,
-      type: MESSAGE_SUCCESS,
+      type: SUBMISSION_SUCCESS,
     });
 }
 
-export function fetchMessage(messageId) {
+export function fetchSubmission(submissionId) {
   return async dispatch => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        endpoint: `/v1/messages/${messageId}`,
-        schema: messageSchema,
-        types: [MESSAGE_REQUEST, MESSAGE_SUCCESS, MESSAGE_FAILURE],
+        endpoint: `/v1/submissions/${submissionId}`,
+        schema: submissionSchema,
+        types: [SUBMISSION_REQUEST, SUBMISSION_SUCCESS, SUBMISSION_FAILURE],
       },
     });
 
@@ -54,17 +54,17 @@ export function fetchMessage(messageId) {
   };
 }
 
-export function fetchMessageActivity() {
+export function fetchSubmissionActivity() {
   return async dispatch => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        endpoint: '/v1/messages/recent_activity',
-        schema: [messageActivitySchema],
+        endpoint: '/v1/submissions/recent_activity',
+        schema: [submissionActivitySchema],
         types: [
-          MESSAGE_ACTIVITY_REQUEST,
-          MESSAGE_ACTIVITY_SUCCESS,
-          MESSAGE_ACTIVITY_FAILURE,
+          SUBMISSION_ACTIVITY_REQUEST,
+          SUBMISSION_ACTIVITY_SUCCESS,
+          SUBMISSION_ACTIVITY_FAILURE,
         ],
       },
     });
@@ -77,25 +77,25 @@ export function fetchMessageActivity() {
   };
 }
 
-function messageSearchQuery(query, requestedPage) {
+function submissionSearchQuery(query, requestedPage) {
   return {
     requestedPage,
-    type: MESSAGE_SEARCH_QUERY,
+    type: SUBMISSION_SEARCH_QUERY,
     query: query || '',
   };
 }
 
-function messageSearchResults(payload, limit, offset, total) {
+function submissionSearchResults(payload, limit, offset, total) {
   return {
     limit,
     offset,
     payload,
     total,
-    type: MESSAGE_SEARCH_RESULTS,
+    type: SUBMISSION_SEARCH_RESULTS,
   };
 }
 
-export function messageSearchFetch(query, requestedPage) {
+export function submissionSearchFetch(query, requestedPage) {
   if (!query) query = '';
   if (!requestedPage) requestedPage = 1;
 
@@ -103,12 +103,12 @@ export function messageSearchFetch(query, requestedPage) {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        endpoint: `/v1/messages?query=${query}&page=${requestedPage}`,
-        schema: [messageSchema],
+        endpoint: `/v1/submissions?query=${query}&page=${requestedPage}`,
+        schema: [submissionSchema],
         types: [
-          MESSAGE_SEARCH_REQUEST,
-          MESSAGE_SEARCH_SUCCESS,
-          MESSAGE_SEARCH_FAILURE,
+          SUBMISSION_SEARCH_REQUEST,
+          SUBMISSION_SEARCH_SUCCESS,
+          SUBMISSION_SEARCH_FAILURE,
         ],
       },
     });
@@ -122,7 +122,7 @@ export function messageSearchFetch(query, requestedPage) {
     const total = Number(actionResponse.headers.get('total'));
 
     return dispatch(
-      messageSearchActions(
+      submissionSearchActions(
         actionResponse.payload,
         query,
         requestedPage,
@@ -134,7 +134,7 @@ export function messageSearchFetch(query, requestedPage) {
   };
 }
 
-function messageSearchActions(
+function submissionSearchActions(
   payload,
   query,
   requestedPage,
@@ -144,21 +144,21 @@ function messageSearchActions(
 ) {
   return dispatch =>
     Promise.all([
-      dispatch(messageSearchQuery(query, requestedPage)),
-      dispatch(messageSearchResults(payload, limit, offset, total)),
+      dispatch(submissionSearchQuery(query, requestedPage)),
+      dispatch(submissionSearchResults(payload, limit, offset, total)),
     ]);
 }
 
-export function fetchMessages(requestedPage) {
+export function fetchSubmissions(requestedPage) {
   if (!requestedPage) requestedPage = 1;
 
   return async dispatch => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        endpoint: `/v1/messages?page=${requestedPage}`,
-        schema: [messageSchema],
-        types: [MESSAGES_REQUEST, MESSAGES_SUCCESS, MESSAGES_FAILURE],
+        endpoint: `/v1/submissions?page=${requestedPage}`,
+        schema: [submissionSchema],
+        types: [SUBMISSIONS_REQUEST, SUBMISSIONS_SUCCESS, SUBMISSIONS_FAILURE],
       },
     });
 
@@ -170,20 +170,20 @@ export function fetchMessages(requestedPage) {
     const offset = (requestedPage - 1) * (limit + 1);
     const total = Number(actionResponse.headers.get('total'));
 
-    return dispatch(receiveMessagesPagination(limit, offset, total));
+    return dispatch(receiveSubmissionsPagination(limit, offset, total));
   };
 }
 
-function receiveMessagesPagination(limit, offset, total) {
+function receiveSubmissionsPagination(limit, offset, total) {
   return {
     limit,
     offset,
     total,
-    type: MESSAGES_PAGINATION,
+    type: SUBMISSIONS_PAGINATION,
   };
 }
 
-export function markMessageAsHam(messageId) {
+export function markSubmissionAsHam(submissionId) {
   return async (dispatch, getState) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
@@ -195,12 +195,12 @@ export function markMessageAsHam(messageId) {
           },
           method: 'PUT',
         },
-        endpoint: `/v1/messages/${messageId}/ham`,
-        schema: messageSchema,
+        endpoint: `/v1/submissions/${submissionId}/ham`,
+        schema: submissionSchema,
         types: [
-          MESSAGE_MARK_HAM_REQUEST,
-          MESSAGE_MARK_HAM_SUCCESS,
-          MESSAGE_MARK_HAM_FAILURE,
+          SUBMISSION_MARK_HAM_REQUEST,
+          SUBMISSION_MARK_HAM_SUCCESS,
+          SUBMISSION_MARK_HAM_FAILURE,
         ],
       },
     });
@@ -213,7 +213,7 @@ export function markMessageAsHam(messageId) {
   };
 }
 
-export function markMessageAsSpam(messageId) {
+export function markSubmissionAsSpam(submissionId) {
   return async (dispatch, getState) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
@@ -225,12 +225,12 @@ export function markMessageAsSpam(messageId) {
           },
           method: 'PUT',
         },
-        endpoint: `/v1/messages/${messageId}/spam`,
-        schema: messageSchema,
+        endpoint: `/v1/submissions/${submissionId}/spam`,
+        schema: submissionSchema,
         types: [
-          MESSAGE_MARK_SPAM_REQUEST,
-          MESSAGE_MARK_SPAM_SUCCESS,
-          MESSAGE_MARK_SPAM_FAILURE,
+          SUBMISSION_MARK_SPAM_REQUEST,
+          SUBMISSION_MARK_SPAM_SUCCESS,
+          SUBMISSION_MARK_SPAM_FAILURE,
         ],
       },
     });

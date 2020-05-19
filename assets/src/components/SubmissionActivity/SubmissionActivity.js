@@ -14,7 +14,7 @@ const Graph = styled.div`
   max-width: 750px;
 `;
 
-class MessageActivity extends React.Component {
+class SubmissionActivity extends React.Component {
   componentDidMount() {
     const { activity } = this.props;
     if (activity && activity.length > 0) this.drawChart();
@@ -55,9 +55,7 @@ class MessageActivity extends React.Component {
     const parseTime = d3.timeParse('%Y-%m-%d');
     const dateRange = d3.timeDay.range(parseTime(startDay), parseTime(endDay));
     const monthRange = d3.timeMonths(
-      moment(firstDate)
-        .startOf('month')
-        .toDate(),
+      moment(firstDate).startOf('month').toDate(),
       lastDate
     );
 
@@ -93,7 +91,7 @@ class MessageActivity extends React.Component {
 
         return formatColor(currentDayRectCount);
       })
-      .attr('x', function(d, i) {
+      .attr('x', function (d, i) {
         const cellDate = moment(d);
         const result =
           cellDate.week() -
@@ -102,7 +100,7 @@ class MessageActivity extends React.Component {
             (cellDate.weekYear() - firstDate.weekYear());
         return result * (cellSize + cellSize * 0.15);
       })
-      .attr('y', function(d, i) {
+      .attr('y', function (d, i) {
         return 20 + d.getDay() * (cellSize + cellSize * 0.15);
       });
 
@@ -114,12 +112,12 @@ class MessageActivity extends React.Component {
       .append('text')
       .attr('class', 'month-name')
       .attr('font-size', 10)
-      .text(function(d) {
+      .text(function (d) {
         return locale.months[d.getMonth()];
       })
-      .attr('x', function(d, i) {
+      .attr('x', function (d, i) {
         let matchIndex = 0;
-        dateRange.find(function(element, index) {
+        dateRange.find(function (element, index) {
           matchIndex = index;
           return (
             moment(d).isSame(element, 'month') &&
@@ -148,12 +146,12 @@ class MessageActivity extends React.Component {
     let dateLUT = {};
 
     for (const object of data) {
-      if (object['message_count'] > maxCount) {
-        maxCount = object['message_count'];
+      if (object['submission_count'] > maxCount) {
+        maxCount = object['submission_count'];
       }
 
       dateLUT[object['day']] = {
-        count: object['message_count'],
+        count: object['submission_count'],
       };
     }
 
@@ -166,7 +164,7 @@ class MessageActivity extends React.Component {
 
   render() {
     return (
-      <Card header="Message Activity Graph">
+      <Card header="Submission Activity Graph">
         <GraphContainer>
           <Graph className="activity-graph" />
         </GraphContainer>
@@ -175,4 +173,4 @@ class MessageActivity extends React.Component {
   }
 }
 
-export default MessageActivity;
+export default SubmissionActivity;

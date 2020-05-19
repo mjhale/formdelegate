@@ -12,7 +12,7 @@ const AuthenticatedNav = ({ isAdmin, isFetching, onClick }) => {
   return (
     <NavContainer onClick={onClick}>
       <NavItem to="/dashboard">dashboard</NavItem>
-      <NavItem to="/messages">messages</NavItem>
+      <NavItem to="/submissions">submissions</NavItem>
       <NavItem to="/forms">forms</NavItem>
       <NavItem to="/settings">settings</NavItem>
       <NavItem to="/support">support</NavItem>

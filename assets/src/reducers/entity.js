@@ -8,7 +8,7 @@ const entity = (
     form_integrations: {},
     forms: {},
     integrations: {},
-    messages: {},
+    submissions: {},
   },
   action
 ) => {

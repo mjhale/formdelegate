@@ -12,16 +12,17 @@ const getIntegrations = state => state.entities.integrations;
 const getIntegrationId = (_state, props) =>
   parseInt(props.match.params.integrationId, 10);
 const getIntegrationIds = state => state.integrations.allIds;
-const getMessageActivities = state => state.entities.message_activity;
-const getMessageActivityIds = state => state.messages.messageActivityIds;
-const getMessageIds = state => state.messages.visibleIds;
-const getMessageId = (_state, props) => props.match.params.messageId;
-const getMessages = state => state.entities.messages;
+const getSubmissionActivities = state => state.entities.submission_activity;
+const getSubmissionActivityIds = state =>
+  state.submissions.submissionActivityIds;
+const getSubmissionIds = state => state.submissions.visibleIds;
+const getSubmissionId = (_state, props) => props.match.params.submissionId;
+const getSubmissions = state => state.entities.submissions;
 
 export const getUser = createSelector(
   [getUsers, getUserId],
   (users, userId) => {
-    return find(users, function(object) {
+    return find(users, function (object) {
       return object.id === userId;
     });
   }
@@ -30,7 +31,7 @@ export const getUser = createSelector(
 export const getCurrentUser = createSelector(
   [getUsers, getCurrentUserId],
   (users, currentUserId) => {
-    return find(users, function(object) {
+    return find(users, function (object) {
       return object.id === currentUserId;
     });
   }
@@ -39,7 +40,7 @@ export const getCurrentUser = createSelector(
 export const getForm = createSelector(
   [getForms, getFormId],
   (forms, formId) => {
-    return find(forms, function(object) {
+    return find(forms, function (object) {
       return object.id === formId;
     });
   }
@@ -48,25 +49,25 @@ export const getForm = createSelector(
 export const getIntegration = createSelector(
   [getIntegrations, getIntegrationId],
   (integrations, integrationId) => {
-    return find(integrations, function(object) {
+    return find(integrations, function (object) {
       return object.id === integrationId;
     });
   }
 );
 
-export const getMessage = createSelector(
-  [getMessages, getMessageId],
-  (messages, messageId) => {
-    return find(messages, function(object) {
-      return object.id === messageId;
+export const getSubmission = createSelector(
+  [getSubmissions, getSubmissionId],
+  (submissions, submissionId) => {
+    return find(submissions, function (object) {
+      return object.id === submissionId;
     });
   }
 );
 
-export const getMessageActivity = createSelector(
-  [getMessageActivities, getMessageActivityIds],
-  (messageActivity, allIds) => {
-    return allIds.map(id => messageActivity[id]);
+export const getSubmissionActivity = createSelector(
+  [getSubmissionActivities, getSubmissionActivityIds],
+  (submissionActivity, allIds) => {
+    return allIds.map(id => submissionActivity[id]);
   }
 );
 
@@ -91,16 +92,16 @@ export const getOrderedIntegrations = createSelector(
   }
 );
 
-const getOrderedMessages = createSelector(
-  [getMessages, getMessageIds],
-  (messages, messageIds) => {
-    return messageIds.map(id => messages[id]);
+const getOrderedSubmissions = createSelector(
+  [getSubmissions, getSubmissionIds],
+  (submissions, submissionIds) => {
+    return submissionIds.map(id => submissions[id]);
   }
 );
 
-export const getVisibleMessages = createSelector(
-  [getOrderedMessages],
-  orderedMessages => {
-    return orderedMessages;
+export const getVisibleSubmissions = createSelector(
+  [getOrderedSubmissions],
+  orderedSubmissions => {
+    return orderedSubmissions;
   }
 );

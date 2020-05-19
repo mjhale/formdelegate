@@ -12,9 +12,9 @@ export const formSchema = new schema.Entity('forms', {
   integrations: [integrationSchema],
 });
 
-export const messageSchema = new schema.Entity('messages');
-export const messageActivitySchema = new schema.Entity(
-  'message_activity',
+export const submissionSchema = new schema.Entity('submissions');
+export const submissionActivitySchema = new schema.Entity(
+  'submission_activity',
   {},
   {
     idAttribute: 'day',

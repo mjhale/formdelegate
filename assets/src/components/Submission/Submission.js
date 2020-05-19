@@ -14,7 +14,7 @@ const Cell = styled.div`
   padding: 0.5rem;
 `;
 
-const MessageSelectCell = styled.div`
+const SubmissionSelectCell = styled.div`
   text-align: center;
   width: 5%;
 `;
@@ -41,7 +41,7 @@ const DetailHeader = styled.div`
   margin-bottom: 0.25rem;
 `;
 
-const FlaggedMessage = styled.div`
+const FlaggedSubmission = styled.div`
   background-color: #e49996;
   border-radius: 0.3rem;
   color: #480907;
@@ -52,7 +52,7 @@ const FlaggedMessage = styled.div`
   padding: 0.25em 0.75em;
 `;
 
-const MessageCell = styled(Cell)`
+const SubmissionCell = styled(Cell)`
   display: none;
 
   ${media.md`
@@ -64,9 +64,9 @@ const MessageCell = styled(Cell)`
   `};
 `;
 
-const MessageDetails = styled.div``;
+const SubmissionDetails = styled.div``;
 
-const MessagePreviewCells = styled.div`
+const SubmissionPreviewCells = styled.div`
   align-items: center;
   box-shadow: inset 0 -1px 0 0 ${theme.offWhite};
   color: ${theme.mineBlack};
@@ -78,7 +78,7 @@ const MessagePreviewCells = styled.div`
   width: 100%;
 `;
 
-const MessagePreview = styled.div`
+const SubmissionPreview = styled.div`
   align-items: center;
   display: flex;
   flex-flow: row nowrap;
@@ -99,14 +99,14 @@ const SenderCell = styled(Cell)`
   `};
 `;
 
-const Message = ({
-  handleSelectMessageChange,
+const Submission = ({
+  handleSelectSubmissionChange,
   isSelected,
-  message: {
+  submission: {
     content,
     flagged_at,
     form,
-    id: messageId,
+    id: submissionId,
     inserted_at,
     sender,
     unknown_fields,
@@ -123,38 +123,38 @@ const Message = ({
     setDateInsertedFromNow(latestFromNowDate);
   }, 60000);
 
-  const handleMessagePreviewToggle = evt => {
+  const handleSubmissionPreviewToggle = evt => {
     setIsPreviewExpanded(!isPreviewExpanded);
   };
 
   return (
     <React.Fragment>
-      <MessagePreview>
-        <MessageSelectCell>
+      <SubmissionPreview>
+        <SubmissionSelectCell>
           <input
             checked={isSelected}
-            data-message-id={messageId}
-            onChange={handleSelectMessageChange}
+            data-submission-id={submissionId}
+            onChange={handleSelectSubmissionChange}
             type="checkbox"
           />
-        </MessageSelectCell>
-        <MessagePreviewCells onClick={handleMessagePreviewToggle}>
+        </SubmissionSelectCell>
+        <SubmissionPreviewCells onClick={handleSubmissionPreviewToggle}>
           <SenderCell>
             {sender && sender.length > 25
               ? `${sender.substring(0, 25)}...`
               : sender}
           </SenderCell>
-          <MessageCell>
-            {flagged_at && <FlaggedMessage>Spam</FlaggedMessage>}
+          <SubmissionCell>
+            {flagged_at && <FlaggedSubmission>Spam</FlaggedSubmission>}
             {content && content.length > 50
               ? `${content.substring(0, 50)}...`
               : content}
-          </MessageCell>
+          </SubmissionCell>
           <DateCell>{dateInsertedFromNow}</DateCell>
-        </MessagePreviewCells>
-      </MessagePreview>
+        </SubmissionPreviewCells>
+      </SubmissionPreview>
       {isPreviewExpanded && (
-        <MessageDetails>
+        <SubmissionDetails>
           <DetailGroup>
             <DetailHeader>Form</DetailHeader>
             <DetailBody>{form.form}</DetailBody>
@@ -168,46 +168,47 @@ const Message = ({
             <DetailBody>{inserted_at}</DetailBody>
           </DetailGroup>
           <DetailGroup>
-            <DetailHeader>Message</DetailHeader>
+            <DetailHeader>Body</DetailHeader>
             <DetailBody>{content}</DetailBody>
           </DetailGroup>
-          {unknown_fields.length > 0 &&
+          {unknown_fields &&
+            Object.keys(unknown_fields).length > 0 &&
             Object.keys(unknown_fields).map((key, index) => {
               if (typeof unknown_fields[key] !== 'string') {
                 return (
                   <Flash type="error">
-                    Unable to load message field(s) which aren't strings.
+                    Unable to load submission field(s) which aren't strings.
                   </Flash>
                 );
               }
 
               return (
                 <DetailGroup key={index}>
-                  <DetailHeader>Field</DetailHeader>{' '}
+                  <DetailHeader>Field: {key}</DetailHeader>{' '}
                   <DetailBody>{unknown_fields[key]}</DetailBody>
                 </DetailGroup>
               );
             })}
-        </MessageDetails>
+        </SubmissionDetails>
       )}
     </React.Fragment>
   );
 };
 
-Message.propTypes = {
-  handleSelectMessageChange: PropTypes.func.isRequired,
+Submission.propTypes = {
+  handleSelectSubmissionChange: PropTypes.func.isRequired,
   isSelected: PropTypes.bool.isRequired,
-  message: PropTypes.shape({
+  submission: PropTypes.shape({
     content: PropTypes.string,
     flagged_at: PropTypes.string,
     form: PropTypes.shape({
       form: PropTypes.string.isRequired,
     }).isRequired,
-    messageId: PropTypes.number.isRequired,
+    id: PropTypes.number.isRequired,
     inserted_at: PropTypes.string.isRequired,
     sender: PropTypes.string.isRequired,
     unknown_fields: PropTypes.object,
   }).isRequired,
 };
 
-export default Message;
+export default Submission;

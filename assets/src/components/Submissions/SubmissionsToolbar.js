@@ -38,7 +38,7 @@ const SearchListItem = styled.li`
   }
 `;
 
-const MessagesToolbar = ({
+const SubmissionsToolbar = ({
   handleMarkAsHam,
   handleMarkAsSpam,
   handlePageChange,
@@ -69,7 +69,7 @@ const MessagesToolbar = ({
   );
 };
 
-MessagesToolbar.propTypes = {
+SubmissionsToolbar.propTypes = {
   handleMarkAsSpam: PropTypes.func.isRequired,
   handlePageChange: PropTypes.func.isRequired,
   handleSearch: PropTypes.func.isRequired,
@@ -83,4 +83,4 @@ MessagesToolbar.propTypes = {
   }).isRequired,
 };
 
-export default MessagesToolbar;
+export default SubmissionsToolbar;

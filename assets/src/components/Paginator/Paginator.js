@@ -54,7 +54,7 @@ const Paginator = ({
       </li>
       <li>
         <Button
-          disabled={itemIndexCeiling >= total ? 'disabled' : false}
+          disabled={itemIndexCeiling >= total ? true : false}
           onClick={evt => handlePageChange(currentPage + 1, evt)}
         >
           {'>'}

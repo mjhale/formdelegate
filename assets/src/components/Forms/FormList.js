@@ -74,9 +74,9 @@ const FormSimpleView = ({ form, onDeleteClick }) => {
     <Card header={form.form}>
       <FormAddress>
         <CopyToClipboard
-          text={`https://api.formdelegate.com/v1/requests/${form.id}`}
+          text={`https://api.formdelegate.com/v1/submissions/${form.id}`}
         >
-          <span>{`https://api.formdelegate.com/v1/requests/${form.id}`}</span>
+          <span>{`https://api.formdelegate.com/v1/submissions/${form.id}`}</span>
         </CopyToClipboard>
       </FormAddress>
       <FormActions>
@@ -84,8 +84,8 @@ const FormSimpleView = ({ form, onDeleteClick }) => {
           <FormActionButton href={`/forms/${form.id}/edit`}>
             Edit Form
           </FormActionButton>
-          <FormActionButton href={`/messages?search=${form.form}`}>
-            View Messages
+          <FormActionButton href={`/submissions?search=${form.form}`}>
+            View Submissions
           </FormActionButton>
         </FormActionGroup>
         <FormActionDelete>

@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { fetchMessageActivity } from 'actions/messages';
-import { getCurrentUser, getMessageActivity } from 'selectors';
+import { fetchSubmissionActivity } from 'actions/submissions';
+import { getCurrentUser, getSubmissionActivity } from 'selectors';
 
 import Card from 'components/Card';
 import Flash from 'components/Flash';
-import MessageActivity from 'components/MessageActivity';
+import SubmissionActivity from 'components/SubmissionActivity';
 
 const UnverifiedAlert = () => (
   <Flash type="alert">Please verify your e-mail address.</Flash>
@@ -15,20 +15,20 @@ const UnverifiedAlert = () => (
 
 class DashboardContainer extends React.Component {
   static propTypes = {
-    fetchMessageActivity: PropTypes.func.isRequired,
+    fetchSubmissionActivity: PropTypes.func.isRequired,
     isFetching: PropTypes.bool.isRequired,
-    messageActivity: PropTypes.array,
+    submissionActivity: PropTypes.array,
     user: PropTypes.object,
   };
 
   componentDidMount() {
-    this.props.fetchMessageActivity();
+    this.props.fetchSubmissionActivity();
   }
 
   render() {
-    const { isFetching, messageActivity, user } = this.props;
+    const { isFetching, submissionActivity, user } = this.props;
 
-    if (isFetching || !messageActivity || !user) return null;
+    if (isFetching || !submissionActivity || !user) return null;
 
     return (
       <React.Fragment>
@@ -36,7 +36,7 @@ class DashboardContainer extends React.Component {
 
         <h1>{user.name}'s Dashboard</h1>
 
-        <MessageActivity activity={messageActivity} />
+        <SubmissionActivity activity={submissionActivity} />
 
         <Card header="Recent Updates">Coming soon</Card>
         <Card header="Feedback">Coming soon</Card>
@@ -47,15 +47,12 @@ class DashboardContainer extends React.Component {
 
 const mapStateToProps = state => ({
   isFetching: state.users.isFetching,
-  messageActivity: getMessageActivity(state),
+  submissionActivity: getSubmissionActivity(state),
   user: getCurrentUser(state),
 });
 
 const mapDispatchToProps = {
-  fetchMessageActivity,
+  fetchSubmissionActivity,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DashboardContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(DashboardContainer);

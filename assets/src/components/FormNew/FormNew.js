@@ -16,11 +16,10 @@ import FormIntegrationList from 'components/FormIntegrations/IntegrationList';
 class FormNewContainer extends React.Component {
   static propTypes = {
     createForm: PropTypes.func.isRequired,
+    fetchIntegrations: PropTypes.func.isRequired,
     history: PropTypes.shape({
       push: PropTypes.func.isRequired,
     }).isRequired,
-    fetchIntegrations: PropTypes.func.isRequired,
-    message: PropTypes.object,
   };
 
   handleFormSubmission = form => {
@@ -74,8 +73,5 @@ FormNewContainer = reduxForm({
 })(FormNewContainer);
 
 export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(FormNewContainer)
+  connect(mapStateToProps, mapDispatchToProps)(FormNewContainer)
 );

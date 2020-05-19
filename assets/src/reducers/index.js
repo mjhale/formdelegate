@@ -7,7 +7,7 @@ import authenticationReducer from 'reducers/authentication';
 import entityReducer from 'reducers/entity';
 import formReducer from 'reducers/form';
 import integrationReducer from 'reducers/integration';
-import messageReducer from 'reducers/message';
+import submissionReducer from 'reducers/submission';
 import notificationReducer from 'reducers/notification';
 import { breakpoints } from 'utils/style';
 
@@ -17,7 +17,7 @@ const reducers = {
   entities: entityReducer,
   forms: formReducer,
   integrations: integrationReducer,
-  messages: messageReducer,
+  submissions: submissionReducer,
   notifications: notificationReducer,
 
   browser: createResponsiveStateReducer(

@@ -2,10 +2,10 @@ import { normalize } from 'normalizr';
 import { Socket } from 'phoenix';
 
 import { getCurrentUserId } from 'utils';
-import { messageSchema } from 'schema';
+import { submissionSchema } from 'schema';
 
-// @TODO: Add handler for message updates (e.g., flagged by spam by Akismet response)
-export const messageListener = addMessageDispatcher => {
+// @TODO: Add handler for submission updates (e.g., flagged by spam by Akismet response)
+export const submissionListener = addSubmissionDispatcher => {
   const currentUserToken = localStorage.getItem('fd_token');
   const currentUserId = getCurrentUserId(currentUserToken);
 
@@ -21,11 +21,11 @@ export const messageListener = addMessageDispatcher => {
 
   socket.connect();
 
-  let channel = socket.channel(`form_message:${currentUserId}`, {});
+  let channel = socket.channel(`form_submission:${currentUserId}`, {});
 
   channel.join();
 
   channel.on('new_msg', payload => {
-    addMessageDispatcher(normalize(payload.data, messageSchema));
+    addSubmissionDispatcher(normalize(payload.data, submissionSchema));
   });
 };

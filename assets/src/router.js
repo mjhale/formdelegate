@@ -15,12 +15,12 @@ import Forms from 'components/Forms';
 import InvalidRoute from 'components/InvalidRoute';
 import Login from 'components/Auth/Login';
 import Logout from 'components/Auth/Logout';
-import Message from 'components/Message';
-import Messages from 'components/Messages';
 import Pricing from 'components/Pricing';
 import RequestFailure from 'components/Request/Failure';
 import RequestSuccess from 'components/Request/Success';
 import Register from 'components/Auth/Register';
+import Submission from 'components/Submission';
+import Submissions from 'components/Submissions';
 import Support from 'components/Support';
 import UserSettings from 'components/User/Settings';
 import requireAuth from 'components/Auth/RequireAuth';
@@ -64,15 +64,15 @@ export const Routes = props => (
     />
     <AppRoute exact path="/login" component={Login} layout={AuthLayout} />
     <AppRoute exact path="/logout" component={Logout} />
-    <AppRoute exact path="/messages" component={requireAuth(Messages)} />
-    <AppRoute
-      exact
-      path="/messages/:messageId"
-      component={requireAuth(Message)}
-    />
     <AppRoute exact path="/pricing" component={Pricing} />
     <AppRoute exact path="/register" component={Register} />
     <AppRoute exact path="/settings" component={UserSettings} />
+    <AppRoute exact path="/submissions" component={requireAuth(Submissions)} />
+    <AppRoute
+      exact
+      path="/submissions/:submissionId"
+      component={requireAuth(Submission)}
+    />
     <AppRoute exact path="/success" component={RequestSuccess} />
     <AppRoute exact path="/support" component={Support} />
     <AppRoute path="/admin" component={requireAuth(Admin)} />

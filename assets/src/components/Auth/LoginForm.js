@@ -55,7 +55,7 @@ const LoginForm = props => {
         />
         <LoginButton
           autoComplete="off"
-          disabled={submitting | pristine}
+          disabled={submitting || pristine}
           tabIndex="0"
           type="submit"
         >

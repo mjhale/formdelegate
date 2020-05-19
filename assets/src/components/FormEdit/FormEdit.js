@@ -111,9 +111,9 @@ class FormEdit extends React.Component {
             <Field
               component={renderField}
               disabled={true}
-              label="Total Messages"
-              name="message_count"
-              placeholder="Total Messages"
+              label="Total Submissions"
+              name="submission_count"
+              placeholder="Total Submissions"
               type="text"
             />
 
@@ -157,7 +157,4 @@ FormEdit = reduxForm({
   form: 'formForm',
 })(FormEdit);
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(FormEdit);
+export default connect(mapStateToProps, mapDispatchToProps)(FormEdit);
