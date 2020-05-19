@@ -21,7 +21,7 @@ defmodule FormDelegateWeb.FormView do
           "form_integration.json"
         ),
       host: form.host,
-      message_count: form.message_count,
+      submission_count: form.submission_count,
       verified: form.verified,
       inserted_at: form.inserted_at,
       updated_at: form.updated_at

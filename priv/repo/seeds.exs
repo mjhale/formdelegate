@@ -7,11 +7,11 @@ alias FormDelegate.Repo
 alias FormDelegate.Accounts.User
 alias FormDelegate.{Forms, Forms.Form}
 alias FormDelegate.Integrations.Integration
-alias FormDelegate.Messages.Message
+alias FormDelegate.Submissions.Submission
 
 # Scrub prior data before seeding
 Repo.delete_all(User)
-Repo.delete_all(Message)
+Repo.delete_all(Submission)
 Repo.delete_all(Form)
 
 # Seed Users
@@ -41,7 +41,7 @@ Repo.insert!(%Form{
   user: admin_user,
   verified: true,
   # pre-set the counter cache
-  message_count: 2
+  submission_count: 2
 })
 
 admin_contact_form = Repo.get_by!(Form, form: "Contact Form")
@@ -51,7 +51,7 @@ Repo.insert!(%Form{
   user: admin_user,
   verified: true,
   # pre-set the counter cache
-  message_count: 1
+  submission_count: 1
 })
 
 admin_error_form = Repo.get_by!(Form, form: "Error Form")
@@ -95,29 +95,29 @@ Repo.insert!(%Forms.Integration{
   }
 })
 
-# Seed Messages
-Repo.insert!(%Message{
+# Seed Submissions
+Repo.insert!(%Submission{
   content: "We need more tests!",
   user: admin_user,
   form: admin_contact_form,
   sender: "Anonymous"
 })
 
-Repo.insert!(%Message{
+Repo.insert!(%Submission{
   content: "There's a bug in some code.",
   user: admin_user,
   form: admin_error_form,
   sender: "Merk"
 })
 
-Repo.insert!(%Message{
+Repo.insert!(%Submission{
   content: "And also better architecture.",
   user: admin_user,
   form: admin_contact_form,
   sender: "Anonymous"
 })
 
-Repo.insert!(%Message{
+Repo.insert!(%Submission{
   content: "Let's meet at 6:30 pm at the coffee shop.",
   user: user,
   form: user_form,

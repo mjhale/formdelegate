@@ -1,12 +1,12 @@
-defmodule FormDelegate.Messages.Message do
+defmodule FormDelegate.Submissions.Submission do
   use Ecto.Schema
   import Ecto.Changeset
 
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
-  alias FormDelegate.Messages.{Message, FlaggedType}
+  alias FormDelegate.Submissions.{Submission, FlaggedType}
 
-  schema "messages" do
+  schema "submissions" do
     field :content, :string
     field :flagged_at, :naive_datetime
 
@@ -26,8 +26,8 @@ defmodule FormDelegate.Messages.Message do
   end
 
   @doc false
-  def changeset(%Message{} = message, attrs \\ %{}) do
-    message
+  def changeset(%Submission{} = submission, attrs \\ %{}) do
+    submission
     |> cast(attrs, [
       :content,
       :sender,
@@ -40,8 +40,8 @@ defmodule FormDelegate.Messages.Message do
   end
 
   @doc false
-  def flag_message_changeset(%Message{} = message, attrs \\ %{}) do
-    message
+  def flag_submission_changeset(%Submission{} = submission, attrs \\ %{}) do
+    submission
     |> cast(attrs, [:flagged_at])
     |> put_assoc(:flagged_type, attrs[:flagged_type])
   end

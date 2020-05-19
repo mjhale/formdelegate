@@ -3,7 +3,7 @@ defmodule FormDelegate.EmailTest do
 
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
-  alias FormDelegate.Messages.Message
+  alias FormDelegate.Submissions.Submission
 
   test "send_email/2" do
     user = %User{
@@ -17,7 +17,7 @@ defmodule FormDelegate.EmailTest do
       verified: true
     }
 
-    message = %Message{
+    submission = %Submission{
       content: "Are there any pricing discounts for schools?",
       user: user,
       form: form,
@@ -25,7 +25,7 @@ defmodule FormDelegate.EmailTest do
       unknown_fields: %{}
     }
 
-    email = FormDelegate.Services.Email.send_email(user, message)
+    email = FormDelegate.Services.Email.send_email(user, submission)
 
     assert email.to == [nil: user.email]
     assert email.from == {"Form Delegate", "no-reply@formdelegate.com"}

@@ -53,7 +53,7 @@ defmodule FormDelegateWeb.IntegrationControllerTest do
     end
 
     @tag :as_inserted_user
-    test "Responds with a message indicating integration not found", %{conn: conn, jwt: jwt} do
+    test "Responds with a submission indicating integration not found", %{conn: conn, jwt: jwt} do
       assert_error_sent :not_found, fn ->
         conn
         |> put_req_header("authorization", "bearer: " <> jwt)

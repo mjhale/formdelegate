@@ -39,7 +39,7 @@ defmodule FormDelegateWeb.FormControllerTest do
             "host" => nil,
             "id" => form.id,
             "inserted_at" => NaiveDateTime.to_iso8601(form.inserted_at),
-            "message_count" => 0,
+            "submission_count" => 0,
             "updated_at" => NaiveDateTime.to_iso8601(form.updated_at),
             "verified" => false
           }
@@ -64,7 +64,7 @@ defmodule FormDelegateWeb.FormControllerTest do
 
       assert response["data"]["form"] == "Contact Form"
       assert response["data"]["host"] == nil
-      assert response["data"]["message_count"] == 0
+      assert response["data"]["submission_count"] == 0
       assert response["data"]["verified"] == false
     end
 
@@ -107,7 +107,7 @@ defmodule FormDelegateWeb.FormControllerTest do
           "host" => nil,
           "id" => form.id,
           "inserted_at" => NaiveDateTime.to_iso8601(form.inserted_at),
-          "message_count" => 0,
+          "submission_count" => 0,
           "updated_at" => NaiveDateTime.to_iso8601(form.updated_at),
           "verified" => false
         }
@@ -146,7 +146,7 @@ defmodule FormDelegateWeb.FormControllerTest do
 
       assert response["data"]["form"] == "Report Form"
       assert response["data"]["host"] == "example.com"
-      assert response["data"]["message_count"] == 0
+      assert response["data"]["submission_count"] == 0
       assert response["data"]["verified"] == false
     end
 
@@ -216,7 +216,7 @@ defmodule FormDelegateWeb.FormControllerTest do
           "host" => nil,
           "id" => user_form.id,
           "inserted_at" => NaiveDateTime.to_iso8601(user_form.inserted_at),
-          "message_count" => 0,
+          "submission_count" => 0,
           "updated_at" => NaiveDateTime.to_iso8601(user_form.updated_at),
           "verified" => false
         }

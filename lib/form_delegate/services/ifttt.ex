@@ -1,7 +1,7 @@
 defmodule FormDelegate.Services.Ifttt do
   require Logger
 
-  def send_request(_user, _message) do
-    Logger.debug("Ifttt request")
+  def send_submission(_user, _submission) do
+    Logger.debug("Ifttt submission")
   end
 end

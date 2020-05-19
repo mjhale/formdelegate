@@ -4,7 +4,7 @@ defmodule FormDelegateWeb.UserSocket do
   ## Channels
   # channel "room:*", FormDelegate.RoomChannel
 
-  channel "form_message:*", FormDelegateWeb.FormMessageChannel
+  channel "form_submission:*", FormDelegateWeb.FormSubmissionChannel
 
   ## Transports
   # transport :websocket, Phoenix.Transports.WebSocket

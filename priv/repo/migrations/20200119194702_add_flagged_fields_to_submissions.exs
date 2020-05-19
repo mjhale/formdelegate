@@ -1,4 +1,4 @@
-defmodule FormDelegate.Repo.Migrations.AddFlaggedFieldsToMessages do
+defmodule FormDelegate.Repo.Migrations.AddFlaggedFieldsToSubmissions do
   use Ecto.Migration
 
   def change do
@@ -9,12 +9,12 @@ defmodule FormDelegate.Repo.Migrations.AddFlaggedFieldsToMessages do
       timestamps()
     end
 
-    alter table("messages") do
+    alter table("submissions") do
       add(:flagged_at, :naive_datetime)
       add(:flagged_type_id, references(:flagged_types))
     end
 
     create(unique_index(:flagged_types, [:type]))
-    create(index(:messages, [:flagged_type_id]))
+    create(index(:submissions, [:flagged_type_id]))
   end
 end

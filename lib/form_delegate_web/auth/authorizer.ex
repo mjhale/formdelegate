@@ -1,7 +1,7 @@
 defmodule FormDelegateWeb.Authorizer do
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
-  alias FormDelegate.Messages.Message
+  alias FormDelegate.Submissions.Submission
 
   def authorize(:create_form, %User{} = _current_user) do
     :ok
@@ -27,11 +27,11 @@ defmodule FormDelegateWeb.Authorizer do
     :ok
   end
 
-  def authorize(:show_recent_message_activity, %User{} = _current_user) do
+  def authorize(:show_recent_submission_activity, %User{} = _current_user) do
     :ok
   end
 
-  def authorize(:show_user_messages, %User{} = _current_user) do
+  def authorize(:show_user_submissions, %User{} = _current_user) do
     :ok
   end
 
@@ -75,16 +75,16 @@ defmodule FormDelegateWeb.Authorizer do
     end
   end
 
-  def authorize(:show_message, %User{} = current_user, %Message{} = message) do
-    if message.user_id == current_user.id do
+  def authorize(:show_submission, %User{} = current_user, %Submission{} = submission) do
+    if submission.user_id == current_user.id do
       :ok
     else
       {:error, :forbidden}
     end
   end
 
-  def authorize(:update_message_state, %User{} = current_user, %Message{} = message) do
-    if message.user_id == current_user.id do
+  def authorize(:update_submission_state, %User{} = current_user, %Submission{} = submission) do
+    if submission.user_id == current_user.id do
       :ok
     else
       {:error, :forbidden}

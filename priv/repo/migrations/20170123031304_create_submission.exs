@@ -1,8 +1,8 @@
-defmodule FormDelegate.Repo.Migrations.CreateMessage do
+defmodule FormDelegate.Repo.Migrations.CreateSubmission do
   use Ecto.Migration
 
   def change do
-    create table(:messages) do
+    create table(:submissions) do
       add(:content, :text)
 
       add(:sender, :string, default: "Anonymous")
@@ -18,6 +18,6 @@ defmodule FormDelegate.Repo.Migrations.CreateMessage do
       timestamps()
     end
 
-    create(index(:messages, [:user_id, :form_id]))
+    create(index(:submissions, [:user_id, :form_id]))
   end
 end

@@ -1,5 +1,5 @@
 defmodule FormDelegate.Services.Akismet.Tesla do
-  alias FormDelegate.Messages.Message
+  alias FormDelegate.Submissions.Submission
   alias FormDelegate.Services.Akismet
 
   @behaviour Akismet
@@ -11,16 +11,16 @@ defmodule FormDelegate.Services.Akismet.Tesla do
   plug(Tesla.Middleware.JSON)
 
   @impl Akismet
-  def is_spam?(api_key, message = %Message{}) do
+  def is_spam?(api_key, submission = %Submission{}) do
     request_body = %{
       blog: "https://formdelegate.com",
       # comment_author_email: "akismet-guaranteed-spam@example.com",
-      comment_author_email: message.sender,
-      comment_content: message.content,
+      comment_author_email: submission.sender,
+      comment_content: submission.content,
       comment_type: "contact-form",
-      referrer: message.sender_referrer,
-      user_agent: message.sender_user_agent,
-      user_ip: message.sender_ip
+      referrer: submission.sender_referrer,
+      user_agent: submission.sender_user_agent,
+      user_ip: submission.sender_ip
     }
 
     case post(
@@ -39,15 +39,15 @@ defmodule FormDelegate.Services.Akismet.Tesla do
   end
 
   @impl Akismet
-  def submit_ham(api_key, message = %Message{}) do
+  def submit_ham(api_key, submission = %Submission{}) do
     request_body = %{
       blog: "https://formdelegate.com",
-      comment_author_email: message.sender,
-      comment_content: message.content,
+      comment_author_email: submission.sender,
+      comment_content: submission.content,
       comment_type: "contact-form",
-      referrer: message.sender_referrer,
-      user_agent: message.sender_user_agent,
-      user_ip: message.sender_ip
+      referrer: submission.sender_referrer,
+      user_agent: submission.sender_user_agent,
+      user_ip: submission.sender_ip
     }
 
     case post(
@@ -66,15 +66,15 @@ defmodule FormDelegate.Services.Akismet.Tesla do
   end
 
   @impl Akismet
-  def submit_spam(api_key, message = %Message{}) do
+  def submit_spam(api_key, submission = %Submission{}) do
     request_body = %{
       blog: "https://formdelegate.com",
-      comment_author_email: message.sender,
-      comment_content: message.content,
+      comment_author_email: submission.sender,
+      comment_content: submission.content,
       comment_type: "contact-form",
-      referrer: message.sender_referrer,
-      user_agent: message.sender_user_agent,
-      user_ip: message.sender_ip
+      referrer: submission.sender_referrer,
+      user_agent: submission.sender_user_agent,
+      user_ip: submission.sender_ip
     }
 
     case post(

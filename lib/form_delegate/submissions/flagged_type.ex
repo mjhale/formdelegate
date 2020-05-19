@@ -1,14 +1,14 @@
-defmodule FormDelegate.Messages.FlaggedType do
+defmodule FormDelegate.Submissions.FlaggedType do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias FormDelegate.Messages.{Message, FlaggedType}
+  alias FormDelegate.Submissions.{Submission, FlaggedType}
 
   schema "flagged_types" do
     field :type, :string
     field :description, :string
 
-    has_many :messages, Message
+    has_many :submissions, Submission
 
     timestamps()
   end

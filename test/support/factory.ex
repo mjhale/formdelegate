@@ -10,11 +10,11 @@ defmodule FormDelegate.Factory do
     }
   end
 
-  def message_factory do
-    %FormDelegate.Messages.Message{
+  def submission_factory do
+    %FormDelegate.Submissions.Submission{
       user: build(:user),
       sender: sequence(:sender, &"User #{&1}"),
-      content: sequence(:content, &"Content message #{&1}")
+      content: sequence(:content, &"Content submission #{&1}")
     }
   end
 

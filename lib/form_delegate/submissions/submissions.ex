@@ -1,4 +1,4 @@
-defmodule FormDelegate.Messages do
+defmodule FormDelegate.Submissions do
   @moduledoc """
   The Integrations context.
   """
@@ -8,21 +8,21 @@ defmodule FormDelegate.Messages do
   alias Ecto.Changeset
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
-  alias FormDelegate.Messages.{FlaggedType, Message}
+  alias FormDelegate.Submissions.{FlaggedType, Submission}
   alias FormDelegate.Repo
 
   @doc """
-  Returns a paginated list of messages for a user.
+  Returns a paginated list of submissions for a user.
 
   ## Examples
 
-      iex> list_messages_of_user(user, params)
-      [%Message{}, ...]
+      iex> list_submissions_of_user(user, params)
+      [%Submission{}, ...]
 
   """
-  def list_messages_of_user(%User{} = user, params) do
+  def list_submissions_of_user(%User{} = user, params) do
     query =
-      from m in Message,
+      from m in Submission,
         where: m.user_id == ^user.id,
         preload: [
           {
@@ -38,19 +38,19 @@ defmodule FormDelegate.Messages do
   end
 
   @doc """
-  Returns a paginated list of messages from a search.
+  Returns a paginated list of submissions from a search.
 
   @TODO: Allow searches of particular forms.
 
   ## Examples
 
-      iex> list_search_messages_of_user(user, params)
-      [%Message{}, ...]
+      iex> list_search_submissions_of_user(user, params)
+      [%Submission{}, ...]
 
   """
-  def list_search_messages_of_user(%User{} = user, params) do
+  def list_search_submissions_of_user(%User{} = user, params) do
     query =
-      from m in Message,
+      from m in Submission,
         where: m.user_id == ^user.id,
         where:
           ilike(m.content, ^"%#{params["query"]}%") or
@@ -70,17 +70,17 @@ defmodule FormDelegate.Messages do
   end
 
   @doc """
-  Returns the daily count of recent message activity of a user.
+  Returns the daily count of recent submission activity of a user.
 
   ## Examples
 
-      iex> get_message_activity_of_user(user)
+      iex> get_submission_activity_of_user(user)
       [%{day, count}, ...]
 
   """
-  def get_message_activity_of_user(%User{} = user) do
+  def get_submission_activity_of_user(%User{} = user) do
     query =
-      from m in Message,
+      from m in Submission,
         right_join:
           day in fragment(
             "SELECT generate_series(CURRENT_DATE - INTERVAL '365 days', CURRENT_DATE, '1 day') :: date AS d"
@@ -91,29 +91,29 @@ defmodule FormDelegate.Messages do
         order_by: day.d,
         select: %{
           day: fragment("date(?)", day.d),
-          message_count: count(m.id)
+          submission_count: count(m.id)
         }
 
     Repo.all(query)
   end
 
   @doc """
-  Gets a single message.
+  Gets a single submission.
 
-  Raises `Ecto.NoResultsError` if the Message does not exist.
+  Raises `Ecto.NoResultsError` if the Submission does not exist.
 
   ## Examples
 
-      iex> get_message!(123)
-      %Message{}
+      iex> get_submission!(123)
+      %Submission{}
 
-      iex> get_message!(456)
+      iex> get_submission!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_message!(id) do
+  def get_submission!(id) do
     Repo.one!(
-      from m in Message,
+      from m in Submission,
         where: m.id == ^id,
         preload: [
           {
@@ -126,64 +126,64 @@ defmodule FormDelegate.Messages do
   end
 
   @doc """
-  Updates a message.
+  Updates a submission.
 
   ## Examples
 
-      iex> update_message(message, %{field: new_value})
-      {:ok, %Message{}}
+      iex> update_submission(submission, %{field: new_value})
+      {:ok, %Submission{}}
 
-      iex> update_message(message, %{field: bad_value})
+      iex> update_submission(submission, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_message(%Message{} = message, attrs) do
-    message
-    |> Message.changeset(attrs)
+  def update_submission(%Submission{} = submission, attrs) do
+    submission
+    |> Submission.changeset(attrs)
     |> Repo.update()
   end
 
   @doc """
-  Updates a message with a flagged status.
+  Updates a submission with a flagged status.
 
   ## Examples
 
-      iex> flag_message(message, %{field: new_value})
-      {:ok, %Message{}}
+      iex> flag_submission(submission, %{field: new_value})
+      {:ok, %Submission{}}
 
-      iex> flag_message(message, %{field: bad_value})
+      iex> flag_submission(submission, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def flag_message(%Message{} = message, attrs) do
-    message
-    |> Message.flag_message_changeset(attrs)
+  def flag_submission(%Submission{} = submission, attrs) do
+    submission
+    |> Submission.flag_submission_changeset(attrs)
     |> Repo.update()
   end
 
   @doc """
-  Creates a message.
+  Creates a submission.
 
   @TODO: Decouple form and user contexts
 
   ## Examples
 
-      iex> create_message(form, %{field: value})
-      {:ok, %Message{}}
+      iex> create_submission(form, %{field: value})
+      {:ok, %Submission{}}
 
-      iex> create_message(form, %{field: bad_value})
+      iex> create_submission(form, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_message(form, attrs \\ %{}) do
-    %Message{}
-    |> Message.changeset(attrs)
+  def create_submission(form, attrs \\ %{}) do
+    %Submission{}
+    |> Submission.changeset(attrs)
     |> Changeset.put_assoc(:form, form)
     |> Changeset.put_assoc(:user, form.user)
     |> Changeset.put_assoc(:flagged_type, nil)
     |> Changeset.assoc_constraint(:form)
     |> Changeset.assoc_constraint(:user)
-    |> update_form_message_count(1)
+    |> update_form_submission_count(1)
     |> Repo.insert()
   end
 
@@ -206,13 +206,13 @@ defmodule FormDelegate.Messages do
     end
   end
 
-  defp update_form_message_count(changeset, value) do
+  defp update_form_submission_count(changeset, value) do
     if changeset.valid? do
       changeset
       |> Changeset.prepare_changes(fn prepared_changeset ->
         if form = Changeset.get_change(prepared_changeset, :form) do
           query = from(Form, where: [id: ^form.data.id])
-          prepared_changeset.repo.update_all(query, inc: [message_count: value])
+          prepared_changeset.repo.update_all(query, inc: [submission_count: value])
         end
 
         prepared_changeset

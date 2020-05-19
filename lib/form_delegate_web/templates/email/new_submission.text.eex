@@ -1,0 +1,17 @@
+<%= @user.name %>, you've received a new submission via Form Delegate!
+
+<%= if @submission.sender do %>
+  Sender: <%= @submission.sender %>
+<% end %>
+
+<%= if @submission.content do %>
+  Content: <%= @submission.content %>
+<% end %>
+
+<%= for {key, value} <- @submission.unknown_fields do %>
+  <%= key %>: <%= value %>
+<% end %>
+
+--
+
+FormDelegate.com

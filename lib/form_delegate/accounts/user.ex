@@ -13,7 +13,7 @@ defmodule FormDelegate.Accounts.User do
     field :verified, :boolean, default: false, null: false
     field :is_admin, :boolean, default: false, null: false
 
-    has_many :messages, FormDelegate.Messages.Message, on_delete: :delete_all
+    has_many :submissions, FormDelegate.Submissions.Submission, on_delete: :delete_all
     has_many :forms, FormDelegate.Forms.Form, on_delete: :delete_all
 
     timestamps()

@@ -16,7 +16,7 @@ defmodule FormDelegateWeb.Router do
     plug Guardian.Plug.VerifySession, claims: @claims
     plug Guardian.Plug.VerifyHeader, claims: @claims, realm: "Bearer"
 
-    plug Guardian.Plug.LoadResource, ensure: true, allow_blank: true
+    plug Guardian.Plug.LoadResource, allow_blank: true
   end
 
   pipeline :ensure_authenticated do
@@ -32,9 +32,9 @@ defmodule FormDelegateWeb.Router do
   end
 
   scope "/v1", FormDelegateWeb do
-    pipe_through :api
+    pipe_through [:api, :check_authenticated, :load_user]
 
-    post "/requests/:id", RequestController, :create
+    post "/submissions/:form_id", SubmissionController, :create, as: :submission
 
     resources "/sessions", SessionController,
       only: [:create, :delete],
@@ -49,17 +49,18 @@ defmodule FormDelegateWeb.Router do
     resources "/forms", FormController, except: [:edit, :new]
     resources "/integrations", IntegrationController, except: [:create, :delete, :edit, :new]
 
-    # @TODO: Refactor and move to different namespace
-    get "/messages/recent_activity", MessageController, :recent_activity
+    scope "/submissions" do
+      # @TODO: Refactor and move to different namespace
+      get "/recent_activity", SubmissionController, :recent_activity,
+        as: :submission_recent_activity
 
-    scope "/messages" do
-      patch "/:id/ham", MessageController, :ham, as: :message_ham
-      put "/:id/ham", MessageController, :ham, as: :message_ham
-      patch "/:id/spam", MessageController, :spam, as: :message_spam
-      put "/:id/spam", MessageController, :spam, as: :message_spam
+      patch "/:id/ham", SubmissionController, :ham, as: :submission_ham
+      put "/:id/ham", SubmissionController, :ham, as: :submission_ham
+      patch "/:id/spam", SubmissionController, :spam, as: :submission_spam
+      put "/:id/spam", SubmissionController, :spam, as: :submission_spam
     end
 
-    resources "/messages", MessageController, only: [:index, :show]
+    resources "/submissions", SubmissionController, only: [:index, :show]
 
     resources "/users", UserController, except: [:create, :edit, :new]
   end

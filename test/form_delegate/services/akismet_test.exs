@@ -1,21 +1,21 @@
 defmodule FormDelegate.AkismetTest do
   use ExUnit.Case, async: true
 
-  alias FormDelegate.Messages.Message
+  alias FormDelegate.Submissions.Submission
 
   describe "is_spam?/3" do
     test "Responds with true when simulating a positive spam response" do
-      message = %Message{
+      submission = %Submission{
         sender: "akismet-guaranteed-spam@example.com"
       }
 
-      assert {:ok, true} = akismet_api().is_spam?("2525a0331863", message)
+      assert {:ok, true} = akismet_api().is_spam?("2525a0331863", submission)
     end
 
     test "Responds with error when provided an invalid API key" do
-      message = %Message{}
+      submission = %Submission{}
 
-      assert {:error, %Tesla.Env{body: "invalid"}} = akismet_api().is_spam?("invalid", message)
+      assert {:error, %Tesla.Env{body: "invalid"}} = akismet_api().is_spam?("invalid", submission)
     end
   end
 
