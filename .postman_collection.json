@@ -1,0 +1,948 @@
+{
+  "info": {
+    "_postman_id": "11182b87-32c5-4dd2-a0f7-9b9361af63dd",
+    "name": "Form Delegate API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Forms (Authenticated)",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"form\": {\n        \"form\": \"Contact Form Example\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/forms",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "forms"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/forms/6b7bed67-adc5-44cb-ac9d-e37aa1943735",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": [
+                "{{version}}",
+                "forms",
+                "6b7bed67-adc5-44cb-ac9d-e37aa1943735"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Index",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/forms",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "forms"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/forms/6b7bed67-adc5-44cb-ac9d-e37aa1943735",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": [
+                "{{version}}",
+                "forms",
+                "6b7bed67-adc5-44cb-ac9d-e37aa1943735"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"form\": {\n        \"form\": \"Complaint Form Example\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/forms/6b7bed67-adc5-44cb-ac9d-e37aa1943735",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": [
+                "{{version}}",
+                "forms",
+                "6b7bed67-adc5-44cb-ac9d-e37aa1943735"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImV4cCI6MTU5MjE2NjQ4NywiaWF0IjoxNTkwOTU2ODg3LCJpc3MiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImp0aSI6ImJjMmU1YzY3LWQ3YTItNDRlYS05NDljLWNlNTg4MmE5ZDkyMyIsIm5iZiI6MTU5MDk1Njg4Niwic3ViIjoiVXNlcjoxIiwidHlwIjoiYWNjZXNzIn0.pBZqhK7njgc9r0E-nd7ZW_AYO2q_Tjnda-JHOoZUsJxY60u-5MiMW0RVPlhH5SqEfJnnIvicLh7fw7UUgtd0sw",
+            "type": "string"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "id": "a15ce447-8165-47e5-83fa-5d69e012ee25",
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "id": "b616b72b-ea4c-41ef-ba9a-74a30af37e4b",
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "Integrations (Authenticated)",
+      "item": [
+        {
+          "name": "Index",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/integrations",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "integrations"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/integrations/1",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "integrations", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"integration\": {\n        \"name\": \"Email (Sendgrid)\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/integrations/1",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "integrations", "1"]
+            }
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImV4cCI6MTU5MjE2NjQ4NywiaWF0IjoxNTkwOTU2ODg3LCJpc3MiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImp0aSI6ImJjMmU1YzY3LWQ3YTItNDRlYS05NDljLWNlNTg4MmE5ZDkyMyIsIm5iZiI6MTU5MDk1Njg4Niwic3ViIjoiVXNlcjoxIiwidHlwIjoiYWNjZXNzIn0.pBZqhK7njgc9r0E-nd7ZW_AYO2q_Tjnda-JHOoZUsJxY60u-5MiMW0RVPlhH5SqEfJnnIvicLh7fw7UUgtd0sw",
+            "type": "string"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "id": "48cf81ba-28b8-40b7-8fbb-f6e8fb3ea44b",
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "id": "cf210e17-2490-46b1-a61d-874cbf0c9f8f",
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "Session",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"session\": {\n        \"email\": \"admin@admin.com\",\n        \"password\": \"admin\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/sessions",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "sessions"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImV4cCI6MTU5MjE1NTA2MiwiaWF0IjoxNTkwOTQ1NDYyLCJpc3MiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImp0aSI6ImYzODY2MjRhLTdhMDgtNGEwNy1iOTBlLThjYWU2ZjE0MmZlZSIsIm5iZiI6MTU5MDk0NTQ2MSwic3ViIjoiVXNlcjoxIiwidHlwIjoiYWNjZXNzIn0._66Jycsj4sC6zY2W8msQ-GRKfNAJ2Mdd6oDVYsE3z0mwPruvfVA1qX63O6Ton4GvdhugXK2CWChpZV7KRzjjFw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/sessions",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "sessions"]
+            }
+          },
+          "response": []
+        }
+      ],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "id": "ec3ea9f5-f7f8-4c36-8b85-32a11cc09dfa",
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "id": "dc4da35d-8bef-4636-abac-a253f749d722",
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "Submissions",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Example Contact Name",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "example@company.com",
+                  "type": "text"
+                },
+                {
+                  "key": "message",
+                  "value": "An example message from a contact.",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/submissions/6b7bed67-adc5-44cb-ac9d-e37aa1943735",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": [
+                "{{version}}",
+                "submissions",
+                "6b7bed67-adc5-44cb-ac9d-e37aa1943735"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "Submissions (Authenticated)",
+      "item": [
+        {
+          "name": "Index",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/submissions",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "submissions"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ham",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/submissions/3/ham",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "submissions", "3", "ham"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Recent Activity",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/submissions/recent_activity",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "submissions", "recent_activity"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "type": "text",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/submissions/3",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "submissions", "3"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Spam",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "type": "text",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/submissions/3/spam",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "submissions", "3", "spam"]
+            }
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImV4cCI6MTU5MjE2NjQ4NywiaWF0IjoxNTkwOTU2ODg3LCJpc3MiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImp0aSI6ImJjMmU1YzY3LWQ3YTItNDRlYS05NDljLWNlNTg4MmE5ZDkyMyIsIm5iZiI6MTU5MDk1Njg4Niwic3ViIjoiVXNlcjoxIiwidHlwIjoiYWNjZXNzIn0.pBZqhK7njgc9r0E-nd7ZW_AYO2q_Tjnda-JHOoZUsJxY60u-5MiMW0RVPlhH5SqEfJnnIvicLh7fw7UUgtd0sw",
+            "type": "string"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "id": "a2c9465e-365d-4c1b-9d9d-0ea2f49cfcb2",
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "id": "7a608e71-0546-4934-ac6a-c0f2821060ae",
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "User (Authenticated)",
+      "item": [
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/users/1",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "users", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Index",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/users",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/users/3",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "users", "3"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user\": {\n        \"name\": \"An Example User\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/users/3",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "users", "3"]
+            }
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImV4cCI6MTU5MjE2NjQ4NywiaWF0IjoxNTkwOTU2ODg3LCJpc3MiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImp0aSI6ImJjMmU1YzY3LWQ3YTItNDRlYS05NDljLWNlNTg4MmE5ZDkyMyIsIm5iZiI6MTU5MDk1Njg4Niwic3ViIjoiVXNlcjoxIiwidHlwIjoiYWNjZXNzIn0.pBZqhK7njgc9r0E-nd7ZW_AYO2q_Tjnda-JHOoZUsJxY60u-5MiMW0RVPlhH5SqEfJnnIvicLh7fw7UUgtd0sw",
+            "type": "string"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "id": "02b8f4da-2112-4073-aa49-00e1c23981a3",
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "id": "cb5ba09c-c748-4424-905c-3c50a17db608",
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "User Confirmation",
+      "item": [
+        {
+          "name": "Create",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "warning": "This is a duplicate header and will be overridden by the Content-Type header generated by Postman.",
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user\": {\n        \"email\": \"user@example.com\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/users/confirm",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "users", "confirm"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm (Show)",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"token\": \"9b2W0Rb7I1G3TGpVfrmPGIlI1ndzGNlr2AxG6Gc5FCPhsON1m0urXgAK6qCsjw8cCXVj53vYSlFx1PlugdjXLw\"\n}"
+            },
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "User Registration",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user\": {\n        \"email\": \"user@example.com\",\n        \"name\": \"Example User\",\n        \"password\": \"a secure password\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/users",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "users"]
+            }
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": {}
+    },
+    {
+      "name": "User Reset Password",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user\": {\n        \"email\": \"user@example.com\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/users/reset-password",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "users", "reset-password"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "type": "text",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user\": {\n    \t\"password\": \"a new valid password\",\n        \"reset_password_token\": \"sAKPYko3-ya_IVPZsZay1BXVfMzt87p4AeX7vaSaKm0\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/users/reset-password",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "users", "reset-password"]
+            }
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": {}
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "id": "c6721448-4948-4773-a0af-e2fa04ce5801",
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "id": "698dc080-98f6-4d8e-aed2-bc282a8ef186",
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "id": "7d03f400-40b7-4984-b592-183039763a5c",
+      "key": "protocol",
+      "value": "http://",
+      "type": "string"
+    },
+    {
+      "id": "c58fbb58-47a3-4eaa-953c-5953efed628e",
+      "key": "host",
+      "value": "localhost",
+      "type": "string"
+    },
+    {
+      "id": "51bd0fed-d856-46f9-b4e0-4c58c73bc630",
+      "key": "port",
+      "value": "4000",
+      "type": "string"
+    },
+    {
+      "id": "fc4b0ad8-f86d-4983-a2a4-b3876341ccfc",
+      "key": "version",
+      "value": "v1",
+      "type": "string"
+    }
+  ],
+  "protocolProfileBehavior": {}
+}
