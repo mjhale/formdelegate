@@ -15,7 +15,7 @@ defmodule FormDelegate.Repo.Migrations.CreateSubmission do
       add(:user_id, references(:users, on_delete: :delete_all))
       add(:form_id, references(:forms, type: :uuid, on_delete: :delete_all))
 
-      timestamps()
+      timestamps(type: :timestamptz)
     end
 
     create(index(:submissions, [:user_id, :form_id]))

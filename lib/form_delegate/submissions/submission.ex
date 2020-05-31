@@ -6,6 +6,8 @@ defmodule FormDelegate.Submissions.Submission do
   alias FormDelegate.Forms.Form
   alias FormDelegate.Submissions.{Submission, FlaggedType}
 
+  @timestamps_opts [type: :utc_datetime_usec]
+
   schema "submissions" do
     field :content, :string
     field :flagged_at, :naive_datetime

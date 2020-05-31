@@ -5,7 +5,7 @@ defmodule FormDelegate.Repo.Migrations.CreateIntegration do
     create table(:integrations) do
       add(:type, :string, null: false)
 
-      timestamps()
+      timestamps(type: :timestamptz)
     end
 
     create table(:form_integrations) do
@@ -14,7 +14,7 @@ defmodule FormDelegate.Repo.Migrations.CreateIntegration do
       add(:enabled, :boolean, default: false, null: false)
       add(:settings, :map)
 
-      timestamps()
+      timestamps(type: :timestamptz)
     end
 
     create(index(:form_integrations, [:form_id, :integration_id]))

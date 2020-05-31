@@ -8,7 +8,8 @@ defmodule FormDelegate.AccountsTest do
 
     @valid_attrs %{
       email: "user@formdelegate.com",
-      name: "Form User"
+      name: "Form User",
+      password: "a valid password!"
     }
     @update_attrs %{
       email: "updateduser@formdelegate.com",
@@ -17,33 +18,33 @@ defmodule FormDelegate.AccountsTest do
     @invalid_attrs %{email: nil, name: nil, password: nil}
 
     def user_fixture(attrs \\ %{}) do
-      {:ok, user} =
+      {:ok, %User{} = user} =
         attrs
         |> Enum.into(@valid_attrs)
-        |> Accounts.create_user()
+        |> Accounts.register_user()
 
       user
     end
 
     test "list_users/0 returns all users" do
-      user = user_fixture()
-      assert Accounts.list_users() == [user]
+      %{id: id} = user_fixture()
+      assert [%User{id: ^id}] = Accounts.list_users()
     end
 
     test "get_user!/1 returns the user with given id" do
-      user = user_fixture()
-      assert Accounts.get_user!(user.id) == user
+      %{id: id} = user_fixture()
+      assert %User{id: ^id} = Accounts.get_user!(id)
     end
 
-    test "create_user/1 with valid data creates a user" do
-      assert {:ok, user} = Accounts.create_user(@valid_attrs)
+    test "register_user/1 with valid data creates a user" do
+      assert {:ok, user} = Accounts.register_user(@valid_attrs)
       assert user.email == "user@formdelegate.com"
       assert user.is_admin == false
       assert user.name == "Form User"
     end
 
-    test "create_user/1 with invalid data returns error changeset" do
-      assert {:error, changeset} = Accounts.create_user(@invalid_attrs)
+    test "register_user/1 with invalid data returns error changeset" do
+      assert {:error, changeset} = Accounts.register_user(@invalid_attrs)
       assert "can't be blank" in errors_on(changeset).email
       assert %{email: ["can't be blank"]} = errors_on(changeset)
     end

@@ -1,6 +1,7 @@
 defmodule FormDelegateWeb.IntegrationControllerTest do
   use FormDelegateWeb.ConnCase
 
+  alias FormDelegate.Factory
   alias FormDelegateWeb.Router.Helpers, as: Routes
 
   @update_attrs %{
@@ -23,7 +24,7 @@ defmodule FormDelegateWeb.IntegrationControllerTest do
 
   @tag :as_inserted_user
   test "index/3 responds with all integrations", %{conn: conn, jwt: jwt} do
-    integration = FormDelegate.Factory.insert(:integration)
+    integration = Factory.insert(:integration)
 
     response =
       conn
@@ -36,10 +37,10 @@ defmodule FormDelegateWeb.IntegrationControllerTest do
     assert response == expected
   end
 
-  @tag :as_inserted_user
   describe "show/3" do
+    @tag :as_inserted_user
     test "Responds with integration info if the integration is found", %{conn: conn, jwt: jwt} do
-      integration = FormDelegate.Factory.insert(:integration)
+      integration = Factory.insert(:integration)
 
       response =
         conn
@@ -69,7 +70,7 @@ defmodule FormDelegateWeb.IntegrationControllerTest do
       conn: conn,
       jwt: jwt
     } do
-      integration = FormDelegate.Factory.insert(:integration)
+      integration = Factory.insert(:integration)
 
       response =
         conn

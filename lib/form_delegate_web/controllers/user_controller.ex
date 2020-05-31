@@ -3,6 +3,8 @@ defmodule FormDelegateWeb.UserController do
 
   alias FormDelegate.{Accounts, Accounts.User}
   alias FormDelegateWeb.Authorizer
+  alias FormDelegateWeb.Guardian
+  alias FormDelegateWeb.Mailers
 
   action_fallback FormDelegateWeb.FallbackController
 
@@ -19,12 +21,15 @@ defmodule FormDelegateWeb.UserController do
   end
 
   def create(conn, %{"user" => user_params}, current_user) do
-    with {:ok, %User{} = user} <- Accounts.create_user(user_params),
-         :ok <- Authorizer.authorize(:create_user, current_user) do
+    with :ok <- Authorizer.authorize(:register_user, current_user),
+         {:ok, %User{} = user} <- Accounts.register_user(user_params),
+         {:ok, token, _claims} <- Guardian.encode_and_sign(user, %{}, token_type: "access") do
+      Mailers.UserConfirmation.send_user_confirmation_email(user)
+
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.user_path(conn, :show, user.id))
-      |> render(:show, user: user)
+      |> render(:sign_up, %{token: token, user: user})
     end
   end
 

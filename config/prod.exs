@@ -72,7 +72,7 @@ config :logger, level: :info
 #
 
 # Configures Bamboo mailer
-config :form_delegate, FormDelegate.Mailer,
+config :form_delegate, FormDelegateWeb.MailService,
   adapter: Bamboo.SparkPostAdapter,
   api_key: System.get_env("SPARKPOST_KEY")
 

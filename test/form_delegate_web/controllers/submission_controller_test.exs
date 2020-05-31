@@ -8,13 +8,11 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
     email: "drew342194@gmail.com",
     content: "I have an issue with an order"
   }
-
   @valid_attrs_with_spam %{
     sender: "Guaranteed Spam",
     email: "akismet-guaranteed-spam@example.com",
     content: "This is certainly spam: viagra-test-123."
   }
-
   @invalid_attrs %{}
 
   setup %{conn: conn, user: user} do
@@ -104,13 +102,13 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
             "flagged_type" => nil,
             "form" => nil,
             "id" => submission.id,
-            "inserted_at" => NaiveDateTime.to_iso8601(submission.inserted_at),
+            "inserted_at" => DateTime.to_iso8601(submission.inserted_at),
             "sender" => submission.sender,
             "sender_ip" => nil,
             "sender_referrer" => nil,
             "sender_user_agent" => nil,
             "unknown_fields" => nil,
-            "updated_at" => NaiveDateTime.to_iso8601(submission.updated_at)
+            "updated_at" => DateTime.to_iso8601(submission.updated_at)
           }
         ]
       }
@@ -141,13 +139,13 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
           "flagged_type" => nil,
           "form" => nil,
           "id" => submission.id,
-          "inserted_at" => NaiveDateTime.to_iso8601(submission.inserted_at),
+          "inserted_at" => DateTime.to_iso8601(submission.inserted_at),
           "sender" => submission.sender,
           "sender_ip" => nil,
           "sender_referrer" => nil,
           "sender_user_agent" => nil,
           "unknown_fields" => nil,
-          "updated_at" => NaiveDateTime.to_iso8601(submission.updated_at)
+          "updated_at" => DateTime.to_iso8601(submission.updated_at)
         }
       }
 

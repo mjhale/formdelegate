@@ -12,7 +12,7 @@ defmodule FormDelegate.Repo.Migrations.CreateForm do
 
       add(:user_id, references(:users, on_delete: :delete_all), null: false)
 
-      timestamps()
+      timestamps(type: :timestamptz)
     end
 
     create(index(:forms, [:user_id]))

@@ -7,6 +7,8 @@ defmodule FormDelegate.Forms.Form do
   alias FormDelegate.Submissions.Submission
 
   @primary_key {:id, :binary_id, autogenerate: true}
+  @timestamps_opts [type: :utc_datetime_usec]
+
   schema "forms" do
     field :form, :string
     field :host, :string

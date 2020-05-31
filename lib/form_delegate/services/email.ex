@@ -2,12 +2,12 @@ defmodule FormDelegate.Services.Email do
   use Bamboo.Phoenix, view: FormDelegateWeb.EmailView
 
   alias FormDelegate.Accounts.User
-  alias FormDelegate.Mailer
   alias FormDelegate.Submissions.Submission
+  alias FormDelegateWeb.MailService
 
   def send_email(%User{} = user, %Submission{} = submission) do
     new_email_submission(user, submission)
-    |> Mailer.deliver_later()
+    |> MailService.deliver_later()
   end
 
   defp new_email_submission(%User{} = user, %Submission{} = submission) do

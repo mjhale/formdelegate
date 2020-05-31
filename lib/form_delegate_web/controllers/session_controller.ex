@@ -13,11 +13,7 @@ defmodule FormDelegateWeb.SessionController do
         render(conn, "show.json", %{session: %{token: token}})
 
       {:error, _reason} ->
-        body = Jason.encode!(%{message: "Bad credentials"})
-
-        conn
-        |> put_resp_content_type("application/json")
-        |> send_resp(:unauthorized, body)
+        {:error, :unauthorized, %{message: "INVALID_CREDENTIALS"}}
     end
   end
 end

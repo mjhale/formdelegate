@@ -15,6 +15,8 @@ defmodule FormDelegateWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  alias FormDelegate.Factory
+
   using do
     quote do
       # Import conveniences for testing with connections
@@ -38,11 +40,26 @@ defmodule FormDelegateWeb.ConnCase do
 
     user =
       cond do
-        tags[:as_admin] -> FormDelegate.Factory.build(:user, is_admin: true)
-        tags[:as_inserted_admin] -> FormDelegate.Factory.insert(:user, is_admin: true)
-        tags[:as_user] -> FormDelegate.Factory.build(:user, is_admin: false)
-        tags[:as_inserted_user] -> FormDelegate.Factory.insert(:user, is_admin: false)
-        true -> nil
+        tags[:as_admin] ->
+          Factory.build(:user, is_admin: true)
+          |> Factory.set_password(Factory.valid_user_password())
+
+        tags[:as_inserted_admin] ->
+          Factory.build(:user, is_admin: true)
+          |> Factory.set_password(Factory.valid_user_password())
+          |> Factory.insert()
+
+        tags[:as_user] ->
+          Factory.build(:user, is_admin: false)
+          |> Factory.set_password(Factory.valid_user_password())
+
+        tags[:as_inserted_user] ->
+          Factory.build(:user)
+          |> Factory.set_password(Factory.valid_user_password())
+          |> Factory.insert()
+
+        true ->
+          nil
       end
 
     conn =

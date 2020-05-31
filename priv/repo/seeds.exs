@@ -21,7 +21,7 @@ Repo.insert!(%User{
   password_hash: Pbkdf2.hash_pwd_salt("admin"),
   # pre-set the counter cache
   form_count: 2,
-  verified: true,
+  confirmed_at: DateTime.utc_now(),
   is_admin: true
 })
 

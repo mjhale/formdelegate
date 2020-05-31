@@ -2,16 +2,25 @@ defmodule FormDelegate.Factory do
   use ExMachina.Ecto, repo: FormDelegate.Repo
 
   alias FormDelegate.Accounts.User
+  alias FormDelegate.Forms.Form
+  alias FormDelegate.Integrations.Integration
+  alias FormDelegate.Submissions.Submission
 
-  @spec user_factory :: FormDelegate.Accounts.User.t()
+  def valid_user_password, do: "a sufficiently long password"
+
   def user_factory do
-    %FormDelegate.Accounts.User{
-      email: sequence(:email, &"User #{&1}")
+    %User{
+      confirmation_sent_at: DateTime.utc_now(),
+      confirmation_token: User.generate_random_url_safe_string(32),
+      email: sequence(:email, fn n -> "email-#{n}@formdelegate.com" end),
+      is_admin: false,
+      name: sequence(:name, &"User #{&1}"),
+      password_hash: "not an actual password hash"
     }
   end
 
   def submission_factory do
-    %FormDelegate.Submissions.Submission{
+    %Submission{
       user: build(:user),
       sender: sequence(:sender, &"User #{&1}"),
       content: sequence(:content, &"Content submission #{&1}")
@@ -19,13 +28,13 @@ defmodule FormDelegate.Factory do
   end
 
   def integration_factory do
-    %FormDelegate.Integrations.Integration{
+    %Integration{
       type: sequence(:type, &"Type #{&1}")
     }
   end
 
   def form_factory do
-    %FormDelegate.Forms.Form{
+    %Form{
       form: sequence(:type, &"Form #{&1}"),
       user: build(:user)
     }
@@ -37,7 +46,7 @@ defmodule FormDelegate.Factory do
 
   def set_password(user, password) do
     user
-    |> User.changeset(%{"password" => password})
+    |> User.registration_changeset(%{"password" => password})
     |> Ecto.Changeset.apply_changes()
   end
 end

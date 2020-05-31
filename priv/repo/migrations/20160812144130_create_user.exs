@@ -3,16 +3,31 @@ defmodule FormDelegate.Repo.Migrations.CreateUsers do
 
   def change do
     create table(:users) do
-      add :email, :string, null: false
-      add :name, :string
-      add :password_hash, :string
-      add :form_count, :integer, null: false, default: 0
-      add :verified, :boolean, null: false, default: false
-      add :is_admin, :boolean, null: false, default: false
+      add(:email, :string, null: false)
+      add(:unconfirmed_email, :string)
+      add(:password_hash, :string, null: false)
+      add(:form_count, :integer, null: false, default: 0)
+      add(:name, :string)
 
-      timestamps()
+      add(:confirmation_token, :string)
+      add(:confirmation_sent_at, :timestamptz)
+      add(:confirmed_at, :timestamptz)
+
+      add(:last_activity_at, :timestamptz)
+      add(:last_sign_in_at, :timestamptz)
+
+      add(:reset_password_token, :string)
+      add(:reset_password_sent_at, :timestamptz)
+
+      add(:is_admin, :boolean, null: false, default: false)
+
+      timestamps(type: :timestamptz)
     end
 
-    create unique_index(:users, [:email])
+    create(index(:users, :last_activity_at))
+    create(index(:users, :last_sign_in_at))
+    create(unique_index(:users, :confirmation_token))
+    create(unique_index(:users, :email))
+    create(unique_index(:users, :reset_password_token))
   end
 end

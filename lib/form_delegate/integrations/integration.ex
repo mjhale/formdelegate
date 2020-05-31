@@ -5,6 +5,8 @@ defmodule FormDelegate.Integrations.Integration do
   alias FormDelegate.Forms
   alias FormDelegate.Integrations.Integration
 
+  @timestamps_opts [type: :utc_datetime_usec]
+
   schema "integrations" do
     field :type, :string
 

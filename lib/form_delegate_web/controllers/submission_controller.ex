@@ -10,8 +10,8 @@ defmodule FormDelegateWeb.SubmissionController do
 
   action_fallback FormDelegateWeb.FallbackController
 
-  def action(%Plug.Conn{assigns: %{current_user: current_user}} = conn, _opts) do
-    args = [conn, conn.params, current_user]
+  def action(conn, _opts) do
+    args = [conn, conn.params, conn.assigns[:current_user] || :guest]
     apply(__MODULE__, action_name(conn), args)
   end
 
@@ -19,7 +19,7 @@ defmodule FormDelegateWeb.SubmissionController do
   # @TODO: Responds with /submissions/:submission_id link alongside 202
   # @TODO: Apply some form of spam filtering before Akismet is used
   # @TODO: Allow user to specify redirect after submission
-  def create(conn, %{"form_id" => form_id} = params, _guest_user) do
+  def create(conn, %{"form_id" => form_id} = params, current_user) do
     grouped_submission_params = transform_params_to_submission_map(params)
 
     meta_params = %{
@@ -30,7 +30,8 @@ defmodule FormDelegateWeb.SubmissionController do
 
     merged_params = Map.merge(grouped_submission_params, meta_params)
 
-    with %Form{} = form <- Forms.get_form!(form_id),
+    with :ok <- Authorizer.authorize(:create_submission, current_user),
+         %Form{} = form <- Forms.get_form!(form_id),
          {:ok, %Submission{} = submission} <- Submissions.create_submission(form, merged_params) do
       # @TODO: Allow user-specified Akismet API key per form
       case akismet_api().is_spam?(System.get_env("AKISMET_API_KEY"), submission) do

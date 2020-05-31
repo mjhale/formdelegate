@@ -13,6 +13,13 @@ defmodule FormDelegateWeb.FallbackController do
     |> render(:"401")
   end
 
+  def call(conn, {:error, :unauthorized, %{message: message}}) do
+    conn
+    |> put_status(:unauthorized)
+    |> put_view(FormDelegateWeb.ErrorView)
+    |> render(:"401", %{message: message})
+  end
+
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
     conn
     |> put_status(:unprocessable_entity)
@@ -32,5 +39,19 @@ defmodule FormDelegateWeb.FallbackController do
     |> put_status(:forbidden)
     |> put_view(FormDelegateWeb.ErrorView)
     |> render(:"403")
+  end
+
+  def call(conn, {:error, :bad_request}) do
+    conn
+    |> put_status(:bad_request)
+    |> put_view(FormDelegateWeb.ErrorView)
+    |> render(:"400")
+  end
+
+  def call(conn, {:error, :bad_request, %{message: message}}) do
+    conn
+    |> put_status(:bad_request)
+    |> put_view(FormDelegateWeb.ErrorView)
+    |> render(:"400", %{message: message})
   end
 end

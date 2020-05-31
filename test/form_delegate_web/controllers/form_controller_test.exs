@@ -38,9 +38,9 @@ defmodule FormDelegateWeb.FormControllerTest do
             "form_integrations" => [],
             "host" => nil,
             "id" => form.id,
-            "inserted_at" => NaiveDateTime.to_iso8601(form.inserted_at),
+            "inserted_at" => DateTime.to_iso8601(form.inserted_at),
             "submission_count" => 0,
-            "updated_at" => NaiveDateTime.to_iso8601(form.updated_at),
+            "updated_at" => DateTime.to_iso8601(form.updated_at),
             "verified" => false
           }
         ]
@@ -106,9 +106,9 @@ defmodule FormDelegateWeb.FormControllerTest do
           "form_integrations" => [],
           "host" => nil,
           "id" => form.id,
-          "inserted_at" => NaiveDateTime.to_iso8601(form.inserted_at),
+          "inserted_at" => DateTime.to_iso8601(form.inserted_at),
           "submission_count" => 0,
-          "updated_at" => NaiveDateTime.to_iso8601(form.updated_at),
+          "updated_at" => DateTime.to_iso8601(form.updated_at),
           "verified" => false
         }
       }
@@ -215,9 +215,9 @@ defmodule FormDelegateWeb.FormControllerTest do
           "form_integrations" => [],
           "host" => nil,
           "id" => user_form.id,
-          "inserted_at" => NaiveDateTime.to_iso8601(user_form.inserted_at),
+          "inserted_at" => DateTime.to_iso8601(user_form.inserted_at),
           "submission_count" => 0,
-          "updated_at" => NaiveDateTime.to_iso8601(user_form.updated_at),
+          "updated_at" => DateTime.to_iso8601(user_form.updated_at),
           "verified" => false
         }
       }

@@ -1,6 +1,7 @@
 defmodule FormDelegateWeb.SessionControllerTest do
   use FormDelegateWeb.ConnCase
 
+  alias FormDelegate.Factory
   alias FormDelegateWeb.Router.Helpers, as: Routes
 
   setup %{conn: conn, user: user} do
@@ -17,14 +18,10 @@ defmodule FormDelegateWeb.SessionControllerTest do
   end
 
   describe "create/2" do
-    test "Creates, and responds with a newly created session if  email and password credentials are valid",
-         %{conn: conn} do
-      user =
-        FormDelegate.Factory.build(:user)
-        |> set_password("GqHglTZ1sP&a20X")
-        |> FormDelegate.Factory.insert()
-
-      credentials = %{email: Map.get(user, :email), password: "GqHglTZ1sP&a20X"}
+    @tag :as_inserted_user
+    test "Creates, and responds with a newly created session if email and password credentials are valid",
+         %{conn: conn, user: user} do
+      credentials = %{email: Map.get(user, :email), password: Factory.valid_user_password()}
 
       response =
         conn
@@ -34,13 +31,9 @@ defmodule FormDelegateWeb.SessionControllerTest do
       assert response["data"]["token"]
     end
 
+    @tag :as_inserted_user
     test "Returns an error and does not create a session if email and password credentials are invalid",
-         %{conn: conn} do
-      user =
-        FormDelegate.Factory.build(:user)
-        |> set_password("GqHglTZ1sP&a20X")
-        |> FormDelegate.Factory.insert()
-
+         %{conn: conn, user: user} do
       credentials = %{email: Map.get(user, :email), password: "wrongpassword"}
 
       response =
@@ -48,18 +41,16 @@ defmodule FormDelegateWeb.SessionControllerTest do
         |> post(Routes.session_path(conn, :create, session: credentials))
         |> json_response(401)
 
-      expected = %{"message" => "Bad credentials"}
+      expected = %{
+        "message" => "INVALID_CREDENTIALS",
+        "errors" => %{"detail" => "LOGIN_REQUIRED"}
+      }
 
       assert response == expected
     end
 
     test "Returns an error and does not create a session if email and password credentials are empty",
          %{conn: conn} do
-      _user =
-        FormDelegate.Factory.build(:user)
-        |> set_password("GqHglTZ1sP&a20X")
-        |> FormDelegate.Factory.insert()
-
       credentials = %{email: "", password: ""}
 
       response =
@@ -67,7 +58,10 @@ defmodule FormDelegateWeb.SessionControllerTest do
         |> post(Routes.session_path(conn, :create, session: credentials))
         |> json_response(401)
 
-      expected = %{"message" => "Bad credentials"}
+      expected = %{
+        "message" => "INVALID_CREDENTIALS",
+        "errors" => %{"detail" => "LOGIN_REQUIRED"}
+      }
 
       assert response == expected
     end

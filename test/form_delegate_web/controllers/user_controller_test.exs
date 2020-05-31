@@ -36,12 +36,12 @@ defmodule FormDelegateWeb.UserControllerTest do
       expected = %{
         "data" => [
           %{
-            "id" => user.id,
+            "confirmed_at" => nil,
             "email" => user.email,
-            "name" => user.name,
             "form_count" => user.form_count,
-            "verified" => user.verified,
-            "is_admin" => user.is_admin
+            "id" => user.id,
+            "is_admin" => user.is_admin,
+            "name" => user.name
           }
         ]
       }
@@ -57,14 +57,16 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> get(Routes.user_path(conn, :index))
         |> json_response(403)
 
-      expected = %{"errors" => %{"detail" => "Forbidden"}}
+      expected = %{"errors" => %{"detail" => "FORBIDDEN"}}
 
       assert response == expected
     end
   end
 
   describe "create/3" do
-    test "Creates, and responds with a newly created user if attributes are valid", %{conn: conn} do
+    test "Creates, and responds with a newly created session token if attributes are valid", %{
+      conn: conn
+    } do
       response =
         conn
         |> post(Routes.user_path(conn, :create), user: @valid_attrs)
@@ -72,12 +74,9 @@ defmodule FormDelegateWeb.UserControllerTest do
 
       expected = %{
         "data" => %{
-          "id" => response["data"]["id"],
           "email" => "user@formdelegate.com",
-          "name" => "Form User",
-          "form_count" => 0,
-          "verified" => false,
-          "is_admin" => false
+          "id" => response["data"]["id"],
+          "token" => response["data"]["token"]
         }
       }
 
@@ -90,7 +89,7 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> post(Routes.user_path(conn, :create), user: @invalid_attrs)
         |> json_response(422)
 
-      expected = %{"errors" => %{"email" => ["can't be blank"]}}
+      expected = %{"errors" => %{"email" => ["can't be blank"], "password" => ["can't be blank"]}}
 
       assert response == expected
     end
@@ -106,7 +105,7 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> post(Routes.user_path(conn, :create), user: @valid_attrs)
         |> json_response(403)
 
-      expected = %{"errors" => %{"detail" => "Forbidden"}}
+      expected = %{"errors" => %{"detail" => "FORBIDDEN"}}
 
       assert response == expected
     end
@@ -127,12 +126,12 @@ defmodule FormDelegateWeb.UserControllerTest do
 
       expected = %{
         "data" => %{
-          "id" => response["data"]["id"],
+          "confirmed_at" => nil,
           "email" => "updateduser@formdelegate.com",
-          "name" => "Updated Form User",
           "form_count" => 0,
-          "verified" => false,
-          "is_admin" => false
+          "id" => response["data"]["id"],
+          "is_admin" => false,
+          "name" => "Updated Form User"
         }
       }
 
@@ -158,12 +157,12 @@ defmodule FormDelegateWeb.UserControllerTest do
 
       expected = %{
         "data" => %{
-          "id" => user.id,
+          "confirmed_at" => nil,
           "email" => user.email,
-          "name" => user.name,
           "form_count" => user.form_count,
-          "verified" => user.verified,
-          "is_admin" => user.is_admin
+          "id" => user.id,
+          "is_admin" => user.is_admin,
+          "name" => user.name
         }
       }
 
@@ -190,12 +189,12 @@ defmodule FormDelegateWeb.UserControllerTest do
 
       expected = %{
         "data" => %{
-          "id" => other_user.id,
+          "confirmed_at" => nil,
           "email" => other_user.email,
-          "name" => other_user.name,
           "form_count" => other_user.form_count,
-          "verified" => other_user.verified,
-          "is_admin" => other_user.is_admin
+          "id" => other_user.id,
+          "is_admin" => other_user.is_admin,
+          "name" => other_user.name
         }
       }
 
@@ -214,12 +213,12 @@ defmodule FormDelegateWeb.UserControllerTest do
 
       expected = %{
         "data" => %{
-          "id" => user.id,
+          "confirmed_at" => nil,
           "email" => user.email,
-          "name" => user.name,
           "form_count" => user.form_count,
-          "verified" => user.verified,
-          "is_admin" => user.is_admin
+          "id" => user.id,
+          "is_admin" => user.is_admin,
+          "name" => user.name
         }
       }
 
@@ -235,7 +234,9 @@ defmodule FormDelegateWeb.UserControllerTest do
       end
     end
 
-    test "Returns an error and does not show the user info if other user", %{conn: conn} do
+    test "Returns an error and does not show another user's info", %{
+      conn: conn
+    } do
       user = FormDelegate.Factory.insert(:user)
 
       other_user = FormDelegate.Factory.insert(:user)
@@ -244,10 +245,10 @@ defmodule FormDelegateWeb.UserControllerTest do
       response =
         conn
         |> put_req_header("authorization", "bearer: " <> other_user_jwt)
-        |> get(Routes.user_path(conn, :show, user))
+        |> get(Routes.user_path(conn, :show, user.id))
         |> json_response(403)
 
-      expected = %{"errors" => %{"detail" => "Forbidden"}}
+      expected = %{"errors" => %{"detail" => "FORBIDDEN"}}
 
       assert response == expected
     end
@@ -272,9 +273,11 @@ defmodule FormDelegateWeb.UserControllerTest do
       end
     end
 
-    test "Returns an error and does not delete the user if other user", %{conn: conn} do
+    test "Returns an error and does not delete another user", %{
+      conn: conn
+    } do
       user = FormDelegate.Factory.insert(:user)
-      {:ok, user_jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(user)
+      {:ok, jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(user)
 
       other_user = FormDelegate.Factory.insert(:user)
       {:ok, other_user_jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(other_user)
@@ -286,18 +289,18 @@ defmodule FormDelegateWeb.UserControllerTest do
 
       response =
         conn
-        |> put_req_header("authorization", "bearer: " <> user_jwt)
+        |> put_req_header("authorization", "bearer: " <> jwt)
         |> get(Routes.user_path(conn, :show, user))
         |> json_response(200)
 
       expected = %{
         "data" => %{
-          "id" => user.id,
+          "confirmed_at" => nil,
           "email" => user.email,
-          "name" => user.name,
           "form_count" => user.form_count,
-          "verified" => user.verified,
-          "is_admin" => user.is_admin
+          "id" => user.id,
+          "is_admin" => user.is_admin,
+          "name" => user.name
         }
       }
 

@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width" />
-    <title>New Form Submission - Form Delegate</title>
+    <title>Welcome to Form Delegate</title>
   </head>
 
   <body leftmargin="0" marginwidth="0" marginheight="0" offset="0" topmargin="0">
@@ -27,33 +27,18 @@
                 <table border="0" cellpadding="20" cellspacing="0" width="100%" id="emailBody">
                   <tr>
                     <td align="center" valign="top">
-                      <%= @user.name %>, you've received a new submission via Form Delegate!
+                      Welcome to Form Delegate!
                     </td>
                   </tr>
                   <tr>
                     <td align="left">
-                      <%= @submission.content %>
+                      Thank you for signing up to Form Delegate. Please verify your account by visiting the below link:
                     </td>
                   </tr>
 
                   <tr>
                     <td align="left">
-                      <ul>
-                        <%= for {key, value} <- @submission.unknown_fields do %>
-                          <li><%= key %>: <%= value %></li>
-                        <% end %>
-                      </ul>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td align="center" valign="top">
-                <table border="0" cellpadding="20" cellspacing="0" width="100%" id="emailFooter">
-                  <tr>
-                    <td align="center" valign="top">
-                      FormDelegate.com
+                      <%= Routes.user_confirmation_url(FormDelegateWeb.Endpoint, :confirm, token: @user.confirmation_token) %>
                     </td>
                   </tr>
                 </table>

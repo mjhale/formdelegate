@@ -1,4 +1,4 @@
-<%= @user.name %>, you've received a new submission via Form Delegate!
+<%= @user.name %>, you've received a new form submission!
 
 <%= if @submission.sender do %>
   Sender: <%= @submission.sender %>

@@ -3,11 +3,15 @@ defmodule FormDelegateWeb.Authorizer do
   alias FormDelegate.Forms.Form
   alias FormDelegate.Submissions.Submission
 
+  def authorize(:create_submission, _current_user) do
+    :ok
+  end
+
   def authorize(:create_form, %User{} = _current_user) do
     :ok
   end
 
-  def authorize(:create_user, current_user) do
+  def authorize(:register_user, current_user) do
     if current_user == :guest do
       :ok
     else

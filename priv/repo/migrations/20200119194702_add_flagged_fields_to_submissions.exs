@@ -6,7 +6,7 @@ defmodule FormDelegate.Repo.Migrations.AddFlaggedFieldsToSubmissions do
       add(:type, :string)
       add(:description, :string)
 
-      timestamps()
+      timestamps(type: :timestamptz)
     end
 
     alter table("submissions") do

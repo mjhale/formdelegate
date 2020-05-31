@@ -4,6 +4,8 @@ defmodule FormDelegate.Submissions.FlaggedType do
 
   alias FormDelegate.Submissions.{Submission, FlaggedType}
 
+  @timestamps_opts [type: :utc_datetime_usec]
+
   schema "flagged_types" do
     field :type, :string
     field :description, :string

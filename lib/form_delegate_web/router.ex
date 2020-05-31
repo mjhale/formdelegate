@@ -32,7 +32,7 @@ defmodule FormDelegateWeb.Router do
   end
 
   scope "/v1", FormDelegateWeb do
-    pipe_through [:api, :check_authenticated, :load_user]
+    pipe_through :api
 
     post "/submissions/:form_id", SubmissionController, :create, as: :submission
 
@@ -41,6 +41,13 @@ defmodule FormDelegateWeb.Router do
       singleton: true
 
     resources "/users", UserController, only: [:create]
+
+    post "/users/confirm", UserConfirmationController, :create, as: :user_confirmation
+    get "/users/confirm", UserConfirmationController, :confirm, as: :user_confirmation
+
+    post "/users/reset-password", ResetPasswordController, :create, as: :reset_password
+    put "/users/reset-password", ResetPasswordController, :update, as: :reset_password
+    patch "/users/reset-password", ResetPasswordController, :update, as: :reset_password
   end
 
   scope "/v1", FormDelegateWeb do
