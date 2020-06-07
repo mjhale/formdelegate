@@ -1,5 +1,4 @@
 import { CALL_API } from 'middleware/api';
-import { getCurrentUserId } from 'utils';
 import { userSchema } from 'schema';
 
 import {
@@ -57,10 +56,6 @@ export const adminUpdateUser = user => {
       },
     });
 
-    if (actionResponse.error) {
-      throw new Error('Promise flow received action error', actionResponse);
-    }
-
     return actionResponse;
   };
 };
@@ -79,34 +74,32 @@ export function createUser(user) {
           method: 'POST',
         },
         endpoint: '/v1/users',
-        schema: userSchema,
+        schema: null,
         types: [USER_CREATE_REQUEST, USER_CREATE_SUCCESS, USER_CREATE_FAILURE],
       },
     });
-
-    if (actionResponse.error) {
-      throw new Error('Promise flow received action error', actionResponse);
-    }
 
     return actionResponse;
   };
 }
 
-export const fetchUser = userId => ({
-  [CALL_API]: {
-    authenticated: true,
-    endpoint: `/v1/users/${userId}`,
-    schema: userSchema,
-    types: [CURRENT_USER_REQUEST, CURRENT_USER_SUCCESS, CURRENT_USER_FAILURE],
-  },
-});
+export const fetchUser = userId => {
+  return async (dispatch, getState) => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        authenticated: true,
+        endpoint: `/v1/users/${userId}`,
+        schema: userSchema,
+        types: [
+          CURRENT_USER_REQUEST,
+          CURRENT_USER_SUCCESS,
+          CURRENT_USER_FAILURE,
+        ],
+      },
+    });
 
-export const fetchCurrentUser = () => {
-  const currentUserId = getCurrentUserId(localStorage.getItem('fd_token'));
-
-  if (currentUserId) {
-    return fetchUser(currentUserId);
-  }
+    return actionResponse;
+  };
 };
 
 export const updateUser = user => {
@@ -127,10 +120,6 @@ export const updateUser = user => {
         types: [USER_UPDATE_REQUEST, USER_UPDATE_SUCCESS, USER_UPDATE_FAILURE],
       },
     });
-
-    if (actionResponse.error) {
-      throw new Error('Promise flow received action error', actionResponse);
-    }
 
     return actionResponse;
   };

@@ -92,7 +92,7 @@ export default store => next => action => {
       }),
     error => {
       return next({
-        error: error.error || 'There was an unknown error',
+        error: error.message || 'There was an unknown error',
         isFetching: false,
         type: errorType,
       });

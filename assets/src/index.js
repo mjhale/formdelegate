@@ -6,7 +6,8 @@ import { Provider } from 'react-redux';
 
 import theme from 'constants/theme';
 import store from 'store';
-import { RootRouter } from 'router';
+
+import App from 'components/App';
 
 const GlobalStyle = createGlobalStyle`
   ${normalize()}
@@ -23,7 +24,7 @@ ReactDOM.render(
   <Provider store={store}>
     <React.Fragment>
       <GlobalStyle />
-      <RootRouter />
+      <App />
     </React.Fragment>
   </Provider>,
   document.getElementById('root')

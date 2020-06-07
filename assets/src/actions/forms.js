@@ -39,10 +39,6 @@ export function createForm(form) {
       },
     });
 
-    if (actionResponse.error) {
-      throw new Error('Promise flow received action error', actionResponse);
-    }
-
     return actionResponse;
   };
 }
@@ -112,10 +108,6 @@ export function updateForm(form) {
         types: [FORM_UPDATE_REQUEST, FORM_UPDATE_SUCCESS, FORM_UPDATE_FAILURE],
       },
     });
-
-    if (actionResponse.error) {
-      throw new Error('Promise flow received action error', actionResponse);
-    }
 
     return actionResponse;
   };

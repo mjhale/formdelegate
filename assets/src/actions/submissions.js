@@ -46,10 +46,6 @@ export function fetchSubmission(submissionId) {
       },
     });
 
-    if (actionResponse.error) {
-      throw new Error('Promise flow received action error', actionResponse);
-    }
-
     return actionResponse.payload;
   };
 }
@@ -68,10 +64,6 @@ export function fetchSubmissionActivity() {
         ],
       },
     });
-
-    if (actionResponse.error) {
-      throw new Error('Promise flow received action error', actionResponse);
-    }
 
     return actionResponse.payload;
   };
@@ -205,10 +197,6 @@ export function markSubmissionAsHam(submissionId) {
       },
     });
 
-    if (actionResponse.error) {
-      throw new Error('Promise flow received action error', actionResponse);
-    }
-
     return actionResponse;
   };
 }
@@ -234,10 +222,6 @@ export function markSubmissionAsSpam(submissionId) {
         ],
       },
     });
-
-    if (actionResponse.error) {
-      throw new Error('Promise flow received action error', actionResponse);
-    }
 
     return actionResponse;
   };

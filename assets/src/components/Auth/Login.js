@@ -5,10 +5,12 @@ import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { withRouter } from 'react-router-dom';
 
+import theme from 'constants/theme';
 import { loginUser } from 'actions/sessions';
 
 import Card from 'components/Card';
 import Flash from 'components/Flash';
+import Link from 'components/Link';
 import LoginForm from 'components/Auth/LoginForm';
 
 const validate = values => {
@@ -33,6 +35,16 @@ const LogInHeader = styled.h1`
   font-size: 1.75rem;
   font-weight: 300;
   margin: 0 0 2rem 0;
+  text-align: center;
+`;
+
+const StyledSignUpLink = styled(Link)`
+  color: ${theme.primaryColor};
+`;
+
+const StyledSignUpWrapper = styled.div`
+  color: ${theme.mineBlack};
+  font-size: 0.9rem;
   text-align: center;
 `;
 
@@ -70,18 +82,24 @@ class Login extends React.Component {
     }
 
     return (
-      <Card>
-        <LogInContainer>
-          <LogInHeader>Sign In</LogInHeader>
-          {authErrorMessage && <Flash type="error">{authErrorMessage}</Flash>}
-          <LoginForm
-            {...fields}
-            onSubmit={handleSubmit(this.handleLogin)}
-            pristine={pristine}
-            submitting={submitting}
-          />
-        </LogInContainer>
-      </Card>
+      <>
+        <Card>
+          <LogInContainer>
+            <LogInHeader>Sign In</LogInHeader>
+            {authErrorMessage && <Flash type="error">{authErrorMessage}</Flash>}
+            <LoginForm
+              {...fields}
+              onSubmit={handleSubmit(this.handleLogin)}
+              pristine={pristine}
+              submitting={submitting}
+            />
+          </LogInContainer>
+        </Card>
+        <StyledSignUpWrapper>
+          <span>Don't have an account? </span>
+          <StyledSignUpLink href="/register">Sign up</StyledSignUpLink>
+        </StyledSignUpWrapper>
+      </>
     );
   }
 }
@@ -100,9 +118,4 @@ const mapDispatchToProps = {
   loginUser,
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(Login)
-);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Login));

@@ -54,14 +54,13 @@ export const NavItem = styled(NavLink).attrs({ activeClassName: 'active' })`
 
 class Nav extends React.Component {
   static propTypes = {
-    isAdmin: PropTypes.bool.isRequired,
+    currentUser: PropTypes.object,
     isAuthenticated: PropTypes.bool.isRequired,
     isFetching: PropTypes.bool.isRequired,
     isSmallDevice: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
-    isAdmin: false,
     isAuthenticated: false,
   };
 
@@ -104,12 +103,17 @@ class Nav extends React.Component {
   };
 
   render() {
-    const { isAdmin, isAuthenticated, isFetching, isSmallDevice } = this.props;
+    const {
+      currentUser,
+      isAuthenticated,
+      isFetching,
+      isSmallDevice,
+    } = this.props;
     const { isNavVisible } = this.state;
 
     const navItems = isAuthenticated ? (
       <AuthenticatedNav
-        isAdmin={isAdmin}
+        isAdmin={currentUser ? currentUser.is_admin : false}
         isFetching={isFetching}
         onClick={this.handleNavClick}
       />
@@ -131,11 +135,10 @@ class Nav extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const user = getCurrentUser(state);
   const { isAuthenticated, isFetching } = state.authentication;
 
   return {
-    isAdmin: user && user.is_admin,
+    currentUser: getCurrentUser(state),
     isAuthenticated,
     isFetching,
     isSmallDevice: state.browser.lessThan.medium,

@@ -8,12 +8,17 @@ export default (state = [], action) => {
         {
           dismissable: action.dismissable,
           id: action.id,
+          key: action.key,
           level: action.level,
           message: action.message,
         },
       ];
     case NOTIFICATION_HIDE:
-      return state.filter(notification => notification.id !== action.id);
+      return state.filter(
+        notification =>
+          (action.id && notification.id !== action.id) ||
+          (action.key && notification.key !== action.key)
+      );
     default:
       return state;
   }

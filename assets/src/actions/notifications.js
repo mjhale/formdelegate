@@ -1,27 +1,32 @@
 import { NOTIFICATION_SHOW, NOTIFICATION_HIDE } from 'constants/actionTypes';
 
-let nextNotificationid = 0;
+let nextNotificationNumericalId = 0;
 
-const showNotification = ({ dismissable, id, level, message }) => {
+const showNotification = ({ dismissable, id, key, level, message }) => {
   return {
     type: NOTIFICATION_SHOW,
     dismissable,
     id,
+    key,
     level,
     message,
   };
 };
 
-export const hideNotification = id => {
+export const hideNotification = ({ id, key }) => {
   return {
     type: NOTIFICATION_HIDE,
     id,
+    key,
   };
 };
 
 export const addNotification = payload => {
   return dispatch => {
-    payload.id = nextNotificationid++;
+    if (!payload.id) {
+      payload.id = nextNotificationNumericalId++;
+    }
+
     dispatch(showNotification(payload));
 
     // Return the notification's id to the caller
@@ -31,11 +36,14 @@ export const addNotification = payload => {
 
 export const addNotificationWithTimeout = payload => {
   return dispatch => {
-    payload.id = nextNotificationid++;
+    if (!payload.id) {
+      payload.id = nextNotificationNumericalId++;
+    }
+
     dispatch(showNotification(payload));
 
     setTimeout(() => {
-      dispatch(hideNotification(payload.id));
+      dispatch(hideNotification({ id: payload.id }));
     }, payload.hideTimeout || 5000);
   };
 };

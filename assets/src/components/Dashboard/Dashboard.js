@@ -3,22 +3,17 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { fetchSubmissionActivity } from 'actions/submissions';
-import { getCurrentUser, getSubmissionActivity } from 'selectors';
+import { getCurrentUser } from 'selectors';
+import { getSubmissionActivity } from 'selectors';
 
 import Card from 'components/Card';
-import Flash from 'components/Flash';
 import SubmissionActivity from 'components/SubmissionActivity';
-
-const UnverifiedAlert = () => (
-  <Flash type="alert">Please verify your e-mail address.</Flash>
-);
 
 class DashboardContainer extends React.Component {
   static propTypes = {
+    currentUser: PropTypes.object,
     fetchSubmissionActivity: PropTypes.func.isRequired,
-    isFetching: PropTypes.bool.isRequired,
     submissionActivity: PropTypes.array,
-    user: PropTypes.object,
   };
 
   componentDidMount() {
@@ -26,15 +21,13 @@ class DashboardContainer extends React.Component {
   }
 
   render() {
-    const { isFetching, submissionActivity, user } = this.props;
+    const { currentUser, submissionActivity } = this.props;
 
-    if (isFetching || !submissionActivity || !user) return null;
+    if (!currentUser || !submissionActivity) return null;
 
     return (
       <React.Fragment>
-        {!user.verified && <UnverifiedAlert />}
-
-        <h1>{user.name}'s Dashboard</h1>
+        <h1>{currentUser.name}'s Dashboard</h1>
 
         <SubmissionActivity activity={submissionActivity} />
 
@@ -46,9 +39,8 @@ class DashboardContainer extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  isFetching: state.users.isFetching,
+  currentUser: getCurrentUser(state),
   submissionActivity: getSubmissionActivity(state),
-  user: getCurrentUser(state),
 });
 
 const mapDispatchToProps = {

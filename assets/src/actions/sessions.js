@@ -1,8 +1,9 @@
 import { reset } from 'redux-form';
 import { CALL_API } from 'middleware/api';
-import { fetchCurrentUser } from 'actions/users';
 
-// action type constants
+import { fetchUser } from 'actions/users';
+import { getCurrentUserId } from 'utils';
+
 import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
@@ -46,7 +47,7 @@ const loginSuccess = response => {
     try {
       await dispatch(reset('loginForm'));
       await localStorage.setItem('fd_token', response.payload.data.token);
-      await dispatch(fetchCurrentUser());
+      await dispatch(fetchUser(getCurrentUserId()));
     } catch (error) {
       throw new Error('Promise flow received error', error);
     }

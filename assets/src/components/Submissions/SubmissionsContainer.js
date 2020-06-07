@@ -43,9 +43,8 @@ class SubmissionsContainer extends React.Component {
   componentDidMount() {
     const { addSubmission, loadSubmissions, location } = this.props;
     const searchQuery = parse(location.search);
-    const startingPage = 1;
 
-    loadSubmissions(startingPage, searchQuery && searchQuery.search);
+    loadSubmissions(1, searchQuery && searchQuery.search);
     submissionListener(addSubmission);
   }
 
@@ -109,7 +108,7 @@ class SubmissionsContainer extends React.Component {
   };
 
   handleSearch = values => {
-    const { history } = this.props;
+    const { history, loadSubmissions } = this.props;
     const searchQuery = values.search;
 
     if (searchQuery) {
@@ -117,6 +116,8 @@ class SubmissionsContainer extends React.Component {
     } else {
       history.push();
     }
+
+    loadSubmissions(1, searchQuery);
   };
 
   render() {

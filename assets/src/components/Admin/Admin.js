@@ -46,12 +46,12 @@ const AdminLink = styled(NavLink).attrs({ activeClassName: 'active' })`
   }
 `;
 
-const Admin = ({ isAdmin, isFetching, showAuthorizationError, user }) => {
-  if (isFetching || !user) {
+const Admin = ({ currentUser, showAuthorizationError }) => {
+  if (!currentUser) {
     return null;
   }
 
-  if (!isAdmin) {
+  if (!currentUser.is_admin) {
     showAuthorizationError();
     return null;
   }
@@ -98,21 +98,13 @@ const Admin = ({ isAdmin, isFetching, showAuthorizationError, user }) => {
 };
 
 Admin.propTypes = {
-  isAdmin: PropTypes.bool,
+  currentUser: PropTypes.object,
   showAuthorizationError: PropTypes.func.isRequired,
-  user: PropTypes.object,
 };
 
-const mapStateToProps = state => {
-  const user = getCurrentUser(state);
-  const { authentication } = state;
-
-  return {
-    isAdmin: user && user.is_admin,
-    isFetching: authentication.isFetching,
-    user: getCurrentUser(state),
-  };
-};
+const mapStateToProps = state => ({
+  currentUser: getCurrentUser(state),
+});
 
 const mapDispatchToProps = dispatch => ({
   showAuthorizationError: () => {
@@ -126,7 +118,4 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Admin);
+export default connect(mapStateToProps, mapDispatchToProps)(Admin);

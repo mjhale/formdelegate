@@ -79,11 +79,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   handleDismissal: (notificationId, evt) => {
     evt.preventDefault();
-    dispatch(hideNotification(notificationId));
+    dispatch(hideNotification({ id: notificationId }));
   },
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Notifications);
+export default connect(mapStateToProps, mapDispatchToProps)(Notifications);

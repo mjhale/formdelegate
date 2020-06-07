@@ -63,8 +63,8 @@ const LoginForm = props => {
         </LoginButton>
       </form>
       <LoginSecondaryActions>
-        Remember me
-        <LoginHelp href="/LoginHelp">Need help?</LoginHelp>
+        <span></span>
+        <LoginHelp href="/reset">Need help?</LoginHelp>
       </LoginSecondaryActions>
     </React.Fragment>
   );

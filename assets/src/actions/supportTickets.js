@@ -33,10 +33,6 @@ export const createSupportTicket = ticket => {
       },
     });
 
-    if (actionResponse.error) {
-      throw new Error('Promise flow received action error', actionResponse);
-    }
-
     return actionResponse;
   };
 };

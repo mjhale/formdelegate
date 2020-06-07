@@ -12,21 +12,20 @@ import Card from 'components/Card';
 
 class UserSettings extends React.Component {
   static propTypes = {
+    currentUser: PropTypes.object,
     handleSubmit: PropTypes.func.isRequired,
-    isFetching: PropTypes.bool.isRequired,
     updateUser: PropTypes.func.isRequired,
-    user: PropTypes.object,
   };
 
-  handleUserUpdate = user => {
+  handleUserUpdate = currentUser => {
     // @TODO: Add alert for update action
-    this.props.updateUser(user);
+    this.props.updateUser(currentUser);
   };
 
   render() {
-    const { handleSubmit, isFetching, submitting, user } = this.props;
+    const { currentUser, handleSubmit, submitting } = this.props;
 
-    if (!user || isFetching) {
+    if (!currentUser) {
       return <div>Loading...</div>;
     }
 
@@ -67,16 +66,14 @@ class UserSettings extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const user = getCurrentUser(state);
-
+  const currentUser = getCurrentUser(state);
   return {
+    currentUser,
     initialValues: {
-      id: user && user.id,
-      name: user && user.name,
-      email: user && user.email,
+      id: currentUser && currentUser.id,
+      name: currentUser && currentUser.name,
+      email: currentUser && currentUser.email,
     },
-    isFetching: state.users.isFetching,
-    user,
   };
 };
 
@@ -89,7 +86,4 @@ UserSettings = reduxForm({
   form: 'settingsForm',
 })(UserSettings);
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(UserSettings);
+export default connect(mapStateToProps, mapDispatchToProps)(UserSettings);

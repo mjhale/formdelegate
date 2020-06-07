@@ -1,24 +1,31 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { addNotification } from 'actions/notifications';
-import { fetchCurrentUser } from 'actions/users';
-import { isTokenCurrent } from 'utils';
+import { addNotification, hideNotification } from 'actions/notifications';
+import { fetchUser } from 'actions/users';
+import { resendUserConfirmation } from 'actions/userConfirmation';
+import { getCurrentUser } from 'selectors';
+import { getCurrentUserId, isTokenCurrent } from 'utils';
 
-import Routes from 'router';
+import Link from 'components/Link';
+import Routes from 'components/Routes';
 
 class App extends React.Component {
-  static propTypes = {
-    addNotification: PropTypes.func.isRequired,
-    fetchCurrentUser: PropTypes.func.isRequired,
-  };
+  constructor(props) {
+    super(props);
+
+    this.handleResendUserConfirmation = this.handleResendUserConfirmation.bind(
+      this
+    );
+  }
 
   componentDidMount() {
-    const encodedJWT = localStorage.getItem('fd_token');
+    const currentUserId = getCurrentUserId();
 
-    if (isTokenCurrent(encodedJWT)) {
-      this.props.fetchCurrentUser();
+    if (currentUserId && isTokenCurrent()) {
+      this.props.fetchUser(currentUserId);
     }
 
     // Show alpha notice
@@ -28,19 +35,80 @@ class App extends React.Component {
       message:
         'Form Delegate is currently in alpha and should be considered unstable.',
     });
+
+    if (this.props.currentUser?.confirmed_at === null) {
+      this.showUserUnconfirmedNotification();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.currentUser?.confirmed_at !==
+      this.props.currentUser?.confirmed_at
+    ) {
+      if (this.props.currentUser?.confirmed_at === null) {
+        this.showUserUnconfirmedNotification();
+      }
+    }
+  }
+
+  showUserUnconfirmedNotification() {
+    this.props.addNotification({
+      dismissable: false,
+      key: 'UNCONFIRMED_USER',
+      level: 'notice',
+      message: (
+        <>
+          Please verify your e-mail address.{' '}
+          <Link
+            href="/user-confirmation"
+            onPress={this.handleResendUserConfirmation}
+          >
+            Resend email
+          </Link>
+        </>
+      ),
+    });
+  }
+
+  handleResendUserConfirmation(evt) {
+    evt.preventDefault();
+    this.props.hideNotification({
+      key: 'UNCONFIRMED_USER',
+    });
+
+    this.props.addNotification({
+      dismissable: true,
+      level: 'success',
+      message: 'The confirmation email should appear in your inbox shortly.',
+    });
+
+    this.props.resendUserConfirmation(this.props.currentUser);
   }
 
   render() {
-    return <Routes />;
+    return (
+      <BrowserRouter>
+        <Routes />;
+      </BrowserRouter>
+    );
   }
 }
 
-const mapDispatchToProps = {
-  addNotification,
-  fetchCurrentUser,
+App.propTypes = {
+  addNotification: PropTypes.func.isRequired,
+  currentUser: PropTypes.object,
 };
 
-export default connect(
-  null,
-  mapDispatchToProps
-)(App);
+const mapStateToProps = state => ({
+  currentUser: getCurrentUser(state),
+});
+
+const mapDispatchToProps = {
+  addNotification,
+  hideNotification,
+  fetchUser,
+  resendUserConfirmation,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
