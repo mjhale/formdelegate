@@ -94,10 +94,14 @@ const Routes = props => {
         component={FormEdit}
       />
       <LayoutRoute exact path="/login" layout={AuthLayout} component={Login} />
-      <LayoutRoute exact path="/logout" component={Logout} />
+      <AuthenticatedLayoutRoute exact path="/logout" component={Logout} />
       <LayoutRoute exact path="/pricing" component={Pricing} />
       <LayoutRoute exact path="/register" component={Register} />
-      <LayoutRoute exact path="/settings" component={UserSettings} />
+      <AuthenticatedLayoutRoute
+        exact
+        path="/settings"
+        component={UserSettings}
+      />
       <AuthenticatedLayoutRoute
         exact
         path="/submissions"

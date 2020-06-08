@@ -7,5 +7,7 @@
   "userlist_th_id": "",
   "userlist_th_is_admin": "Admin",
   "userlist_th_name": "Name",
-  "userlist_th_verified": "Verified"
+  "userlist_th_verified": "Verified",
+
+  "INVALID_OR_EXPIRED_CONFIRMATION_TOKEN": "Sorry, your confirmation link has expired."
 }

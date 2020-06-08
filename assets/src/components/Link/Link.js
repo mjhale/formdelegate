@@ -1,10 +1,27 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import styled from 'styled-components/macro';
 import { Link as RouterLink } from 'react-router-dom';
 
 import ExternalLink from 'components/Link/ExternalLink';
 
-const Link = props => {
+const UnstyledLink = styled(Link)`
+  background-color: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  margin: 0;
+  padding: 0;
+  text-align: inherit;
+  text-decoration: none;
+  outline: none;
+`;
+
+function Link(props) {
   const { children, className, href, onPress } = props;
 
   if (href.includes('http') || href.includes('https')) {
@@ -20,7 +37,7 @@ const Link = props => {
       {children}
     </RouterLink>
   );
-};
+}
 
 Link.propTypes = {
   children: PropTypes.node.isRequired,
@@ -29,4 +46,4 @@ Link.propTypes = {
   onPress: PropTypes.func,
 };
 
-export default Link;
+export default UnstyledLink;

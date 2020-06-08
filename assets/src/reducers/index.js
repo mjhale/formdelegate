@@ -2,23 +2,27 @@ import { combineReducers } from 'redux';
 import { reducer as reduxFormReducer } from 'redux-form';
 import { createResponsiveStateReducer } from 'redux-responsive';
 
-import userReducer from 'reducers/user';
 import authenticationReducer from 'reducers/authentication';
 import entityReducer from 'reducers/entity';
 import formReducer from 'reducers/form';
 import integrationReducer from 'reducers/integration';
-import submissionReducer from 'reducers/submission';
 import notificationReducer from 'reducers/notification';
+import submissionReducer from 'reducers/submission';
+import userReducer from 'reducers/user';
+import userConfirmationReducer from 'reducers/userConfirmation';
+import userResetPassword from 'reducers/userResetPassword';
 import { breakpoints } from 'utils/style';
 
 const reducers = {
-  users: userReducer,
   authentication: authenticationReducer,
   entities: entityReducer,
   forms: formReducer,
   integrations: integrationReducer,
-  submissions: submissionReducer,
   notifications: notificationReducer,
+  submissions: submissionReducer,
+  users: userReducer,
+  userConfirmation: userConfirmationReducer,
+  userResetPassword: userResetPassword,
 
   browser: createResponsiveStateReducer(
     {
