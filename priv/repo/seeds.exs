@@ -97,29 +97,25 @@ Repo.insert!(%Forms.Integration{
 
 # Seed Submissions
 Repo.insert!(%Submission{
-  content: "We need more tests!",
-  user: admin_user,
+  body: "We need more tests!",
   form: admin_contact_form,
   sender: "Anonymous"
 })
 
 Repo.insert!(%Submission{
-  content: "There's a bug in some code.",
-  user: admin_user,
+  body: "There's a bug in some code.",
   form: admin_error_form,
   sender: "Merk"
 })
 
 Repo.insert!(%Submission{
-  content: "And also better architecture.",
-  user: admin_user,
+  body: "And also better architecture.",
   form: admin_contact_form,
   sender: "Anonymous"
 })
 
 Repo.insert!(%Submission{
-  content: "Let's meet at 6:30 pm at the coffee shop.",
-  user: user,
+  body: "Let's meet at 6:30 pm at the coffee shop.",
   form: user_form,
   sender: "sam@gmail.com"
 })

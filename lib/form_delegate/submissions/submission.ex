@@ -1,44 +1,56 @@
 defmodule FormDelegate.Submissions.Submission do
   use Ecto.Schema
+  use Waffle.Ecto.Schema
   import Ecto.Changeset
 
-  alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
-  alias FormDelegate.Submissions.{Submission, FlaggedType}
+  alias FormDelegate.Submissions.{Attachment, FlaggedType, Submission}
 
+  @primary_key {:id, :binary_id, autogenerate: true}
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "submissions" do
-    field :content, :string
-    field :flagged_at, :naive_datetime
-
     field :sender, :string, null: false
+    field :body, :string
+
+    field :flagged_at, :naive_datetime
 
     field :sender_ip, :string
     field :sender_referrer, :string
     field :sender_user_agent, :string
 
-    field :unknown_fields, :map
+    field :fields, {:map, :string}
+    has_many :attachments, Attachment
 
     belongs_to :form, Form, type: Ecto.UUID
-    belongs_to :user, User
     belongs_to :flagged_type, FlaggedType, on_replace: :update
 
     timestamps()
   end
 
   @doc false
-  def changeset(%Submission{} = submission, attrs \\ %{}) do
+  def insert_changeset(%Submission{} = submission, attrs \\ %{}) do
     submission
     |> cast(attrs, [
-      :content,
+      :body,
+      :fields,
+      :form_id,
       :sender,
       :sender_ip,
       :sender_referrer,
-      :sender_user_agent,
-      :unknown_fields
+      :sender_user_agent
     ])
-    |> validate_required_inclusion([:content, :sender, :unknown_fields])
+    |> foreign_key_constraint(:form_id)
+    |> validate_required_inclusion([:body, :fields, :sender])
+  end
+
+  @doc false
+  def update_changeset(submission, attrs \\ %{}) do
+    submission
+    |> insert_changeset(attrs)
+    |> cast_assoc(:attachments,
+      with: &Attachment.insert_changeset(Map.put(&1, :submission_id, submission.id), &2)
+    )
   end
 
   @doc false
@@ -48,16 +60,16 @@ defmodule FormDelegate.Submissions.Submission do
     |> put_assoc(:flagged_type, attrs[:flagged_type])
   end
 
+  defp present?(changeset, field) do
+    value = get_field(changeset, field)
+    value && (value != "" && value != %{})
+  end
+
   defp validate_required_inclusion(changeset, fields) do
     if Enum.any?(fields, &present?(changeset, &1)) do
       changeset
     else
       add_error(changeset, hd(fields), "One of these fields must be present: #{inspect(fields)}")
     end
-  end
-
-  defp present?(changeset, field) do
-    value = get_field(changeset, field)
-    value && (value != "" && value != %{})
   end
 end

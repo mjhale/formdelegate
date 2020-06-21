@@ -38,35 +38,37 @@ defmodule FormDelegate.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.1"},
+      {:phoenix, "~> 1.5.3"},
       {:phoenix_pubsub, "~> 2.0.0"},
-      {:ecto_sql, "~> 3.4.3"},
+      {:ecto_sql, "~> 3.4.4"},
       {:phoenix_ecto, "~> 4.1.0"},
-      {:postgrex, "~> 0.15.4"},
+      {:postgrex, "~> 0.15.5"},
       {:phoenix_html, "~> 2.14.2"},
       {:jason, "~> 1.2.1"},
       {:gettext, "~> 0.18.0"},
-      {:plug_cowboy, "~> 2.2.1"},
+      {:plug_cowboy, "~> 2.3.0"},
       {:guardian, "~> 2.1.1"},
       {:guardian_phoenix, "~> 2.0"},
       {:pbkdf2_elixir, "~> 1.2.1"},
       {:bamboo, "~> 1.5.0"},
       {:bamboo_sparkpost, "~> 1.1.3"},
-      {:scrivener_ecto, "~> 2.3.0"},
+      {:scrivener_ecto, "~> 2.4.0"},
       {:scrivener_headers, "~> 3.1.1"},
       {:cors_plug, "~> 2.0.2"},
       {:rihanna, "~> 2.1.1"},
       {:tesla, "~> 1.3.3"},
-      {:hackney, "~> 1.15.2"},
-
-      # @TODO Remove ecto divergency override when scrivener_ecto updates
-      {:ecto, "~> 3.4.4", override: true},
+      {:waffle, "~> 1.1.0"},
+      {:waffle_ecto, "~> 0.0.9"},
+      {:hackney, "~> 1.16.0"},
+      {:ex_aws, "~> 2.1"},
+      {:ex_aws_s3, "~> 2.0"},
+      {:sweet_xml, "~> 0.6"},
 
       # dev, test
       {:ex_machina, "~> 2.4.0", only: :test},
       {:credo, "~> 1.4.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0.0", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.10.2", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.10.3", only: [:dev, :test], runtime: false},
 
       # build
       {:distillery, "~> 2.1.1", runtime: false}

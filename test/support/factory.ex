@@ -21,9 +21,12 @@ defmodule FormDelegate.Factory do
 
   def submission_factory do
     %Submission{
-      user: build(:user),
-      sender: sequence(:sender, &"User #{&1}"),
-      content: sequence(:content, &"Content submission #{&1}")
+      body: "Content submission body",
+      fields: %{
+        message: "Content submission body"
+      },
+      form: build(:form),
+      sender: sequence(:sender, &"User #{&1}")
     }
   end
 

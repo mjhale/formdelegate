@@ -45,6 +45,23 @@ config :rihanna,
 # HTTP client adapter for Tesla
 config :tesla, adapter: Tesla.Adapter.Hackney
 
+# Configures ExAws and ExAws S3
+config :ex_aws,
+  json_codec: Jason,
+  access_key_id: {:system, "AWS_ACCESS_KEY_ID"},
+  secret_access_key: {:system, "AWS_SECRET_ACCESS_KEY"},
+  region: {:system, "AWS_REGION"}
+
+config :ex_aws, :s3,
+  host: {:system, "AWS_S3_HOST"},
+  scheme: {:system, "AWS_S3_SCHEME"}
+
+# Configures Waffle
+config :waffle,
+  storage: Waffle.Storage.S3,
+  bucket: {:system, "AWS_S3_BUCKET"},
+  asset_host: {:system, "AWS_S3_ASSET_HOST"}
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

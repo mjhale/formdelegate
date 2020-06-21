@@ -4,15 +4,15 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
   alias FormDelegateWeb.Router.Helpers, as: Routes
 
   @valid_attrs %{
-    sender: "Drew Fo",
-    email: "drew342194@gmail.com",
-    content: "I have an issue with an order"
+    message: "I have an issue with an order",
+    name: "Drew Fo"
   }
+
   @valid_attrs_with_spam %{
-    sender: "Guaranteed Spam",
-    email: "akismet-guaranteed-spam@example.com",
-    content: "This is certainly spam: viagra-test-123."
+    message: "This is certainly spam: viagra-test-123.",
+    name: "akismet-guaranteed-spam@example.com"
   }
+
   @invalid_attrs %{}
 
   setup %{conn: conn, user: user} do
@@ -37,7 +37,7 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
     } do
       response =
         conn
-        |> post(Routes.submission_path(conn, :create, form.id, request: @valid_attrs))
+        |> post(Routes.submission_path(conn, :create, form.id, @valid_attrs))
         |> json_response(202)
 
       expected = %{"submission" => "Accepted"}
@@ -45,13 +45,14 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
       assert response == expected
     end
 
+    @tag :debug
     test "Responds with accepted with @valid_attrs_with_spam", %{
       conn: conn,
       form: form
     } do
       response =
         conn
-        |> post(Routes.submission_path(conn, :create, form.id, request: @valid_attrs_with_spam))
+        |> post(Routes.submission_path(conn, :create, form.id, @valid_attrs_with_spam))
         |> json_response(202)
 
       expected = %{"submission" => "Accepted"}
@@ -65,28 +66,27 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
     } do
       conn =
         conn
-        |> post(Routes.submission_path(conn, :create, form.id, submission: @invalid_attrs))
+        |> post(Routes.submission_path(conn, :create, form.id, @invalid_attrs))
 
       assert json_response(conn, 422)
     end
 
-    test "Responds with error for nonexistant form", %{
+    test "Responds with :not_found  error for nonexistant form", %{
       conn: conn
     } do
-      assert_error_sent :not_found, fn ->
+      conn =
         conn
-        |> post(
-          Routes.submission_path(conn, :create, Ecto.UUID.generate(), submission: @valid_attrs)
-        )
-        |> json_response(404)
-      end
+        |> post(Routes.submission_path(conn, :create, Ecto.UUID.generate(), @valid_attrs))
+
+      assert json_response(conn, 404)
     end
   end
 
   describe "index/3" do
     @tag :as_inserted_user
     test "Responds with a list of user submissions", %{conn: conn, jwt: jwt, user: user} do
-      submission = FormDelegate.Factory.insert(:submission, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user)
+      submission = FormDelegate.Factory.insert(:submission, form: form)
 
       response =
         conn
@@ -97,17 +97,26 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
       expected = %{
         "data" => [
           %{
-            "content" => submission.content,
+            "body" => submission.body,
+            "data" => %{"message" => "Content submission body"},
             "flagged_at" => nil,
             "flagged_type" => nil,
-            "form" => nil,
+            "form" => %{
+              "form" => form.form,
+              "form_integrations" => [],
+              "host" => nil,
+              "id" => form.id,
+              "inserted_at" => DateTime.to_iso8601(form.inserted_at),
+              "submission_count" => 0,
+              "updated_at" => DateTime.to_iso8601(form.updated_at),
+              "verified" => false
+            },
             "id" => submission.id,
             "inserted_at" => DateTime.to_iso8601(submission.inserted_at),
             "sender" => submission.sender,
             "sender_ip" => nil,
             "sender_referrer" => nil,
             "sender_user_agent" => nil,
-            "unknown_fields" => nil,
             "updated_at" => DateTime.to_iso8601(submission.updated_at)
           }
         ]
@@ -124,7 +133,8 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
       jwt: jwt,
       user: user
     } do
-      submission = FormDelegate.Factory.insert(:submission, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user)
+      submission = FormDelegate.Factory.insert(:submission, form: form)
 
       response =
         conn
@@ -134,17 +144,17 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
 
       expected = %{
         "data" => %{
-          "content" => submission.content,
+          "body" => submission.body,
+          "data" => %{"message" => "Content submission body"},
           "flagged_at" => nil,
           "flagged_type" => nil,
-          "form" => nil,
+          "form" => response["data"]["form"],
           "id" => submission.id,
           "inserted_at" => DateTime.to_iso8601(submission.inserted_at),
           "sender" => submission.sender,
           "sender_ip" => nil,
           "sender_referrer" => nil,
           "sender_user_agent" => nil,
-          "unknown_fields" => nil,
           "updated_at" => DateTime.to_iso8601(submission.updated_at)
         }
       }

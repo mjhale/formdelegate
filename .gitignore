@@ -50,6 +50,9 @@ Thumbs.db
 # Ignore static build assets
 priv/static
 
+# Ignore Waffle uploads in dev
+priv/waffle
+
 # Misc
 /.env
 .env.local

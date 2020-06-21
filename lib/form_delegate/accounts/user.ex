@@ -27,7 +27,6 @@ defmodule FormDelegate.Accounts.User do
 
     field :is_admin, :boolean, default: false, null: false
 
-    has_many :submissions, FormDelegate.Submissions.Submission, on_delete: :delete_all
     has_many :forms, FormDelegate.Forms.Form, on_delete: :delete_all
 
     timestamps()

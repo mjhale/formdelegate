@@ -1,11 +1,11 @@
 defmodule FormDelegate.Submissions do
   @moduledoc """
-  The Integrations context.
+  The Submissions context.
   """
 
   import Ecto.Query, warn: false
 
-  alias Ecto.Changeset
+  alias Ecto.{Changeset, Multi}
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
   alias FormDelegate.Submissions.{FlaggedType, Submission}
@@ -22,16 +22,15 @@ defmodule FormDelegate.Submissions do
   """
   def list_submissions_of_user(%User{} = user, params) do
     query =
-      from m in Submission,
-        where: m.user_id == ^user.id,
+      from s in Submission,
+        inner_join: form in Form,
+        on: form.user_id == ^user.id and form.id == s.form_id,
+        order_by: [desc: s.inserted_at],
         preload: [
-          {
-            :form,
-            [{:form_integrations, :integration}]
-          },
-          :flagged_type
-        ],
-        order_by: [desc: m.id]
+          :attachments,
+          :flagged_type,
+          form: {form, form_integrations: :integration}
+        ]
 
     query
     |> Repo.paginate(params)
@@ -50,27 +49,27 @@ defmodule FormDelegate.Submissions do
   """
   def list_search_submissions_of_user(%User{} = user, params) do
     query =
-      from m in Submission,
-        where: m.user_id == ^user.id,
+      from s in Submission,
+        inner_join: form in Form,
+        on: form.user_id == ^user.id and form.id == s.form_id,
+        # @TODO: Improve where clause matching
         where:
-          ilike(m.content, ^"%#{params["query"]}%") or
-            ilike(m.sender, ^"%#{params["query"]}%") or
-            fragment("?->>? ilike ?", m.unknown_fields, "user_mail", ^"%#{params["query"]}%"),
+          ilike(s.content, ^"%#{params["query"]}%") or
+            ilike(s.sender, ^"%#{params["query"]}%") or
+            fragment("?->>? ilike ?", s.data, "user_mail", ^"%#{params["query"]}%"),
+        order_by: [desc: s.inserted_at],
         preload: [
-          {
-            :form,
-            [{:form_integrations, :integration}]
-          },
-          :flagged_type
-        ],
-        order_by: [desc: m.id]
+          :attachments,
+          :flagged_type,
+          form: {form, form_integrations: :integration}
+        ]
 
     query
     |> Repo.paginate(params)
   end
 
   @doc """
-  Returns the daily count of recent submission activity of a user.
+  Returns the daily count of recent submission activity of a user for past 365 days.
 
   ## Examples
 
@@ -104,23 +103,21 @@ defmodule FormDelegate.Submissions do
 
   ## Examples
 
-      iex> get_submission!(123)
+      iex> get_submission!(8f8ef4dd-dfb2-4441-a1ad-dd65c23c7ea7)
       %Submission{}
 
-      iex> get_submission!(456)
+      iex> get_submission!(00000000-1234-5555-1234-000000000000)
       ** (Ecto.NoResultsError)
 
   """
   def get_submission!(id) do
     Repo.one!(
-      from m in Submission,
-        where: m.id == ^id,
+      from s in Submission,
+        where: s.id == ^id,
         preload: [
-          {
-            :form,
-            [{:form_integrations, :integration}]
-          },
-          :flagged_type
+          :attachments,
+          :flagged_type,
+          form: [form_integrations: :integration]
         ]
     )
   end
@@ -139,7 +136,7 @@ defmodule FormDelegate.Submissions do
   """
   def update_submission(%Submission{} = submission, attrs) do
     submission
-    |> Submission.changeset(attrs)
+    |> Submission.update_changeset(attrs)
     |> Repo.update()
   end
 
@@ -168,37 +165,46 @@ defmodule FormDelegate.Submissions do
 
   ## Examples
 
-      iex> create_submission(form, %{field: value})
+      iex> create_submission(%{field: value})
       {:ok, %Submission{}}
 
-      iex> create_submission(form, %{field: bad_value})
+      iex> create_submission(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_submission(form, attrs \\ %{}) do
-    %Submission{}
-    |> Submission.changeset(attrs)
-    |> Changeset.put_assoc(:form, form)
-    |> Changeset.put_assoc(:user, form.user)
-    |> Changeset.put_assoc(:flagged_type, nil)
-    |> Changeset.assoc_constraint(:form)
-    |> Changeset.assoc_constraint(:user)
-    |> update_form_submission_count(1)
-    |> Repo.insert()
+  def create_submission(params \\ %{}) do
+    Multi.new()
+    |> Multi.insert(
+      :submission,
+      Submission.insert_changeset(%Submission{}, params) |> update_form_submission_count(1)
+    )
+    |> Multi.update(:submission_with_attachments, fn %{submission: submission} ->
+      submission
+      |> Repo.preload([:attachments, :flagged_type, form: [form_integrations: :integration]])
+      |> Submission.update_changeset(params)
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{submission: _submission, submission_with_attachments: submission_with_attachments}} ->
+        {:ok, submission_with_attachments}
+
+      {:error, _failed_operation, failed_value, _changes_so_far} ->
+        {:error, failed_value}
+    end
   end
 
-  # @doc """
-  # Gets a flagged type or creates a flagged type if it does not already exist.
+  @doc """
+  Gets a flagged type or creates a flagged type if it does not already exist.
 
-  # ## Examples
+  ## Examples
 
-  #     iex> get_or_create_flagged_type(%{type: name})
-  #     %Flagged_Type{}
+      iex> get_or_create_flagged_type(%{type: name})
+      %Flagged_Type{}
 
-  #     iex> get_or_create_flagged_type(%{})
-  #     {:error, %Ecto.Changeset{}}
+      iex> get_or_create_flagged_type(%{})
+      {:error, %Ecto.Changeset{}}
 
-  # """
+  """
   def get_or_create_flagged_type(flagged_type_attrs) do
     if type = flagged_type_attrs[:type] do
       Repo.get_by(FlaggedType, type: type) ||

@@ -19,7 +19,7 @@ config :form_delegate, FormDelegateWeb.Endpoint,
   check_origin: [
     "https://www.formdelegate.com"
   ],
-  secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE"),
+  secret_key_base: System.get_env("SECRET_KEY_BASE") || raise("Env var not set: SECRET_KEY_BASE"),
   server: true,
   version: Application.spec(:phoenix_distillery, :vsn)
 
@@ -28,7 +28,7 @@ config :form_delegate, FormDelegate.Repo,
   database: "",
   pool_size: 2,
   ssl: true,
-  url: System.get_env("DATABASE_URL")
+  url: System.get_env("DATABASE_URL") || raise("Env var not set: DATABASE_URL")
 
 # Do not print debug messages in production
 config :logger, level: :info
@@ -74,11 +74,11 @@ config :logger, level: :info
 # Configures Bamboo mailer
 config :form_delegate, FormDelegateWeb.MailService,
   adapter: Bamboo.SparkPostAdapter,
-  api_key: System.get_env("SPARKPOST_KEY")
+  api_key: System.get_env("SPARKPOST_KEY") || raise("Env var not set: SPARKPOST_KEY"),
 
 # Configures CORS options
 config :cors_plug,
-  origin: ["https://www.formdelegate.com", "http://localhost:3000"],
+  origin: ["https://www.formdelegate.com"],
   max_age: 86400,
   expose: ["Per-Page", "Total", "Link"]
 
@@ -87,7 +87,7 @@ config :form_delegate, FormDelegateWeb.Guardian,
   allowed_algos: ["HS512"],
   issuer: "form_delegate_web",
   secret_key: %{
-    "k" => System.get_env("GUARDIAN_SECRET"),
+    "k" => System.get_env("GUARDIAN_SECRET") || raise("Env var not set: GUARDIAN_SECRET"),
     "kty" => "oct"
   },
   ttl: {14, :days},
@@ -95,6 +95,25 @@ config :form_delegate, FormDelegateWeb.Guardian,
 
 # Configures Akismet module to use Tesla HTTP client
 config :form_delegate, :akismet_api, FormDelegate.Services.Akismet.Tesla
+
+# Configures ExAws and ExAws S3
+config :ex_aws,
+  access_key_id:
+    System.get_env("AWS_ACCESS_KEY_ID") || raise("Env var not set: AWS_ACCESS_KEY_ID"),
+  secret_access_key:
+    System.get_env("AWS_SECRET_ACCESS_KEY") || raise("Env var not set: AWS_SECRET_ACCESS_KEY"),
+  region:
+    System.get_env("AWS_SECRET_ACCESS_KEY") || raise("Env var not set: AWS_SECRET_ACCESS_KEY"),
+
+config :ex_aws, :s3,
+  storage: Waffle.Storage.S3,
+  scheme: System.get_env("AWS_S3_SCHEME") || raise("Env var not set: AWS_S3_SCHEME"),
+  host: System.get_env("AWS_S3_HOST") || raise("Env var not set: AWS_S3_HOST")
+
+config :waffle,
+  storage: Waffle.Storage.S3,
+  bucket: System.get_env("AWS_S3_BUCKET") || raise("Env var not set: AWS_S3_BUCKET"),
+  asset_host: System.get_env("AWS_S3_ASSET_HOST") || raise("Env var not set: AWS_S3_ASSET_HOST")
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.

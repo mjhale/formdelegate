@@ -80,7 +80,7 @@ defmodule FormDelegateWeb.Authorizer do
   end
 
   def authorize(:show_submission, %User{} = current_user, %Submission{} = submission) do
-    if submission.user_id == current_user.id do
+    if submission.form.user_id == current_user.id do
       :ok
     else
       {:error, :forbidden}
@@ -88,7 +88,7 @@ defmodule FormDelegateWeb.Authorizer do
   end
 
   def authorize(:update_submission_state, %User{} = current_user, %Submission{} = submission) do
-    if submission.user_id == current_user.id do
+    if submission.form.user_id == current_user.id do
       :ok
     else
       {:error, :forbidden}
