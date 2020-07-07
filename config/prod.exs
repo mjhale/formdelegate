@@ -74,7 +74,7 @@ config :logger, level: :info
 # Configures Bamboo mailer
 config :form_delegate, FormDelegateWeb.MailService,
   adapter: Bamboo.SparkPostAdapter,
-  api_key: System.get_env("SPARKPOST_KEY") || raise("Env var not set: SPARKPOST_KEY"),
+  api_key: System.get_env("SPARKPOST_KEY") || raise("Env var not set: SPARKPOST_KEY")
 
 # Configures CORS options
 config :cors_plug,
@@ -103,7 +103,7 @@ config :ex_aws,
   secret_access_key:
     System.get_env("AWS_SECRET_ACCESS_KEY") || raise("Env var not set: AWS_SECRET_ACCESS_KEY"),
   region:
-    System.get_env("AWS_SECRET_ACCESS_KEY") || raise("Env var not set: AWS_SECRET_ACCESS_KEY"),
+    System.get_env("AWS_SECRET_ACCESS_KEY") || raise("Env var not set: AWS_SECRET_ACCESS_KEY")
 
 config :ex_aws, :s3,
   storage: Waffle.Storage.S3,
