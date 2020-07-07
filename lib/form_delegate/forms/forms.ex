@@ -6,7 +6,8 @@ defmodule FormDelegate.Forms do
   import Ecto.Query, warn: false
 
   alias FormDelegate.Accounts.User
-  alias FormDelegate.{Forms, Forms.Form}
+  alias FormDelegate.Forms.Form
+  alias FormDelegate.Integrations.EmailIntegration
   alias FormDelegate.Repo
 
   @doc """
@@ -22,12 +23,7 @@ defmodule FormDelegate.Forms do
     Repo.all(
       from f in Form,
         where: f.user_id == ^user.id,
-        preload: [
-          {
-            :form_integrations,
-            :integration
-          }
-        ],
+        preload: [form_integrations: [:email_integration_recipients, :integration]],
         order_by: f.inserted_at
     )
   end
@@ -50,10 +46,7 @@ defmodule FormDelegate.Forms do
     Repo.one!(
       from f in Form,
         preload: [
-          {
-            :form_integrations,
-            :integration
-          },
+          [form_integrations: [:email_integration_recipients, :integration]],
           :user
         ],
         where: f.id == ^id
@@ -75,7 +68,7 @@ defmodule FormDelegate.Forms do
   def create_form(attrs \\ %{}, %User{} = user) do
     %Form{}
     |> Form.changeset(attrs)
-    |> Ecto.Changeset.cast_assoc(:form_integrations, with: &Forms.Integration.changeset/2)
+    |> Ecto.Changeset.cast_assoc(:email_integrations, with: &EmailIntegration.changeset/2)
     |> Ecto.Changeset.put_assoc(:user, user)
     |> Repo.insert()
   end
@@ -93,9 +86,11 @@ defmodule FormDelegate.Forms do
 
   """
   def update_form(%Form{} = form, attrs) do
-    Form.changeset(form, attrs)
-    |> Ecto.Changeset.cast_assoc(:form_integrations, with: &Forms.Integration.changeset/2)
-    |> Repo.update()
+    form
+    |> Repo.preload(email_integrations: :integration)
+    |> Form.changeset(attrs)
+    |> Ecto.Changeset.cast_assoc(:email_integrations, with: &EmailIntegration.changeset/2)
+    |> Repo.update(returning: true)
   end
 
   @doc """

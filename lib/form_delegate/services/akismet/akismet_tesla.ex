@@ -16,7 +16,7 @@ defmodule FormDelegate.Services.Akismet.Tesla do
       blog: "https://formdelegate.com",
       # comment_author_email: "akismet-guaranteed-spam@example.com",
       comment_author_email: submission.sender,
-      comment_content: submission.content,
+      comment_content: submission.body,
       comment_type: "contact-form",
       referrer: submission.sender_referrer,
       user_agent: submission.sender_user_agent,
@@ -43,7 +43,7 @@ defmodule FormDelegate.Services.Akismet.Tesla do
     request_body = %{
       blog: "https://formdelegate.com",
       comment_author_email: submission.sender,
-      comment_content: submission.content,
+      comment_content: submission.body,
       comment_type: "contact-form",
       referrer: submission.sender_referrer,
       user_agent: submission.sender_user_agent,
@@ -55,7 +55,7 @@ defmodule FormDelegate.Services.Akismet.Tesla do
            request_body
          ) do
       {:ok, %Tesla.Env{status: 200, body: "Thanks for making the web a better place."}} ->
-        {:ok, true}
+        {:ok}
 
       {:ok, %Tesla.Env{status: 200, body: body}} ->
         {:error, body}
@@ -70,7 +70,7 @@ defmodule FormDelegate.Services.Akismet.Tesla do
     request_body = %{
       blog: "https://formdelegate.com",
       comment_author_email: submission.sender,
-      comment_content: submission.content,
+      comment_content: submission.body,
       comment_type: "contact-form",
       referrer: submission.sender_referrer,
       user_agent: submission.sender_user_agent,
@@ -82,7 +82,7 @@ defmodule FormDelegate.Services.Akismet.Tesla do
            request_body
          ) do
       {:ok, %Tesla.Env{status: 200, body: "Thanks for making the web a better place."}} ->
-        {:ok, true}
+        {:ok}
 
       {:ok, %Tesla.Env{status: 200, body: body}} ->
         {:error, body}

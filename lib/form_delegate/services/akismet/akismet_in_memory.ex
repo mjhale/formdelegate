@@ -20,12 +20,12 @@ defmodule FormDelegate.Services.Akismet.InMemory do
 
   @impl Akismet
   def submit_ham(_api_key, _submission = %Submission{}) do
-    {:ok, true}
+    {:ok}
   end
 
   @impl Akismet
   def submit_spam(_api_key, _submission = %Submission{}) do
-    {:ok, true}
+    {:ok}
   end
 
   @impl Akismet

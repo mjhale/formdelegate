@@ -21,7 +21,11 @@ defmodule FormDelegateWeb.FormController do
   def create(conn, %{"form" => form_params}, current_user) do
     with :ok <- Authorizer.authorize(:create_form, current_user),
          {:ok, %Form{} = form} <- Forms.create_form(form_params, current_user) do
-      form = FormDelegate.Repo.preload(form, form_integrations: :integration)
+      form =
+        FormDelegate.Repo.preload(form, [
+          [form_integrations: [:email_integration_recipients, :integration]],
+          :user
+        ])
 
       conn
       |> put_status(:created)
@@ -41,7 +45,6 @@ defmodule FormDelegateWeb.FormController do
     with %Form{} = form <- Forms.get_form!(id),
          :ok <- Authorizer.authorize(:update_form, current_user, form),
          {:ok, %Form{} = form} <- Forms.update_form(form, form_params) do
-      form = FormDelegate.Repo.preload(form, form_integrations: :integration)
       render(conn, "show.json", form: form)
     end
   end

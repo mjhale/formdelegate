@@ -3,31 +3,59 @@ defmodule FormDelegate.EmailTest do
 
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
+  alias FormDelegate.Integrations.{EmailIntegration, EmailIntegrationRecipient, Integration}
   alias FormDelegate.Submissions.Submission
 
+  # @TODO: Refactor test with improved data creation
   test "send_email/2" do
     user = %User{
       email: "sales@company.com",
       name: "Sales Team"
     }
 
+    email_integration = %Integration{
+      id: 1,
+      name: "E-mail",
+      type_code: "email"
+    }
+
     form = %Form{
       form: "Sales Form",
       user: user,
-      verified: true
+      form_integrations: [
+        %EmailIntegration{
+          email_api_key: nil,
+          email_from_address: nil,
+          email_integration_recipients: [
+            %EmailIntegrationRecipient{
+              name: "Sales Team",
+              email: "sales@company.com",
+              type: "to"
+            }
+          ],
+          enabled: true,
+          integration: email_integration
+        }
+      ]
     }
 
     submission = %Submission{
-      content: "Are there any pricing discounts for schools?",
-      user: user,
+      body: "Are there any pricing discounts for schools?",
+      fields: %{
+        message: "Are there any pricing discounts for schools?",
+        name: "Sam"
+      },
       form: form,
-      sender: "Sam",
-      unknown_fields: %{}
+      sender: "Sam"
     }
 
-    email = FormDelegate.Services.Email.send_email(user, submission)
+    email =
+      FormDelegate.Services.Email.send_email(
+        submission,
+        List.first(form.form_integrations).email_integration_recipients
+      )
 
-    assert email.to == [nil: user.email]
+    assert email.to == [{"Sales Team", "sales@company.com"}]
     assert email.from == {"Form Delegate", "no-reply@formdelegate.com"}
 
     assert email.html_body =~

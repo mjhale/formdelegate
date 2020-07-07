@@ -27,19 +27,19 @@
                 <table border="0" cellpadding="20" cellspacing="0" width="100%" id="emailBody">
                   <tr>
                     <td align="center" valign="top">
-                      <%= @user.name %>, you've received a new submission via Form Delegate!
+                      You've received a new submission via Form Delegate!
                     </td>
                   </tr>
                   <tr>
                     <td align="left">
-                      <%= @submission.content %>
+                      <%= @submission.body %>
                     </td>
                   </tr>
 
                   <tr>
                     <td align="left">
                       <ul>
-                        <%= for {key, value} <- @submission.unknown_fields do %>
+                        <%= for {key, value} <- @submission.fields do %>
                           <li><%= key %>: <%= value %></li>
                         <% end %>
                       </ul>

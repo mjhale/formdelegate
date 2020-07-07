@@ -3,7 +3,8 @@ defmodule FormDelegate.Forms.Form do
   import Ecto.Changeset
 
   alias FormDelegate.Accounts.User
-  alias FormDelegate.Forms.{Form, Integration}
+  alias FormDelegate.Forms.Form
+  alias FormDelegate.Integrations.{EmailIntegration, FormIntegration}
   alias FormDelegate.Submissions.Submission
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -17,8 +18,8 @@ defmodule FormDelegate.Forms.Form do
 
     belongs_to :user, User
     has_many :submissions, Submission, on_delete: :delete_all
-    has_many :form_integrations, Integration, on_delete: :delete_all, on_replace: :delete
-    has_many :integrations, through: [:form_integrations, :integration]
+    has_many :form_integrations, FormIntegration, on_delete: :delete_all, on_replace: :delete
+    has_many :email_integrations, EmailIntegration, on_delete: :delete_all, on_replace: :delete
 
     timestamps()
   end

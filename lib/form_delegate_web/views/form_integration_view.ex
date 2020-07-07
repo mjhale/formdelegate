@@ -1,6 +1,6 @@
 defmodule FormDelegateWeb.FormIntegrationView do
   use FormDelegateWeb, :view
-  alias FormDelegateWeb.{FormIntegrationView, IntegrationView, SettingsView}
+  alias FormDelegateWeb.{EmailIntegrationRecipientView, FormIntegrationView, IntegrationView}
 
   def render("index.json", %{form_integrations: form_integrations}) do
     %{
@@ -26,21 +26,23 @@ defmodule FormDelegateWeb.FormIntegrationView do
 
   def render("form_integration.json", %{form_integration: form_integration}) do
     %{
-      id: form_integration.id,
-      enabled: form_integration.enabled,
-      settings:
-        render_one(
-          form_integration.settings,
-          SettingsView,
-          "settings.json"
+      email_api_key: form_integration.email_api_key,
+      email_from_address: form_integration.email_from_address,
+      email_integration_recipients:
+        render_many(
+          form_integration.email_integration_recipients,
+          EmailIntegrationRecipientView,
+          "email_integration_recipient.json"
         ),
+      enabled: form_integration.enabled,
+      id: form_integration.id,
+      inserted_at: form_integration.inserted_at,
       integration:
         render_one(
           form_integration.integration,
           IntegrationView,
           "integration.json"
         ),
-      inserted_at: form_integration.inserted_at,
       updated_at: form_integration.updated_at
     }
   end

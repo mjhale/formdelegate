@@ -5,9 +5,10 @@ defmodule FormDelegateWeb.IntegrationControllerTest do
   alias FormDelegateWeb.Router.Helpers, as: Routes
 
   @update_attrs %{
-    type: "Keybase"
+    name: "Stripe",
+    type_code: "stripe"
   }
-  @invalid_attrs %{type: nil}
+  @invalid_attrs %{name: nil, type_code: nil}
 
   setup %{conn: conn, user: user} do
     jwt =
@@ -32,7 +33,15 @@ defmodule FormDelegateWeb.IntegrationControllerTest do
       |> get(Routes.integration_path(conn, :index))
       |> json_response(200)
 
-    expected = %{"data" => [%{"id" => integration.id, "type" => integration.type}]}
+    expected = %{
+      "data" => [
+        %{
+          "id" => integration.id,
+          "name" => integration.name,
+          "type_code" => integration.type_code
+        }
+      ]
+    }
 
     assert response == expected
   end
@@ -48,7 +57,13 @@ defmodule FormDelegateWeb.IntegrationControllerTest do
         |> get(Routes.integration_path(conn, :show, integration.id))
         |> json_response(200)
 
-      expected = %{"data" => %{"id" => integration.id, "type" => integration.type}}
+      expected = %{
+        "data" => %{
+          "id" => integration.id,
+          "name" => integration.name,
+          "type_code" => integration.type_code
+        }
+      }
 
       assert response == expected
     end
@@ -80,8 +95,9 @@ defmodule FormDelegateWeb.IntegrationControllerTest do
 
       expected = %{
         "data" => %{
-          "type" => "Keybase",
-          "id" => integration.id
+          "id" => integration.id,
+          "name" => "Stripe",
+          "type_code" => "stripe"
         }
       }
 
@@ -104,7 +120,13 @@ defmodule FormDelegateWeb.IntegrationControllerTest do
         |> get(Routes.integration_path(conn, :show, integration.id))
         |> json_response(200)
 
-      expected = %{"data" => %{"id" => integration.id, "type" => integration.type}}
+      expected = %{
+        "data" => %{
+          "id" => integration.id,
+          "name" => integration.name,
+          "type_code" => integration.type_code
+        }
+      }
 
       assert response == expected
     end

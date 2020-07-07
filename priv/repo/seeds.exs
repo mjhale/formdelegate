@@ -5,8 +5,8 @@
 
 alias FormDelegate.Repo
 alias FormDelegate.Accounts.User
-alias FormDelegate.{Forms, Forms.Form}
-alias FormDelegate.Integrations.Integration
+alias FormDelegate.Forms.Form
+alias FormDelegate.Integrations.{EmailIntegration, EmailIntegrationRecipient, Integration}
 alias FormDelegate.Submissions.Submission
 
 # Scrub prior data before seeding
@@ -66,33 +66,25 @@ user_form = Repo.get_by!(Form, form: "More Info Form")
 
 # Seed Integrations
 Repo.insert!(%Integration{
-  type: "E-mail"
+  name: "E-mail",
+  type_code: "email"
 })
 
-email_integration = Repo.get_by!(Integration, type: "E-mail")
+email_integration = Repo.get_by!(Integration, type_code: "email")
 
-Repo.insert!(%Integration{
-  type: "Ifttt"
-})
+admin_contact_form_email_integration =
+  Repo.insert!(%EmailIntegration{
+    form: admin_contact_form,
+    email_api_key: nil,
+    email_from_address: nil,
+    enabled: true,
+    integration: email_integration
+  })
 
-ifttt_integration = Repo.get_by!(Integration, type: "Ifttt")
-
-Repo.insert!(%Forms.Integration{
-  form: admin_contact_form,
-  enabled: true,
-  integration: ifttt_integration,
-  settings: %{
-    api_key: "31134"
-  }
-})
-
-Repo.insert!(%Forms.Integration{
-  form: admin_contact_form,
-  enabled: false,
-  integration: email_integration,
-  settings: %{
-    api_key: "00000-523-232222"
-  }
+Repo.insert!(%EmailIntegrationRecipient{
+  email: "admin@admin.com",
+  email_integration: admin_contact_form_email_integration,
+  type: "to"
 })
 
 # Seed Submissions

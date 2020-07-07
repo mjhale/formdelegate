@@ -3,7 +3,7 @@ defmodule FormDelegate.SubmissionQueueJob do
 
   alias FormDelegate.Forms.Form
   alias FormDelegate.Submissions.Submission
-  alias FormDelegate.Services.{Email, Ifttt, Zapier}
+  alias FormDelegate.Services.Email
 
   require Logger
 
@@ -15,21 +15,16 @@ defmodule FormDelegate.SubmissionQueueJob do
   defp run_integrations(%Form{} = form, %Submission{} = submission) do
     Enum.each(form.form_integrations, fn form_integration ->
       if form_integration.enabled do
-        case form_integration.integration.type do
-          "E-mail" ->
-            Logger.info("FD: Email job running for #{submission.id}")
-            Task.start_link(fn -> Email.send_email(submission, "test@test.com") end)
+        case form_integration.integration.type_code do
+          "email" ->
+            Logger.info("FD: Form email job running for #{submission.id}")
 
-          "Ifttt" ->
-            Logger.info("FD: Queue job running for Ifttt...")
-            Task.start_link(fn -> Ifttt.send_submission(submission, form) end)
-
-          "Zapier" ->
-            Logger.info("FD: Queue job running for Zapier...")
-            Task.start_link(fn -> Zapier.send_submission(submission, form) end)
+            Task.start_link(fn ->
+              Email.send_email(submission, form_integration.email_integration_recipients)
+            end)
 
           _ ->
-            Logger.error("FD: Integration jobs error for #{submission.id}")
+            Logger.error("FD: Form integration job error for #{submission.id}")
             {:error, "Unknown integration type"}
         end
       end

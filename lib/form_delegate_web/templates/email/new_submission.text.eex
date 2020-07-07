@@ -1,14 +1,14 @@
-<%= @user.name %>, you've received a new form submission!
+You've received a new form submission!
 
 <%= if @submission.sender do %>
   Sender: <%= @submission.sender %>
 <% end %>
 
-<%= if @submission.content do %>
-  Content: <%= @submission.content %>
+<%= if @submission.body do %>
+  Body: <%= @submission.body %>
 <% end %>
 
-<%= for {key, value} <- @submission.unknown_fields do %>
+<%= for {key, value} <- @submission.fields do %>
   <%= key %>: <%= value %>
 <% end %>
 

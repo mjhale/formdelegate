@@ -13,7 +13,8 @@ defmodule FormDelegateWeb.IntegrationView do
   def render("integration.json", %{integration: integration}) do
     %{
       id: integration.id,
-      type: integration.type
+      name: integration.name,
+      type_code: integration.type_code
     }
   end
 end
