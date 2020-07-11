@@ -96,6 +96,9 @@ config :form_delegate, FormDelegateWeb.Guardian,
 # Configures Akismet module to use Tesla HTTP client
 config :form_delegate, :akismet_api, FormDelegate.Services.Akismet.Tesla
 
+# Configures Hcaptcha module to use Tesla HTTP client
+config :form_delegate, :hcaptcha_api, FormDelegate.Services.Hcaptcha.Tesla
+
 # Configures ExAws and ExAws S3
 config :ex_aws,
   access_key_id:

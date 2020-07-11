@@ -20,8 +20,9 @@ defmodule FormDelegateWeb.UserController do
     end
   end
 
-  def create(conn, %{"user" => user_params}, current_user) do
+  def create(conn, %{"user" => user_params, "captcha" => captcha_token}, current_user) do
     with :ok <- Authorizer.authorize(:register_user, current_user),
+         {:ok, _captcha_response} <- hcaptcha_api().verify_token(captcha_token),
          {:ok, %User{} = user} <- Accounts.register_user(user_params),
          {:ok, token, _claims} <- Guardian.encode_and_sign(user, %{}, token_type: "access") do
       Mailers.UserConfirmation.send_user_confirmation_email(user)
@@ -56,5 +57,9 @@ defmodule FormDelegateWeb.UserController do
       |> put_resp_header("content-type", "application/json")
       |> send_resp(:no_content, "")
     end
+  end
+
+  defp hcaptcha_api do
+    Application.get_env(:form_delegate, :hcaptcha_api)
   end
 end

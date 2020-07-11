@@ -22,3 +22,6 @@ config :form_delegate, FormDelegateWeb.MailService, adapter: Bamboo.TestAdapter
 
 # Configures Akismet module to use an in-memory mock
 config :form_delegate, :akismet_api, FormDelegate.Services.Akismet.InMemory
+
+# Configures Hcaptcha module to use an in-memory mock
+config :form_delegate, :hcaptcha_api, FormDelegate.Services.Hcaptcha.InMemory

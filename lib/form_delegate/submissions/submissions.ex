@@ -79,18 +79,19 @@ defmodule FormDelegate.Submissions do
   """
   def get_submission_activity_of_user(%User{} = user) do
     query =
-      from m in Submission,
+      from s in Submission,
+        inner_join: form in Form,
+        on: form.user_id == ^user.id and form.id == s.form_id,
         right_join:
           day in fragment(
             "SELECT generate_series(CURRENT_DATE - INTERVAL '365 days', CURRENT_DATE, '1 day') :: date AS d"
           ),
-        on: day.d == fragment("date(?)", m.inserted_at),
-        on: m.user_id == ^user.id,
+        on: day.d == fragment("date(?)", s.inserted_at),
         group_by: day.d,
         order_by: day.d,
         select: %{
           day: fragment("date(?)", day.d),
-          submission_count: count(m.id)
+          submission_count: count(s.id)
         }
 
     Repo.all(query)

@@ -3,14 +3,27 @@ defmodule FormDelegateWeb.UserControllerTest do
 
   alias FormDelegateWeb.Router.Helpers, as: Routes
 
-  @valid_attrs %{email: "user@formdelegate.com", name: "Form User", password: "Qcd%dW38eR#xyL3v"}
+  @valid_attrs %{
+    captcha: "10000000-aaaa-bbbb-cccc-000000000001",
+    user: %{
+      email: "user@formdelegate.com",
+      name: "Form User",
+      password: "Qcd%dW38eR#xyL3v"
+    }
+  }
   @update_attrs %{
     email: "updateduser@formdelegate.com",
     name: "Updated Form User",
     password: "@1MTe*znr6dJ6gP"
   }
-  @invalid_attrs %{email: nil, name: nil, password: nil}
-
+  @invalid_attrs %{
+    captcha: "10000000-aaaa-bbbb-cccc-000000000001",
+    user: %{
+      email: nil,
+      name: nil,
+      password: nil
+    }
+  }
   setup %{conn: conn, user: user} do
     jwt =
       case FormDelegateWeb.Guardian.encode_and_sign(user) do
@@ -69,7 +82,7 @@ defmodule FormDelegateWeb.UserControllerTest do
     } do
       response =
         conn
-        |> post(Routes.user_path(conn, :create), user: @valid_attrs)
+        |> post(Routes.user_path(conn, :create), @valid_attrs)
         |> json_response(201)
 
       expected = %{
@@ -86,10 +99,16 @@ defmodule FormDelegateWeb.UserControllerTest do
     test "Returns an error and does not create a user if attributes are invalid", %{conn: conn} do
       response =
         conn
-        |> post(Routes.user_path(conn, :create), user: @invalid_attrs)
+        |> post(Routes.user_path(conn, :create), @invalid_attrs)
         |> json_response(422)
 
-      expected = %{"errors" => %{"email" => ["can't be blank"], "password" => ["can't be blank"]}}
+      expected = %{
+        "errors" => %{
+          "email" => ["can't be blank"],
+          "name" => ["can't be blank"],
+          "password" => ["can't be blank"]
+        }
+      }
 
       assert response == expected
     end
@@ -102,7 +121,7 @@ defmodule FormDelegateWeb.UserControllerTest do
       response =
         conn
         |> put_req_header("authorization", "bearer: " <> jwt)
-        |> post(Routes.user_path(conn, :create), user: @valid_attrs)
+        |> post(Routes.user_path(conn, :create), @valid_attrs)
         |> json_response(403)
 
       expected = %{"errors" => %{"detail" => "FORBIDDEN"}}
@@ -146,7 +165,7 @@ defmodule FormDelegateWeb.UserControllerTest do
     } do
       conn
       |> put_req_header("authorization", "bearer: " <> jwt)
-      |> put(Routes.user_path(conn, :update, user), user: @invalid_attrs)
+      |> put(Routes.user_path(conn, :update, user), @invalid_attrs)
       |> json_response(:unprocessable_entity)
 
       response =
@@ -178,7 +197,7 @@ defmodule FormDelegateWeb.UserControllerTest do
 
       conn
       |> put_req_header("authorization", "bearer: " <> user_jwt)
-      |> put(Routes.user_path(conn, :update, other_user), user: @valid_attrs)
+      |> put(Routes.user_path(conn, :update, other_user), @valid_attrs)
       |> json_response(403)
 
       response =
