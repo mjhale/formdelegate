@@ -60,13 +60,13 @@ export const adminUpdateUser = user => {
   };
 };
 
-export function createUser(user) {
+export function createUser({ captchaToken, user }) {
   return async (dispatch, getState) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: false,
         config: {
-          body: JSON.stringify({ user }),
+          body: JSON.stringify({ captcha: captchaToken, user: user }),
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -78,6 +78,10 @@ export function createUser(user) {
         types: [USER_CREATE_REQUEST, USER_CREATE_SUCCESS, USER_CREATE_FAILURE],
       },
     });
+
+    if (actionResponse.error) {
+      throw new Error('Promise flow received action error', actionResponse);
+    }
 
     return actionResponse;
   };

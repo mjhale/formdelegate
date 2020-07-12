@@ -1,133 +1,143 @@
-import PropTypes from 'prop-types';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 import React from 'react';
-import { connect } from 'react-redux';
-import { Field } from 'redux-form';
-import { reduxForm } from 'redux-form';
-import { withRouter } from 'react-router-dom';
+import styled from 'styled-components/macro';
+import * as Yup from 'yup';
+import { Formik, Form } from 'formik';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
+import translations from 'translations';
 import { createUser } from 'actions/users';
 import { loginUser } from 'actions/sessions';
 
 import Button from 'components/Button';
+import Field from 'components/Field/FormikField';
 import Flash from 'components/Flash';
-import renderField from 'components/Field';
 
-const isValidEmail = email => {
-  const regex = new RegExp(
-    "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+const StyledCaptchaWrapper = styled.div`
+  margin-bottom: 0.725rem;
+`;
+
+const RegisterUser = () => {
+  const CAPTCHA_SITE_KEY = process.env.REACT_APP_CAPTCHA_SITE_KEY;
+  const captchaRef = React.createRef();
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const registrationErrorMessage = useSelector(
+    state => state.users.errorMessage
   );
 
-  return regex.test(email);
-};
-
-const checkFormErrors = values => {
-  let errors = {};
-
-  if (!values.email) {
-    errors.email = 'Required';
-  }
-
-  if (!values.name) {
-    errors.name = 'Required';
-  }
-
-  if (!values.password) {
-    errors.password = 'Required';
-  }
-
-  return errors;
-};
-
-const checkFormWarnings = values => {
-  let warnings = {};
-
-  if (!isValidEmail(values.email)) {
-    warnings.email = 'Warning: Your e-mail address appears invalid.';
-  }
-
-  return warnings;
-};
-
-class RegisterUser extends React.Component {
-  static propTypes = {
-    createUser: PropTypes.func.isRequired,
-    handleSubmit: PropTypes.func.isRequired,
-    history: PropTypes.shape({
-      push: PropTypes.func.isRequired,
-    }),
-    loginUser: PropTypes.func.isRequired,
-    registrationErrorMessage: PropTypes.string,
+  const handleRegistrationAndLogin = registrationFields => {
+    try {
+      dispatch(
+        createUser({
+          captchaToken: registrationFields.captcha,
+          user: registrationFields.user,
+        })
+      )
+        .then(() =>
+          dispatch(
+            loginUser({
+              email: registrationFields.user.email,
+              password: registrationFields.user.password,
+            })
+          )
+        )
+        .then(() => {
+          captchaRef.current && captchaRef.current.resetCaptcha();
+          history.push('/dashboard/');
+        });
+    } catch (error) {
+      console.error(`FD registration flow error: ${error}`);
+    }
   };
 
-  handleRegistrationAndLogin = credentials => {
-    const { createUser, history, loginUser } = this.props;
+  return (
+    <React.Fragment>
+      {registrationErrorMessage && (
+        <Flash type="error">
+          {translations[registrationErrorMessage]
+            ? translations[registrationErrorMessage]
+            : registrationErrorMessage}
+        </Flash>
+      )}
 
-    createUser(credentials)
-      .then(() => loginUser(credentials))
-      .then(() => history.push('/dashboard/'))
-      .catch(error => console.log('error', error));
-  };
+      <h2>Create your Form Delegate account</h2>
 
-  render() {
-    const { handleSubmit, registrationErrorMessage, submitting } = this.props;
-
-    return (
-      <React.Fragment>
-        {registrationErrorMessage && (
-          <Flash type="error">{registrationErrorMessage}</Flash>
+      <Formik
+        initialValues={{
+          captcha: '',
+          user: {
+            email: '',
+            name: '',
+            password: '',
+            password_confirmation: '',
+          },
+        }}
+        onSubmit={handleRegistrationAndLogin}
+        validationSchema={Yup.object({
+          captcha: Yup.string().required('CAPTCHA validation is required'),
+          user: Yup.object({
+            email: Yup.string()
+              .email('Invalid email address')
+              .required('Email is required'),
+            name: Yup.string().required('Name is required'),
+            password: Yup.string()
+              .min(8, 'Password must be at least 8 characters')
+              .required('Password is required'),
+            password_confirmation: Yup.string()
+              .oneOf([Yup.ref('password'), null], 'Passwords must match')
+              .required('Password confirmation is required'),
+          }),
+        })}
+      >
+        {formProps => (
+          <Form>
+            <Field
+              label="Email"
+              name="user.email"
+              placeholder="Email"
+              type="email"
+            />
+            <Field
+              label="Full Name"
+              name="user.name"
+              placeholder="Full Name"
+              type="text"
+            />
+            <Field
+              label="Password"
+              name="user.password"
+              placeholder="Password"
+              type="password"
+            />
+            <Field
+              label="Confirm password"
+              name="user.password_confirmation"
+              placeholder="Confirm password"
+              type="password"
+            />
+            <StyledCaptchaWrapper>
+              <HCaptcha
+                ref={captchaRef}
+                sitekey={CAPTCHA_SITE_KEY}
+                onVerify={token => formProps.setFieldValue('captcha', token)}
+              />
+            </StyledCaptchaWrapper>
+            <Button
+              disabled={
+                formProps.isSubmitting ||
+                !(formProps.isValid && formProps.dirty)
+              }
+              type="submit"
+            >
+              Create Account
+            </Button>
+          </Form>
         )}
-
-        <h2>Create Your Free Account</h2>
-
-        <form onSubmit={handleSubmit(this.handleRegistrationAndLogin)}>
-          <Field
-            component={renderField}
-            label="Email"
-            name="email"
-            placeholder="Email"
-            type="text"
-          />
-          <Field
-            component={renderField}
-            label="Full Name"
-            name="name"
-            placeholder="Full Name"
-            type="text"
-          />
-          <Field
-            component={renderField}
-            label="Password"
-            name="password"
-            placeholder="Password"
-            type="password"
-          />
-          <Button disabled={submitting} type="submit">
-            Create User
-          </Button>
-        </form>
-      </React.Fragment>
-    );
-  }
-}
-
-RegisterUser = reduxForm({
-  form: 'registerForm',
-  validate: checkFormErrors,
-  warn: checkFormWarnings,
-})(RegisterUser);
-
-const mapStateToProps = state => ({
-  registrationErrorMessage: state.users.errorMessage,
-});
-
-const mapDispatchToProps = {
-  createUser,
-  loginUser,
+      </Formik>
+    </React.Fragment>
+  );
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(RegisterUser)
-);
+export default RegisterUser;

@@ -7,7 +7,8 @@
   "userlist_th_id": "",
   "userlist_th_is_admin": "Admin",
   "userlist_th_name": "Name",
-  "userlist_th_verified": "Verified",
+  "userlist_th_confirmed": "Confirmed",
 
+  "INVALID_OR_EXPIRED_CAPTCHA": "Sorry, we're having trouble confirming your CAPTCHA response. Please try again.",
   "INVALID_OR_EXPIRED_CONFIRMATION_TOKEN": "Sorry, your confirmation link has expired."
 }
