@@ -1,5 +1,5 @@
-Hi <%= @user.name %>!
+Hi <%= @user.name %>,
 
-Thank you for signing up to Form Delegate. Please verify your account by visiting the below link:
+Please confirm your account by visiting the following link:
 
-<%= Routes.user_confirmation_url(FormDelegateWeb.Endpoint, :confirm, token: @user.confirmation_token) %>
+<%= @user_confirmation_frontend_url %>

@@ -3,7 +3,7 @@ defmodule FormDelegate.SubmissionQueueJob do
 
   alias FormDelegate.Forms.Form
   alias FormDelegate.Submissions.Submission
-  alias FormDelegate.Services.Email
+  alias FormDelegateWeb.Mailers.NewSubmissionMailer
 
   require Logger
 
@@ -19,9 +19,10 @@ defmodule FormDelegate.SubmissionQueueJob do
           "email" ->
             Logger.info("FD: Form email job running for #{submission.id}")
 
-            Task.start_link(fn ->
-              Email.send_email(submission, form_integration.email_integration_recipients)
-            end)
+            NewSubmissionMailer.send_new_submission_email(
+              submission,
+              form_integration.email_integration_recipients
+            )
 
           _ ->
             Logger.error("FD: Form integration job error for #{submission.id}")

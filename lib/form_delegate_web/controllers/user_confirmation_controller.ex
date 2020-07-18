@@ -4,13 +4,20 @@ defmodule FormDelegateWeb.UserConfirmationController do
   alias FormDelegate.{Accounts, Accounts.User}
   alias FormDelegateWeb.Mailers
 
+  require Logger
+
   action_fallback FormDelegateWeb.FallbackController
 
   def create(conn, %{"user" => %{"email" => email}}) do
     if user = Accounts.get_user_by_email(email) do
       # @TODO: Prevent multiple reset confirmation attempts in a short period
-      Accounts.reset_user_confirmation(user)
-      Mailers.UserConfirmation.send_user_confirmation_email(user)
+      with {:ok, %User{} = user} <- Accounts.reset_user_confirmation(user) do
+        Mailers.UserConfirmationMailer.send_user_confirmation_email(user)
+      else
+        {:error, %Ecto.Changeset{} = changeset} ->
+          Logger.error("FD User Confirmation Token: Unable to create token for #{email}")
+          Logger.error(inspect(changeset, pretty: true))
+      end
     end
 
     # Show same response regardless of outcome

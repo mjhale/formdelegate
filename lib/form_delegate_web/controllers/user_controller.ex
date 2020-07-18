@@ -25,7 +25,7 @@ defmodule FormDelegateWeb.UserController do
          {:ok, _captcha_response} <- hcaptcha_api().verify_token(captcha_token),
          {:ok, %User{} = user} <- Accounts.register_user(user_params),
          {:ok, token, _claims} <- Guardian.encode_and_sign(user, %{}, token_type: "access") do
-      Mailers.UserConfirmation.send_user_confirmation_email(user)
+      Mailers.UserWelcomeMailer.send_user_welcome_email(user)
 
       conn
       |> put_status(:created)

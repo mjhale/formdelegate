@@ -1,0 +1,5 @@
+Welcome to Form Delegate!
+
+To get started, please confirm your account by visiting the following link:
+
+<%= @user_confirmation_frontend_url %>

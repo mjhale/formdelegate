@@ -14,15 +14,15 @@ defmodule FormDelegateWeb.Mailers.EnqueueEmail do
     if Map.has_key?(response, :status_code) do
       case Map.get(response, :status_code) do
         status when status < 299 ->
-          Logger.info("FD EnqueueEmail received success status response from Bamboo adapter")
+          Logger.info("FD EnqueueEmail: Received success status response from Bamboo adapter")
           {:ok, response}
 
         _ ->
-          Logger.error("FD EnqueueEmail received error status response from Bamboo adapter")
+          Logger.error("FD EnqueueEmail: Received error status response from Bamboo adapter")
           {:error, response}
       end
     else
-      Logger.error("FD EnqueueEmail did not receive status response from Bamboo adapter")
+      Logger.error("FD EnqueueEmail: Did not receive status response from Bamboo adapter")
       {:ok, response}
     end
   end

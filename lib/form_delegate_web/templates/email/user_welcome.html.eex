@@ -3,12 +3,12 @@
     <table border="0" cellpadding="10" cellspacing="0" width="100%" id="emailBody">
       <tr>
         <td align="left" valign="top">
-          Hi <%= @user.name %>,
+          Welcome to Form Delegate! We hope you have a great experience with our service.
         </td>
       </tr>
       <tr>
         <td align="left" valign="top">
-          Please confirm your account by visiting the following link:
+          To get started, please confirm your account by visiting the following link:
         </td>
       </tr>
 

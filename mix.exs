@@ -40,7 +40,7 @@ defmodule FormDelegate.Mixfile do
     [
       {:phoenix, "~> 1.5.3"},
       {:phoenix_pubsub, "~> 2.0.0"},
-      {:ecto_sql, "~> 3.4.4"},
+      {:ecto_sql, "~> 3.4.5"},
       {:phoenix_ecto, "~> 4.1.0"},
       {:postgrex, "~> 0.15.5"},
       {:phoenix_html, "~> 2.14.2"},
@@ -51,7 +51,7 @@ defmodule FormDelegate.Mixfile do
       {:guardian_phoenix, "~> 2.0"},
       {:pbkdf2_elixir, "~> 1.2.1"},
       {:bamboo, "~> 1.5.0"},
-      {:bamboo_sparkpost, "~> 1.1.3"},
+      {:bamboo_postmark, "~> 0.6"},
       {:scrivener_ecto, "~> 2.4.0"},
       {:scrivener_headers, "~> 3.1.1"},
       {:cors_plug, "~> 2.0.2"},

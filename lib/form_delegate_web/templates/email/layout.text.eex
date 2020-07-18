@@ -1,0 +1,3 @@
+<%= @inner_content %>
+
+As always, if you have any questions, email us at hello@formdelegate.com.

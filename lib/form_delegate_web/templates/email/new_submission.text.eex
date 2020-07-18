@@ -1,4 +1,4 @@
-You've received a new form submission!
+You received a new form submission for <%= @form.form %>
 
 <%= if @submission.sender do %>
   Sender: <%= @submission.sender %>
@@ -12,6 +12,4 @@ You've received a new form submission!
   <%= key %>: <%= value %>
 <% end %>
 
---
-
-FormDelegate.com
+Visit <%= @submission_frontend_url %> for additional information.

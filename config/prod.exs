@@ -73,8 +73,8 @@ config :logger, level: :info
 
 # Configures Bamboo mailer
 config :form_delegate, FormDelegateWeb.MailService,
-  adapter: Bamboo.SparkPostAdapter,
-  api_key: System.get_env("SPARKPOST_KEY") || raise("Env var not set: SPARKPOST_KEY")
+  adapter: Bamboo.PostmarkAdapter,
+  api_key: System.get_env("POSTMARK_API_KEY") || raise("Env var not set: POSTMARK_API_KEY")
 
 # Configures CORS options
 config :cors_plug,
@@ -113,10 +113,14 @@ config :ex_aws, :s3,
   scheme: System.get_env("AWS_S3_SCHEME") || raise("Env var not set: AWS_S3_SCHEME"),
   host: System.get_env("AWS_S3_HOST") || raise("Env var not set: AWS_S3_HOST")
 
+# Configures Waffle
 config :waffle,
   storage: Waffle.Storage.S3,
   bucket: System.get_env("AWS_S3_BUCKET") || raise("Env var not set: AWS_S3_BUCKET"),
   asset_host: System.get_env("AWS_S3_ASSET_HOST") || raise("Env var not set: AWS_S3_ASSET_HOST")
+
+# Configure frontend URL for user-targetted actions and messaging
+config :form_delegate, frontend_url: System.get_env("FRONTEND_URL") || raise("Env var not set: FRONTEND_URL")
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
