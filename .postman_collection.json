@@ -26,7 +26,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"form\": {\n        \"form\": \"Contact Form Example\"\n    }\n}"
+              "raw": "{\n    \"form\": {\n        \"form\": \"Contact Form Example\",\n        \"email_integrations\": [{\n            \"enabled\": true,\n            \"email_api_key\": \"123-456\",\n            \"email_integration_recipients\": [{\n                \"email\": \"admin@admin.com\",\n                \"name\": \"Michael\",\n                \"type\": \"cc\"\n            }],\n            \"integration_id\": 1\n        }]\n    }\n}"
             },
             "url": {
               "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/forms",
@@ -138,16 +138,16 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"form\": {\n        \"form\": \"Complaint Form Example\"\n    }\n}"
+              "raw": "{\n    \"form\": {\n        \"form\": \"New Contact Form Example\",\n        \"email_integrations\": [\n            {\n                \"email_api_key\": \"\",\n                \"email_from_address\": null,\n                \"email_integration_recipients\": [\n                    {\n                        \"email\": \"michaelh@formdelegate.com\",\n                        \"name\": \"Michael\",\n                        \"type\": \"to\"\n                    },\n                    },\n                    {\n                        \"email\": \"jessicaf@formdelegate.com\",\n                        \"name\": \"Jessica\",\n                        \"type\": \"to\"\n                    }\n                ],\n                \"enabled\": true,\n                \"integration_id\": 1\n            }\n        ]\n    }\n}"
             },
             "url": {
-              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/forms/6b7bed67-adc5-44cb-ac9d-e37aa1943735",
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/forms/902eddf2-6e39-4128-be61-cf77876d2abd",
               "host": ["{{protocol}}{{host}}"],
               "port": "{{port}}",
               "path": [
                 "{{version}}",
                 "forms",
-                "6b7bed67-adc5-44cb-ac9d-e37aa1943735"
+                "902eddf2-6e39-4128-be61-cf77876d2abd"
               ]
             }
           },
@@ -159,7 +159,7 @@
         "bearer": [
           {
             "key": "token",
-            "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImV4cCI6MTU5MjE2NjQ4NywiaWF0IjoxNTkwOTU2ODg3LCJpc3MiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImp0aSI6ImJjMmU1YzY3LWQ3YTItNDRlYS05NDljLWNlNTg4MmE5ZDkyMyIsIm5iZiI6MTU5MDk1Njg4Niwic3ViIjoiVXNlcjoxIiwidHlwIjoiYWNjZXNzIn0.pBZqhK7njgc9r0E-nd7ZW_AYO2q_Tjnda-JHOoZUsJxY60u-5MiMW0RVPlhH5SqEfJnnIvicLh7fw7UUgtd0sw",
+            "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImV4cCI6MTU5NDkzNTI3OSwiaWF0IjoxNTkzNzI1Njc5LCJpc3MiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImp0aSI6IjUyYTU1YjQyLWEzYzUtNGZhNi04N2Y0LTEyZTU0MDMyZTQwZiIsIm5iZiI6MTU5MzcyNTY3OCwic3ViIjoiVXNlcjoxIiwidHlwIjoiYWNjZXNzIn0.KPveh3j5GZbX98JXyrTbPAL6pqvPkq0LyvViHQDr25Aagbd1fjhvwbMXM8OXh-vZgsdLFFOpfRKVaSGrxGebmA",
             "type": "string"
           }
         ]
@@ -272,7 +272,7 @@
         "bearer": [
           {
             "key": "token",
-            "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImV4cCI6MTU5MjE2NjQ4NywiaWF0IjoxNTkwOTU2ODg3LCJpc3MiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImp0aSI6ImJjMmU1YzY3LWQ3YTItNDRlYS05NDljLWNlNTg4MmE5ZDkyMyIsIm5iZiI6MTU5MDk1Njg4Niwic3ViIjoiVXNlcjoxIiwidHlwIjoiYWNjZXNzIn0.pBZqhK7njgc9r0E-nd7ZW_AYO2q_Tjnda-JHOoZUsJxY60u-5MiMW0RVPlhH5SqEfJnnIvicLh7fw7UUgtd0sw",
+            "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImV4cCI6MTU5NDkzNTI3OSwiaWF0IjoxNTkzNzI1Njc5LCJpc3MiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImp0aSI6IjUyYTU1YjQyLWEzYzUtNGZhNi04N2Y0LTEyZTU0MDMyZTQwZiIsIm5iZiI6MTU5MzcyNTY3OCwic3ViIjoiVXNlcjoxIiwidHlwIjoiYWNjZXNzIn0.KPveh3j5GZbX98JXyrTbPAL6pqvPkq0LyvViHQDr25Aagbd1fjhvwbMXM8OXh-vZgsdLFFOpfRKVaSGrxGebmA",
             "type": "string"
           }
         ]
@@ -569,7 +569,7 @@
         "bearer": [
           {
             "key": "token",
-            "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImV4cCI6MTU5MjE2NjQ4NywiaWF0IjoxNTkwOTU2ODg3LCJpc3MiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImp0aSI6ImJjMmU1YzY3LWQ3YTItNDRlYS05NDljLWNlNTg4MmE5ZDkyMyIsIm5iZiI6MTU5MDk1Njg4Niwic3ViIjoiVXNlcjoxIiwidHlwIjoiYWNjZXNzIn0.pBZqhK7njgc9r0E-nd7ZW_AYO2q_Tjnda-JHOoZUsJxY60u-5MiMW0RVPlhH5SqEfJnnIvicLh7fw7UUgtd0sw",
+            "value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImV4cCI6MTU5NTc4MDU4MiwiaWF0IjoxNTk0NTcwOTgyLCJpc3MiOiJmb3JtX2RlbGVnYXRlX3dlYiIsImp0aSI6ImE0MzA0MDNlLTNlNWUtNDQzMS1hNjQ2LWNlZTA2MTA3M2U5ZiIsIm5iZiI6MTU5NDU3MDk4MSwic3ViIjoiVXNlcjoxMDEiLCJ0eXAiOiJhY2Nlc3MifQ.Ry1xQclQJqwj_jEMPKxtFAy3dAFUhCDpCcyWlnLL6u6dsSfTtflf7YGRSK-TTgJFP_2SIzZ9LsIsb1NOlwlpaA",
             "type": "string"
           }
         ]
@@ -770,9 +770,6 @@
         },
         {
           "name": "Confirm (Show)",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "method": "GET",
             "header": [
@@ -787,12 +784,17 @@
                 "type": "text"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"token\": \"9b2W0Rb7I1G3TGpVfrmPGIlI1ndzGNlr2AxG6Gc5FCPhsON1m0urXgAK6qCsjw8cCXVj53vYSlFx1PlugdjXLw\"\n}"
-            },
             "url": {
-              "raw": ""
+              "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/users/confirm?token=9b2W0Rb7I1G3TGpVfrmPGIlI1ndzGNlr2AxG6Gc5FCPhsON1m0urXgAK6qCsjw8cCXVj53vYSlFx1PlugdjXLw",
+              "host": ["{{protocol}}{{host}}"],
+              "port": "{{port}}",
+              "path": ["{{version}}", "users", "confirm"],
+              "query": [
+                {
+                  "key": "token",
+                  "value": "9b2W0Rb7I1G3TGpVfrmPGIlI1ndzGNlr2AxG6Gc5FCPhsON1m0urXgAK6qCsjw8cCXVj53vYSlFx1PlugdjXLw"
+                }
+              ]
             }
           },
           "response": []
@@ -821,7 +823,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"user\": {\n        \"email\": \"user@example.com\",\n        \"name\": \"Example User\",\n        \"password\": \"a secure password\"\n    }\n}"
+              "raw": "{\n    \"captcha\": \"10000000-aaaa-bbbb-cccc-000000000001\",\n    \"user\": {\n        \"email\": \"{{$randomExampleEmail}}\",\n        \"name\": \"{{$randomFullName}}\",\n        \"password\": \"{{$randomPassword}}\"\n    }\n}"
             },
             "url": {
               "raw": "{{protocol}}{{host}}:{{port}}/{{version}}/users",
@@ -920,28 +922,24 @@
   ],
   "variable": [
     {
-      "id": "7d03f400-40b7-4984-b592-183039763a5c",
+      "id": "6be280e9-c32d-4980-b090-3f5b42a2ef2f",
       "key": "protocol",
-      "value": "http://",
-      "type": "string"
+      "value": "http://"
     },
     {
-      "id": "c58fbb58-47a3-4eaa-953c-5953efed628e",
+      "id": "483b04d3-460a-4024-a809-93306668f590",
       "key": "host",
-      "value": "localhost",
-      "type": "string"
+      "value": "localhost"
     },
     {
-      "id": "51bd0fed-d856-46f9-b4e0-4c58c73bc630",
+      "id": "603314f9-8069-446e-8371-1f40fd34e588",
       "key": "port",
-      "value": "4000",
-      "type": "string"
+      "value": "4000"
     },
     {
-      "id": "fc4b0ad8-f86d-4983-a2a4-b3876341ccfc",
+      "id": "42ad2e14-e1da-4820-b3c6-689ef3812ab0",
       "key": "version",
-      "value": "v1",
-      "type": "string"
+      "value": "v1"
     }
   ],
   "protocolProfileBehavior": {}

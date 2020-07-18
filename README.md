@@ -1,15 +1,15 @@
 # Form Delegate
 
-[Form Delegate](https://formdelegate.com) is a service that allows users to manage form submissions.
-It is ideal for forms on static websites or in situations where form processing requires considerable
+[Form Delegate](https://formdelegate.com) is a service that allows users to process and manage form submissions.
+It is ideal for static websites and in situations where form processing requires considerable
 effort.
 
 Using this service requires signing up for an account and creating an endpoint for your
-submissions. The endpoint you receive after creating a form would look like this:
+submissions. Your generated endpoint will look similar to:
 
 `https://formdelegate.com/submissions/6b7bed67-adc5-44cb-ac9d-e37aa1943735`
 
-As an example of using Form Delegate, consider this existing form:
+As an example of using Form Delegate, consider this existing HTML form:
 
 ```
 <form action="https://www.cdc.gov/DCS/" method="post">
@@ -33,9 +33,9 @@ To use this form with Form Delegate, replace the first line with:
 <form action="https://formdelegate.com/submissions/6b7bed67-adc5-44cb-ac9d-e37aa1943735" method="post">
 ```
 
-And that's it. You will receive an email whenever you have a new submission, and you can also set up
-integrations with services such as Ifttt. Submissions will automatically be filtered for spam
-via [Akismet](https://akismet.com/).
+And that's it. You can configure your endpoint to automatically send an email when a new submission is
+received, and you can also set up integration hooks with services such as Zapier. Submissions are
+automatically filtered for spam via [Akismet](https://akismet.com/).
 
 ## Local Development
 
@@ -58,12 +58,14 @@ use._
 
 - Install dependencies with `mix deps.get`
 - Create and migrate your database with `mix ecto.create && mix ecto.migrate`
-- Start Phoenix endpoint with `mix phx.server`
+- Ensure the [necessary environment variables](./.sample.env) are set via `source .env`
+- Start the Phoenix endpoint with `mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 You can also download
-our [Postman collection of API actions](./.postman_collection.json) and [import it into your environment](https://learning.postman.com/docs/postman/collections/importing-and-exporting-data/#importing-data-into-postman).
+our [Postman collection of API actions](./.postman_collection.json) and [import it into your environment](https://learning.postman.com/docs/postman/collections/importing-and-exporting-data/#importing-data-into-postman). Alternatively, you can open our
+collection by following this link:
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/e7b20dafc2a25c1f5d20)
 
@@ -77,11 +79,21 @@ Now you can visit [`localhost:3000`](http://localhost:3000) from your browser.
 ## Running Your Own Instance
 
 Form Delegate runs on [Gigalixir](https://www.gigalixir.com/) for the Phoenix API and
-[Netlify](https://www.netlify.com/) for the React frontend. Both services offer free tiers that are suitable for development
-and staging.
+[Netlify](https://www.netlify.com/) for the React frontend. Both services offer free tiers that are
+suitable for development and staging.
 
-_Please note that this repository is currently hardcoded with our official domain. You will need to create a fork of this
-repository and change `formdelegate.com` where appropriate._
+Additionally, Form Delegate uses the following services:
+
+- [Akismet](https://akismet.com/) for spam detection
+
+- [hCaptcha](https://www.hcaptcha.com/) for serving CAPTCHAs
+
+- [Amazon S3](https://aws.amazon.com/s3/) for block storage of submission files
+
+- [Postmark](https://postmarkapp.com/) for email delivery
+
+_Note: This repository is currently hardcoded with our official domain. You will need to create a fork
+and replace `formdelegate.com` where appropriate._
 
 ### Create a Free Gigalixir Account
 
@@ -119,7 +131,8 @@ FormDelegate.Repo.insert!(%FormDelegate.Accounts.User{
 })
 
 FormDelegate.Repo.insert!(%FormDelegate.Integrations.Integration{
-  type: "E-mail"
+  name: "E-mail",
+  type_code: "email"
 })
 ```
 
