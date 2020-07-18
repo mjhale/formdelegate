@@ -25,12 +25,9 @@ defmodule FormDelegateWeb.UserConfirmationController do
   end
 
   def confirm(conn, %{"token" => token}) do
-    case Accounts.confirm_user(token) do
-      {:ok, %User{} = user} ->
-        render(conn, :show, user: user)
-
-      _ ->
-        {:error, :bad_request, %{message: "INVALID_OR_EXPIRED_CONFIRMATION_TOKEN"}}
+    with %User{} = user <- Accounts.get_user_by_confirmation_token!(token),
+         {:ok, %User{} = user} <- Accounts.confirm_user(user) do
+      render(conn, :show, user: user)
     end
   end
 end

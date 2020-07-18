@@ -25,7 +25,7 @@ defmodule FormDelegate.Services.Hcaptcha.Tesla do
 
       _response ->
         Logger.error("FD Registration: Invalid CAPTCHA challenge for request token #{token}")
-        {:error, :invalid_api_response}
+        {:error, :invalid_or_expired_captcha}
     end
   end
 end

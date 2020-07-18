@@ -83,16 +83,9 @@ defmodule FormDelegateWeb.ResetPasswordControllerTest do
         }
       }
 
-      response =
+      assert_error_sent :not_found, fn ->
         put(conn, Routes.reset_password_path(conn, :update, req_params))
-        |> json_response(400)
-
-      expected = %{
-        "errors" => %{"detail" => "BAD_REQUEST"},
-        "message" => "INVALID_OR_EXPIRED_CONFIRMATION_TOKEN"
-      }
-
-      assert response == expected
+      end
     end
   end
 end

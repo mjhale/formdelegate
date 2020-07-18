@@ -11,7 +11,7 @@ defmodule FormDelegate.Services.Hcaptcha.InMemory do
         {:ok, %{body: %{success: "true"}}}
 
       _ ->
-        {:error, :invalid_api_response}
+        {:error, :invalid_or_expired_captcha}
     end
   end
 end

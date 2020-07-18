@@ -55,7 +55,14 @@ defmodule FormDelegateWeb.FallbackController do
     |> render(:"400", %{message: message})
   end
 
-  def call(conn, {:error, :invalid_api_response}) do
+  def call(conn, {:error, :invalid_or_expired_token}) do
+    conn
+    |> put_status(:bad_request)
+    |> put_view(FormDelegateWeb.ErrorView)
+    |> render(:"400", %{message: "INVALID_OR_EXPIRED_TOKEN"})
+  end
+
+  def call(conn, {:error, :invalid_or_expired_captcha}) do
     conn
     |> put_status(:bad_request)
     |> put_view(FormDelegateWeb.ErrorView)

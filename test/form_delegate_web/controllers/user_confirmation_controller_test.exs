@@ -36,7 +36,7 @@ defmodule FormDelegateWeb.UserConfirmationControllerTest do
            conn: conn,
            user: user
          } do
-      {:ok, %User{} = user} = Accounts.confirm_user(user.confirmation_token)
+      {:ok, %User{} = user} = Accounts.confirm_user(user)
 
       req_params = %{"user" => %{"email" => user.email}}
 

@@ -8,6 +8,8 @@ defmodule FormDelegate.Accounts do
   alias FormDelegate.Repo
   alias FormDelegate.Accounts.User
 
+  require Logger
+
   @doc """
   Returns the list of users.
 
@@ -78,15 +80,15 @@ defmodule FormDelegate.Accounts do
 
   ## Examples
 
-      iex> get_user_by_confirmation_token("ZsyEMtusL6hWS...")
+      iex> get_user_by_confirmation_token!("ZsyEMtusL6hWS...")
       %User{}
 
-      iex> get_user_by_confirmation_token("invalid-token")
-      nil
+      iex> get_user_by_confirmation_token!("invalid-token")
+      ** (Ecto.NoResultsError)
 
   """
-  def get_user_by_confirmation_token(confirmation_token, preload \\ []) do
-    Repo.get_by(User, confirmation_token: confirmation_token)
+  def get_user_by_confirmation_token!(token, preload \\ []) do
+    Repo.get_by!(User, confirmation_token: token)
     |> Repo.preload(preload)
   end
 
@@ -95,15 +97,16 @@ defmodule FormDelegate.Accounts do
 
   ## Examples
 
-      iex> get_user_by_reset_password_token("ZsyEMtusL6hWS...")
+      iex> get_user_by_reset_password_token!("ZsyEMtusL6hWS...")
       %User{}
 
-      iex> get_user_by_reset_password_token("invalid-token")
-      nil
+      iex> get_user_by_reset_password_token!("invalid-token")
+      ** (Ecto.NoResultsError)
 
   """
-  def get_user_by_reset_password_token(reset_password_token) do
-    Repo.get_by(User, reset_password_token: reset_password_token)
+  def get_user_by_reset_password_token!(reset_password_token, preload \\ []) do
+    Repo.get_by!(User, reset_password_token: reset_password_token)
+    |> Repo.preload(preload)
   end
 
   @doc """
@@ -150,29 +153,17 @@ defmodule FormDelegate.Accounts do
       iex> confirm_user(user)
       {:ok, %User{}}
 
+      iex> confirm_user(user_with_invalid_token)
+      {:error, :invalid_or_expired_token}
+
       iex> confirm_user(user)
-      :error
+      {:error, %Ecto.Changeset{}}
 
   """
-  def confirm_user(confirmation_token) do
-    with %User{} = user <- get_user_by_confirmation_token(confirmation_token),
-         {:ok, _} <- verify_confirmation_token(user),
+  def confirm_user(%User{} = user) do
+    with {:ok, %User{} = user} <- verify_confirmation_token_window(user),
          {:ok, %User{} = user} <- Repo.update(User.confirmed_changeset(user)) do
       {:ok, user}
-    else
-      _ -> :error
-    end
-  end
-
-  defp verify_confirmation_token(%User{confirmation_sent_at: sent_at} = user) do
-    confirmation_validity_in_seconds = 5 * (60 * 60 * 24)
-    seconds_since_confirmation_sent_at = DateTime.diff(DateTime.utc_now(), sent_at, :second)
-    is_confirmation_valid = seconds_since_confirmation_sent_at < confirmation_validity_in_seconds
-
-    if is_confirmation_valid do
-      {:ok, user}
-    else
-      {:error, :expired_confirmation_token}
     end
   end
 
@@ -203,13 +194,18 @@ defmodule FormDelegate.Accounts do
       {:ok, %User{}}
 
       iex> reset_user_password(user)
+      {:error, :invalid_or_expired_token}
+
+      iex> reset_user_password(user)
       {:error, %Ecto.Changeset{}}
 
   """
   def reset_user_password(%User{} = user, params \\ %{}) do
-    user
-    |> User.reset_password_changeset(params)
-    |> Repo.update()
+    with {:ok, %User{} = user} <- verify_reset_user_password_token_window(user) do
+      user
+      |> User.reset_password_changeset(params)
+      |> Repo.update()
+    end
   end
 
   @doc """
@@ -305,6 +301,33 @@ defmodule FormDelegate.Accounts do
           {:error, _} ->
             {:error, :invalid_credentials}
         end
+    end
+  end
+
+  @doc false
+  defp verify_confirmation_token_window(%User{confirmation_sent_at: sent_at} = user) do
+    # Set validity window to 5 days
+    confirmation_validity_in_seconds = 5 * (60 * 60 * 24)
+    seconds_since_confirmation_sent_at = DateTime.diff(DateTime.utc_now(), sent_at, :second)
+    is_confirmation_valid = seconds_since_confirmation_sent_at < confirmation_validity_in_seconds
+
+    if is_confirmation_valid do
+      {:ok, user}
+    else
+      {:error, :invalid_or_expired_token}
+    end
+  end
+
+  @doc false
+  defp verify_reset_user_password_token_window(%User{reset_password_sent_at: sent_at} = user) do
+    confirmation_validity_in_seconds = 5 * (60 * 60 * 24)
+    seconds_since_sent_at = DateTime.diff(DateTime.utc_now(), sent_at, :second)
+    is_confirmation_valid = seconds_since_sent_at < confirmation_validity_in_seconds
+
+    if is_confirmation_valid do
+      {:ok, user}
+    else
+      {:error, :invalid_or_expired_token}
     end
   end
 end

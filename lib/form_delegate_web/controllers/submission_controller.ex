@@ -69,6 +69,9 @@ defmodule FormDelegateWeb.SubmissionController do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:error, changeset}
+
+      {:error, :forbidden} ->
+        {:error, :forbidden}
     end
   end
 
