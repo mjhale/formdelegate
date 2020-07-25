@@ -20,10 +20,10 @@ defmodule FormDelegateWeb.UserController do
     end
   end
 
-  def create(conn, %{"user" => user_params, "captcha" => captcha_token}, current_user) do
+  def create(conn, %{"captcha" => captcha_token} = registration_params, current_user) do
     with :ok <- Authorizer.authorize(:register_user, current_user),
          {:ok, _captcha_response} <- hcaptcha_api().verify_token(captcha_token),
-         {:ok, %User{} = user} <- Accounts.register_user(user_params),
+         {:ok, %User{} = user} <- Accounts.register_user(registration_params),
          {:ok, token, _claims} <- Guardian.encode_and_sign(user, %{}, token_type: "access") do
       Mailers.UserWelcomeMailer.send_user_welcome_email(user)
 

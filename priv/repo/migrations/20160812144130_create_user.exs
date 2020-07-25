@@ -2,8 +2,10 @@ defmodule FormDelegate.Repo.Migrations.CreateUsers do
   use Ecto.Migration
 
   def change do
+    execute("CREATE EXTENSION IF NOT EXISTS citext", "DROP EXTENSION IF EXISTS citext")
+
     create table(:users) do
-      add(:email, :string, null: false)
+      add(:email, :citext, null: false)
       add(:unconfirmed_email, :string)
       add(:password_hash, :string, null: false)
       add(:form_count, :integer, null: false, default: 0)

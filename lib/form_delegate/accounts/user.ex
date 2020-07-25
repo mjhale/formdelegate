@@ -55,6 +55,7 @@ defmodule FormDelegate.Accounts.User do
 
   @doc false
   def new_confirmation_changeset(%User{} = user) do
+    # @TODO: Set confirmation_sent_at on mailer action
     user
     |> change()
     |> put_confirmation_token()

@@ -6,9 +6,8 @@ defmodule FormDelegate.Accounts do
   import Ecto.Query, warn: false
 
   alias FormDelegate.Repo
+  alias FormDelegate.Accounts.Registration
   alias FormDelegate.Accounts.User
-
-  require Logger
 
   @doc """
   Returns the list of users.
@@ -268,9 +267,18 @@ defmodule FormDelegate.Accounts do
 
   """
   def register_user(attrs \\ %{}) do
-    %User{}
-    |> User.registration_changeset(attrs)
-    |> Repo.insert()
+    changeset = Registration.changeset(%Registration{}, attrs)
+
+    with %Ecto.Multi{} = multi <- Registration.to_multi(changeset),
+         {:ok, %{user: user}} <- Repo.transaction(multi) do
+      {:ok, user}
+    else
+      {:error, changeset} ->
+        {:error, changeset}
+
+      {:error, _operation, changeset, _changes} ->
+        {:error, changeset}
+    end
   end
 
   @doc """

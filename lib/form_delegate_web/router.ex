@@ -48,6 +48,8 @@ defmodule FormDelegateWeb.Router do
     post "/users/reset-password", ResetPasswordController, :create, as: :reset_password
     put "/users/reset-password", ResetPasswordController, :update, as: :reset_password
     patch "/users/reset-password", ResetPasswordController, :update, as: :reset_password
+
+    post "/validations/email", ValidationController, :email, as: :email_validation
   end
 
   scope "/v1", FormDelegateWeb do
