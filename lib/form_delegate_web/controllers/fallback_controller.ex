@@ -13,11 +13,11 @@ defmodule FormDelegateWeb.FallbackController do
     |> render(:"401")
   end
 
-  def call(conn, {:error, :unauthorized, %{message: message}}) do
+  def call(conn, {:error, :unauthorized, %{type: type}}) do
     conn
     |> put_status(:unauthorized)
     |> put_view(FormDelegateWeb.ErrorView)
-    |> render(:"401", %{message: message})
+    |> render(:"401", %{type: type})
   end
 
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
@@ -48,24 +48,24 @@ defmodule FormDelegateWeb.FallbackController do
     |> render(:"400")
   end
 
-  def call(conn, {:error, :bad_request, %{message: message}}) do
+  def call(conn, {:error, :bad_request, %{type: type}}) do
     conn
     |> put_status(:bad_request)
     |> put_view(FormDelegateWeb.ErrorView)
-    |> render(:"400", %{message: message})
+    |> render(:"400", %{type: type})
   end
 
   def call(conn, {:error, :invalid_or_expired_token}) do
     conn
     |> put_status(:bad_request)
     |> put_view(FormDelegateWeb.ErrorView)
-    |> render(:"400", %{message: "INVALID_OR_EXPIRED_TOKEN"})
+    |> render(:"400", %{type: "INVALID_OR_EXPIRED_TOKEN"})
   end
 
   def call(conn, {:error, :invalid_or_expired_captcha}) do
     conn
     |> put_status(:bad_request)
     |> put_view(FormDelegateWeb.ErrorView)
-    |> render(:"400", %{message: "INVALID_OR_EXPIRED_CAPTCHA"})
+    |> render(:"400", %{type: "INVALID_OR_EXPIRED_CAPTCHA"})
   end
 end

@@ -41,10 +41,7 @@ defmodule FormDelegateWeb.SessionControllerTest do
         |> post(Routes.session_path(conn, :create, session: credentials))
         |> json_response(401)
 
-      expected = %{
-        "message" => "INVALID_CREDENTIALS",
-        "errors" => %{"detail" => "LOGIN_REQUIRED"}
-      }
+      expected = %{"error" => %{"code" => 401, "type" => "INVALID_CREDENTIALS"}}
 
       assert response == expected
     end
@@ -58,10 +55,7 @@ defmodule FormDelegateWeb.SessionControllerTest do
         |> post(Routes.session_path(conn, :create, session: credentials))
         |> json_response(401)
 
-      expected = %{
-        "message" => "INVALID_CREDENTIALS",
-        "errors" => %{"detail" => "LOGIN_REQUIRED"}
-      }
+      expected = %{"error" => %{"code" => 401, "type" => "INVALID_CREDENTIALS"}}
 
       assert response == expected
     end

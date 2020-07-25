@@ -79,7 +79,13 @@ defmodule FormDelegateWeb.FormControllerTest do
         |> post(Routes.form_path(conn, :create), form: @invalid_attrs)
         |> json_response(422)
 
-      expected = %{"errors" => %{"form" => ["can't be blank"]}}
+      expected = %{
+        "error" => %{
+          "code" => 422,
+          "errors" => %{"form" => ["can't be blank"]},
+          "type" => "UNPROCESSABLE_ENTITY"
+        }
+      }
 
       assert response == expected
     end

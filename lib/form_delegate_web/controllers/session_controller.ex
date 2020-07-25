@@ -13,7 +13,7 @@ defmodule FormDelegateWeb.SessionController do
         render(conn, "show.json", %{session: %{token: token}})
 
       {:error, _reason} ->
-        {:error, :unauthorized, %{message: "INVALID_CREDENTIALS"}}
+        {:error, :unauthorized, %{type: "INVALID_CREDENTIALS"}}
     end
   end
 end

@@ -70,7 +70,7 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> get(Routes.user_path(conn, :index))
         |> json_response(403)
 
-      expected = %{"errors" => %{"detail" => "FORBIDDEN"}}
+      expected = %{"error" => %{"code" => 403, "type" => "FORBIDDEN"}}
 
       assert response == expected
     end
@@ -103,10 +103,16 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> json_response(422)
 
       expected = %{
-        "errors" => %{
-          "email" => ["can't be blank"],
-          "name" => ["can't be blank"],
-          "password" => ["can't be blank"]
+        "error" => %{
+          "code" => 422,
+          "errors" => %{
+            "user" => %{
+              "email" => ["can't be blank"],
+              "name" => ["can't be blank"],
+              "password" => ["can't be blank"]
+            }
+          },
+          "type" => "UNPROCESSABLE_ENTITY"
         }
       }
 
@@ -124,7 +130,7 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> post(Routes.user_path(conn, :create), @valid_attrs)
         |> json_response(403)
 
-      expected = %{"errors" => %{"detail" => "FORBIDDEN"}}
+      expected = %{"error" => %{"code" => 403, "type" => "FORBIDDEN"}}
 
       assert response == expected
     end
@@ -267,7 +273,7 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> get(Routes.user_path(conn, :show, user.id))
         |> json_response(403)
 
-      expected = %{"errors" => %{"detail" => "FORBIDDEN"}}
+      expected = %{"error" => %{"code" => 403, "type" => "FORBIDDEN"}}
 
       assert response == expected
     end
