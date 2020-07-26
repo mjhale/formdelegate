@@ -47,7 +47,7 @@ defmodule FormDelegate.Factory do
 
   def form_factory do
     %Form{
-      form: sequence(:form, &"Form #{&1}"),
+      name: sequence(:form, &"Form #{&1}"),
       user: build(:user)
     }
   end

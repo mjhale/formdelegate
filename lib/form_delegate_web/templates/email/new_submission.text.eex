@@ -1,4 +1,4 @@
-You received a new form submission for <%= @form.form %>
+You received a new form submission for <%= @form.name %>
 
 <%= if @submission.sender do %>
   Sender: <%= @submission.sender %>

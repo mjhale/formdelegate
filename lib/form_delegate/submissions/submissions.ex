@@ -52,11 +52,9 @@ defmodule FormDelegate.Submissions do
       from s in Submission,
         inner_join: form in Form,
         on: form.user_id == ^user.id and form.id == s.form_id,
-        # @TODO: Improve where clause matching
         where:
-          ilike(s.content, ^"%#{params["query"]}%") or
-            ilike(s.sender, ^"%#{params["query"]}%") or
-            fragment("?->>? ilike ?", s.data, "user_mail", ^"%#{params["query"]}%"),
+          ilike(s.sender, ^"%#{params["query"]}%") or
+            fragment("?::text ilike ?", s.fields, ^"%#{params["query"]}%"),
         order_by: [desc: s.inserted_at],
         preload: [
           :attachments,

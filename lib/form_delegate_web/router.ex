@@ -5,6 +5,10 @@ defmodule FormDelegateWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :browser_and_api do
+    plug :accepts, ["html", "json"]
+  end
+
   pipeline :check_authenticated do
     @claims %{typ: "access"}
 
@@ -32,9 +36,13 @@ defmodule FormDelegateWeb.Router do
   end
 
   scope "/v1", FormDelegateWeb do
-    pipe_through :api
+    pipe_through [:browser_and_api]
 
     post "/submissions/:form_id", SubmissionController, :create, as: :submission
+  end
+
+  scope "/v1", FormDelegateWeb do
+    pipe_through :api
 
     resources "/sessions", SessionController,
       only: [:create, :delete],

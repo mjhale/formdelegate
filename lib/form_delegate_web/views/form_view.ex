@@ -12,19 +12,21 @@ defmodule FormDelegateWeb.FormView do
 
   def render("form.json", %{form: form}) do
     %{
-      id: form.id,
-      form: form.form,
+      callback_success_includes_data: form.callback_success_includes_data,
+      callback_success_url: form.callback_success_url,
       form_integrations:
         render_many(
           form.form_integrations,
           FormIntegrationView,
           "form_integration.json"
         ),
-      host: form.host,
-      submission_count: form.submission_count,
-      verified: form.verified,
+      hosts: form.hosts,
+      id: form.id,
       inserted_at: form.inserted_at,
-      updated_at: form.updated_at
+      name: form.name,
+      submission_count: form.submission_count,
+      updated_at: form.updated_at,
+      verified: form.verified
     }
   end
 end

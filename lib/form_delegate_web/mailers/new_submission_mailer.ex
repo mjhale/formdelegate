@@ -2,6 +2,7 @@ defmodule FormDelegateWeb.Mailers.NewSubmissionMailer do
   use Bamboo.Phoenix, view: FormDelegateWeb.EmailView
   import FormDelegateWeb.Mailers.BaseEmail, only: [base_email: 0]
 
+  alias FormDelegateWeb.Mailers
   alias FormDelegate.Submissions.Submission
 
   def send_new_submission_email(%Submission{} = submission, recipients) do

@@ -3,7 +3,7 @@
     <table border="0" cellpadding="10" cellspacing="0" width="100%" id="emailBody">
       <tr>
         <td align="center" valign="top">
-          You've received a new submission via Form Delegate!
+          You received a new form submission for <%= @form.name %>
         </td>
       </tr>
       <tr>

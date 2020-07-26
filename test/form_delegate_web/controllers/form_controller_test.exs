@@ -3,9 +3,9 @@ defmodule FormDelegateWeb.FormControllerTest do
 
   alias FormDelegateWeb.Router.Helpers, as: Routes
 
-  @valid_attrs %{form: "Contact Form"}
-  @update_attrs %{form: "Report Form", host: "example.com"}
-  @invalid_attrs %{form: nil}
+  @valid_attrs %{name: "Contact Form"}
+  @update_attrs %{hosts: ["example.com"], name: "Report Form"}
+  @invalid_attrs %{name: nil}
 
   setup %{conn: conn, user: user} do
     jwt =
@@ -34,11 +34,13 @@ defmodule FormDelegateWeb.FormControllerTest do
       expected = %{
         "data" => [
           %{
-            "form" => form.form,
+            "callback_success_includes_data" => false,
+            "callback_success_url" => nil,
             "form_integrations" => [],
-            "host" => nil,
+            "hosts" => nil,
             "id" => form.id,
             "inserted_at" => DateTime.to_iso8601(form.inserted_at),
+            "name" => form.name,
             "submission_count" => 0,
             "updated_at" => DateTime.to_iso8601(form.updated_at),
             "verified" => false
@@ -62,8 +64,8 @@ defmodule FormDelegateWeb.FormControllerTest do
         |> post(Routes.form_path(conn, :create), form: @valid_attrs)
         |> json_response(201)
 
-      assert response["data"]["form"] == "Contact Form"
       assert response["data"]["host"] == nil
+      assert response["data"]["name"] == "Contact Form"
       assert response["data"]["submission_count"] == 0
       assert response["data"]["verified"] == false
     end
@@ -82,7 +84,7 @@ defmodule FormDelegateWeb.FormControllerTest do
       expected = %{
         "error" => %{
           "code" => 422,
-          "errors" => %{"form" => ["can't be blank"]},
+          "errors" => %{"name" => ["can't be blank"]},
           "type" => "UNPROCESSABLE_ENTITY"
         }
       }
@@ -108,11 +110,13 @@ defmodule FormDelegateWeb.FormControllerTest do
 
       expected = %{
         "data" => %{
-          "form" => form.form,
+          "callback_success_includes_data" => false,
+          "callback_success_url" => nil,
           "form_integrations" => [],
-          "host" => nil,
+          "hosts" => nil,
           "id" => form.id,
           "inserted_at" => DateTime.to_iso8601(form.inserted_at),
+          "name" => form.name,
           "submission_count" => 0,
           "updated_at" => DateTime.to_iso8601(form.updated_at),
           "verified" => false
@@ -150,8 +154,8 @@ defmodule FormDelegateWeb.FormControllerTest do
         |> put(Routes.form_path(conn, :update, form.id), form: @update_attrs)
         |> json_response(200)
 
-      assert response["data"]["form"] == "Report Form"
-      assert response["data"]["host"] == "example.com"
+      assert response["data"]["hosts"] == ["example.com"]
+      assert response["data"]["name"] == "Report Form"
       assert response["data"]["submission_count"] == 0
       assert response["data"]["verified"] == false
     end
@@ -217,11 +221,13 @@ defmodule FormDelegateWeb.FormControllerTest do
 
       expected = %{
         "data" => %{
-          "form" => user_form.form,
+          "callback_success_includes_data" => false,
+          "callback_success_url" => nil,
           "form_integrations" => [],
-          "host" => nil,
+          "hosts" => nil,
           "id" => user_form.id,
           "inserted_at" => DateTime.to_iso8601(user_form.inserted_at),
+          "name" => user_form.name,
           "submission_count" => 0,
           "updated_at" => DateTime.to_iso8601(user_form.updated_at),
           "verified" => false

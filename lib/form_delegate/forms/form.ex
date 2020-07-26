@@ -11,10 +11,12 @@ defmodule FormDelegate.Forms.Form do
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "forms" do
-    field :form, :string
-    field :host, :string
-    field :verified, :boolean, default: false, null: false
+    field :callback_success_includes_data, :boolean, default: false, null: false
+    field :callback_success_url, :string
+    field :hosts, {:array, :string}
+    field :name, :string
     field :submission_count, :integer, default: 0, null: false
+    field :verified, :boolean, default: false, null: false
 
     belongs_to :user, User
     has_many :submissions, Submission, on_delete: :delete_all
@@ -29,7 +31,7 @@ defmodule FormDelegate.Forms.Form do
   """
   def changeset(%Form{} = form, attrs) do
     form
-    |> cast(attrs, [:form, :host])
-    |> validate_required([:form])
+    |> cast(attrs, [:callback_success_includes_data, :callback_success_url, :name, :hosts])
+    |> validate_required([:name])
   end
 end

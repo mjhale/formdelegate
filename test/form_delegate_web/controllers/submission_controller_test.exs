@@ -102,11 +102,13 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
             "flagged_at" => nil,
             "flagged_type" => nil,
             "form" => %{
-              "form" => form.form,
+              "callback_success_includes_data" => false,
+              "callback_success_url" => nil,
               "form_integrations" => [],
-              "host" => nil,
+              "hosts" => nil,
               "id" => form.id,
               "inserted_at" => DateTime.to_iso8601(form.inserted_at),
+              "name" => form.name,
               "submission_count" => 0,
               "updated_at" => DateTime.to_iso8601(form.updated_at),
               "verified" => false
