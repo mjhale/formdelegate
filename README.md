@@ -138,7 +138,7 @@ FormDelegate.Repo.insert!(%FormDelegate.Integrations.Integration{
 
 ### Deploy to Gigalixir
 
-Run `git push gigalixir master` to deploy the application.
+Run `git push gigalixir main` to deploy the application.
 
 ### Create a Netlify Account
 

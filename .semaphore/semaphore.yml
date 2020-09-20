@@ -27,7 +27,7 @@ blocks:
         - name: MIX_ENV
           value: test
         - name: DATABASE_URL
-          value: 'ecto://postgres:@0.0.0.0:5432/sema_test'
+          value: "ecto://postgres:@0.0.0.0:5432/sema_test"
       prologue:
         commands:
           - checkout
@@ -42,4 +42,4 @@ promotions:
   - name: Deploy to Gigalixir
     pipeline_file: gigalixir.yml
     auto_promote:
-      when: branch = 'master' AND result = 'passed'
+      when: branch = 'main' AND result = 'passed'

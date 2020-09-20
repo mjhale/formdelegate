@@ -13,8 +13,8 @@ blocks:
             - chmod 0600 ~/.ssh/id_rsa_semaphore_gigalixir
             - ssh-add ~/.ssh/id_rsa_semaphore_gigalixir
             - checkout
-            - 'git remote add gigalixir https://$GIGALIXIR_EMAIL:$GIGALIXIR_API_KEY@git.gigalixir.com/$GIGALIXIR_APP_NAME.git'
-            - 'git push gigalixir -f $SEMAPHORE_GIT_BRANCH:master'
+            - "git remote add gigalixir https://$GIGALIXIR_EMAIL:$GIGALIXIR_API_KEY@git.gigalixir.com/$GIGALIXIR_APP_NAME.git"
+            - "git push gigalixir -f $SEMAPHORE_GIT_BRANCH:master"
 agent:
   machine:
     type: e1-standard-2
