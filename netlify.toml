@@ -3,4 +3,4 @@
   command = "yarn run build"
   publish = "assets/build/"
   functions = ""
-  environment = { NODE_VERSION = "13.13.0", NPM_VERSION = "6.14.4", YARN_VERSION = "1.22.4" }
+  environment = { NODE_VERSION = "14", YARN_VERSION = "1.22.10" }

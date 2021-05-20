@@ -4,18 +4,18 @@ defmodule FormDelegate.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
-    import Supervisor.Spec
 
     # Define workers and child supervisors to be supervised
     children = [
       # Start the PubSub system
       {Phoenix.PubSub, name: FormDelegate.PubSub},
       # Start the Ecto repository
-      supervisor(FormDelegate.Repo, []),
+      FormDelegate.Repo,
       # Start the endpoint when the application starts
-      supervisor(FormDelegateWeb.Endpoint, []),
+      FormDelegateWeb.Endpoint,
       # Start Rihanna job queue
-      supervisor(Rihanna.Supervisor, [[postgrex: FormDelegate.Repo.config()]])
+      {Rihanna.Supervisor, [postgrex: FormDelegate.Repo.config()]}
+
       # Start your own worker by calling: FormDelegate.Worker.start_link(arg1, arg2, arg3)
       # worker(FormDelegate.Worker, [arg1, arg2, arg3]),
     ]

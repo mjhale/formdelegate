@@ -7,7 +7,7 @@ defmodule FormDelegate.Integrations.EmailIntegrationRecipient do
   schema "email_integration_recipients" do
     field :email, :string, null: false
     field :name, :string
-    field :type, :string, default: 'to', null: false
+    field :type, :string, default: "to", null: false
 
     belongs_to :email_integration, EmailIntegration,
       foreign_key: :form_integration_id,

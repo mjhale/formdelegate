@@ -23,7 +23,7 @@ defmodule FormDelegate.Repo.Migrations.CreateIntegrationTables do
     end
 
     create table(:email_integration_recipients) do
-      add(:name, :string)
+      add(:name, :string, default: "")
       add(:email, :string, null: false)
       add(:type, :string, default: "to", null: false)
 
