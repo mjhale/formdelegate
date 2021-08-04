@@ -24,6 +24,7 @@ defmodule FormDelegate.Integrations.EmailIntegrationRecipient do
       :type,
       :form_integration_id
     ])
+    |> validate_required([:email, :type])
     |> assoc_constraint(:email_integration)
   end
 end

@@ -23,7 +23,7 @@ defmodule FormDelegate.Forms do
     Repo.all(
       from f in Form,
         where: f.user_id == ^user.id,
-        preload: [form_integrations: [:email_integration_recipients, :integration]],
+        preload: [email_integrations: [:email_integration_recipients]],
         order_by: f.inserted_at
     )
   end
@@ -46,7 +46,7 @@ defmodule FormDelegate.Forms do
     Repo.one!(
       from f in Form,
         preload: [
-          [form_integrations: [:email_integration_recipients, :integration]],
+          [email_integrations: [:email_integration_recipients]],
           :user
         ],
         where: f.id == ^id
@@ -87,7 +87,6 @@ defmodule FormDelegate.Forms do
   """
   def update_form(%Form{} = form, attrs) do
     form
-    |> Repo.preload(email_integrations: :integration)
     |> Form.changeset(attrs)
     |> Ecto.Changeset.cast_assoc(:email_integrations, with: &EmailIntegration.changeset/2)
     |> Repo.update(returning: true)

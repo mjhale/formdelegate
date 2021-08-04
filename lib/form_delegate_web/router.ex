@@ -64,7 +64,6 @@ defmodule FormDelegateWeb.Router do
     pipe_through [:api, :check_authenticated, :ensure_authenticated, :load_user]
 
     resources "/forms", FormController, except: [:edit, :new]
-    resources "/integrations", IntegrationController, except: [:create, :delete, :edit, :new]
 
     scope "/submissions" do
       # @TODO: Refactor and move to different namespace

@@ -6,7 +6,7 @@
 alias FormDelegate.Repo
 alias FormDelegate.Accounts.User
 alias FormDelegate.Forms.Form
-alias FormDelegate.Integrations.{EmailIntegration, EmailIntegrationRecipient, Integration}
+alias FormDelegate.Integrations.{EmailIntegration, EmailIntegrationRecipient}
 alias FormDelegate.Submissions.Submission
 
 # Scrub prior data before seeding
@@ -61,21 +61,13 @@ user_form =
     submission_count: 1
   })
 
-# Seed Integrations
-Repo.insert!(%Integration{
-  name: "E-mail",
-  type_code: "email"
-})
-
-email_integration = Repo.get_by!(Integration, type_code: "email")
-
 admin_contact_form_email_integration =
   Repo.insert!(%EmailIntegration{
     form: admin_contact_form,
     email_api_key: nil,
     email_from_address: nil,
     enabled: true,
-    integration: email_integration
+    integration_type: :email
   })
 
 Repo.insert!(%EmailIntegrationRecipient{

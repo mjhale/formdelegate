@@ -13,21 +13,14 @@ defmodule FormDelegate.SubmissionQueueJob do
   end
 
   defp run_integrations(%Form{} = form, %Submission{} = submission) do
-    Enum.each(form.form_integrations, fn form_integration ->
-      if form_integration.enabled do
-        case form_integration.integration.type_code do
-          "email" ->
-            Logger.info("FD: Form email job running for #{submission.id}")
+    Enum.each(form.email_integrations, fn email_integration ->
+      if email_integration.enabled do
+        Logger.info("FD: Form email job running for #{submission.id}")
 
-            NewSubmissionMailer.send_new_submission_email(
-              submission,
-              form_integration.email_integration_recipients
-            )
-
-          _ ->
-            Logger.error("FD: Form integration job error for #{submission.id}")
-            {:error, "Unknown integration type"}
-        end
+        NewSubmissionMailer.send_new_submission_email(
+          submission,
+          email_integration.email_integration_recipients
+        )
       end
     end)
   end

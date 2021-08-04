@@ -104,7 +104,7 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
             "form" => %{
               "callback_success_includes_data" => false,
               "callback_success_url" => nil,
-              "form_integrations" => [],
+              "email_integrations" => [],
               "hosts" => nil,
               "id" => form.id,
               "inserted_at" => DateTime.to_iso8601(form.inserted_at),

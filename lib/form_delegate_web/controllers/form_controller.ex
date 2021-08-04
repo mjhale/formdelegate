@@ -23,7 +23,7 @@ defmodule FormDelegateWeb.FormController do
          {:ok, %Form{} = form} <- Forms.create_form(form_params, current_user) do
       form =
         FormDelegate.Repo.preload(form, [
-          [form_integrations: [:email_integration_recipients, :integration]],
+          [email_integrations: [:email_integration_recipients]],
           :user
         ])
 

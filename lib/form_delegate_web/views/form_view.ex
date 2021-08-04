@@ -1,6 +1,6 @@
 defmodule FormDelegateWeb.FormView do
   use FormDelegateWeb, :view
-  alias FormDelegateWeb.{FormIntegrationView, FormView}
+  alias FormDelegateWeb.{FormEmailIntegrationView, FormView}
 
   def render("index.json", %{forms: forms}) do
     %{data: render_many(forms, FormView, "form.json")}
@@ -14,11 +14,12 @@ defmodule FormDelegateWeb.FormView do
     %{
       callback_success_includes_data: form.callback_success_includes_data,
       callback_success_url: form.callback_success_url,
-      form_integrations:
+      email_integrations:
         render_many(
-          form.form_integrations,
-          FormIntegrationView,
-          "form_integration.json"
+          form.email_integrations,
+          FormEmailIntegrationView,
+          "form_email_integration.json",
+          as: :email_integration
         ),
       hosts: form.hosts,
       id: form.id,

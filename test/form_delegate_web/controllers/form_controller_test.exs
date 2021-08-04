@@ -36,7 +36,7 @@ defmodule FormDelegateWeb.FormControllerTest do
           %{
             "callback_success_includes_data" => false,
             "callback_success_url" => nil,
-            "form_integrations" => [],
+            "email_integrations" => [],
             "hosts" => nil,
             "id" => form.id,
             "inserted_at" => DateTime.to_iso8601(form.inserted_at),
@@ -112,7 +112,7 @@ defmodule FormDelegateWeb.FormControllerTest do
         "data" => %{
           "callback_success_includes_data" => false,
           "callback_success_url" => nil,
-          "form_integrations" => [],
+          "email_integrations" => [],
           "hosts" => nil,
           "id" => form.id,
           "inserted_at" => DateTime.to_iso8601(form.inserted_at),
@@ -223,7 +223,7 @@ defmodule FormDelegateWeb.FormControllerTest do
         "data" => %{
           "callback_success_includes_data" => false,
           "callback_success_url" => nil,
-          "form_integrations" => [],
+          "email_integrations" => [],
           "hosts" => nil,
           "id" => user_form.id,
           "inserted_at" => DateTime.to_iso8601(user_form.inserted_at),

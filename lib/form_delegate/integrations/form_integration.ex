@@ -3,7 +3,7 @@ defmodule FormDelegate.Integrations.FormIntegration do
   import Ecto.Changeset
 
   alias FormDelegate.Forms.Form
-  alias FormDelegate.Integrations.{EmailIntegrationRecipient, FormIntegration, Integration}
+  alias FormDelegate.Integrations.{EmailIntegrationRecipient, FormIntegration}
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @timestamps_opts [type: :utc_datetime_usec]
@@ -17,16 +17,16 @@ defmodule FormDelegate.Integrations.FormIntegration do
     has_many :email_integration_recipients, EmailIntegrationRecipient,
       foreign_key: :form_integration_id
 
+    field :integration_type, Ecto.Enum, values: [:email, :zapier, :ifttt], null: false
     belongs_to :form, Form, type: Ecto.UUID
-    belongs_to :integration, Integration
 
     timestamps()
   end
 
-  def changeset(%FormIntegration{} = integration, attrs) do
-    integration
-    |> cast(attrs, [:enabled, :form_id, :integration_id])
+  def changeset(%FormIntegration{} = form_integration, attrs) do
+    form_integration
+    |> cast(attrs, [:enabled, :form_id, :integration_type])
+    |> validate_required([:enabled, :form_id, :integration_type])
     |> assoc_constraint(:form)
-    |> assoc_constraint(:integration)
   end
 end

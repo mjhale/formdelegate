@@ -9,6 +9,9 @@ defmodule FormDelegate.Repo.Migrations.CreateIntegrationTables do
       timestamps(type: :timestamptz)
     end
 
+    # Migration for integration_type enum
+    execute(&execute_enum_up/0, &execute_enum_down/0)
+
     create table(:form_integrations, primary_key: false) do
       add(:enabled, :boolean, default: false, null: false)
       add(:id, :binary_id, primary_key: true)
@@ -17,7 +20,7 @@ defmodule FormDelegate.Repo.Migrations.CreateIntegrationTables do
       add(:email_from_address, :string)
 
       add(:form_id, references(:forms, type: :uuid, on_delete: :delete_all), null: false)
-      add(:integration_id, references(:integrations, on_delete: :delete_all), null: false)
+      add(:integration_type, :integration_type)
 
       timestamps(type: :timestamptz)
     end
@@ -34,8 +37,12 @@ defmodule FormDelegate.Repo.Migrations.CreateIntegrationTables do
       )
     end
 
-    create(index(:form_integrations, [:form_id, :integration_id]))
+    create(index(:form_integrations, [:form_id]))
+    create(index(:form_integrations, [:form_id, :integration_type]))
 
     create(index(:email_integration_recipients, [:form_integration_id, :type]))
   end
+
+  defp execute_enum_up, do: repo().query!("CREATE TYPE integration_type AS ENUM ('email', 'zapier', 'ifttt')", [], [log: :info])
+  defp execute_enum_down, do: repo().query!("DROP TYPE integration_type", [], [log: :info])
 end

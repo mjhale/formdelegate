@@ -3,7 +3,7 @@ defmodule FormDelegate.Factory do
 
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
-  alias FormDelegate.Integrations.{EmailIntegrationRecipient, Integration}
+  alias FormDelegate.Integrations.EmailIntegrationRecipient
   alias FormDelegate.Submissions.Submission
 
   def valid_user_password, do: "a sufficiently long password"
@@ -27,13 +27,6 @@ defmodule FormDelegate.Factory do
       },
       form: build(:form),
       sender: sequence(:sender, &"User #{&1}")
-    }
-  end
-
-  def integration_factory do
-    %Integration{
-      name: sequence(:integration_name, &"Type #{&1}"),
-      type_code: sequence(:type_code, &"type_#{&1}")
     }
   end
 
