@@ -7,7 +7,7 @@ defmodule FormDelegateWeb.Mailers.EnqueueEmail do
   require Logger
 
   def perform(%Email{} = email) do
-    {%Email{}, response} = MailService.deliver_now(email, response: true)
+    {:ok, %Email{}, response} = MailService.deliver_now(email, response: true)
 
     # If :status_code isn't in response map then the Bamboo test adapter is likely being used?
     # @TODO: Verify the above statement is true and if not then try to refactor and use pattern matching
