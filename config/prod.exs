@@ -120,7 +120,8 @@ config :waffle,
   asset_host: System.get_env("AWS_S3_ASSET_HOST") || raise("Env var not set: AWS_S3_ASSET_HOST")
 
 # Configure frontend URL for user-targetted actions and messaging
-config :form_delegate, frontend_url: System.get_env("FRONTEND_URL") || raise("Env var not set: FRONTEND_URL")
+config :form_delegate,
+  frontend_url: System.get_env("FRONTEND_URL") || raise("Env var not set: FRONTEND_URL")
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.

@@ -13,12 +13,11 @@ defmodule FormDelegateWeb.ErrorView do
   def render("400.json", _) do
     %{
       error: %{
-      code: 400,
-      type: "BAD_REQUEST"
+        code: 400,
+        type: "BAD_REQUEST"
+      }
     }
-
-  }
-end
+  end
 
   def render("401.json", %{type: type}) do
     %{
@@ -63,7 +62,6 @@ end
         type: "INTERNAL_SERVER_ERROR"
       }
     }
-
   end
 
   # In case no render clause matches or no
