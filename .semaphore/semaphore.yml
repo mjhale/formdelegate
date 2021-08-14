@@ -11,7 +11,7 @@ blocks:
         - name: mix and cache
           commands:
             - checkout
-            - sem-version elixir 1.10.2
+            - sem-version elixir 1.12.2
             - mix local.hex --force
             - mix local.rebar --force
             - cache restore
@@ -31,7 +31,7 @@ blocks:
       prologue:
         commands:
           - checkout
-          - sem-version elixir 1.10.2
+          - sem-version elixir 1.12.2
           - cache restore
       jobs:
         - name: run all tests

@@ -18,7 +18,7 @@ defmodule FormDelegateWeb.Router do
       error_handler: FormDelegateWeb.AuthErrorHandler
 
     plug Guardian.Plug.VerifySession, claims: @claims
-    plug Guardian.Plug.VerifyHeader, claims: @claims, realm: "Bearer"
+    plug Guardian.Plug.VerifyHeader, claims: @claims, scheme: "Bearer"
 
     plug Guardian.Plug.LoadResource, allow_blank: true
   end
