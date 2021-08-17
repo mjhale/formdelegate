@@ -220,6 +220,19 @@ defmodule FormDelegateWeb.SubmissionController do
       submission_fields =
         Phoenix.View.render(SubmissionView, "show.json", submission: submission).data.data
 
+      # Alter submission fields map to flatten attachment maps to URL strings
+      # - Assumes all field value maps are upload maps
+      submission_fields =
+        submission_fields
+        |> Enum.map(fn
+          {key, value} when is_map(value) ->
+            {key, value.url}
+
+          field ->
+            field
+        end)
+        |> Enum.into(%{})
+
       parsed_callback_url = URI.parse(callback_success_url)
 
       # Merge submission url and callback url queries, overwriting submission url queries if needed
