@@ -80,7 +80,7 @@ export function createUser({ captchaToken, user }) {
     });
 
     if (actionResponse.error) {
-      throw new Error('Promise flow received action error', actionResponse);
+      throw actionResponse.error;
     }
 
     return actionResponse;

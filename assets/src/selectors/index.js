@@ -8,10 +8,6 @@ const getCurrentUserId = state => state.users.currentUserId;
 const getFormId = (_state, props) => props.match.params.formId;
 const getFormIds = state => state.forms.allIds;
 const getForms = state => state.entities.forms;
-const getIntegrations = state => state.entities.integrations;
-const getIntegrationId = (_state, props) =>
-  parseInt(props.match.params.integrationId, 10);
-const getIntegrationIds = state => state.integrations.allIds;
 const getSubmissionActivities = state => state.entities.submission_activity;
 const getSubmissionActivityIds = state =>
   state.submissions.submissionActivityIds;
@@ -46,15 +42,6 @@ export const getForm = createSelector(
   }
 );
 
-export const getIntegration = createSelector(
-  [getIntegrations, getIntegrationId],
-  (integrations, integrationId) => {
-    return find(integrations, function (object) {
-      return object.id === integrationId;
-    });
-  }
-);
-
 export const getSubmission = createSelector(
   [getSubmissions, getSubmissionId],
   (submissions, submissionId) => {
@@ -85,13 +72,6 @@ export const getOrderedForms = createSelector(
   }
 );
 
-export const getOrderedIntegrations = createSelector(
-  [getIntegrations, getIntegrationIds],
-  (integrations, integrationIds) => {
-    return integrationIds.map(id => integrations[id]);
-  }
-);
-
 const getOrderedSubmissions = createSelector(
   [getSubmissions, getSubmissionIds],
   (submissions, submissionIds) => {
@@ -103,5 +83,12 @@ export const getVisibleSubmissions = createSelector(
   [getOrderedSubmissions],
   orderedSubmissions => {
     return orderedSubmissions;
+  }
+);
+
+export const getVisibleSubmissionForms = createSelector(
+  [getOrderedSubmissions, getForms],
+  (submissions, forms) => {
+    return submissions.map(submission => forms[submission.form]);
   }
 );

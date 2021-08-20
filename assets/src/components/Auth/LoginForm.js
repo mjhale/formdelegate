@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/macro';
-import { Field } from 'redux-form';
-
-import renderField from 'components/Field';
+import * as Yup from 'yup';
+import { Formik, Form } from 'formik';
 
 import Button from 'components/Button';
+import Field from 'components/Field/FormikField';
 import Link from 'components/Link';
 
 const LoginButton = styled(Button)`
@@ -30,50 +30,61 @@ const LoginSecondaryActions = styled.div`
 `;
 
 const LoginForm = props => {
-  const { onSubmit, pristine, submitting } = props;
-
   return (
-    <React.Fragment>
-      <form onSubmit={onSubmit}>
-        <Field
-          autoComplete="email"
-          component={renderField}
-          label="Email"
-          name="email"
-          placeholder="Email"
-          tabIndex="0"
-          type="text"
-        />
-        <Field
-          autoComplete="current-password"
-          component={renderField}
-          label="Password"
-          name="password"
-          placeholder="Password"
-          tabIndex="0"
-          type="password"
-        />
-        <LoginButton
-          autoComplete="off"
-          disabled={submitting || pristine}
-          tabIndex="0"
-          type="submit"
-        >
-          Continue
-        </LoginButton>
-      </form>
+    <>
+      <Formik
+        initialValues={{
+          email: '',
+          password: '',
+        }}
+        onSubmit={props.handleLogin}
+        validationSchema={Yup.object({
+          email: Yup.string()
+            .email('Invalid email address')
+            .required('Email is required'),
+          password: Yup.string().required('Password is required'),
+        })}
+      >
+        {formProps => (
+          <Form>
+            <Field
+              autoComplete="email"
+              label="Email"
+              name="email"
+              placeholder="Email"
+              tabIndex="0"
+              type="email"
+            />
+            <Field
+              autoComplete="current-password"
+              label="Password"
+              name="password"
+              placeholder="Password"
+              tabIndex="0"
+              type="password"
+            />
+            <LoginButton
+              autoComplete="off"
+              disabled={formProps.isSubmitting}
+              tabIndex="0"
+              type="submit"
+            >
+              Continue
+            </LoginButton>
+          </Form>
+        )}
+      </Formik>
+
       <LoginSecondaryActions>
         <span></span>
         <LoginHelp href="/reset">Need help?</LoginHelp>
       </LoginSecondaryActions>
-    </React.Fragment>
+    </>
   );
 };
 
 LoginForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-  pristine: PropTypes.bool.isRequired,
-  submitting: PropTypes.bool.isRequired,
+  handleLogin: PropTypes.func.isRequired,
 };
 
 export default LoginForm;

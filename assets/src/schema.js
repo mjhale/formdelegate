@@ -2,17 +2,16 @@ import { schema } from 'normalizr';
 
 export const userSchema = new schema.Entity('users');
 
-export const integrationSchema = new schema.Entity('integrations');
+export const emailIntegrationSchema = new schema.Entity('email_integrations');
 
-const formIntegrationSchema = new schema.Entity('form_integrations', {
-  integration: integrationSchema,
-});
 export const formSchema = new schema.Entity('forms', {
-  form_integrations: [formIntegrationSchema],
-  integrations: [integrationSchema],
+  email_integrations: [emailIntegrationSchema],
 });
 
-export const submissionSchema = new schema.Entity('submissions');
+export const submissionSchema = new schema.Entity('submissions', {
+  form: formSchema,
+});
+
 export const submissionActivitySchema = new schema.Entity(
   'submission_activity',
   {},

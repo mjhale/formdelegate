@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/macro';
-import { Field } from 'redux-form';
+import { Field } from 'formik';
 
 const SwitchContainer = styled.span`
   --action-color: #477dca;

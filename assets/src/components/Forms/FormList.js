@@ -71,7 +71,7 @@ let FormList = ({ forms, isFetching, onDeleteClick }) => {
 
 const FormSimpleView = ({ form, onDeleteClick }) => {
   return (
-    <Card header={form.form}>
+    <Card header={form.name}>
       <FormAddress>
         <CopyToClipboard
           text={`https://api.formdelegate.com/v1/submissions/${form.id}`}
@@ -84,7 +84,7 @@ const FormSimpleView = ({ form, onDeleteClick }) => {
           <FormActionButton href={`/forms/${form.id}/edit`}>
             Edit Form
           </FormActionButton>
-          <FormActionButton href={`/submissions?search=${form.form}`}>
+          <FormActionButton href={`/forms/${form.id}/submissions`}>
             View Submissions
           </FormActionButton>
         </FormActionGroup>

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import styled from 'styled-components/macro';
 
 import { media } from 'utils/style';
@@ -43,7 +43,6 @@ const SubmissionsToolbar = ({
   handleMarkAsSpam,
   handlePageChange,
   handleSearch,
-  location,
   paginationMetaData,
 }) => {
   return (
@@ -55,7 +54,7 @@ const SubmissionsToolbar = ({
         Mark as Not Junk
       </ReportButtonListItem>
       <SearchListItem>
-        <Search location={location} handleSearch={handleSearch} />
+        <Search handleSearch={handleSearch} />
       </SearchListItem>
       {paginationMetaData.total > 0 && (
         <PaginationListItem>
@@ -73,9 +72,6 @@ SubmissionsToolbar.propTypes = {
   handleMarkAsSpam: PropTypes.func.isRequired,
   handlePageChange: PropTypes.func.isRequired,
   handleSearch: PropTypes.func.isRequired,
-  location: PropTypes.shape({
-    search: PropTypes.string,
-  }).isRequired,
   paginationMetaData: PropTypes.shape({
     limit: PropTypes.number.isRequired,
     offset: PropTypes.number.isRequired,

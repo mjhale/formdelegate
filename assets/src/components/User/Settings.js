@@ -1,89 +1,68 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { connect } from 'react-redux';
-import { Field, reduxForm } from 'redux-form';
+import * as React from 'react';
+import * as Yup from 'yup';
+import { Formik, Form } from 'formik';
+import { useDispatch, useSelector } from 'react-redux';
 
-import renderField from 'components/Field';
 import { getCurrentUser } from 'selectors';
 import { updateUser } from 'actions/users';
 
 import Button from 'components/Button';
 import Card from 'components/Card';
+import Field from 'components/Field/FormikField';
 
-class UserSettings extends React.Component {
-  static propTypes = {
-    currentUser: PropTypes.object,
-    handleSubmit: PropTypes.func.isRequired,
-    updateUser: PropTypes.func.isRequired,
-  };
+const UserSettings = () => {
+  const dispatch = useDispatch();
+  const currentUser = useSelector(state => getCurrentUser(state));
 
-  handleUserUpdate = currentUser => {
-    // @TODO: Add alert for update action
-    this.props.updateUser(currentUser);
-  };
-
-  render() {
-    const { currentUser, handleSubmit, submitting } = this.props;
-
-    if (!currentUser) {
-      return <div>Loading...</div>;
-    }
-
-    return (
-      <React.Fragment>
-        <h1>User Settings</h1>
-        <Card>
-          <form onSubmit={handleSubmit(this.handleUserUpdate)}>
-            <Field
-              component={renderField}
-              label="Email"
-              name="email"
-              placeholder="Email"
-              type="text"
-            />
-            <Field
-              component={renderField}
-              label="Full Name"
-              name="name"
-              placeholder="Full Name"
-              type="text"
-            />
-            <Field
-              component={renderField}
-              label="Password"
-              name="password"
-              placeholder="Password"
-              type="password"
-            />
-            <Button disabled={submitting} type="submit">
-              Update User
-            </Button>
-          </form>
-        </Card>
-      </React.Fragment>
-    );
+  if (!currentUser) {
+    return <div>Loading...</div>;
   }
-}
 
-const mapStateToProps = state => {
-  const currentUser = getCurrentUser(state);
-  return {
-    currentUser,
-    initialValues: {
-      id: currentUser && currentUser.id,
-      name: currentUser && currentUser.name,
-      email: currentUser && currentUser.email,
-    },
-  };
+  return (
+    <React.Fragment>
+      <h1>User Settings</h1>
+      <Card>
+        <Formik
+          initialValues={{
+            id: '',
+            name: '',
+            email: '',
+          }}
+          onSubmit={(values, actions) => {
+            // @TODO: Add user feedback on update action
+            dispatch(updateUser(currentUser));
+          }}
+          validationSchema={Yup.object({
+            id: Yup.string(),
+            name: Yup.string().required('Name is required'),
+            email: Yup.string()
+              .email('Invalid email address')
+              .required('Email is required'),
+          })}
+        >
+          {({ isSubmitting }) => (
+            <Form>
+              <Field
+                label="Email"
+                name="email"
+                placeholder="Email"
+                type="text"
+              />
+              <Field
+                label="Full Name"
+                name="name"
+                placeholder="Full Name"
+                type="text"
+              />
+              <Button disabled={isSubmitting} type="submit">
+                Update User
+              </Button>
+            </Form>
+          )}
+        </Formik>
+      </Card>
+    </React.Fragment>
+  );
 };
 
-const mapDispatchToProps = {
-  updateUser,
-};
-
-UserSettings = reduxForm({
-  enableReinitialize: true,
-  form: 'settingsForm',
-})(UserSettings);
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserSettings);
+export default UserSettings;

@@ -1,94 +1,67 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import { connect } from 'react-redux';
-import { Field, reduxForm, reset } from 'redux-form';
+import * as React from 'react';
+import * as Yup from 'yup';
+import { Formik, Form } from 'formik';
+import { useDispatch } from 'react-redux';
 
 import { addNotification } from 'actions/notifications';
 import { createSupportTicket } from 'actions/supportTickets';
 
 import Button from 'components/Button';
 import Card from 'components/Card';
-import renderField from 'components/Field';
+import Field from 'components/Field/FormikField';
 
-const propTypes = {
+const SupportForm = ({ handleSubmit }) => {
+  const dispatch = useDispatch();
+
+  return (
+    <Formik
+      initialValues={{
+        name: '',
+        email: '',
+        message: '',
+      }}
+      onSubmit={(values, actions) => {
+        dispatch(createSupportTicket(values));
+        dispatch(
+          addNotification({
+            level: 'success',
+            message: "Support ticket submitted. We'll be in touch soon!",
+          })
+        );
+        actions.resetForm();
+      }}
+      validationSchema={Yup.object({
+        email: Yup.string()
+          .email('Invalid email address')
+          .required('Email is required'),
+        name: Yup.string().required('Name is required'),
+        message: Yup.string().required('Message is required'),
+      })}
+    >
+      {({ isSubmitting }) => (
+        <Form onSubmit={handleSubmit}>
+          <Card>
+            <Field label="Name" name="name" placeholder="Name" type="text" />
+            <Field label="Email" name="email" placeholder="Email" type="text" />
+            <Field
+              label="Message"
+              name="message"
+              placeholder="Message"
+              type="textarea"
+            />
+          </Card>
+          <Button disabled={isSubmitting} type="submit">
+            Submit Ticket
+          </Button>
+        </Form>
+      )}
+    </Formik>
+  );
+};
+
+SupportForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
-  pristine: PropTypes.bool.isRequired,
-  submitting: PropTypes.bool.isRequired,
 };
 
-const submitFormValidations = values => {
-  const errors = {};
-
-  if (!values.name) {
-    errors.name = 'Required';
-  }
-
-  if (!values.email) {
-    errors.email = 'Required';
-  } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-    errors.email = 'Invalid email address';
-  }
-
-  if (!values.message) {
-    errors.message = 'Required';
-  }
-
-  return errors;
-};
-
-let SupportForm = ({ handleSubmit, submitting }) => (
-  <form onSubmit={handleSubmit}>
-    <Card>
-      <Field
-        component={renderField}
-        label="Name"
-        name="name"
-        placeholder="Name"
-        type="text"
-      />
-      <Field
-        component={renderField}
-        label="Email"
-        name="email"
-        placeholder="Email"
-        type="text"
-      />
-      <Field
-        component={renderField}
-        label="Message"
-        name="message"
-        placeholder="Message"
-        type="textarea"
-      />
-    </Card>
-    <Button disabled={submitting} type="submit">
-      Submit Ticket
-    </Button>
-  </form>
-);
-
-SupportForm.propTypes = propTypes;
-
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  onSubmit(values) {
-    dispatch(createSupportTicket(values));
-    dispatch(
-      addNotification({
-        level: 'success',
-        message: "Support ticket submitted. We'll be in touch soon!",
-      })
-    );
-    dispatch(reset('support'));
-  },
-});
-
-SupportForm = reduxForm({
-  form: 'support',
-  validate: submitFormValidations,
-})(SupportForm);
-
-export default connect(
-  null,
-  mapDispatchToProps
-)(SupportForm);
+export default SupportForm;

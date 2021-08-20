@@ -59,7 +59,11 @@ const Button = props => {
 };
 
 Button.propTypes = {
-  as: PropTypes.PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
+  as: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.string,
+    PropTypes.shape({ render: PropTypes.func.isRequired }),
+  ]),
   disabled: PropTypes.bool,
   type: PropTypes.oneOf(['button', 'reset', 'submit', null]),
   variant: PropTypes.string,

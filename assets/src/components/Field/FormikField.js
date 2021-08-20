@@ -40,7 +40,7 @@ const StyledFieldMessage = styled.p`
   line-height: 1.15rem;
 `;
 
-const StyledFieldError = styled(StyledFieldMessage)`
+export const StyledFieldError = styled(StyledFieldMessage)`
   color: ${theme.darkCarnation};
 `;
 
@@ -54,7 +54,6 @@ const StyledInput = styled.input`
 
 const StyledInputWrapper = styled.div`
   font-size: 0.9rem;
-  margin-bottom: 1rem;
   position: relative;
 `;
 
@@ -92,7 +91,7 @@ const Field = ({ disabled, label, placeholder, type, ...props }) => {
    * returning before the input's blur trigger.
    */
   const showFloatingLabel =
-    (meta.touched && meta.value) || (!meta.touched && meta.value);
+    (meta.touched && meta.value) || (!meta.touched && meta.value !== '');
 
   const displayError = meta.error && (
     <StyledFieldError>{meta.error}</StyledFieldError>

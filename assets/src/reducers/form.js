@@ -17,9 +17,6 @@ import {
   FORMS_REQUEST,
   FORMS_SUCCESS,
   FORMS_FAILURE,
-  INTEGRATIONS_REQUEST,
-  INTEGRATIONS_SUCCESS,
-  INTEGRATIONS_FAILURE,
 } from 'constants/actionTypes';
 
 const allIds = (state = [], action) => {
@@ -46,7 +43,6 @@ const isFetching = (state = false, action) => {
     case FORM_DELETE_REQUEST:
     case FORM_UPDATE_REQUEST:
     case FORMS_REQUEST:
-    case INTEGRATIONS_REQUEST:
       return true;
 
     case FORM_FAILURE:
@@ -54,7 +50,6 @@ const isFetching = (state = false, action) => {
     case FORM_DELETE_FAILURE:
     case FORM_UPDATE_FAILURE:
     case FORMS_FAILURE:
-    case INTEGRATIONS_FAILURE:
       return false;
 
     case FORM_SUCCESS:
@@ -62,7 +57,6 @@ const isFetching = (state = false, action) => {
     case FORM_DELETE_SUCCESS:
     case FORM_UPDATE_SUCCESS:
     case FORMS_SUCCESS:
-    case INTEGRATIONS_SUCCESS:
       return false;
 
     default:

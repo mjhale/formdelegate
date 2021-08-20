@@ -1,4 +1,3 @@
-import { reset } from 'redux-form';
 import { CALL_API } from 'middleware/api';
 
 import { fetchUser } from 'actions/users';
@@ -45,7 +44,6 @@ export function loginUser(credentials) {
 const loginSuccess = response => {
   return async dispatch => {
     try {
-      await dispatch(reset('loginForm'));
       await localStorage.setItem('fd_token', response.payload.data.token);
       await dispatch(fetchUser(getCurrentUserId()));
     } catch (error) {

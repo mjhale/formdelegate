@@ -8,12 +8,10 @@ import theme from 'constants/theme';
 import { addNotification } from 'actions/notifications';
 import { getCurrentUser } from 'selectors';
 
+import AdminUserForm from 'components/Admin/UserForm';
+import AdminUserList from 'components/Admin/UserList';
+import AdminUserView from 'components/Admin/UserView';
 import Dashboard from 'components/Admin/Dashboard';
-import IntegrationForm from 'components/Admin/IntegrationForm';
-import IntegrationList from 'components/Admin/IntegrationList';
-import UserFormContainer from 'components/Admin/UserFormContainer';
-import UserList from 'components/Admin/UserList';
-import UserView from 'components/Admin/UserView';
 
 const AdminNavigation = styled.ul`
   background-color: ${theme.primaryColor};
@@ -70,27 +68,16 @@ const Admin = ({ currentUser, showAuthorizationError }) => {
             Users
           </AdminLink>
         </li>
-        <li>
-          <AdminLink to="/admin/integrations" activeClassName="active">
-            Integrations
-          </AdminLink>
-        </li>
       </AdminNavigation>
 
       <Switch>
         <Route exact path="/admin" component={Dashboard} />
-        <Route exact path="/admin/users" component={UserList} />
-        <Route exact path="/admin/users/:userId" component={UserView} />
+        <Route exact path="/admin/users" component={AdminUserList} />
+        <Route exact path="/admin/users/:userId" component={AdminUserView} />
         <Route
           exact
           path="/admin/users/:userId/edit"
-          component={UserFormContainer}
-        />
-        <Route exact path="/admin/integrations" component={IntegrationList} />
-        <Route
-          exact
-          path="/admin/integrations/:integrationId"
-          component={IntegrationForm}
+          component={AdminUserForm}
         />
       </Switch>
     </React.Fragment>

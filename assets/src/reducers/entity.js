@@ -5,9 +5,8 @@ import { FORM_UPDATE_SUCCESS } from 'constants/actionTypes';
 const entity = (
   state = {
     users: {},
-    form_integrations: {},
+    email_integrations: {},
     forms: {},
-    integrations: {},
     submissions: {},
   },
   action
@@ -22,9 +21,9 @@ const entity = (
             ...action.payload.entities.forms[action.payload.result],
           },
         },
-        form_integrations: {
-          ...state.form_integrations,
-          ...action.payload.entities.form_integrations,
+        email_integrations: {
+          ...state.email_integrations,
+          ...action.payload.entities.email_integrations,
         },
       };
     default:
