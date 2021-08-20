@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import styled from 'styled-components/macro';
 import { connect } from 'react-redux';
 import { parse } from 'query-string';
@@ -12,7 +12,7 @@ import {
   markSubmissionAsSpam,
   submissionSearchFetch,
 } from 'actions/submissions';
-import { getVisibleSubmissions } from 'selectors';
+import { getVisibleSubmissions, getVisibleSubmissionForms } from 'selectors';
 import { submissionListener } from 'components/Submissions/submissionListener';
 
 import ErrorBoundary from 'components/ErrorBoundary';
@@ -93,9 +93,9 @@ class SubmissionsContainer extends React.Component {
     } = evt.target;
 
     if (isChecked) {
-      this.handleSelectSubmission(parseInt(submissionId, 10));
+      this.handleSelectSubmission(submissionId);
     } else {
-      this.handleDeselectSubmission(parseInt(submissionId, 10));
+      this.handleDeselectSubmission(submissionId);
     }
   };
 
@@ -122,8 +122,8 @@ class SubmissionsContainer extends React.Component {
 
   render() {
     const {
+      forms,
       isFetching,
-      location,
       submissions,
       pagination: paginationMetaData,
     } = this.props;
@@ -137,12 +137,12 @@ class SubmissionsContainer extends React.Component {
             handleMarkAsSpam={this.handleMarkAsSpam}
             handlePageChange={this.handlePageChange}
             handleSearch={this.handleSearch}
-            location={location}
             paginationMetaData={paginationMetaData}
           />
         </Header>
         <ErrorBoundary>
           <Submissions
+            forms={forms}
             handleSelectSubmissionChange={this.handleSelectSubmissionChange}
             isFetching={isFetching}
             submissions={submissions}
@@ -161,26 +161,20 @@ SubmissionsContainer.propTypes = {
   }).isRequired,
   isFetching: PropTypes.bool.isRequired,
   loadSubmissions: PropTypes.func.isRequired,
-  location: PropTypes.shape({
-    search: PropTypes.string,
-  }).isRequired,
   submissions: PropTypes.array.isRequired,
   query: PropTypes.string,
 };
 
-const mapStateToProps = state => {
-  const submissions = state.submissions;
-
-  return {
-    isFetching: submissions.isFetching,
-    submissions: getVisibleSubmissions(state),
-    pagination: {
-      limit: submissions.pagination.limit,
-      offset: submissions.pagination.offset,
-      total: submissions.pagination.total,
-    },
-  };
-};
+const mapStateToProps = (state, props) => ({
+  forms: getVisibleSubmissionForms(state, props),
+  isFetching: state.submissions.isFetching,
+  submissions: getVisibleSubmissions(state),
+  pagination: {
+    limit: state.submissions.pagination.limit,
+    offset: state.submissions.pagination.offset,
+    total: state.submissions.pagination.total,
+  },
+});
 
 const mapDispatchToProps = dispatch => ({
   addSubmission: payload => {

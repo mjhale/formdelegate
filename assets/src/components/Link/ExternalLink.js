@@ -5,6 +5,7 @@ const ExternalLink = props => {
   const { children, className, href, onPress, openInNewWindow } = props;
 
   return (
+    // eslint-disable-next-line react/jsx-no-target-blank
     <a
       className={className}
       href={href}

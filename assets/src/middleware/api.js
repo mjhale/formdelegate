@@ -1,4 +1,3 @@
-import fetch from 'isomorphic-fetch';
 import { normalize } from 'normalizr';
 import { merge } from 'lodash';
 
@@ -74,11 +73,11 @@ export default store => next => action => {
     return finalAction;
   };
 
-  let [requestType, successType, errorType] = types;
+  let [requestActionType, successActionType, errorActionType] = types;
   next(
     actionWith({
       isFetching: true,
-      type: requestType,
+      type: requestActionType,
     })
   );
 
@@ -88,14 +87,13 @@ export default store => next => action => {
         headers: response.headers,
         isFetching: false,
         payload: response.payload,
-        type: successType,
+        type: successActionType,
       }),
-    error => {
-      return next({
-        error: error.message || 'There was an unknown error',
+    error =>
+      next({
+        error: error.error || { error: { type: 'UNKNOWN_ERROR' } },
         isFetching: false,
-        type: errorType,
-      });
-    }
+        type: errorActionType,
+      })
   );
 };

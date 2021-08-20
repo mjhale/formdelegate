@@ -22,6 +22,7 @@ const SubmissionListWrapper = styled.section`
 `;
 
 const Submissions = ({
+  forms,
   handleSelectSubmissionChange,
   isFetching,
   submissions,
@@ -31,7 +32,7 @@ const Submissions = ({
     return <p>Loading submissions...</p>;
   }
 
-  if (!isFetching && submissions.length === 0) {
+  if (!isFetching && (submissions.length === 0 || forms.length === 0)) {
     return <p>No submissions found.</p>;
   }
 
@@ -39,6 +40,7 @@ const Submissions = ({
     <SubmissionListWrapper>
       {map(Object.keys(submissions), index => (
         <Submission
+          form={forms.find(form => form.id === submissions[index].form)}
           handleSelectSubmissionChange={handleSelectSubmissionChange}
           isSelected={selectedSubmissionList.has(submissions[index].id)}
           key={submissions[index].id}
@@ -50,6 +52,7 @@ const Submissions = ({
 };
 
 Submissions.propTypes = {
+  forms: PropTypes.array.isRequired,
   handleSelectSubmissionChange: PropTypes.func.isRequired,
   isFetching: PropTypes.bool.isRequired,
   submissions: PropTypes.array.isRequired,

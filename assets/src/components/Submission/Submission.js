@@ -8,6 +8,7 @@ import { media } from 'utils/style';
 import { useInterval } from 'utils/useInterval';
 
 import Flash from 'components/Flash';
+import Link from 'components/Link';
 
 const Cell = styled.div`
   font-size: 0.8rem;
@@ -29,7 +30,6 @@ const DetailGroup = styled.div`
   color: #5a5454;
   font-size: 0.8rem;
   padding: 0 1.5rem 0 3.25rem;
-}
 `;
 
 const DetailBody = styled.div`
@@ -100,17 +100,10 @@ const SenderCell = styled(Cell)`
 `;
 
 const Submission = ({
+  form,
   handleSelectSubmissionChange,
   isSelected,
-  submission: {
-    content,
-    flagged_at,
-    form,
-    id: submissionId,
-    inserted_at,
-    sender,
-    unknown_fields,
-  },
+  submission: { body, data, flagged_at, id: submissionId, inserted_at, sender },
 }) => {
   const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
   const [dateInsertedFromNow, setDateInsertedFromNow] = useState(
@@ -146,9 +139,7 @@ const Submission = ({
           </SenderCell>
           <SubmissionCell>
             {flagged_at && <FlaggedSubmission>Spam</FlaggedSubmission>}
-            {content && content.length > 50
-              ? `${content.substring(0, 50)}...`
-              : content}
+            {body && body.length > 50 ? `${body.substring(0, 50)}...` : body}
           </SubmissionCell>
           <DateCell>{dateInsertedFromNow}</DateCell>
         </SubmissionPreviewCells>
@@ -157,35 +148,50 @@ const Submission = ({
         <SubmissionDetails>
           <DetailGroup>
             <DetailHeader>Form</DetailHeader>
-            <DetailBody>{form.form}</DetailBody>
-          </DetailGroup>
-          <DetailGroup>
-            <DetailHeader>Name</DetailHeader>
-            <DetailBody>{sender}</DetailBody>
+            <DetailBody>{form.name}</DetailBody>
           </DetailGroup>
           <DetailGroup>
             <DetailHeader>Submitted</DetailHeader>
             <DetailBody>{inserted_at}</DetailBody>
           </DetailGroup>
-          <DetailGroup>
-            <DetailHeader>Body</DetailHeader>
-            <DetailBody>{content}</DetailBody>
-          </DetailGroup>
-          {unknown_fields &&
-            Object.keys(unknown_fields).length > 0 &&
-            Object.keys(unknown_fields).map((key, index) => {
-              if (typeof unknown_fields[key] !== 'string') {
+          {data &&
+            Object.keys(data).length > 0 &&
+            Object.keys(data).map((key, index) => {
+              if (typeof data[key] !== 'string') {
+                if (
+                  Object.prototype.hasOwnProperty.call(data[key], 'url') &&
+                  Object.prototype.hasOwnProperty.call(
+                    data[key],
+                    'field_name'
+                  ) &&
+                  Object.prototype.hasOwnProperty.call(data[key], 'file_size')
+                ) {
+                  return (
+                    <DetailGroup key={index}>
+                      <DetailHeader>
+                        File Field: {data[key].field_name}
+                      </DetailHeader>{' '}
+                      <DetailBody>
+                        <Link href={data[key].url}>{data[key].file_name}</Link>{' '}
+                        <>({data[key].file_size})</>
+                      </DetailBody>
+                    </DetailGroup>
+                  );
+                }
+
                 return (
-                  <Flash type="error">
-                    Unable to load submission field(s) which aren't strings.
-                  </Flash>
+                  <DetailGroup key={index}>
+                    <Flash type="error">
+                      Unable to load submission field(s) which aren't strings.
+                    </Flash>
+                  </DetailGroup>
                 );
               }
 
               return (
                 <DetailGroup key={index}>
                   <DetailHeader>Field: {key}</DetailHeader>{' '}
-                  <DetailBody>{unknown_fields[key]}</DetailBody>
+                  <DetailBody>{data[key]}</DetailBody>
                 </DetailGroup>
               );
             })}
@@ -196,15 +202,15 @@ const Submission = ({
 };
 
 Submission.propTypes = {
+  form: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+  }).isRequired,
   handleSelectSubmissionChange: PropTypes.func.isRequired,
   isSelected: PropTypes.bool.isRequired,
   submission: PropTypes.shape({
     content: PropTypes.string,
     flagged_at: PropTypes.string,
-    form: PropTypes.shape({
-      form: PropTypes.string.isRequired,
-    }).isRequired,
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     inserted_at: PropTypes.string.isRequired,
     sender: PropTypes.string.isRequired,
     unknown_fields: PropTypes.object,

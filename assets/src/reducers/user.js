@@ -43,7 +43,7 @@ const currentUserId = (state = null, action) => {
   }
 };
 
-const errorMessage = (state = '', action) => {
+const error = (state = { error_code: '', errors: [] }, action) => {
   switch (action.type) {
     case USER_FAILURE:
     case USER_CREATE_FAILURE:
@@ -94,6 +94,6 @@ const isFetching = (state = false, action) => {
 export default combineReducers({
   allIds,
   currentUserId,
-  errorMessage,
+  error,
   isFetching,
 });

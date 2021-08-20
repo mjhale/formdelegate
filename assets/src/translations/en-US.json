@@ -9,6 +9,10 @@
   "userlist_th_name": "Name",
   "userlist_th_confirmed": "Confirmed",
 
-  "INVALID_OR_EXPIRED_CAPTCHA": "Sorry, we're having trouble confirming your CAPTCHA response. Please try again.",
-  "INVALID_OR_EXPIRED_CONFIRMATION_TOKEN": "Sorry, your confirmation link has expired."
+  "INVALID_CREDENTIALS": "Incorrect email or password.",
+
+  "INVALID_OR_EXPIRED_CAPTCHA": "We were unable to confirm your CAPTCHA challenge. Please try again.",
+  "INVALID_OR_EXPIRED_CONFIRMATION_TOKEN": "Your confirmation link has expired.",
+
+  "UNKNOWN_ERROR": "There was an unknown error. Please try again or contact hello@formdelegate.com to report the issue."
 }

@@ -1,5 +1,5 @@
 import HCaptcha from '@hcaptcha/react-hcaptcha';
-import React from 'react';
+import * as React from 'react';
 import styled from 'styled-components/macro';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
@@ -11,7 +11,7 @@ import { createUser } from 'actions/users';
 import { loginUser } from 'actions/sessions';
 
 import Button from 'components/Button';
-import Field from 'components/Field/FormikField';
+import Field, { StyledFieldError } from 'components/Field/FormikField';
 import Flash from 'components/Flash';
 
 const StyledCaptchaWrapper = styled.div`
@@ -20,45 +20,53 @@ const StyledCaptchaWrapper = styled.div`
 
 const RegisterUser = () => {
   const CAPTCHA_SITE_KEY = process.env.REACT_APP_CAPTCHA_SITE_KEY;
-  const captchaRef = React.createRef();
+  const captchaRef = React.useRef();
   const dispatch = useDispatch();
   const history = useHistory();
-  const registrationErrorMessage = useSelector(
-    state => state.users.errorMessage
-  );
+  const registrationError = useSelector(state => state.users.error);
 
-  const handleRegistrationAndLogin = registrationFields => {
-    try {
-      dispatch(
-        createUser({
-          captchaToken: registrationFields.captcha,
-          user: registrationFields.user,
-        })
-      )
-        .then(() =>
-          dispatch(
-            loginUser({
-              email: registrationFields.user.email,
-              password: registrationFields.user.password,
-            })
-          )
+  const handleRegistrationAndLogin = (registrationFields, actions) => {
+    dispatch(
+      createUser({
+        captchaToken: registrationFields.captcha,
+        user: registrationFields.user,
+      })
+    )
+      .then(() =>
+        dispatch(
+          loginUser({
+            email: registrationFields.user.email,
+            password: registrationFields.user.password,
+          })
         )
-        .then(() => {
-          captchaRef.current && captchaRef.current.resetCaptcha();
-          history.push('/dashboard/');
-        });
-    } catch (error) {
-      console.error(`FD registration flow error: ${error}`);
-    }
+      )
+      .then(() => {
+        history.push('/dashboard/');
+      })
+      .catch(errorPayload => {
+        if (
+          errorPayload.error_code === 'CHANGESET_ERROR' &&
+          errorPayload.errors.length > 0
+        ) {
+          errorPayload.errors.forEach(changesetError => {
+            actions.setFieldError(changesetError.field, changesetError.message);
+          });
+        }
+
+        actions.setFieldValue('captcha', '');
+        captchaRef.current && captchaRef.current.resetCaptcha();
+      })
+      .finally(() => {
+        actions.setSubmitting(false);
+      });
   };
 
   return (
     <React.Fragment>
-      {registrationErrorMessage && (
+      {registrationError.type && (
         <Flash type="error">
-          {translations[registrationErrorMessage]
-            ? translations[registrationErrorMessage]
-            : registrationErrorMessage}
+          {translations[registrationError.type] ||
+            translations['UNKNOWN_ERROR']}
         </Flash>
       )}
 
@@ -74,7 +82,9 @@ const RegisterUser = () => {
             password_confirmation: '',
           },
         }}
-        onSubmit={handleRegistrationAndLogin}
+        onSubmit={(values, actions) =>
+          handleRegistrationAndLogin(values, actions)
+        }
         validationSchema={Yup.object({
           captcha: Yup.string().required('CAPTCHA validation is required'),
           user: Yup.object({
@@ -123,14 +133,11 @@ const RegisterUser = () => {
                 sitekey={CAPTCHA_SITE_KEY}
                 onVerify={token => formProps.setFieldValue('captcha', token)}
               />
+              {formProps.errors.captcha && formProps.touched.captcha && (
+                <StyledFieldError>{formProps.errors.captcha}</StyledFieldError>
+              )}
             </StyledCaptchaWrapper>
-            <Button
-              disabled={
-                formProps.isSubmitting ||
-                !(formProps.isValid && formProps.dirty)
-              }
-              type="submit"
-            >
+            <Button disabled={formProps.isSubmitting} type="submit">
               Create Account
             </Button>
           </Form>

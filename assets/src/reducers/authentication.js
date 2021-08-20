@@ -13,7 +13,7 @@ import {
   LOGOUT_FAILURE,
 } from 'constants/actionTypes';
 
-const errorMessage = (state = '', action) => {
+const error = (state = {}, action) => {
   switch (action.type) {
     case LOGIN_FAILURE:
     case LOGOUT_FAILURE:
@@ -21,11 +21,9 @@ const errorMessage = (state = '', action) => {
 
     case LOGIN_REQUEST:
     case LOGIN_SUCCESS:
-      return '';
-
     case LOGOUT_REQUEST:
     case LOGOUT_SUCCESS:
-      return '';
+      return {};
 
     default:
       return state;
@@ -71,7 +69,7 @@ const isFetching = (state = false, action) => {
 };
 
 export default combineReducers({
-  errorMessage,
+  error,
   isAuthenticated,
   isFetching,
 });

@@ -56,7 +56,4 @@ const mapDispatchToProps = {
   formDeletionRequest,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(FormsContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(FormsContainer);

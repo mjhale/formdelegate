@@ -34,6 +34,7 @@ class SubmissionContainer extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
+  form: state.entities.forms[ownProps.submission.form],
   submission: getSubmission(state, ownProps),
   isFetching: state.submissions.isFetching,
 });
