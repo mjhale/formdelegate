@@ -44,10 +44,10 @@ Form Delegate uses Elixir and [Phoenix](http://www.phoenixframework.org/) for th
 To install the necessary dependencies on your machine:
 
 - _Recommended: Install [asdf-vm](https://github.com/asdf-vm/asdf) to manage versions of [Erlang](https://github.com/asdf-vm/asdf-erlang), [Elixir](https://github.com/asdf-vm/asdf-elixir), [Node.js](https://github.com/asdf-vm/asdf-nodejs), and [Yarn](https://github.com/twuni/asdf-yarn)._
-- Install Erlang: `asdf install erlang 22.3.2`
-- Install Elixir\*: `asdf install elixir 1.10.3-otp-22`
-- Install Node.js: `asdf install nodejs 13.13.0`
-- Install Yarn: `asdf install yarn 1.22.4`
+- Install Erlang: `asdf install erlang 24.0.5`
+- Install Elixir\*: `asdf install elixir 1.12.2-otp-24`
+- Install Node.js: `asdf install nodejs latest`
+- Install Yarn: `asdf install yarn latest `
 - Install Postgres (see the [official installation instructions](https://www.postgresql.org/download/))
 
 _\* By default, asdf-vm will install Elixir with a binary compiled for the oldest OTP release supported
@@ -119,7 +119,7 @@ Visit [Gigalixir's getting started guide](https://gigalixir.readthedocs.io/en/la
 
 7. Drop into a remote console for the application: `gigalixir ps:remote_console`
 
-8. Set up your initial data:
+8. Set up your initial data via `iex -S mix`:
 
 ```
 FormDelegate.Repo.insert!(%FormDelegate.Accounts.User{
@@ -128,11 +128,6 @@ FormDelegate.Repo.insert!(%FormDelegate.Accounts.User{
   password_hash: Pbkdf2.hash_pwd_salt("a randomly generated password"),
   confirmed_at: DateTime.utc_now(),
   is_admin: true
-})
-
-FormDelegate.Repo.insert!(%FormDelegate.Integrations.Integration{
-  name: "E-mail",
-  type_code: "email"
 })
 ```
 
@@ -155,6 +150,6 @@ Read the [Netlify getting started guide](https://docs.netlify.com/) to learn how
 
 ## Build Badges
 
-[![Semaphore](https://formdelegate.semaphoreci.com/badges/formdelegate.svg?key=9e94b382-9d19-49c0-b3f2-fb5e2a92f75b)](https://formdelegate.semaphoreci.com/projects/formdelegate)
+[![Semaphore](https://formdelegate.semaphoreci.com/badges/formdelegate.svg)](https://formdelegate.semaphoreci.com/projects/formdelegate)
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/f75c7f76-9eb5-412d-ba74-cc00e856c1ea/deploy-status)](https://app.netlify.com/sites/angry-ramanujan-e322e7/deploys)
