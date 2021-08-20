@@ -1,6 +1,6 @@
 import { NOTIFICATION_SHOW, NOTIFICATION_HIDE } from 'constants/actionTypes';
 
-export default (state = [], action) => {
+const notificationReducer = (state = [], action) => {
   switch (action.type) {
     case NOTIFICATION_SHOW:
       return [
@@ -23,3 +23,5 @@ export default (state = [], action) => {
       return state;
   }
 };
+
+export default notificationReducer;

@@ -46,7 +46,7 @@ const callApi = (endpoint, schema, authenticated, config) => {
     }));
 };
 
-export default store => next => action => {
+const apiMiddleware = store => next => action => {
   const callAPI = action[CALL_API];
 
   if (typeof callAPI === 'undefined') {
@@ -97,3 +97,5 @@ export default store => next => action => {
       })
   );
 };
+
+export default apiMiddleware;
