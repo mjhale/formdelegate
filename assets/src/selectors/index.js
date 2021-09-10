@@ -1,19 +1,19 @@
 import { createSelector } from 'reselect';
 import { find } from 'lodash';
 
-const getUserIds = state => state.users.allIds;
-const getUserId = (_state, props) => parseInt(props.match.params.userId, 10);
-const getUsers = state => state.entities.users;
-const getCurrentUserId = state => state.users.currentUserId;
-const getFormId = (_state, props) => props.match.params.formId;
-const getFormIds = state => state.forms.allIds;
-const getForms = state => state.entities.forms;
-const getSubmissionActivities = state => state.entities.submission_activity;
-const getSubmissionActivityIds = state =>
+const getUserIds = (state) => state.users.allIds;
+const getUserId = (state, userId) => userId;
+const getUsers = (state) => state.entities.users;
+const getCurrentUserId = (state) => state.authentication.currentUserId;
+const getFormId = (_state, formId) => formId;
+const getFormIds = (state) => state.forms.allIds;
+const getForms = (state) => state.entities.forms;
+const getSubmissionActivities = (state) => state.entities.submission_activity;
+const getSubmissionActivityIds = (state) =>
   state.submissions.submissionActivityIds;
-const getSubmissionIds = state => state.submissions.visibleIds;
-const getSubmissionId = (_state, props) => props.match.params.submissionId;
-const getSubmissions = state => state.entities.submissions;
+const getSubmissionIds = (state) => state.submissions.visibleIds;
+const getSubmissionId = (state, submissionId) => submissionId;
+const getSubmissions = (state) => state.entities.submissions;
 
 export const getUser = createSelector(
   [getUsers, getUserId],
@@ -54,34 +54,34 @@ export const getSubmission = createSelector(
 export const getSubmissionActivity = createSelector(
   [getSubmissionActivities, getSubmissionActivityIds],
   (submissionActivity, allIds) => {
-    return allIds.map(id => submissionActivity[id]);
+    return allIds.map((id) => submissionActivity[id]);
   }
 );
 
 export const getOrderedUsers = createSelector(
   [getUsers, getUserIds],
   (users, allIds) => {
-    return allIds.map(id => users[id]);
+    return allIds.map((id) => users[id]);
   }
 );
 
 export const getOrderedForms = createSelector(
   [getForms, getFormIds],
   (forms, allIds) => {
-    return allIds.map(id => forms[id]);
+    return allIds.map((id) => forms[id]);
   }
 );
 
 const getOrderedSubmissions = createSelector(
   [getSubmissions, getSubmissionIds],
   (submissions, submissionIds) => {
-    return submissionIds.map(id => submissions[id]);
+    return submissionIds.map((id) => submissions[id]);
   }
 );
 
 export const getVisibleSubmissions = createSelector(
   [getOrderedSubmissions],
-  orderedSubmissions => {
+  (orderedSubmissions) => {
     return orderedSubmissions;
   }
 );
@@ -89,6 +89,6 @@ export const getVisibleSubmissions = createSelector(
 export const getVisibleSubmissionForms = createSelector(
   [getOrderedSubmissions, getForms],
   (submissions, forms) => {
-    return submissions.map(submission => forms[submission.form]);
+    return submissions.map((submission) => forms[submission.form]);
   }
 );

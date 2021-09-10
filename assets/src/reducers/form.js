@@ -24,7 +24,7 @@ const allIds = (state = [], action) => {
     case FORM_CREATE_SUCCESS:
       return [...state, action.payload.result];
     case FORM_DELETE_SUCCESS:
-      return state.filter(form => form !== action.id);
+      return state.filter((form) => form !== action.id);
     case FORM_SUCCESS:
       return indexOf(state, action.payload.result) > -1
         ? state

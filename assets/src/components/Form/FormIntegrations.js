@@ -1,7 +1,7 @@
 import { animateScroll } from 'react-scroll';
 import { FieldArray } from 'formik';
 import React from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 import Button from 'components/Button';
 import EmailIntegration from './EmailIntegration';
@@ -25,10 +25,10 @@ const FormIntegrations = ({ values }) => {
     <React.Fragment>
       <FieldArray
         name="email_integrations"
-        render={arrayHelpers => (
+        render={(arrayHelpers) => (
           <IntegrationsContainer>
             <Button
-              onClick={evt => {
+              onClick={(evt) => {
                 evt.preventDefault();
                 arrayHelpers.push({
                   enabled: false,

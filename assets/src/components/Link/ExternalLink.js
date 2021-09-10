@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const ExternalLink = props => {
+const ExternalLink = (props) => {
   const { children, className, href, onPress, openInNewWindow } = props;
 
   return (

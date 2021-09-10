@@ -1,7 +1,11 @@
-import { useLocation } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 const useQuery = () => {
-  return new URLSearchParams(useLocation().search);
+  const router = useRouter();
+
+  console.log(router);
+
+  return new URLSearchParams(router.pathname);
 };
 
 export default useQuery;

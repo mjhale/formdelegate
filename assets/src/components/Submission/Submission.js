@@ -1,7 +1,7 @@
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 import theme from 'constants/theme';
 import { media } from 'utils/style';
@@ -116,7 +116,7 @@ const Submission = ({
     setDateInsertedFromNow(latestFromNowDate);
   }, 60000);
 
-  const handleSubmissionPreviewToggle = evt => {
+  const handleSubmissionPreviewToggle = (evt) => {
     setIsPreviewExpanded(!isPreviewExpanded);
   };
 

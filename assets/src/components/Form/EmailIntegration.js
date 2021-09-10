@@ -1,6 +1,6 @@
 import { clearFix } from 'polished';
 import * as React from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 import theme from 'constants/theme';
 
@@ -63,7 +63,7 @@ const EmailIntegration = ({
           />
         </ToggleContainer>
         <StyledDeleteButton
-          onClick={evt => {
+          onClick={(evt) => {
             evt.preventDefault();
             let confirm = window.confirm(
               'Are you positive you want to remove this email integration?'

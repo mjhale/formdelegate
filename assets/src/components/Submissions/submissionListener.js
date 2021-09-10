@@ -5,7 +5,7 @@ import { getCurrentUserId } from 'utils';
 import { submissionSchema } from 'schema';
 
 // @TODO: Add handler for submission updates (e.g., flagged by spam by Akismet response)
-export const submissionListener = addSubmissionDispatcher => {
+export const submissionListener = (addSubmissionDispatcher) => {
   const currentUserToken = localStorage.getItem('fd_token');
   const currentUserId = getCurrentUserId(currentUserToken);
 
@@ -25,7 +25,7 @@ export const submissionListener = addSubmissionDispatcher => {
 
   channel.join();
 
-  channel.on('new_msg', payload => {
+  channel.on('new_msg', (payload) => {
     addSubmissionDispatcher(normalize(payload.data, submissionSchema));
   });
 };

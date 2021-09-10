@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 import theme from 'constants/theme';
 
@@ -31,7 +31,7 @@ const LogoLink = styled(Link)`
   }
 `;
 
-const AuthLayout = props => (
+const AuthLayout = (props) => (
   <React.Fragment>
     <SkipToContent href="#site-content">Skip to main content</SkipToContent>
     <LogoLink href="/">form delegate</LogoLink>

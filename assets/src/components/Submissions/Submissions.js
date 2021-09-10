@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import { map } from 'lodash';
 
 import theme from 'constants/theme';
@@ -38,9 +38,9 @@ const Submissions = ({
 
   return (
     <SubmissionListWrapper>
-      {map(Object.keys(submissions), index => (
+      {map(Object.keys(submissions), (index) => (
         <Submission
-          form={forms.find(form => form.id === submissions[index].form)}
+          form={forms.find((form) => form.id === submissions[index].form)}
           handleSelectSubmissionChange={handleSelectSubmissionChange}
           isSelected={selectedSubmissionList.has(submissions[index].id)}
           key={submissions[index].id}

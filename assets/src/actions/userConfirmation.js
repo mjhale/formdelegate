@@ -9,7 +9,7 @@ import {
   USER_CONFIRMATION_RESEND_FAILURE,
 } from 'constants/actionTypes';
 
-export const verifyUserConfirmationToken = token => {
+export const verifyUserConfirmationToken = (token) => {
   return async (dispatch, getState) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
@@ -34,7 +34,7 @@ export const verifyUserConfirmationToken = token => {
   };
 };
 
-export const resendUserConfirmation = user => {
+export const resendUserConfirmation = (user) => {
   return async (dispatch, getState) => {
     const actionResponse = await dispatch({
       [CALL_API]: {

@@ -7,10 +7,10 @@ import {
   SUPPORT_CREATE_FAILURE,
 } from 'constants/actionTypes';
 
-export const createSupportTicket = ticket => {
-  return async dispatch => {
+export const createSupportTicket = (ticket) => {
+  return async (dispatch) => {
     const SUPPORT_TICKET_ENDPOINT =
-      process.env.REACT_APP_SUPPORT_TICKET_ENDPOINT;
+      process.env.NEXT_PUBLIC_SUPPORT_TICKET_ENDPOINT;
 
     const actionResponse = await dispatch({
       [CALL_API]: {

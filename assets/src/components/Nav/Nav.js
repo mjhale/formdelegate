@@ -1,16 +1,16 @@
-import PropTypes from 'prop-types';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import React from 'react';
-import { connect } from 'react-redux';
 import { darken } from 'polished';
-import { NavLink, withRouter } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import theme from 'constants/theme';
 import { getCurrentUser } from 'selectors';
 import { media } from 'utils/style';
+import useUser from 'hooks/useUser';
 
 import AuthenticatedNav from 'components/Nav/AuthenticatedNav';
 import NavToggle from 'components/Nav/NavToggle';
+import Placeholder from 'components/Placeholder';
 import UnauthenticatedNav from 'components/Nav/UnauthenticatedNav';
 
 export const NavContainer = styled.nav`
@@ -27,7 +27,7 @@ export const NavContainer = styled.nav`
   `};
 `;
 
-export const NavItem = styled(NavLink).attrs({ activeClassName: 'active' })`
+export const NavItem = styled('a').attrs({ activeClassName: 'active' })`
   color: ${theme.navTextColor};
   display: block;
   font-family: ${theme.systemFont};
@@ -36,113 +36,76 @@ export const NavItem = styled(NavLink).attrs({ activeClassName: 'active' })`
   text-decoration: none;
 
   &:hover,
-  &.${props => props.activeClassName} {
+  &.${(props) => props.activeClassName} {
     color: ${theme.offWhite};
     transition: all 0.1s;
   }
 
-  &:hover:not(.${props => props.activeClassName}) {
+  &:hover:not(.${(props) => props.activeClassName}) {
     background-color: ${theme.darkCarnation};
     border-left: 0.5rem solid #b9332d;
   }
 
-  &.${props => props.activeClassName} {
+  &.${(props) => props.activeClassName} {
     background-color: rgba(130, 37, 35, 0.85);
     border-left: 0.5rem solid #b9332d;
   }
 `;
 
-class Nav extends React.Component {
-  static propTypes = {
-    currentUser: PropTypes.object,
-    isAuthenticated: PropTypes.bool.isRequired,
-    isFetching: PropTypes.bool.isRequired,
-    isSmallDevice: PropTypes.bool.isRequired,
-  };
+const Nav = () => {
+  useUser();
 
-  static defaultProps = {
-    isAuthenticated: false,
-  };
+  const currentUser = useSelector((state) => getCurrentUser(state));
+  const { isAuthenticated, isFetching } = useSelector(
+    (state) => state.authentication
+  );
+  const [isNavVisible, setIsNavVisible] = React.useState(true);
+  const isSmallDevice = useSelector((state) => state.browser.lessThan.medium);
 
-  state = { isNavVisible: true };
-
-  componentDidMount() {
-    const { isSmallDevice } = this.props;
-
+  React.useEffect(() => {
     if (isSmallDevice) {
-      this.setState({
-        isNavVisible: false,
-      });
+      setIsNavVisible(false);
+    } else {
+      setIsNavVisible(true);
     }
-  }
+  }, [isSmallDevice]);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.isSmallDevice !== this.props.isSmallDevice) {
-      if (this.props.isSmallDevice) {
-        this.setState({ isNavVisible: false });
-      } else {
-        this.setState({ isNavVisible: true });
-      }
-    }
-  }
-
-  handleNavClick = evt => {
+  const handleNavClick = (evt) => {
     evt.preventDefault();
-    if (this.props.isSmallDevice) {
-      this.setState(prevState => ({
-        isNavVisible: false,
-      }));
+    if (isSmallDevice) {
+      setIsNavVisible(false);
     }
   };
 
-  handleNavToggle = evt => {
+  const handleNavToggle = (evt) => {
     evt.preventDefault();
-    this.setState(prevState => ({
-      isNavVisible: !prevState.isNavVisible,
-    }));
+    setIsNavVisible((isNavVisible) => !isNavVisible);
   };
 
-  render() {
-    const {
-      currentUser,
-      isAuthenticated,
-      isFetching,
-      isSmallDevice,
-    } = this.props;
-    const { isNavVisible } = this.state;
+  if (isFetching) {
+    return <Placeholder isFetching={isFetching} rows={6} />;
+  }
 
-    const navItems = isAuthenticated ? (
-      <AuthenticatedNav
-        isAdmin={currentUser ? currentUser.is_admin : false}
-        isFetching={isFetching}
-        onClick={this.handleNavClick}
+  const navItems = isAuthenticated ? (
+    <AuthenticatedNav
+      isAdmin={currentUser ? currentUser.is_admin : false}
+      isFetching={isFetching}
+      onClick={handleNavClick}
+    />
+  ) : (
+    <UnauthenticatedNav onClick={handleNavClick} />
+  );
+
+  return (
+    <React.Fragment>
+      <NavToggle
+        handleNavTaggle={handleNavToggle}
+        isNavVisible={isNavVisible}
+        isSmallDevice={isSmallDevice}
       />
-    ) : (
-      <UnauthenticatedNav onClick={this.handleNavClick} />
-    );
-
-    return (
-      <React.Fragment>
-        <NavToggle
-          handleNavTaggle={this.handleNavToggle}
-          isNavVisible={isNavVisible}
-          isSmallDevice={isSmallDevice}
-        />
-        {isNavVisible && navItems}
-      </React.Fragment>
-    );
-  }
-}
-
-const mapStateToProps = state => {
-  const { isAuthenticated, isFetching } = state.authentication;
-
-  return {
-    currentUser: getCurrentUser(state),
-    isAuthenticated,
-    isFetching,
-    isSmallDevice: state.browser.lessThan.medium,
-  };
+      {isNavVisible ? navItems : null}
+    </React.Fragment>
+  );
 };
 
-export default withRouter(connect(mapStateToProps)(Nav));
+export default Nav;

@@ -1,6 +1,6 @@
 import { FieldArray } from 'formik';
 import * as React from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 import Button from 'components/Button';
 import Field from 'components/Field/FormikField';
@@ -17,7 +17,7 @@ const EmailRecipientList = ({ emailIntegrationIndex, emailIntegration }) => {
   return (
     <FieldArray
       name={`email_integrations.${emailIntegrationIndex}.email_integration_recipients`}
-      render={recipientArrayHelpers => (
+      render={(recipientArrayHelpers) => (
         <React.Fragment>
           {Array.isArray(emailIntegration.email_integration_recipients) &&
           emailIntegration.email_integration_recipients.length > 0

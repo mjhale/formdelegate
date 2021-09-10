@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { css } from 'styled-components/macro';
+import styled, { css } from 'styled-components';
 import { useField } from 'formik';
 
 import theme from 'constants/theme';
@@ -11,7 +11,7 @@ const inputStyle = css`
   box-sizing: border-box;
   display: block;
   font-weight: bold;
-  padding: ${props =>
+  padding: ${(props) =>
     props.showFloatingLabel ? '1.3rem 0.75rem 0.4rem' : '0.85rem 0.75rem'};
   transition: all 0.25s ease-out;
   width: 100%;
@@ -64,7 +64,7 @@ const StyledFloatingLabel = styled.label`
   font-size: 0.75rem;
   font-weight: normal;
   margin: 0.35rem 0 0 0.075rem;
-  opacity: ${props => (props.showFloatingLabel ? 1 : 0)};
+  opacity: ${(props) => (props.showFloatingLabel ? 1 : 0)};
   overflow: hidden;
   padding: 0 0.75rem;
   pointer-events: none;

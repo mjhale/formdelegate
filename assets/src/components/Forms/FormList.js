@@ -1,6 +1,6 @@
 import CopyToClipboard from 'react-copy-to-clipboard';
 import React from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 import theme from 'constants/theme';
 
@@ -39,7 +39,7 @@ const FormActions = styled.div`
   padding-top: 0.5rem;
 `;
 
-const FormActionButton = styled(props => <Button as={Link} {...props} />)`
+const FormActionButton = styled((props) => <Button as={Link} {...props} />)`
   margin-right: 0.5rem;
 `;
 
@@ -58,7 +58,7 @@ let FormList = ({ forms, isFetching, onDeleteClick }) => {
 
   return (
     <React.Fragment>
-      {forms.map(form => (
+      {forms.map((form) => (
         <FormSimpleView
           key={form.id}
           form={form}
@@ -89,7 +89,10 @@ const FormSimpleView = ({ form, onDeleteClick }) => {
           </FormActionButton>
         </FormActionGroup>
         <FormActionDelete>
-          <Button onClick={evt => onDeleteClick(form.id, evt)} variant="delete">
+          <Button
+            onClick={(evt) => onDeleteClick(form.id, evt)}
+            variant="delete"
+          >
             Delete Form
           </Button>
         </FormActionDelete>

@@ -1,6 +1,6 @@
 import jwtDecode from 'jwt-decode';
 
-export const getCurrentUserId = (token = localStorage.getItem('fd_token')) => {
+export const getCurrentUserId = (token) => {
   if (!token) return;
 
   const decodedToken = jwtDecode(token);
@@ -10,7 +10,7 @@ export const getCurrentUserId = (token = localStorage.getItem('fd_token')) => {
   }
 };
 
-export const isTokenCurrent = (token = localStorage.getItem('fd_token')) => {
+export const isTokenCurrent = (token) => {
   if (!token) return false;
 
   const decodedToken = jwtDecode(token);

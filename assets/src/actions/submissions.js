@@ -27,7 +27,7 @@ import {
 } from 'constants/actionTypes';
 
 export function addSubmission(payload) {
-  return dispatch =>
+  return (dispatch) =>
     dispatch({
       isFetching: false,
       payload: payload,
@@ -36,10 +36,11 @@ export function addSubmission(payload) {
 }
 
 export function fetchSubmission(submissionId) {
-  return async dispatch => {
+  return async (dispatch) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
+        directApiCall: false,
         endpoint: `/v1/submissions/${submissionId}`,
         schema: submissionSchema,
         types: [SUBMISSION_REQUEST, SUBMISSION_SUCCESS, SUBMISSION_FAILURE],
@@ -51,10 +52,11 @@ export function fetchSubmission(submissionId) {
 }
 
 export function fetchSubmissionActivity() {
-  return async dispatch => {
+  return async (dispatch) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
+        directApiCall: false,
         endpoint: '/v1/submissions/recent_activity',
         schema: [submissionActivitySchema],
         types: [
@@ -91,7 +93,7 @@ export function submissionSearchFetch(query, requestedPage) {
   if (!query) query = '';
   if (!requestedPage) requestedPage = 1;
 
-  return async dispatch => {
+  return async (dispatch) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
@@ -134,7 +136,7 @@ function submissionSearchActions(
   offset,
   total
 ) {
-  return dispatch =>
+  return (dispatch) =>
     Promise.all([
       dispatch(submissionSearchQuery(query, requestedPage)),
       dispatch(submissionSearchResults(payload, limit, offset, total)),
@@ -144,10 +146,11 @@ function submissionSearchActions(
 export function fetchSubmissions(requestedPage) {
   if (!requestedPage) requestedPage = 1;
 
-  return async dispatch => {
+  return async (dispatch) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
+        directApiCall: false,
         endpoint: `/v1/submissions?page=${requestedPage}`,
         schema: [submissionSchema],
         types: [SUBMISSIONS_REQUEST, SUBMISSIONS_SUCCESS, SUBMISSIONS_FAILURE],

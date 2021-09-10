@@ -1,6 +1,0 @@
-[build]
-  base = "assets/"
-  command = "yarn run build"
-  publish = "assets/build/"
-  functions = ""
-  environment = { NODE_VERSION = "14", YARN_VERSION = "1.22.10" }

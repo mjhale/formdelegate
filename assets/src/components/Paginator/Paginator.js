@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 import Button from 'components/Button';
 
@@ -47,7 +47,7 @@ const Paginator = ({
       <li>
         <Button
           disabled={itemIndexFloor <= 1 ? true : false}
-          onClick={evt => handlePageChange(currentPage - 1, evt)}
+          onClick={(evt) => handlePageChange(currentPage - 1, evt)}
         >
           {'<'}
         </Button>
@@ -55,7 +55,7 @@ const Paginator = ({
       <li>
         <Button
           disabled={itemIndexCeiling >= total ? true : false}
-          onClick={evt => handlePageChange(currentPage + 1, evt)}
+          onClick={(evt) => handlePageChange(currentPage + 1, evt)}
         >
           {'>'}
         </Button>

@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import * as React from 'react';
 import { Formik, Form } from 'formik';
 import { parse } from 'query-string';
-import styled from 'styled-components/macro';
-import { useLocation } from 'react-router-dom';
+import styled from 'styled-components';
+import { useRouter } from 'next/router';
 import * as Yup from 'yup';
 
 import theme from 'constants/theme';
@@ -16,7 +16,8 @@ const SearchField = styled(Field)`
 `;
 
 const Search = ({ handleSearch }) => {
-  const { search: searchParam } = useLocation();
+  const router = useRouter();
+  const { search: searchParam } = router.query;
 
   const [query, setQuery] = React.useState(
     searchParam != null ? parse(searchParam).search : ''

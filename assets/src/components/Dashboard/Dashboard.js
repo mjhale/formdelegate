@@ -38,7 +38,7 @@ class DashboardContainer extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   currentUser: getCurrentUser(state),
   submissionActivity: getSubmissionActivity(state),
 });

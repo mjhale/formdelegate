@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/macro';
-import { Link as RouterLink } from 'react-router-dom';
+import styled from 'styled-components';
+import NextLink from 'next/link';
 
 import ExternalLink from 'components/Link/ExternalLink';
 
@@ -33,9 +33,9 @@ function Link(props) {
   }
 
   return (
-    <RouterLink className={className} onClick={onPress} to={href}>
+    <NextLink className={className} onClick={onPress} href={href} passHref>
       {children}
-    </RouterLink>
+    </NextLink>
   );
 }
 

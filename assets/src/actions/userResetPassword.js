@@ -6,7 +6,7 @@ import {
   USER_RESET_PASSWORD_FAILURE,
 } from 'constants/actionTypes';
 
-export const userResetPasswordRequest = email => {
+export const userResetPasswordRequest = (email) => {
   return async (dispatch, getState) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
@@ -37,7 +37,7 @@ export const userResetPasswordRequest = email => {
 };
 
 export const userResetPasswordTokenVerify = ({ password, token }) => {
-  return async dispatch => {
+  return async (dispatch) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         config: {

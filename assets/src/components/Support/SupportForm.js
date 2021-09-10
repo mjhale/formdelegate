@@ -1,18 +1,17 @@
-import PropTypes from 'prop-types';
 import * as React from 'react';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
-import { useDispatch } from 'react-redux';
 
 import { addNotification } from 'actions/notifications';
 import { createSupportTicket } from 'actions/supportTickets';
+import { useAppDispatch } from 'hooks/useRedux';
 
 import Button from 'components/Button';
 import Card from 'components/Card';
 import Field from 'components/Field/FormikField';
 
-const SupportForm = ({ handleSubmit }) => {
-  const dispatch = useDispatch();
+const SupportForm = () => {
+  const dispatch = useAppDispatch();
 
   return (
     <Formik
@@ -40,7 +39,7 @@ const SupportForm = ({ handleSubmit }) => {
       })}
     >
       {({ isSubmitting }) => (
-        <Form onSubmit={handleSubmit}>
+        <Form>
           <Card>
             <Field label="Name" name="name" placeholder="Name" type="text" />
             <Field label="Email" name="email" placeholder="Email" type="text" />
@@ -58,10 +57,6 @@ const SupportForm = ({ handleSubmit }) => {
       )}
     </Formik>
   );
-};
-
-SupportForm.propTypes = {
-  handleSubmit: PropTypes.func.isRequired,
 };
 
 export default SupportForm;

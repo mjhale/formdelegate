@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 
@@ -29,7 +29,7 @@ const LoginSecondaryActions = styled.div`
   margin: 0.75rem 0 0;
 `;
 
-const LoginForm = props => {
+const LoginForm = (props) => {
   return (
     <>
       <Formik
@@ -45,7 +45,7 @@ const LoginForm = props => {
           password: Yup.string().required('Password is required'),
         })}
       >
-        {formProps => (
+        {(formProps) => (
           <Form>
             <Field
               autoComplete="email"
@@ -77,7 +77,7 @@ const LoginForm = props => {
 
       <LoginSecondaryActions>
         <span></span>
-        <LoginHelp href="/reset">Need help?</LoginHelp>
+        <LoginHelp href="/reset-password">Need help?</LoginHelp>
       </LoginSecondaryActions>
     </>
   );

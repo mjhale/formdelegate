@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import { clearFix } from 'polished';
 
 import theme from 'constants/theme';
@@ -32,7 +32,7 @@ const Content = styled.div`
   ${clearFix()};
 `;
 
-const Card = props => (
+const Card = (props) => (
   <CardContainer>
     {props.header && <Header>{props.header}</Header>}
     <Content>{props.children}</Content>

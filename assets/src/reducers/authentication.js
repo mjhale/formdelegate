@@ -13,16 +13,28 @@ import {
   LOGOUT_FAILURE,
 } from 'constants/actionTypes';
 
+const currentUserId = (state = null, action) => {
+  switch (action.type) {
+    case CURRENT_USER_SUCCESS:
+      return state || action.payload.result;
+    default:
+      return state;
+  }
+};
+
 const error = (state = {}, action) => {
   switch (action.type) {
     case LOGIN_FAILURE:
     case LOGOUT_FAILURE:
+    case CURRENT_USER_FAILURE:
       return action.error;
 
     case LOGIN_REQUEST:
     case LOGIN_SUCCESS:
     case LOGOUT_REQUEST:
     case LOGOUT_SUCCESS:
+    case CURRENT_USER_REQUEST:
+    case CURRENT_USER_SUCCESS:
       return {};
 
     default:
@@ -30,11 +42,9 @@ const error = (state = {}, action) => {
   }
 };
 
-const isAuthenticated = (
-  state = isTokenCurrent(localStorage.getItem('fd_token')),
-  action
-) => {
+const isAuthenticated = (state = false, action) => {
   switch (action.type) {
+    case CURRENT_USER_SUCCESS:
     case LOGIN_SUCCESS:
       return true;
     case LOGOUT_SUCCESS:
@@ -69,6 +79,7 @@ const isFetching = (state = false, action) => {
 };
 
 export default combineReducers({
+  currentUserId,
   error,
   isAuthenticated,
   isFetching,

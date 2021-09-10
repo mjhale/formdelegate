@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import { Field } from 'formik';
 
 const SwitchContainer = styled.span`
@@ -84,7 +84,7 @@ const Checkbox = styled.div`
   }
 `;
 
-const ToggleSwitch = props => (
+const ToggleSwitch = (props) => (
   <SwitchContainer>
     <SwitchLabel>
       <CheckboxInput {...props} component="input" type="checkbox" />

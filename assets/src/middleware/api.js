@@ -3,35 +3,25 @@ import { merge } from 'lodash';
 
 export const CALL_API = Symbol('Call API');
 
-const callApi = (endpoint, schema, authenticated, config) => {
-  const API_HOST = process.env.REACT_APP_API_HOST;
-  const fullUrl = API_HOST ? API_HOST + endpoint : endpoint;
-  const token = localStorage.getItem('fd_token') || null;
-
-  if (authenticated) {
-    if (token) {
-      config = merge(
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-        config
-      );
-    } else {
-      throw new Error('No authentication token was found');
-    }
-  }
+const callApi = (
+  endpoint,
+  directApiCall = true,
+  schema,
+  authenticated,
+  config
+) => {
+  // When directApiCall is false, send requests through the Next.js proxy server to handle cookie creation
+  const API_HOST = directApiCall ? process.env.NEXT_PUBLIC_API_HOST : null;
+  const fullUrl = API_HOST ? API_HOST + endpoint : `/api${endpoint}`;
 
   return fetch(fullUrl, config)
-    .then(response => {
+    .then((response) => {
       const noResponseStatusCodes = [202, 204, 205];
 
       if (noResponseStatusCodes.includes(response.status)) {
         return { json: null, response };
       } else {
-        return response.json().then(json => {
+        return response.json().then((json) => {
           if (!response.ok) {
             return Promise.reject(json);
           }
@@ -46,14 +36,15 @@ const callApi = (endpoint, schema, authenticated, config) => {
     }));
 };
 
-const apiMiddleware = store => next => action => {
+const apiMiddleware = (store) => (next) => (action) => {
   const callAPI = action[CALL_API];
 
   if (typeof callAPI === 'undefined') {
     return next(action);
   }
 
-  let { authenticated, config, endpoint, schema, types } = callAPI;
+  let { authenticated, config, directApiCall, endpoint, schema, types } =
+    callAPI;
 
   if (typeof endpoint === 'function') {
     endpoint = endpoint(store.getState());
@@ -67,7 +58,7 @@ const apiMiddleware = store => next => action => {
     throw new Error('Please specify a schema or null');
   }
 
-  const actionWith = data => {
+  const actionWith = (data) => {
     const finalAction = Object.assign({}, action, data);
     delete finalAction[CALL_API];
     return finalAction;
@@ -81,15 +72,15 @@ const apiMiddleware = store => next => action => {
     })
   );
 
-  return callApi(endpoint, schema, authenticated, config).then(
-    response =>
+  return callApi(endpoint, directApiCall, schema, authenticated, config).then(
+    (response) =>
       next({
         headers: response.headers,
         isFetching: false,
         payload: response.payload,
         type: successActionType,
       }),
-    error =>
+    (error) =>
       next({
         error: error.error || { error: { type: 'UNKNOWN_ERROR' } },
         isFetching: false,

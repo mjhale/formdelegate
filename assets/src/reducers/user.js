@@ -2,9 +2,6 @@ import { combineReducers } from 'redux';
 import { indexOf } from 'lodash';
 
 import {
-  CURRENT_USER_REQUEST,
-  CURRENT_USER_SUCCESS,
-  CURRENT_USER_FAILURE,
   USER_REQUEST,
   USER_SUCCESS,
   USER_FAILURE,
@@ -32,24 +29,12 @@ const allIds = (state = [], action) => {
   }
 };
 
-const currentUserId = (state = null, action) => {
-  switch (action.type) {
-    case USER_SUCCESS:
-      return state || action.payload.result;
-    case CURRENT_USER_SUCCESS:
-      return action.payload.result;
-    default:
-      return state;
-  }
-};
-
 const error = (state = { error_code: '', errors: [] }, action) => {
   switch (action.type) {
     case USER_FAILURE:
     case USER_CREATE_FAILURE:
     case USER_UPDATE_FAILURE:
     case USERS_FAILURE:
-    case CURRENT_USER_FAILURE:
       return action.error;
 
     default:
@@ -59,11 +44,6 @@ const error = (state = { error_code: '', errors: [] }, action) => {
 
 const isFetching = (state = false, action) => {
   switch (action.type) {
-    case CURRENT_USER_FAILURE:
-    case CURRENT_USER_SUCCESS:
-      return false;
-
-    case CURRENT_USER_REQUEST:
     case USER_REQUEST:
     case USER_CREATE_REQUEST:
     case USER_UPDATE_REQUEST:
@@ -93,7 +73,6 @@ const isFetching = (state = false, action) => {
 
 export default combineReducers({
   allIds,
-  currentUserId,
   error,
   isFetching,
 });

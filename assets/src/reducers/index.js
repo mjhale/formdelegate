@@ -30,7 +30,7 @@ const reducers = {
     },
     {
       extraFields: () => ({
-        width: window.innerWidth,
+        width: typeof window !== 'undefined' ? window.innerWidth : 0,
       }),
     }
   ),

@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import moment from 'moment';
 import React from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 import Card from 'components/Card';
 
@@ -85,7 +85,7 @@ class SubmissionActivity extends React.Component {
       .attr('class', 'day-cell')
       .attr('width', cellSize)
       .attr('height', cellSize)
-      .attr('fill', d => {
+      .attr('fill', (d) => {
         const currentDayRectDate = d3.timeFormat('%Y-%m-%d')(d);
         const currentDayRectCount = data['dates'][currentDayRectDate]['count'];
 

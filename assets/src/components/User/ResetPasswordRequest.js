@@ -10,14 +10,14 @@ import {
   StyledContinueBotton,
   StyledFormWrapper,
   StyledInstructionText,
-} from 'components/User/ForgotPassword';
+} from 'pages/reset-password';
 
 const ResetPasswordRequest = () => {
   const dispatch = useDispatch();
 
   const [formStatus, setFormStatus] = useState('');
 
-  const handleResetPasswordRequest = values => {
+  const handleResetPasswordRequest = (values) => {
     dispatch(userResetPasswordRequest(values.email));
     setFormStatus('submitted');
   };
@@ -51,7 +51,7 @@ const ResetPasswordRequest = () => {
               email: Yup.string().required('Email is required'),
             })}
           >
-            {formProps => (
+            {(formProps) => (
               <Form>
                 <Field
                   type="email"

@@ -15,7 +15,7 @@ const notificationReducer = (state = [], action) => {
       ];
     case NOTIFICATION_HIDE:
       return state.filter(
-        notification =>
+        (notification) =>
           (action.id && notification.id !== action.id) ||
           (action.key && notification.key !== action.key)
       );

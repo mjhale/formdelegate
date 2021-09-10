@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 import theme from 'constants/theme';
 
@@ -52,13 +52,8 @@ class Table extends React.Component {
   };
 
   render() {
-    const {
-      columns,
-      data,
-      dataEmptyPlaceholder,
-      error,
-      isFetching,
-    } = this.props;
+    const { columns, data, dataEmptyPlaceholder, error, isFetching } =
+      this.props;
     const isEmpty = data.length === 0;
     const shouldShowError = !isFetching && error;
     const shouldShowPlaceholder = !isFetching && !error && isEmpty;

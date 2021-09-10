@@ -1,23 +1,35 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Placeholder from 'components/Placeholder';
+import Link from 'next/link';
 import { NavContainer, NavItem } from 'components/Nav/Nav';
 
-const AuthenticatedNav = ({ isAdmin, isFetching, onClick }) => {
-  if (isFetching) {
-    return <Placeholder isFetching={isFetching} rows={6} />;
-  }
-
+const AuthenticatedNav = ({ isAdmin, onClick }) => {
   return (
     <NavContainer onClick={onClick}>
-      <NavItem to="/dashboard">dashboard</NavItem>
-      <NavItem to="/submissions">submissions</NavItem>
-      <NavItem to="/forms">forms</NavItem>
-      <NavItem to="/settings">settings</NavItem>
-      <NavItem to="/support">support</NavItem>
-      {isAdmin && <NavItem to="/admin">admin</NavItem>}
-      <NavItem to="/logout">logout</NavItem>
+      <Link href="/dashboard" passHref>
+        <NavItem>dashboard</NavItem>
+      </Link>
+      <Link href="/submissions" passHref>
+        <NavItem>submissions</NavItem>
+      </Link>
+      <Link href="/forms" passHref>
+        <NavItem>forms</NavItem>
+      </Link>
+      <Link href="/settings" passHref>
+        <NavItem>settings</NavItem>
+      </Link>
+      <Link href="/support" passHref>
+        <NavItem>support</NavItem>
+      </Link>
+      {isAdmin && (
+        <Link href="/admin" passHref>
+          <NavItem>admin</NavItem>
+        </Link>
+      )}
+      <Link href="/logout" passHref>
+        <NavItem>logout</NavItem>
+      </Link>
     </NavContainer>
   );
 };

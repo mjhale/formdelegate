@@ -1,10 +1,8 @@
-import styled, { keyframes } from 'styled-components/macro';
+import styled, { keyframes } from 'styled-components';
 import { hideVisually } from 'polished';
 
 import theme from 'constants/theme';
 import { media } from 'utils/style';
-
-import Link from 'components/Link';
 
 export const ContentContainer = styled.main`
   ${media.md`
@@ -19,7 +17,7 @@ export const ContentContainer = styled.main`
   `};
 `;
 
-export const LogoLink = styled(Link)`
+export const LogoLink = styled.a`
   color: ${theme.logoColor};
   display: inline-block;
   font-family: 'Lato', sans-serif;

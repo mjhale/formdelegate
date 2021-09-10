@@ -19,9 +19,10 @@ import {
   USERS_FAILURE,
 } from 'constants/actionTypes';
 
-export const adminFetchUser = userId => ({
+export const adminFetchUser = (userId) => ({
   [CALL_API]: {
     authenticated: true,
+    directApiCall: false,
     endpoint: `/v1/users/${userId}`,
     schema: userSchema,
     types: [USER_REQUEST, USER_SUCCESS, USER_FAILURE],
@@ -31,13 +32,14 @@ export const adminFetchUser = userId => ({
 export const adminFetchUsers = () => ({
   [CALL_API]: {
     authenticated: true,
+    directApiCall: false,
     endpoint: '/v1/users',
     schema: [userSchema],
     types: [USERS_REQUEST, USERS_SUCCESS, USERS_FAILURE],
   },
 });
 
-export const adminUpdateUser = user => {
+export const adminUpdateUser = (user) => {
   return async (dispatch, getState) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
@@ -50,6 +52,7 @@ export const adminUpdateUser = user => {
           },
           method: 'PUT',
         },
+        directApiCall: false,
         endpoint: `/v1/users/${user.id}`,
         schema: userSchema,
         types: [USER_UPDATE_REQUEST, USER_UPDATE_SUCCESS, USER_UPDATE_FAILURE],
@@ -67,6 +70,7 @@ export function createUser({ captchaToken, user }) {
         authenticated: false,
         config: {
           body: JSON.stringify({ captcha: captchaToken, user: user }),
+          directApiCall: false,
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -87,12 +91,13 @@ export function createUser({ captchaToken, user }) {
   };
 }
 
-export const fetchUser = userId => {
+export const fetchUser = () => {
   return async (dispatch, getState) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        endpoint: `/v1/users/${userId}`,
+        directApiCall: false,
+        endpoint: `/user`,
         schema: userSchema,
         types: [
           CURRENT_USER_REQUEST,
@@ -106,7 +111,7 @@ export const fetchUser = userId => {
   };
 };
 
-export const updateUser = user => {
+export const updateUser = (user) => {
   return async (dispatch, getState) => {
     const actionResponse = await dispatch({
       [CALL_API]: {

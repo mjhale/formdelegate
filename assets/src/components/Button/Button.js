@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 import theme from 'constants/theme';
 
@@ -47,16 +47,16 @@ const DeleteButton = styled(DefaultButton)`
   }
 `;
 
-const Button = props => {
+const Button = React.forwardRef((props, ref) => {
   const { className, variant, ...restProps } = props;
 
   switch (variant) {
     case 'delete':
-      return <DeleteButton className={className} {...restProps} />;
+      return <DeleteButton className={className} ref={ref} {...restProps} />;
     default:
-      return <DefaultButton className={className} {...restProps} />;
+      return <DefaultButton className={className} ref={ref} {...restProps} />;
   }
-};
+});
 
 Button.propTypes = {
   as: PropTypes.oneOfType([
@@ -64,7 +64,9 @@ Button.propTypes = {
     PropTypes.string,
     PropTypes.shape({ render: PropTypes.func.isRequired }),
   ]),
+  children: PropTypes.node,
   disabled: PropTypes.bool,
+  tabIndex: PropTypes.string,
   type: PropTypes.oneOf(['button', 'reset', 'submit', null]),
   variant: PropTypes.string,
 };

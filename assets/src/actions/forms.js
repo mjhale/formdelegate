@@ -33,6 +33,7 @@ export function createForm(form) {
           },
           method: 'POST',
         },
+        directApiCall: false,
         endpoint: '/v1/forms',
         schema: formSchema,
         types: [FORM_CREATE_REQUEST, FORM_CREATE_SUCCESS, FORM_CREATE_FAILURE],
@@ -50,9 +51,10 @@ function deleteForm(formId) {
   };
 }
 
-export const fetchForm = formId => ({
+export const fetchForm = (formId) => ({
   [CALL_API]: {
     authenticated: true,
+    directApiCall: false,
     endpoint: `/v1/forms/${formId}`,
     schema: formSchema,
     types: [FORM_REQUEST, FORM_SUCCESS, FORM_FAILURE],
@@ -62,6 +64,7 @@ export const fetchForm = formId => ({
 export const fetchForms = () => ({
   [CALL_API]: {
     authenticated: true,
+    directApiCall: false,
     endpoint: '/v1/forms',
     schema: [formSchema],
     types: [FORMS_REQUEST, FORMS_SUCCESS, FORMS_FAILURE],
@@ -76,6 +79,7 @@ export function formDeletionRequest(formId) {
         config: {
           method: 'DELETE',
         },
+        directApiCall: false,
         endpoint: `/v1/forms/${formId}`,
         schema: null,
         types: [FORM_DELETE_REQUEST, FORM_DELETE_SUCCESS, FORM_DELETE_FAILURE],
@@ -103,6 +107,7 @@ export function updateForm(form) {
           },
           method: 'PUT',
         },
+        directApiCall: false,
         endpoint: `/v1/forms/${form.id}`,
         schema: formSchema,
         types: [FORM_UPDATE_REQUEST, FORM_UPDATE_SUCCESS, FORM_UPDATE_FAILURE],

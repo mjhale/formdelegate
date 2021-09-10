@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import { Formik, Form as FormikForm } from 'formik';
 import * as Yup from 'yup';
 
@@ -29,7 +29,7 @@ const StyledCardHeader = ({ title, isVerified }) => {
   );
 };
 
-const Form = props => {
+const Form = (props) => {
   const { handleFormSubmit, initialValues, isFetching } = props;
 
   if (isFetching || initialValues == null) {
@@ -40,7 +40,7 @@ const Form = props => {
     <React.Fragment>
       <Formik
         initialValues={initialValues}
-        onSubmit={values => {
+        onSubmit={(values) => {
           handleFormSubmit(values);
         }}
         validationSchema={Yup.object({
