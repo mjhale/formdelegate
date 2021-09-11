@@ -5,7 +5,7 @@ defmodule FormDelegate.Mixfile do
     [
       app: :form_delegate,
       version: "0.0.1",
-      elixir: "~> 1.11",
+      elixir: "~> 1.12",
       elixirc_options: [warnings_as_errors: true],
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -38,16 +38,16 @@ defmodule FormDelegate.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.10"},
+      {:phoenix, "~> 1.5.12"},
       {:phoenix_pubsub, "~> 2.0.0"},
-      {:ecto_sql, "~> 3.6.2"},
-      {:phoenix_ecto, "~> 4.3.0"},
+      {:ecto_sql, "~> 3.7.0"},
+      {:phoenix_ecto, "~> 4.4.0"},
       {:postgrex, "~> 0.15.10"},
-      {:phoenix_html, "~> 3.0.0"},
+      {:phoenix_html, "~> 3.0.3"},
       {:jason, "~> 1.2.1"},
       {:gettext, "~> 0.18.2"},
-      {:plug_cowboy, "~> 2.5.1"},
-      {:guardian, "~> 2.2.0"},
+      {:plug_cowboy, "~> 2.5.2"},
+      {:guardian, "~> 2.2.1"},
       {:guardian_phoenix, "~> 2.0"},
       {:pbkdf2_elixir, "~> 1.4"},
       {:bamboo, "~> 2.2"},
@@ -61,9 +61,9 @@ defmodule FormDelegate.Mixfile do
       {:waffle, "~> 1.1.5"},
       {:waffle_ecto, "~> 0.0.11"},
       {:hackney, "~> 1.17.4"},
-      {:ex_aws, "~> 2.2.3"},
+      {:ex_aws, "~> 2.2.5"},
       {:ex_aws_s3, "~> 2.3.0"},
-      {:sweet_xml, "~> 0.7"},
+      {:sweet_xml, "~> 0.7.1"},
 
       # dev, test
       {:ex_machina, "~> 2.7.0", only: :test},
