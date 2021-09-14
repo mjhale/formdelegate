@@ -7,6 +7,6 @@ defmodule FormDelegateWeb.SessionView do
   end
 
   def render("session.json", %{session: session}) do
-    %{token: session.token}
+    %{id: session.user.id, token: session.token}
   end
 end

@@ -10,7 +10,7 @@ defmodule FormDelegateWeb.SessionController do
     case Accounts.authenticate_user(%{email: email, password: password}) do
       {:ok, %User{} = user} ->
         {:ok, token, _claims} = Guardian.encode_and_sign(user, %{}, token_type: "access")
-        render(conn, "show.json", %{session: %{token: token}})
+        render(conn, "show.json", %{session: %{user: user, token: token}})
 
       {:error, _reason} ->
         {:error, :unauthorized, %{type: "INVALID_CREDENTIALS"}}
