@@ -1,6 +1,5 @@
 import { animateScroll } from 'react-scroll';
 import { FieldArray } from 'formik';
-import React from 'react';
 import styled from 'styled-components';
 
 import Button from 'components/Button';
@@ -22,7 +21,7 @@ const IntegrationsContainer = styled.ul`
 
 const FormIntegrations = ({ values }) => {
   return (
-    <React.Fragment>
+    <>
       <FieldArray
         name="email_integrations"
         render={(arrayHelpers) => (
@@ -55,7 +54,7 @@ const FormIntegrations = ({ values }) => {
           </IntegrationsContainer>
         )}
       />
-    </React.Fragment>
+    </>
   );
 };
 

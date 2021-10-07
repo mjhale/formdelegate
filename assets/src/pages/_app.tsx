@@ -2,9 +2,9 @@ import type { AppProps } from 'next/app';
 import type { NextPage } from 'next';
 import type { ReactElement, ReactNode } from 'react';
 
+import { ChakraProvider } from '@chakra-ui/react';
 import { CookiesProvider } from 'react-cookie';
 import { createGlobalStyle } from 'styled-components';
-import { normalize } from 'polished';
 import * as React from 'react';
 
 import { addNotification, hideNotification } from 'actions/notifications';
@@ -21,8 +21,6 @@ import NextLink from 'next/link';
 import { Provider } from 'react-redux';
 
 const GlobalStyle = createGlobalStyle`
-  ${normalize()}
-
   body {
     background-color: ${theme.backgroundColor};
     font-family: ${theme.systemFont};
@@ -115,9 +113,11 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
         <GlobalStyle />
         <CookiesProvider>
           <Provider store={store}>
-            <UserNotificationDispatcher>
-              {getLayout(<Component {...pageProps} />)}
-            </UserNotificationDispatcher>
+            <ChakraProvider>
+              <UserNotificationDispatcher>
+                {getLayout(<Component {...pageProps} />)}
+              </UserNotificationDispatcher>
+            </ChakraProvider>
           </Provider>
         </CookiesProvider>
       </>

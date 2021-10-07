@@ -234,7 +234,7 @@ const Index = () => {
               Send your forms to us. We'll handle the rest.
             </HeroMessage>
             <HeroAction>
-              <Link href="/register">
+              <Link href="/signup">
                 <Button tabIndex="-1">Sign Up For Free</Button>
               </Link>
             </HeroAction>

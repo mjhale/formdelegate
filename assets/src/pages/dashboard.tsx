@@ -1,3 +1,4 @@
+import { Heading } from '@chakra-ui/react';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -27,7 +28,9 @@ const DashboardPage = () => {
 
   return (
     <>
-      <h1>{user.name}'s Dashboard</h1>
+      <Heading as="h1" mb={4} size="lg">
+        My Dashboard
+      </Heading>
 
       <SubmissionActivity activity={submissionActivity} />
 

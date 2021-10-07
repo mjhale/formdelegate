@@ -1,9 +1,13 @@
+import { Heading } from '@chakra-ui/react';
+
 import SupportForm from 'components/Support/SupportForm';
 
 const SupportPage = () => {
   return (
     <>
-      <h1>Support Hub</h1>
+      <Heading mb={2} size="lg">
+        Support Hub
+      </Heading>
       <SupportForm />
     </>
   );

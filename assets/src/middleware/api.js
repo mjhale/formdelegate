@@ -1,16 +1,16 @@
 import { normalize } from 'normalizr';
-import { merge } from 'lodash';
 
 export const CALL_API = Symbol('Call API');
 
 const callApi = (
   endpoint,
-  directApiCall = true,
+  directApiCall = false,
   schema,
-  authenticated,
+  _authenticated,
   config
 ) => {
-  // When directApiCall is false, send requests through the Next.js proxy server to handle cookie creation
+  /* When directApiCall is false, send requests through the Next.js proxy server to handle
+     cookie creation and auth header injection */
   const API_HOST = directApiCall ? process.env.NEXT_PUBLIC_API_HOST : null;
   const fullUrl = API_HOST ? API_HOST + endpoint : `/api${endpoint}`;
 

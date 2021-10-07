@@ -52,7 +52,6 @@ export const adminUpdateUser = (user) => {
           },
           method: 'PUT',
         },
-        directApiCall: false,
         endpoint: `/v1/users/${user.id}`,
         schema: userSchema,
         types: [USER_UPDATE_REQUEST, USER_UPDATE_SUCCESS, USER_UPDATE_FAILURE],
@@ -70,7 +69,6 @@ export function createUser({ captchaToken, user }) {
         authenticated: false,
         config: {
           body: JSON.stringify({ captcha: captchaToken, user: user }),
-          directApiCall: false,
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -96,7 +94,6 @@ export const fetchUser = () => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        directApiCall: false,
         endpoint: `/user`,
         schema: userSchema,
         types: [

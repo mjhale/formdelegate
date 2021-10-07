@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 
@@ -9,6 +8,7 @@ import translations from 'translations';
 import { useAppDispatch, useAppSelector } from 'hooks/useRedux';
 import useUser from 'hooks/useUser';
 
+import AuthLayout from 'components/Layouts/AuthLayout';
 import Card from 'components/Card';
 import Flash from 'components/Flash';
 import Link from 'components/Link';
@@ -18,7 +18,7 @@ const LogInContainer = styled.div`
   padding: 5% 15%;
 `;
 
-const LogInHeader = styled.h1`
+const LogInHeader = styled.h2`
   font-size: 1.75rem;
   font-weight: 300;
   margin: 0 0 2rem 0;
@@ -69,17 +69,19 @@ const LoginPage = () => {
       <Card>
         <LogInContainer>
           <LogInHeader>Sign In</LogInHeader>
-          {authError.type && (
-            <Flash type="error">
-              {translations[authError.type] || translations['UNKNOWN_ERROR']}
-            </Flash>
-          )}
+          {authError?.type != null &&
+            // Do not show INVALID_TOKEN errors on login page it is currently generated whenever a user isn't logged in
+            authError.type !== 'INVALID_TOKEN' && (
+              <Flash type="error">
+                {translations[authError.type] || translations['UNKNOWN_ERROR']}
+              </Flash>
+            )}
           <LoginForm handleLogin={handleLogin} />
         </LogInContainer>
       </Card>
       <StyledSignUpWrapper>
         <span>Don't have an account? </span>
-        <StyledSignUpLink href="/register">Sign up</StyledSignUpLink>
+        <StyledSignUpLink href="/signup">Sign up</StyledSignUpLink>
       </StyledSignUpWrapper>
     </>
   );
@@ -102,5 +104,7 @@ export async function getServerSideProps({ req }) {
     props: {},
   };
 }
+
+LoginPage.getLayout = (page) => <AuthLayout>{page}</AuthLayout>;
 
 export default LoginPage;

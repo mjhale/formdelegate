@@ -1,4 +1,5 @@
 import { denormalize } from 'normalizr';
+import { Heading } from '@chakra-ui/react';
 import * as React from 'react';
 import { useAppDispatch, useAppSelector } from 'hooks/useRedux';
 import { useRouter } from 'next/router';
@@ -35,7 +36,9 @@ const FormEdit = () => {
 
   return (
     <React.Fragment>
-      <h1>Edit Form</h1>
+      <Heading mb={4} size="lg">
+        Modify Form Settings
+      </Heading>
 
       <Form
         initialValues={denormalizedForm}

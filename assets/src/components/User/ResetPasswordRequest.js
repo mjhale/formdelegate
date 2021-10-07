@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { VStack } from '@chakra-ui/react';
+import * as React from 'react';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import { useDispatch } from 'react-redux';
@@ -15,7 +16,7 @@ import {
 const ResetPasswordRequest = () => {
   const dispatch = useDispatch();
 
-  const [formStatus, setFormStatus] = useState('');
+  const [formStatus, setFormStatus] = React.useState('');
 
   const handleResetPasswordRequest = (values) => {
     dispatch(userResetPasswordRequest(values.email));
@@ -53,18 +54,20 @@ const ResetPasswordRequest = () => {
           >
             {(formProps) => (
               <Form>
-                <Field
-                  type="email"
-                  label="Email"
-                  name="email"
-                  placeholder="Email"
-                />
-                <StyledContinueBotton
-                  disabled={!(formProps.isValid && formProps.dirty)}
-                  type="submit"
-                >
-                  Continue
-                </StyledContinueBotton>
+                <VStack spacing={2}>
+                  <Field
+                    type="email"
+                    label="Email"
+                    name="email"
+                    placeholder="Email"
+                  />
+                  <StyledContinueBotton
+                    disabled={!(formProps.isValid && formProps.dirty)}
+                    type="submit"
+                  >
+                    Continue
+                  </StyledContinueBotton>
+                </VStack>
               </Form>
             )}
           </Formik>

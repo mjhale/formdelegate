@@ -18,7 +18,7 @@ const EmailRecipientList = ({ emailIntegrationIndex, emailIntegration }) => {
     <FieldArray
       name={`email_integrations.${emailIntegrationIndex}.email_integration_recipients`}
       render={(recipientArrayHelpers) => (
-        <React.Fragment>
+        <>
           {Array.isArray(emailIntegration.email_integration_recipients) &&
           emailIntegration.email_integration_recipients.length > 0
             ? emailIntegration.email_integration_recipients.map(
@@ -102,7 +102,7 @@ const EmailRecipientList = ({ emailIntegrationIndex, emailIntegration }) => {
               Add Recipient
             </Button>
           </div>
-        </React.Fragment>
+        </>
       )}
     />
   );

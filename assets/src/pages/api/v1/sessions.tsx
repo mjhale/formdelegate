@@ -40,7 +40,7 @@ const proxy = createProxyMiddleware({
         ]);
 
         res.statusCode = 204;
-        return null;
+        return '';
       }
 
       const apiResponse = buffer.toString('utf8');

@@ -1,31 +1,24 @@
-import * as React from 'react';
-import styled from 'styled-components';
+import { Box, Button, Heading, Skeleton, Stack } from '@chakra-ui/react';
 import { Formik, Form as FormikForm } from 'formik';
 import * as Yup from 'yup';
 
-import Button from 'components/Button';
 import Card from 'components/Card';
 import Field from 'components/Field/FormikField';
 import FormIntegrations from 'components/Form/FormIntegrations';
 
-const StyledVerifiedStatus = styled.div`
-  float: right;
-  text-transform: none;
-`;
-
 const StyledCardHeader = ({ title, isVerified }) => {
   if (!title && isVerified == null) {
-    return <React.Fragment>Form</React.Fragment>;
+    return <>Form</>;
   }
 
   return (
-    <React.Fragment>
-      <StyledVerifiedStatus>
+    <>
+      <Box float="right" textTransform="none">
         {isVerified ? 'Verified' : 'Unverified'}
-      </StyledVerifiedStatus>
+      </Box>
 
       {title}
-    </React.Fragment>
+    </>
   );
 };
 
@@ -33,11 +26,17 @@ const Form = (props) => {
   const { handleFormSubmit, initialValues, isFetching } = props;
 
   if (isFetching || initialValues == null) {
-    return <div>Loading form...</div>;
+    return (
+      <Stack spacing={4}>
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+      </Stack>
+    );
   }
 
   return (
-    <React.Fragment>
+    <>
       <Formik
         initialValues={initialValues}
         onSubmit={(values) => {
@@ -72,41 +71,50 @@ const Form = (props) => {
                   />
                 }
               >
-                <h2>Form Details</h2>
-                <Field
-                  label="Form Name"
-                  name="name"
-                  placeholder="Form Name"
-                  type="text"
-                />
-                {values.id != null ? (
+                <Box mb={2}>
                   <Field
-                    disabled={true}
-                    label="Endpoint ID"
-                    name="id"
-                    placeholder="Endpoint ID"
+                    label="Form Name"
+                    name="name"
+                    placeholder="Form Name"
                     type="text"
                   />
+                </Box>
+                {values.id != null ? (
+                  <Box mb={2}>
+                    <Field
+                      disabled={true}
+                      label="Endpoint ID"
+                      name="id"
+                      placeholder="Endpoint ID"
+                      type="text"
+                    />
+                  </Box>
                 ) : null}
                 {initialValues.submission_count != null ? (
-                  <Field
-                    disabled={true}
-                    label="Total Submissions"
-                    name="submission_count"
-                    placeholder="Total Submissions"
-                    type="text"
-                  />
+                  <Box mb={2}>
+                    <Field
+                      disabled={true}
+                      label="Total Submissions"
+                      name="submission_count"
+                      placeholder="Total Submissions"
+                      type="text"
+                    />
+                  </Box>
                 ) : null}
 
-                <h2>Integrations</h2>
+                <Heading as="h3" mb={2} size="md">
+                  Integrations
+                </Heading>
                 <FormIntegrations values={values} />
               </Card>
-              <Button type="submit">Save Form</Button>
+              <Button type="submit" variant="outline">
+                Save Form
+              </Button>
             </FormikForm>
           );
         }}
       </Formik>
-    </React.Fragment>
+    </>
   );
 };
 

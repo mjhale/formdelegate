@@ -1,17 +1,16 @@
-import React from 'react';
+import Link from 'next/link';
 import styled from 'styled-components';
 
 import theme from 'constants/theme';
 
 import FluidContainer from 'components/FluidContainer';
-import Link from 'components/Link';
 import { SkipToContent } from './Styled';
 
 const AuthLayoutContainer = styled(FluidContainer)`
   max-width: 500px;
 `;
 
-const LogoLink = styled(Link)`
+const LogoLink = styled.a`
   color: ${theme.carnation};
   display: block;
   font-family: 'Lato', sans-serif;
@@ -32,13 +31,15 @@ const LogoLink = styled(Link)`
 `;
 
 const AuthLayout = (props) => (
-  <React.Fragment>
+  <>
     <SkipToContent href="#site-content">Skip to main content</SkipToContent>
-    <LogoLink href="/">form delegate</LogoLink>
+    <Link href="/" passHref>
+      <LogoLink>form delegate</LogoLink>
+    </Link>
     <AuthLayoutContainer id="site-content" role="main">
       {props.children}
     </AuthLayoutContainer>
-  </React.Fragment>
+  </>
 );
 
 export default AuthLayout;

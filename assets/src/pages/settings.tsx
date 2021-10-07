@@ -1,14 +1,13 @@
+import { Button, Heading, Skeleton, Stack, VStack } from '@chakra-ui/react';
+import { Formik, Form } from 'formik';
 import * as React from 'react';
 import * as Yup from 'yup';
-import { Formik, Form } from 'formik';
 
-import { getCurrentUser } from 'selectors';
 import { isTokenCurrent } from 'utils';
 import { updateUser } from 'actions/users';
-import { useAppDispatch, useAppSelector } from 'hooks/useRedux';
+import { useAppDispatch } from 'hooks/useRedux';
 import useUser from 'hooks/useUser';
 
-import Button from 'components/Button';
 import Card from 'components/Card';
 import Field from 'components/Field/FormikField';
 
@@ -18,52 +17,63 @@ const UserSettings = () => {
   const dispatch = useAppDispatch();
 
   if (isFetching) {
-    return <div>Loading...</div>;
+    return (
+      <Stack spacing={4}>
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+      </Stack>
+    );
   }
 
   return (
     <React.Fragment>
-      <h1>User Settings</h1>
-      <Card>
-        <Formik
-          initialValues={{
-            id: user.id,
-            name: user.name,
-            email: user.email,
-          }}
-          onSubmit={(values, actions) => {
-            // @TODO: Add user feedback on update action
-            dispatch(updateUser(user));
-          }}
-          validationSchema={Yup.object({
-            id: Yup.string(),
-            name: Yup.string().required('Name is required'),
-            email: Yup.string()
-              .email('Invalid email address')
-              .required('Email is required'),
-          })}
-        >
-          {({ isSubmitting }) => (
-            <Form>
-              <Field
-                label="Email"
-                name="email"
-                placeholder="Email"
-                type="text"
-              />
-              <Field
-                label="Full Name"
-                name="name"
-                placeholder="Full Name"
-                type="text"
-              />
-              <Button disabled={isSubmitting} type="submit">
-                Update User
-              </Button>
-            </Form>
-          )}
-        </Formik>
-      </Card>
+      <Heading mb={2} size="lg">
+        My Settings
+      </Heading>
+      <Formik
+        initialValues={{
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        }}
+        onSubmit={(values, actions) => {
+          // @TODO: Add user feedback on update action
+          dispatch(updateUser(user));
+        }}
+        validationSchema={Yup.object({
+          id: Yup.string(),
+          name: Yup.string().required('Name is required'),
+          email: Yup.string()
+            .email('Invalid email address')
+            .required('Email is required'),
+        })}
+      >
+        {({ isSubmitting }) => (
+          <Form>
+            <Card>
+              <VStack spacing={2}>
+                <Field
+                  label="Email"
+                  name="email"
+                  placeholder="Email"
+                  type="text"
+                />
+                <Field
+                  label="Full Name"
+                  name="name"
+                  placeholder="Full Name"
+                  type="text"
+                />
+              </VStack>
+            </Card>
+
+            <Button disabled={isSubmitting} type="submit" variant="outline">
+              Update User
+            </Button>
+          </Form>
+        )}
+      </Formik>
     </React.Fragment>
   );
 };

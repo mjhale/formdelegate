@@ -1,3 +1,4 @@
+import { Heading, VStack } from '@chakra-ui/react';
 import { Formik, Form } from 'formik';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import * as React from 'react';
@@ -74,7 +75,9 @@ const SignupPage = () => {
         </Flash>
       )}
 
-      <h2>Create your Form Delegate account</h2>
+      <Heading mb={4} size="lg">
+        Sign Up for Form Delegate
+      </Heading>
 
       <Formik
         initialValues={{
@@ -107,43 +110,49 @@ const SignupPage = () => {
       >
         {(formProps) => (
           <Form>
-            <Field
-              label="Email"
-              name="user.email"
-              placeholder="Email"
-              type="email"
-            />
-            <Field
-              label="Full Name"
-              name="user.name"
-              placeholder="Full Name"
-              type="text"
-            />
-            <Field
-              label="Password"
-              name="user.password"
-              placeholder="Password"
-              type="password"
-            />
-            <Field
-              label="Confirm password"
-              name="user.password_confirmation"
-              placeholder="Confirm password"
-              type="password"
-            />
-            <StyledCaptchaWrapper>
-              <HCaptcha
-                ref={captchaRef}
-                sitekey={CAPTCHA_SITE_KEY}
-                onVerify={(token) => formProps.setFieldValue('captcha', token)}
+            <VStack align="start" spacing={2}>
+              <Field
+                label="Email"
+                name="user.email"
+                placeholder="Email"
+                type="email"
               />
-              {formProps.errors.captcha && formProps.touched.captcha && (
-                <StyledFieldError>{formProps.errors.captcha}</StyledFieldError>
-              )}
-            </StyledCaptchaWrapper>
-            <Button disabled={formProps.isSubmitting} type="submit">
-              Create Account
-            </Button>
+              <Field
+                label="Full Name"
+                name="user.name"
+                placeholder="Full Name"
+                type="text"
+              />
+              <Field
+                label="Password"
+                name="user.password"
+                placeholder="Password"
+                type="password"
+              />
+              <Field
+                label="Confirm password"
+                name="user.password_confirmation"
+                placeholder="Confirm password"
+                type="password"
+              />
+              <StyledCaptchaWrapper>
+                <HCaptcha
+                  ref={captchaRef}
+                  sitekey={CAPTCHA_SITE_KEY}
+                  onVerify={(token) =>
+                    formProps.setFieldValue('captcha', token)
+                  }
+                />
+                {formProps.errors.captcha && formProps.touched.captcha && (
+                  <StyledFieldError>
+                    {formProps.errors.captcha}
+                  </StyledFieldError>
+                )}
+              </StyledCaptchaWrapper>
+              <Button disabled={formProps.isSubmitting} type="submit">
+                Create Account
+              </Button>
+            </VStack>
           </Form>
         )}
       </Formik>

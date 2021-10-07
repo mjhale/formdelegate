@@ -62,7 +62,6 @@ export function logoutUser() {
         config: {
           method: 'DELETE',
         },
-        directApiCall: false,
         endpoint: `/v1/sessions`,
         schema: null,
         types: [LOGOUT_REQUEST, LOGOUT_SUCCESS, LOGOUT_FAILURE],

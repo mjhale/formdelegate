@@ -40,7 +40,6 @@ export function fetchSubmission(submissionId) {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        directApiCall: false,
         endpoint: `/v1/submissions/${submissionId}`,
         schema: submissionSchema,
         types: [SUBMISSION_REQUEST, SUBMISSION_SUCCESS, SUBMISSION_FAILURE],
@@ -56,7 +55,6 @@ export function fetchSubmissionActivity() {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        directApiCall: false,
         endpoint: '/v1/submissions/recent_activity',
         schema: [submissionActivitySchema],
         types: [
@@ -150,7 +148,6 @@ export function fetchSubmissions(requestedPage) {
     const actionResponse = await dispatch({
       [CALL_API]: {
         authenticated: true,
-        directApiCall: false,
         endpoint: `/v1/submissions?page=${requestedPage}`,
         schema: [submissionSchema],
         types: [SUBMISSIONS_REQUEST, SUBMISSIONS_SUCCESS, SUBMISSIONS_FAILURE],

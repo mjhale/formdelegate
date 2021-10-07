@@ -1,3 +1,4 @@
+import { VStack } from '@chakra-ui/react';
 import * as React from 'react';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
@@ -97,24 +98,26 @@ const ResetPasswordForm = ({ token }) => {
         >
           {(formProps) => (
             <Form>
-              <Field
-                type="password"
-                label="New Password"
-                name="password"
-                placeholder="New password"
-              />
-              <Field
-                type="password"
-                label="Confirm your password"
-                name="password_confirmation"
-                placeholder="Confirm your password"
-              />
-              <StyledContinueBotton
-                disabled={!(formProps.isValid && formProps.dirty)}
-                type="submit"
-              >
-                Continue
-              </StyledContinueBotton>
+              <VStack spacing={2}>
+                <Field
+                  type="password"
+                  label="New Password"
+                  name="password"
+                  placeholder="New password"
+                />
+                <Field
+                  type="password"
+                  label="Confirm your password"
+                  name="password_confirmation"
+                  placeholder="Confirm your password"
+                />
+                <StyledContinueBotton
+                  disabled={!(formProps.isValid && formProps.dirty)}
+                  type="submit"
+                >
+                  Continue
+                </StyledContinueBotton>
+              </VStack>
             </Form>
           )}
         </Formik>

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Button, VStack } from '@chakra-ui/react';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 
@@ -6,7 +6,6 @@ import { addNotification } from 'actions/notifications';
 import { createSupportTicket } from 'actions/supportTickets';
 import { useAppDispatch } from 'hooks/useRedux';
 
-import Button from 'components/Button';
 import Card from 'components/Card';
 import Field from 'components/Field/FormikField';
 
@@ -41,16 +40,23 @@ const SupportForm = () => {
       {({ isSubmitting }) => (
         <Form>
           <Card>
-            <Field label="Name" name="name" placeholder="Name" type="text" />
-            <Field label="Email" name="email" placeholder="Email" type="text" />
-            <Field
-              label="Message"
-              name="message"
-              placeholder="Message"
-              type="textarea"
-            />
+            <VStack spacing={2}>
+              <Field label="Name" name="name" placeholder="Name" type="text" />
+              <Field
+                label="Email"
+                name="email"
+                placeholder="Email"
+                type="text"
+              />
+              <Field
+                label="Message"
+                name="message"
+                placeholder="Message"
+                type="textarea"
+              />
+            </VStack>
           </Card>
-          <Button disabled={isSubmitting} type="submit">
+          <Button disabled={isSubmitting} type="submit" variant="outline">
             Submit Ticket
           </Button>
         </Form>

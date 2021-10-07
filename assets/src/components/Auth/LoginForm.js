@@ -1,5 +1,5 @@
+import { VStack } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import React from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
@@ -47,30 +47,32 @@ const LoginForm = (props) => {
       >
         {(formProps) => (
           <Form>
-            <Field
-              autoComplete="email"
-              label="Email"
-              name="email"
-              placeholder="Email"
-              tabIndex="0"
-              type="email"
-            />
-            <Field
-              autoComplete="current-password"
-              label="Password"
-              name="password"
-              placeholder="Password"
-              tabIndex="0"
-              type="password"
-            />
-            <LoginButton
-              autoComplete="off"
-              disabled={formProps.isSubmitting}
-              tabIndex="0"
-              type="submit"
-            >
-              Continue
-            </LoginButton>
+            <VStack spacing={2}>
+              <Field
+                autoComplete="email"
+                label="Email"
+                name="email"
+                placeholder="Email"
+                tabIndex="0"
+                type="email"
+              />
+              <Field
+                autoComplete="current-password"
+                label="Password"
+                name="password"
+                placeholder="Password"
+                tabIndex="0"
+                type="password"
+              />
+              <LoginButton
+                autoComplete="off"
+                disabled={formProps.isSubmitting}
+                tabIndex="0"
+                type="submit"
+              >
+                Continue
+              </LoginButton>
+            </VStack>
           </Form>
         )}
       </Formik>

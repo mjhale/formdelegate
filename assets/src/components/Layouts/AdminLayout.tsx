@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { addNotification } from 'actions/notifications';
+import { Box, Heading } from '@chakra-ui/react';
 import styled from 'styled-components';
 import theme from 'constants/theme';
 import { useAppDispatch } from 'hooks/useRedux';
@@ -74,7 +75,7 @@ const AdminLayout = (props: Props) => {
         <Link href="/" passHref>
           <LogoLink>form delegate</LogoLink>
         </Link>
-        <Nav role="navigation" />
+        <Nav />
       </NavBar>
       <ContentContainer id="site-content" role="main">
         <FluidContainer>
@@ -84,19 +85,23 @@ const AdminLayout = (props: Props) => {
 
           {!isFetching && user?.is_admin ? (
             <>
-              <h1>Administration</h1>
-              <AdminNavigation>
-                <li>
-                  <Link href="/admin" passHref>
-                    <AdminLink activeClassName="active">Dashboard</AdminLink>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/admin/users" passHref>
-                    <AdminLink activeClassName="active">Users</AdminLink>
-                  </Link>
-                </li>
-              </AdminNavigation>
+              <Heading mb={2} size="lg">
+                Administration
+              </Heading>
+              <Box mb={2}>
+                <AdminNavigation>
+                  <li>
+                    <Link href="/admin" passHref>
+                      <AdminLink activeClassName="active">Dashboard</AdminLink>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/admin/users" passHref>
+                      <AdminLink activeClassName="active">Users</AdminLink>
+                    </Link>
+                  </li>
+                </AdminNavigation>
+              </Box>
               {props.children}
             </>
           ) : null}

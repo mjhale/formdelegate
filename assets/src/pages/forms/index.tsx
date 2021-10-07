@@ -1,3 +1,4 @@
+import { Button, Heading } from '@chakra-ui/react';
 import Link from 'next/link';
 import * as React from 'react';
 
@@ -7,7 +8,6 @@ import { isTokenCurrent } from 'utils';
 import { useAppDispatch, useAppSelector } from 'hooks/useRedux';
 import useUser from 'hooks/useUser';
 
-import Button from 'components/Button';
 import FormList from 'components/Forms/FormList';
 
 const FormsPage = () => {
@@ -30,17 +30,21 @@ const FormsPage = () => {
   }, [dispatch]);
 
   return (
-    <div>
-      <h1>Forms</h1>
+    <>
+      <Heading mb={2} size="lg">
+        Forms
+      </Heading>
       <Link href="/forms/new" passHref>
-        <Button>New Form</Button>
+        <Button mb={2} variant="outline">
+          Add Form
+        </Button>
       </Link>
       <FormList
         forms={forms}
         isFetching={isFetching}
         onDeleteClick={handleFormDeletion}
       />
-    </div>
+    </>
   );
 };
 

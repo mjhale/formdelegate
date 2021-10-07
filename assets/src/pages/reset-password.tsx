@@ -1,9 +1,9 @@
-import * as React from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 
 import theme from 'constants/theme';
 
+import AuthLayout from 'components/Layouts/AuthLayout';
 import Button from 'components/Button';
 import Card from 'components/Card';
 import ResetPasswordForm from 'components/User/ResetPasswordForm';
@@ -47,7 +47,7 @@ const SignUpLink = () => {
   return (
     <StyledSignUpWrapper>
       <span>Don't have an account? </span>
-      <StyledPrimaryLink href="/register">Sign up</StyledPrimaryLink>
+      <StyledPrimaryLink href="/signup">Sign up</StyledPrimaryLink>
     </StyledSignUpWrapper>
   );
 };
@@ -77,5 +77,7 @@ const ResetPasswordPage = () => {
     </>
   );
 };
+
+ResetPasswordPage.getLayout = (page) => <AuthLayout>{page}</AuthLayout>;
 
 export default ResetPasswordPage;
