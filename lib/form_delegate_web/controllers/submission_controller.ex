@@ -68,7 +68,7 @@ defmodule FormDelegateWeb.SubmissionController do
           |> send_resp(:accepted, body)
 
         "html" when is_nil(callback_success_url) ->
-          redirect(conn, external: "#{frontend_url()}/success")
+          redirect(conn, external: "#{frontend_url()}/submissions/success")
 
         _format ->
           redirect(conn, external: generate_success_redirect_url(submission))
