@@ -6,7 +6,6 @@ defmodule FormDelegate.Mixfile do
       app: :form_delegate,
       version: "0.0.1",
       elixir: "~> 1.13",
-      elixirc_options: [warnings_as_errors: true],
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -70,10 +69,7 @@ defmodule FormDelegate.Mixfile do
       {:ex_machina, "~> 2.7.0", only: :test},
       {:credo, "~> 1.6.4", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.11.1", only: [:dev, :test], runtime: false},
-
-      # build
-      {:distillery, "~> 2.1.1", runtime: false}
+      {:sobelow, "~> 0.11.1", only: [:dev, :test], runtime: false}
     ]
   end
 
