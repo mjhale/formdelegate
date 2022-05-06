@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 # For production, we configure the host to read the PORT
 # from the system environment. Therefore, you will need
@@ -22,6 +22,10 @@ config :form_delegate, FormDelegateWeb.Endpoint,
   secret_key_base: System.get_env("SECRET_KEY_BASE") || raise("Env var not set: SECRET_KEY_BASE"),
   server: true,
   version: Application.spec(:phoenix_distillery, :vsn)
+
+config :form_delegate,
+  stripe_webhook_secret:
+    System.get_env("STRIPE_WEBHOOK_SECRET") || raise("Env var not set: STRIPE_WEBHOOK_SECRET")
 
 config :form_delegate, FormDelegate.Repo,
   adapter: Ecto.Adapters.Postgres,
@@ -118,6 +122,10 @@ config :waffle,
   storage: Waffle.Storage.S3,
   bucket: System.get_env("AWS_S3_BUCKET") || raise("Env var not set: AWS_S3_BUCKET"),
   asset_host: System.get_env("AWS_S3_ASSET_HOST") || raise("Env var not set: AWS_S3_ASSET_HOST")
+
+# Configures Stripe
+config :stripity_stripe,
+  api_key: System.get_env("STRIPE_SECRET") || raise("Env var not set: STRIPE_SECRET")
 
 # Configure frontend URL for user-targetted actions and messaging
 config :form_delegate,

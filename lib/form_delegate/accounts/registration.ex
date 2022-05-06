@@ -2,8 +2,7 @@ defmodule FormDelegate.Accounts.Registration do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias FormDelegate.Accounts.Registration
-  alias FormDelegate.Accounts.User
+  alias FormDelegate.Accounts.{Registration, User}
 
   @primary_key false
   embedded_schema do

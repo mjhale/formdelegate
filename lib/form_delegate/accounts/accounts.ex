@@ -19,7 +19,7 @@ defmodule FormDelegate.Accounts do
 
   """
   def list_users do
-    User |> order_by(:id) |> Repo.all()
+    User |> order_by(:id) |> Repo.all() |> Repo.preload(team: :subscriptions)
   end
 
   @doc """
@@ -36,7 +36,10 @@ defmodule FormDelegate.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_user!(id) do
+    Repo.get!(User, id)
+    |> Repo.preload(team: :subscriptions)
+  end
 
   @doc """
   Gets a single user by their email address.

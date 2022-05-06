@@ -3,17 +3,18 @@ defmodule FormDelegate.Accounts.User do
   import Ecto.Changeset
 
   alias FormDelegate.Accounts.User
+  alias FormDelegate.Teams.Team
 
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "users" do
-    field :email, :string, null: false
+    field :email, :string
     field :unconfirmed_email, :string
     field :password, :string, virtual: true
-    field :password_hash, :string, null: false
+    field :password_hash, :string
 
     field :name, :string
-    field :form_count, :integer, default: 0, null: false
+    field :form_count, :integer, default: 0
 
     field :confirmation_token, :string
     field :confirmation_sent_at, :utc_datetime_usec
@@ -25,8 +26,12 @@ defmodule FormDelegate.Accounts.User do
     field :reset_password_token, :string
     field :reset_password_sent_at, :utc_datetime_usec
 
-    field :is_admin, :boolean, default: false, null: false
+    field :is_admin, :boolean, default: false
 
+    field :is_billing_account, :boolean, default: true
+    field :stripe_customer_id, :string
+
+    belongs_to :team, FormDelegate.Teams.Team, type: Ecto.UUID
     has_many :forms, FormDelegate.Forms.Form, on_delete: :delete_all
 
     timestamps()
@@ -35,7 +40,7 @@ defmodule FormDelegate.Accounts.User do
   @doc false
   def changeset(%User{} = user, params \\ %{}) do
     user
-    |> cast(params, [:email, :name])
+    |> cast(params, [:email, :name, :stripe_customer_id])
     |> validate_required([:email, :name])
     |> validate_length(:email, min: 3, max: 254)
     |> unique_constraint(:email)
@@ -45,6 +50,9 @@ defmodule FormDelegate.Accounts.User do
   def registration_changeset(%User{} = user, params \\ %{}) do
     user
     |> changeset(params)
+    # @TODO: Allow a user to sign up with an existing team. For now, create a new team with each
+    # registration.
+    |> put_assoc(:team, %Team{})
     |> cast(params, [:password])
     |> validate_required([:password])
     |> validate_length(:password, min: 8)

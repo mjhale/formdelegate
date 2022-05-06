@@ -63,6 +63,11 @@ defmodule FormDelegateWeb.Router do
   scope "/v1", FormDelegateWeb do
     pipe_through [:api, :check_authenticated, :ensure_authenticated, :load_user]
 
+    post "/stripe/checkout-sessions", StripeController, :create_checkout_session,
+      as: :stripe_checkout_session
+
+    get "/stripe/portal", StripeController, :create_portal, as: :stripe_portal
+
     resources "/forms", FormController, except: [:edit, :new]
 
     scope "/submissions" do

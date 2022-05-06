@@ -3,7 +3,7 @@
 #
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
-use Mix.Config
+import Config
 
 # General application configuration
 config :form_delegate,
@@ -16,6 +16,9 @@ config :form_delegate, FormDelegateWeb.Endpoint,
   secret_key_base: "GkaatwxvDjnh98SB762NswtanDoaBP0/cyeLPl0G/dUoHNKvd70FMXGSrJjH/y5q",
   render_errors: [view: FormDelegateWeb.ErrorView, accepts: ~w(json)],
   pubsub_server: FormDelegate.PubSub
+
+config :form_delegate,
+  stripe_webhook_secret: System.get_env("STRIPE_WEBHOOK_SECRET")
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -61,6 +64,10 @@ config :waffle,
   storage: Waffle.Storage.S3,
   bucket: {:system, "AWS_S3_BUCKET"},
   asset_host: {:system, "AWS_S3_ASSET_HOST"}
+
+# Configures Stripe
+config :stripity_stripe,
+  api_key: System.get_env("STRIPE_SECRET")
 
 # Configures frontend URL for user-targetted actions and messaging
 config :form_delegate, frontend_url: System.get_env("FRONTEND_URL")

@@ -10,7 +10,7 @@ defmodule FormDelegate.Submissions.Submission do
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "submissions" do
-    field :sender, :string, null: false
+    field :sender, :string
     field :body, :string
 
     field :flagged_at, :naive_datetime

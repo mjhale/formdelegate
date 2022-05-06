@@ -11,12 +11,12 @@ defmodule FormDelegate.Forms.Form do
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "forms" do
-    field :callback_success_includes_data, :boolean, default: false, null: false
+    field :callback_success_includes_data, :boolean, default: false
     field :callback_success_url, :string
     field :hosts, {:array, :string}
     field :name, :string
-    field :submission_count, :integer, default: 0, null: false
-    field :verified, :boolean, default: false, null: false
+    field :submission_count, :integer, default: 0
+    field :verified, :boolean, default: false
 
     belongs_to :user, User
     has_many :submissions, Submission, on_delete: :delete_all

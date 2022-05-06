@@ -1,6 +1,6 @@
 defmodule FormDelegateWeb.UserView do
   use FormDelegateWeb, :view
-  alias FormDelegateWeb.UserView
+  alias FormDelegateWeb.{TeamView, UserView}
 
   def render("index.json", %{users: users}) do
     %{data: render_many(users, UserView, "user.json")}
@@ -27,7 +27,10 @@ defmodule FormDelegateWeb.UserView do
       form_count: user.form_count,
       id: user.id,
       is_admin: user.is_admin,
-      name: user.name
+      name: user.name,
+      is_billing_account: user.is_billing_account,
+      stripe_customer_id: user.stripe_customer_id,
+      team: render_one(user.team, TeamView, "team.json")
     }
   end
 end

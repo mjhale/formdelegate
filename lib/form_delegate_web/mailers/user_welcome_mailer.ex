@@ -16,7 +16,7 @@ defmodule FormDelegateWeb.Mailers.UserWelcomeMailer do
     |> assign(:user, user)
     |> assign(
       :user_confirmation_frontend_url,
-      "#{frontend_url()}/confirmation?token=#{user.confirmation_token}"
+      "#{frontend_url()}/user-confirmation?token=#{user.confirmation_token}"
     )
     |> render(:user_welcome)
   end

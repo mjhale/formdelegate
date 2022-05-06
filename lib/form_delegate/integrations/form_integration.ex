@@ -9,7 +9,7 @@ defmodule FormDelegate.Integrations.FormIntegration do
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "form_integrations" do
-    field :enabled, :boolean, null: false, default: false
+    field :enabled, :boolean, default: false
 
     field :email_api_key, :string
     field :email_from_address, :string
@@ -17,7 +17,7 @@ defmodule FormDelegate.Integrations.FormIntegration do
     has_many :email_integration_recipients, EmailIntegrationRecipient,
       foreign_key: :form_integration_id
 
-    field :integration_type, Ecto.Enum, values: [:email, :zapier, :ifttt], null: false
+    field :integration_type, Ecto.Enum, values: [:email, :zapier, :ifttt]
     belongs_to :form, Form, type: Ecto.UUID
 
     timestamps()
