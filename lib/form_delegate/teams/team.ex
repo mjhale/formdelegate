@@ -12,6 +12,7 @@ defmodule FormDelegate.Teams.Team do
 
     has_many :users, FormDelegate.Accounts.User
     has_many :subscriptions, FormDelegate.Subscriptions.Subscription
+    has_many :billing_counts, FormDelegate.BillingCounts.BillingCount
 
     timestamps()
   end
@@ -22,5 +23,17 @@ defmodule FormDelegate.Teams.Team do
   def changeset(%Team{} = team, attrs) do
     team
     |> cast(attrs, [:name])
+  end
+
+  @doc """
+  Builds a registration changeset based on the `struct` and `params`.
+  """
+  def registration_changeset(%Team{} = team, attrs) do
+    team
+    |> cast(attrs, [:name])
+    |> cast_assoc(:billing_count,
+      with: &FormDelegate.BillingCounts.BillingCount.create_changeset/2,
+      required: true
+    )
   end
 end

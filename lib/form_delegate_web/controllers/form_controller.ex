@@ -1,6 +1,8 @@
 defmodule FormDelegateWeb.FormController do
   use FormDelegateWeb, :controller
+  plug FormDelegateWeb.Plugs.SetPlan when action in [:create]
 
+  alias FormDelegate.BillingCounts
   alias FormDelegate.{Forms, Forms.Form}
   alias FormDelegateWeb.Authorizer
 
@@ -18,8 +20,9 @@ defmodule FormDelegateWeb.FormController do
     end
   end
 
-  def create(conn, %{"form" => form_params}, current_user) do
+  def create(%{assigns: %{plan: plan}} = conn, %{"form" => form_params}, current_user) do
     with :ok <- Authorizer.authorize(:create_form, current_user),
+         :ok <- validate_and_update_billing_count(plan, current_user.team_id),
          {:ok, %Form{} = form} <- Forms.create_form(form_params, current_user) do
       form =
         FormDelegate.Repo.preload(form, [
@@ -56,6 +59,24 @@ defmodule FormDelegateWeb.FormController do
       conn
       |> put_resp_header("content-type", "application/json")
       |> send_resp(:no_content, "")
+    end
+  end
+
+  defp validate_and_update_billing_count(plan, team_id) do
+    billing_count = BillingCounts.get_latest_billing_count_of_team(team_id)
+
+    # @TODO: Send warnings when limit is approached and exceeded
+    cond do
+      billing_count.form_count >= plan.limit_forms ->
+        {:error, :plan_limit_exceeded}
+
+      true ->
+        {:ok, _billing_count} =
+          BillingCounts.update_billing_count(billing_count, %{
+            form_count: billing_count.form_count + 1
+          })
+
+        :ok
     end
   end
 end

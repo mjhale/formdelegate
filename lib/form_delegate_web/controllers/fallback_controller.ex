@@ -68,4 +68,18 @@ defmodule FormDelegateWeb.FallbackController do
     |> put_view(FormDelegateWeb.ErrorView)
     |> render(:"400", %{type: "INVALID_OR_EXPIRED_CAPTCHA"})
   end
+
+  def call(conn, {:error, :plan_grace_limit_exceeded}) do
+    conn
+    |> put_status(:service_unavailable)
+    |> put_view(FormDelegateWeb.ErrorView)
+    |> render(:"503", %{type: "PLAN_GRACE_LIMIT_EXCEEDED"})
+  end
+
+  def call(conn, {:error, :plan_limit_exceeded}) do
+    conn
+    |> put_status(:service_unavailable)
+    |> put_view(FormDelegateWeb.ErrorView)
+    |> render(:"503", %{type: "PLAN_LIMIT_EXCEEDED"})
+  end
 end

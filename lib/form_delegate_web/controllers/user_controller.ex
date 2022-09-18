@@ -1,7 +1,7 @@
 defmodule FormDelegateWeb.UserController do
   use FormDelegateWeb, :controller
 
-  alias FormDelegate.{Accounts, Accounts.User}
+  alias FormDelegate.{Accounts, Accounts.User, BillingCounts, BillingCounts.BillingCount}
   alias FormDelegateWeb.Authorizer
   alias FormDelegateWeb.Guardian
   alias FormDelegateWeb.Mailers
@@ -24,7 +24,11 @@ defmodule FormDelegateWeb.UserController do
     with :ok <- Authorizer.authorize(:register_user, current_user),
          {:ok, _captcha_response} <- hcaptcha_api().verify_token(captcha_token),
          {:ok, %User{} = user} <- Accounts.register_user(registration_params),
-         {:ok, token, _claims} <- Guardian.encode_and_sign(user, %{}, token_type: "access") do
+         # @TODO: Move billing count creation to team creation instead of user creation
+         {:ok, %BillingCount{} = _billing_count} <-
+           BillingCounts.create_billing_count(%BillingCount{}, %{team_id: user.team_id}),
+         {:ok, token, _claims} <-
+           Guardian.encode_and_sign(user, %{}, token_type: "access") do
       Mailers.UserWelcomeMailer.send_user_welcome_email(user)
 
       conn

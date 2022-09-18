@@ -13,10 +13,12 @@ defmodule FormDelegate.Application do
       # Start the endpoint when the application starts
       FormDelegateWeb.Endpoint,
       # Start Rihanna job queue
-      {Rihanna.Supervisor, [postgrex: FormDelegate.Repo.config()]}
+      {Rihanna.Supervisor, [postgrex: FormDelegate.Repo.config()]},
 
       # Start your own worker by calling: FormDelegate.Worker.start_link(arg1, arg2, arg3)
       # worker(FormDelegate.Worker, [arg1, arg2, arg3]),
+
+      {FormDelegate.BillingCountValidatorStarter, restart: :temporary}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

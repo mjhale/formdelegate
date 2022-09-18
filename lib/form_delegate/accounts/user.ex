@@ -3,7 +3,6 @@ defmodule FormDelegate.Accounts.User do
   import Ecto.Changeset
 
   alias FormDelegate.Accounts.User
-  alias FormDelegate.Teams.Team
 
   @timestamps_opts [type: :utc_datetime_usec]
 
@@ -50,12 +49,12 @@ defmodule FormDelegate.Accounts.User do
   def registration_changeset(%User{} = user, params \\ %{}) do
     user
     |> changeset(params)
-    # @TODO: Allow a user to sign up with an existing team. For now, create a new team with each
-    # registration.
-    |> put_assoc(:team, %Team{})
     |> cast(params, [:password])
     |> validate_required([:password])
     |> validate_length(:password, min: 8)
+    # @TODO: Allow a user to sign up with an existing team.
+    # But for now, create a new team with each registration.
+    |> put_assoc(:team, %{})
     |> put_password_hash()
     |> put_confirmation_token()
     |> put_confirmation_sent_at()

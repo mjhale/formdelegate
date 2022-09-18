@@ -47,7 +47,7 @@ defmodule FormDelegate.Forms do
       from f in Form,
         preload: [
           [email_integrations: [:email_integration_recipients]],
-          :user
+          user: [team: :subscriptions]
         ],
         where: f.id == ^id
     )
