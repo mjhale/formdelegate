@@ -1,6 +1,6 @@
 # Form Delegate
 
-[Form Delegate](https://formdelegate.com) is a service that allows users to process and manage form submissions.
+[Form Delegate](https://formdelegate.com) is a service that allows users to process and manage HTML form submissions.
 It is ideal for static websites and in situations where form processing requires considerable
 effort.
 
@@ -44,8 +44,8 @@ Form Delegate uses Elixir and [Phoenix](http://www.phoenixframework.org/) for th
 To install the necessary dependencies on your machine:
 
 - _Recommended: Install [asdf-vm](https://github.com/asdf-vm/asdf) to manage versions of [Erlang](https://github.com/asdf-vm/asdf-erlang), [Elixir](https://github.com/asdf-vm/asdf-elixir), [Node.js](https://github.com/asdf-vm/asdf-nodejs), and [Yarn](https://github.com/twuni/asdf-yarn)._
-- Install Erlang: `asdf install erlang 24.0.5`
-- Install Elixir\*: `asdf install elixir 1.12.2-otp-24`
+- Install Erlang: `asdf install erlang 24.3.4`
+- Install Elixir\*: `asdf install elixir 1.13.4-otp-24`
 - Install Node.js: `asdf install nodejs latest`
 - Install Yarn: `asdf install yarn latest `
 - Install Postgres (see the [official installation instructions](https://www.postgresql.org/download/))
@@ -72,15 +72,15 @@ collection by following this link:
 **To start the React app:**
 
 - Install dependencies with `yarn --cwd ./assets/ install`
-- Start the React development server with `yarn --cwd ./assets/ start`
+- Start the React development server with `yarn --cwd ./assets/ dev`
 
 Now you can visit [`localhost:3000`](http://localhost:3000) from your browser.
 
 ## Running Your Own Instance
 
-Form Delegate runs on [Gigalixir](https://www.gigalixir.com/) for the Phoenix API and
-[Netlify](https://www.netlify.com/) for the React frontend. Both services offer free tiers that are
-suitable for development and staging.
+Form Delegate runs on [Fly.io](https://fly.io/) for the Phoenix API and
+[Vercel](https://vercel.com/) for the React frontend. Both services offer free tiers that are
+suitable for development.
 
 Additionally, Form Delegate uses the following services:
 
@@ -95,31 +95,32 @@ Additionally, Form Delegate uses the following services:
 _Note: This repository is currently hardcoded with our official domain. You will need to create a fork
 and replace `formdelegate.com` where appropriate._
 
-### Create a Free Gigalixir Account
+### Create a Free Fly.io Account
 
-Visit the [Gigalixir website](https://gigalixir.com/) to create a free account.
+Visit the [Fly.io website](https://fly.io/docs/speedrun/) to create a free account.
 
-### Install and Set Up the Gigalixir CLI
+### Install and Set Up the Fly.io CLI
 
-Visit [Gigalixir's getting started guide](https://gigalixir.readthedocs.io/en/latest/main.html#getting-started-guide) for instructions on how to set up the CLI and configure it for your instance.
+Visit [Fly.io's flyctl installation guide](https://fly.io/docs/hands-on/install-flyctl/) for instructions on how to set up and configure the CLI.
 
-### Set Up a Free Gigalixir Database
+### Set Up Your Fly.io Instance
 
-1. Scale down the application to 0: `gigalixir ps:scale --replicas=0`
+1. Run `fly launch` inside the project directory and follow the configuration prompts. Set up the Postgres database during this process.
 
-2. _Optional: Destroy an existing database if you would like to start fresh: `gigalixir pg:destroy -d $DATABASE_ID`_
+2. Configure the project secrets found in `.env` via the flyctl: e.g., `fly secrets set HCAPTCHA_SECRET_API_KEY=0x9623`
 
-3. Provision a new Postgres database: `gigalixir pg:create --free`
+3. Deploy the project: `fly deploy`
 
-4. Scale up the application: `gigalixir ps:scale --replicas=1`
+4. Run the following one-time setup commands to enable SSH access to the Fly.io app: `fly ssh establish`
+and `fly ssh issue --agent`
 
-5. Add an environmental variable for the new Postgres database: `gigalixir config:set DATABASE_URL="$DATABASE_URL"`
+5. Open a shell connection to the app's machine: `fly ssh console`
 
-6. Run migrations against the database: `gigalixir ps:migrate`
+6. Set up your initial data via the remote IEx shell `app/bin/form_delegate remote`:
 
-7. Drop into a remote console for the application: `gigalixir ps:remote_console`
-
-8. Set up your initial data via `iex -S mix`:
+```
+team = FormDelegate.Repo.insert!(%FormDelegate.Teams.Team{})
+```
 
 ```
 FormDelegate.Repo.insert!(%FormDelegate.Accounts.User{
@@ -127,19 +128,31 @@ FormDelegate.Repo.insert!(%FormDelegate.Accounts.User{
   email: "hello@yourname.com",
   password_hash: Pbkdf2.hash_pwd_salt("a randomly generated password"),
   confirmed_at: DateTime.utc_now(),
+  team: team,
   is_admin: true
 })
 ```
 
-### Deploy to Gigalixir
+```
+FormDelegate.BillingCounts.create_billing_count(%FormDelegate.BillingCounts.BillingCount{}, %{
+  team_id: team.id
+})
+```
 
-Run `git push gigalixir main` to deploy the application.
+```
+FormDelegate.Repo.insert!(%FormDelegate.Plans.Plan{
+  name: "Free",
+  limit_submissions: 100,
+  limit_forms: 5,
+  limit_storage: 5000000
+})
+```
 
-### Create a Netlify Account
+### Create a Vercel account
 
-[Visit the Netlify website](https://www.netlify.com/) and sign up for a free Netlify account.
+[Visit the Vercel website](https://vercel.com/) and sign up for a free Vercel account.
 
-Read the [Netlify getting started guide](https://docs.netlify.com/) to learn how to create deploys.
+Add a new project via the Git repository import. Add the project's environment variables found in `assets/.env.production`.
 
 ## Learn More
 
@@ -147,9 +160,3 @@ Read the [Netlify getting started guide](https://docs.netlify.com/) to learn how
 - Phoenix Docs: https://hexdocs.pm/phoenix
 - React Docs: https://reactjs.org/docs
 - Source: https://github.com/mjhale/formdelegate
-
-## Build Badges
-
-[![Semaphore](https://formdelegate.semaphoreci.com/badges/formdelegate.svg)](https://formdelegate.semaphoreci.com/projects/formdelegate)
-
-[![Netlify Status](https://api.netlify.com/api/v1/badges/f75c7f76-9eb5-412d-ba74-cc00e856c1ea/deploy-status)](https://app.netlify.com/sites/angry-ramanujan-e322e7/deploys)
