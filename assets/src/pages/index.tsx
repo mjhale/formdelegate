@@ -253,11 +253,11 @@ const Index = () => {
             Add powerful features to your forms. No coding required.
           </Subheading>
           <FeaturesList>
-            <li>Send form submissions to multiple e-mail users.</li>
+            <li>E-mail form submissions to multiple people.</li>
             <li>
               View and manage every submission with our ad-free interface.
             </li>
-            <li>Create endless integrations with Zappier.</li>
+            <li>Integrate form submissions with multiple services.</li>
             <li>Keep spam out of your life with our automatic filtering.</li>
           </FeaturesList>
         </FluidContainer>
@@ -270,7 +270,7 @@ const Index = () => {
           <Code>
             {`<form `}
             <CodeHighlight>
-              {`action="https://www.formdelegate.com/f/########"`}
+              {`action="https://www.formdelegate.com/forms/00000000-1111-2222-3333-4444444444"`}
             </CodeHighlight>
             {` method="POST">`}
             <CodeTab>{`<input type="text" placeholder="Message">`}</CodeTab>
@@ -313,10 +313,7 @@ const Index = () => {
               </CardIcon>
               <span>No ads.</span>
             </CardHeading>
-            <p>
-              Your data isn't used for our monetization. We'll never sell your
-              information.
-            </p>
+            <p>We'll never show you ads or abuse your privacy.</p>
           </Card>
           <Card>
             <CardHeading>

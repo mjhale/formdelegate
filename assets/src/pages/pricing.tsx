@@ -37,15 +37,12 @@ const Pricing = () => {
             </Box>
           </Flex>
           <Divider mb={4} />
-          <VStack align="start" fontSize="sm" mb={4} sspacing={2}>
+          <VStack align="start" fontSize="sm" mb={4} spacing={2}>
             <Box>Good for personal websites</Box>
             <Box>100 Submissions</Box>
             <Box>1GB Storage</Box>
             <Box>Unlimited Forms</Box>
           </VStack>
-          <Button colorScheme="red" onClick={() => router.push('/signup')}>
-            Sign up
-          </Button>
         </Flex>
         <Flex
           border="1px"
@@ -70,7 +67,6 @@ const Pricing = () => {
             <Box>20GB Storage</Box>
             <Box>Unlimited Forms</Box>
           </VStack>
-          <Button disabled>Unavailable</Button>
         </Flex>
         <Flex
           border="1px"
@@ -95,9 +91,14 @@ const Pricing = () => {
             <Box>1TB storage</Box>
             <Box>Unlimited Forms</Box>
           </VStack>
-          <Button disabled>Unavailable</Button>
         </Flex>
       </Grid>
+
+      <Flex mt={8} justifyContent="center">
+        <Button colorScheme="red" onClick={() => router.push('/signup')}>
+          Sign up for free
+        </Button>
+      </Flex>
     </>
   );
 };

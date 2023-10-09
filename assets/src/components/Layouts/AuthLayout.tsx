@@ -1,3 +1,4 @@
+import { createGlobalStyle } from 'styled-components';
 import Link from 'next/link';
 import styled from 'styled-components';
 
@@ -11,7 +12,7 @@ const AuthLayoutContainer = styled(FluidContainer)`
 `;
 
 const LogoLink = styled.a`
-  color: ${theme.carnation};
+  color: ${theme.offWhite};
   display: block;
   font-family: 'Lato', sans-serif;
   font-size: 3rem;
@@ -26,12 +27,19 @@ const LogoLink = styled.a`
 
   &:active,
   &:hover {
-    color: ${theme.lightCarnation};
+    color: ${theme.solidWhite};
+  }
+`;
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    background-color: ${theme.lightCarnation} !important;
   }
 `;
 
 const AuthLayout = (props) => (
   <>
+    <GlobalStyle />
     <SkipToContent href="#site-content">Skip to main content</SkipToContent>
     <Link href="/" passHref>
       <LogoLink>form delegate</LogoLink>

@@ -16,8 +16,8 @@ const AuthenticatedNav = ({ isAdmin, onClick }) => {
       <Link href="/forms" passHref>
         <NavItem>forms</NavItem>
       </Link>
-      <Link href="/settings" passHref>
-        <NavItem>settings</NavItem>
+      <Link href="/account" passHref>
+        <NavItem>account</NavItem>
       </Link>
       <Link href="/support" passHref>
         <NavItem>support</NavItem>

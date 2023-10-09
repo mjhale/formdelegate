@@ -37,6 +37,11 @@ And that's it. You can configure your endpoint to automatically send an email wh
 received, and you can also set up integration hooks with services such as Zapier. Submissions are
 automatically filtered for spam via [Akismet](https://akismet.com/).
 
+## TODO
+
+- Integrate Stripe payments into frontend
+- Refactor notification and alert system
+
 ## Local Development
 
 Form Delegate uses Elixir and [Phoenix](http://www.phoenixframework.org/) for the API, JavaScript and [React](https://reactjs.org/) for the frontend, and [Postgres](https://www.postgresql.org/) for the database.

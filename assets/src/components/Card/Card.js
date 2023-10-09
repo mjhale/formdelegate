@@ -8,7 +8,7 @@ const CardContainer = styled.div`
   background: ${theme.solidWhite};
   border: 1px solid ${theme.borderColor};
   border-bottom-width: 2px;
-  border-radius: 0 0 3px 3px;
+  border-radius: 7px;
   margin-bottom: 0.5rem;
 
   ${clearFix()};

@@ -13,14 +13,16 @@ export const config = {
 };
 
 const proxy = createProxyMiddleware({
-  target: `${process.env.NEXT_PUBLIC_API_HOST}`,
+  target: process.env.NEXT_PUBLIC_API_HOST,
   changeOrigin: true,
   selfHandleResponse: true,
   secure: true,
-  logLevel: 'error',
+  logLevel: 'debug',
   pathRewrite: { ['^/api']: '' },
   onProxyRes: responseInterceptor(
     async (buffer, proxyRes, req: NextApiRequest, res: NextApiResponse) => {
+      console.log('Proxying session request');
+
       if (req.method === 'DELETE') {
         res.setHeader('Set-Cookie', [
           serialize('access_token', undefined, {
@@ -45,6 +47,7 @@ const proxy = createProxyMiddleware({
 
       const apiResponse = buffer.toString('utf8');
       res.statusCode = proxyRes.statusCode;
+      console.log(apiResponse);
 
       try {
         const json = JSON.parse(apiResponse);

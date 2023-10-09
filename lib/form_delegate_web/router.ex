@@ -41,6 +41,7 @@ defmodule FormDelegateWeb.Router do
     post "/submissions/:form_id", SubmissionController, :create, as: :submission
   end
 
+  # Unathenticated routes
   scope "/v1", FormDelegateWeb do
     pipe_through :api
 
@@ -60,11 +61,14 @@ defmodule FormDelegateWeb.Router do
     post "/validations/email", ValidationController, :email, as: :email_validation
   end
 
+  # Authenticated routes
   scope "/v1", FormDelegateWeb do
     pipe_through [:api, :check_authenticated, :ensure_authenticated, :load_user]
 
     post "/stripe/checkout-sessions", StripeController, :create_checkout_session,
       as: :stripe_checkout_session
+
+    # stripe details of current sub?
 
     get "/stripe/portal", StripeController, :create_portal, as: :stripe_portal
 

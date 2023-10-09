@@ -25,10 +25,6 @@ const LogInHeader = styled.h2`
   text-align: center;
 `;
 
-const StyledSignUpLink = styled(Link)`
-  color: ${theme.primaryColor};
-`;
-
 const StyledSignUpWrapper = styled.div`
   color: ${theme.mineBlack};
   font-size: 0.9rem;
@@ -81,7 +77,7 @@ const LoginPage = () => {
       </Card>
       <StyledSignUpWrapper>
         <span>Don't have an account? </span>
-        <StyledSignUpLink href="/signup">Sign up</StyledSignUpLink>
+        <Link href="/signup">Sign up</Link>
       </StyledSignUpWrapper>
     </>
   );
