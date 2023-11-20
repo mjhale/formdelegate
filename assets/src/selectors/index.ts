@@ -8,6 +8,8 @@ const getCurrentUserId = (state) => state.authentication.currentUserId;
 const getFormId = (_state, formId) => formId;
 const getFormIds = (state) => state.forms.allIds;
 const getForms = (state) => state.entities.forms;
+const getPlanIds = (state) => state.plans.allIds;
+const getPlans = (state) => state.entities.plans;
 const getSubmissionActivities = (state) => state.entities.submission_activity;
 const getSubmissionActivityIds = (state) =>
   state.submissions.submissionActivityIds;
@@ -69,6 +71,13 @@ export const getOrderedForms = createSelector(
   [getForms, getFormIds],
   (forms, allIds) => {
     return allIds.map((id) => forms[id]);
+  }
+);
+
+export const getOrderedPlans = createSelector(
+  [getPlans, getPlanIds],
+  (plans, allIds) => {
+    return allIds.map((id) => plans[id]);
   }
 );
 

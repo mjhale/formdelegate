@@ -7,6 +7,7 @@ const entity = (
     users: {},
     email_integrations: {},
     forms: {},
+    plans: {},
     submissions: {},
   },
   action

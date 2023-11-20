@@ -50,7 +50,7 @@ const UserNotificationDispatcher = ({ children }) => {
         message: (
           <>
             Please verify your e-mail address.{' '}
-            <NextLink href="/user-confirmation" passHref>
+            <NextLink href="/user-confirmation" passHref legacyBehavior>
               <Link onPress={handleResendUserConfirmation}>Resend email</Link>
             </NextLink>
           </>

@@ -14,7 +14,7 @@ import useUser from 'hooks/useUser';
 import Button from 'components/Button';
 import FixedLayout from 'components/Layouts/FixedLayout';
 import FluidContainer from 'components/FluidContainer';
-import Image from 'next/image';
+import Image from 'next/legacy/image';
 import Link from 'components/Link';
 
 const ActionBar = styled.div`
@@ -234,7 +234,7 @@ const Index = () => {
               Send your forms to us. We'll handle the rest.
             </HeroMessage>
             <HeroAction>
-              <Link href="/signup">
+              <Link href="/signup" passHref legacyBehavior>
                 <Button tabIndex="-1">Sign Up For Free</Button>
               </Link>
             </HeroAction>
@@ -289,8 +289,8 @@ const Index = () => {
                 <Image
                   src={iconFolder}
                   alt=""
-                  height="24px"
-                  width="24px"
+                  height="24"
+                  width="24"
                   aria-hidden={true}
                   role="presentation"
                 />
@@ -305,8 +305,8 @@ const Index = () => {
                 <Image
                   src={iconBlocker}
                   alt=""
-                  height="24px"
-                  width="24px"
+                  height="24"
+                  width="24"
                   aria-hidden={true}
                   role="presentation"
                 />
@@ -321,8 +321,8 @@ const Index = () => {
                 <Image
                   src={iconConnection}
                   alt=""
-                  height="24px"
-                  width="24px"
+                  height="24"
+                  width="24"
                   aria-hidden={true}
                   role="presentation"
                 />
@@ -339,8 +339,8 @@ const Index = () => {
                 <Image
                   src={iconLock}
                   alt=""
-                  height="24px"
-                  width="24px"
+                  height="24"
+                  width="24"
                   aria-hidden={true}
                   role="presentation"
                 />

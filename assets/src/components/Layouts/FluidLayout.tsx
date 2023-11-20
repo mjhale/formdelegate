@@ -14,7 +14,7 @@ const FluidLayout = (props: Props) => (
   <>
     <SkipToContent href="#site-content">Skip to main content</SkipToContent>
     <NavBar>
-      <Link href="/" passHref>
+      <Link href="/" passHref legacyBehavior>
         <LogoLink>form delegate</LogoLink>
       </Link>
       <Nav role="navigation" />

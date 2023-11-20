@@ -72,7 +72,7 @@ const AdminLayout = (props: Props) => {
     <>
       <SkipToContent href="#site-content">Skip to main content</SkipToContent>
       <NavBar>
-        <Link href="/" passHref>
+        <Link href="/" passHref legacyBehavior>
           <LogoLink>form delegate</LogoLink>
         </Link>
         <Nav />
@@ -91,12 +91,12 @@ const AdminLayout = (props: Props) => {
               <Box mb={2}>
                 <AdminNavigation>
                   <li>
-                    <Link href="/admin" passHref>
+                    <Link href="/admin" passHref legacyBehavior>
                       <AdminLink activeClassName="active">Dashboard</AdminLink>
                     </Link>
                   </li>
                   <li>
-                    <Link href="/admin/users" passHref>
+                    <Link href="/admin/users" passHref legacyBehavior>
                       <AdminLink activeClassName="active">Users</AdminLink>
                     </Link>
                   </li>

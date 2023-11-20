@@ -21,8 +21,6 @@ const proxy = createProxyMiddleware({
   pathRewrite: { ['^/api']: '' },
   onProxyRes: responseInterceptor(
     async (buffer, proxyRes, req: NextApiRequest, res: NextApiResponse) => {
-      console.log('Proxying session request');
-
       if (req.method === 'DELETE') {
         res.setHeader('Set-Cookie', [
           serialize('access_token', undefined, {
@@ -47,7 +45,6 @@ const proxy = createProxyMiddleware({
 
       const apiResponse = buffer.toString('utf8');
       res.statusCode = proxyRes.statusCode;
-      console.log(apiResponse);
 
       try {
         const json = JSON.parse(apiResponse);

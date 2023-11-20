@@ -8,6 +8,8 @@ export const formSchema = new schema.Entity('forms', {
   email_integrations: [emailIntegrationSchema],
 });
 
+export const planSchema = new schema.Entity('plans');
+
 export const submissionSchema = new schema.Entity('submissions', {
   form: formSchema,
 });

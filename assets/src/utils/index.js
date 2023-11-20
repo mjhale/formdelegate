@@ -1,4 +1,4 @@
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 export const getCurrentUserId = (token) => {
   if (!token) return;
@@ -6,7 +6,8 @@ export const getCurrentUserId = (token) => {
   const decodedToken = jwtDecode(token);
 
   if (decodedToken) {
-    return decodedToken.sub.match(/User:(\d+)/i)[1];
+    const userId = decodedToken.sub.match(/User:(\d+)/i)[1];
+    return Number(userId);
   }
 };
 

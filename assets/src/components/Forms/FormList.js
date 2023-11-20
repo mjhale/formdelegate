@@ -52,12 +52,12 @@ const FormSimpleView = ({ form, onDeleteClick }) => {
       </Box>
       <Flex justify="space-between" pt={2}>
         <Flex>
-          <Link href={`/forms/${form.id}/edit`} passHref>
+          <Link href={`/forms/${form.id}/edit`} passHref legacyBehavior>
             <Button mr={2} size="sm">
               Edit Form
             </Button>
           </Link>
-          <Link href={`/forms/${form.id}/submissions`} passHref>
+          <Link href={`/forms/${form.id}/submissions`} passHref legacyBehavior>
             <Button size="sm">View Submissions</Button>
           </Link>
         </Flex>

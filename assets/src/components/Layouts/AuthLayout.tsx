@@ -41,7 +41,7 @@ const AuthLayout = (props) => (
   <>
     <GlobalStyle />
     <SkipToContent href="#site-content">Skip to main content</SkipToContent>
-    <Link href="/" passHref>
+    <Link href="/" passHref legacyBehavior>
       <LogoLink>form delegate</LogoLink>
     </Link>
     <AuthLayoutContainer id="site-content" role="main">

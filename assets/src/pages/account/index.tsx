@@ -10,13 +10,13 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
   Skeleton,
   Stack,
   Text,
 } from '@chakra-ui/react';
 
 import { Formik, Form, FormikProps } from 'formik';
+import Link from 'next/link';
 import * as React from 'react';
 import * as Yup from 'yup';
 
@@ -58,10 +58,16 @@ const UserSettings = () => {
   return (
     <React.Fragment>
       <Flex mb={4}>
-        <Button size="sm" mr={2}>
-          Billing
-        </Button>
-        <Button size="sm">Team</Button>
+        <Link href="/account" passHref legacyBehavior>
+          <Button as="a" size="sm" mr={2}>
+            Account
+          </Button>
+        </Link>
+        <Link href="/account/billing" passHref legacyBehavior>
+          <Button as="a" size="sm" mr={2}>
+            Billing
+          </Button>
+        </Link>
       </Flex>
 
       <Flex justifyContent="space-between" mb={4}>

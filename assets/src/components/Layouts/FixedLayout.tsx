@@ -13,10 +13,10 @@ const FixedLayout = (props: Props) => (
   <>
     <SkipToContent href="#site-content">Skip to main content</SkipToContent>
     <NavBar>
-      <Link href="/" passHref>
+      <Link href="/" passHref legacyBehavior>
         <LogoLink>form delegate</LogoLink>
       </Link>
-      <Nav role="navigation" />
+      <Nav />
     </NavBar>
     <ContentContainer id="site-content" role="main">
       <Notifications margin={'0'} />

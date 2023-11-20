@@ -34,7 +34,7 @@ const FormsPage = () => {
       <Heading mb={2} size="lg">
         Forms
       </Heading>
-      <Link href="/forms/new" passHref>
+      <Link href="/forms/new" passHref legacyBehavior>
         <Button mb={2} variant="outline">
           Add Form
         </Button>

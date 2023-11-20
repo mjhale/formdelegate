@@ -33,7 +33,7 @@ function Link(props) {
   }
 
   return (
-    <NextLink className={className} onClick={onPress} href={href} passHref>
+    <NextLink className={className} onClick={onPress} href={href} passHref legacyBehavior>
       {children}
     </NextLink>
   );

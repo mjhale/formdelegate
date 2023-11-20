@@ -5,6 +5,7 @@ import authenticationReducer from 'reducers/authentication';
 import entityReducer from 'reducers/entity';
 import formReducer from 'reducers/form';
 import notificationReducer from 'reducers/notification';
+import planReducer from 'reducers/plan';
 import submissionReducer from 'reducers/submission';
 import userReducer from 'reducers/user';
 import userConfirmationReducer from 'reducers/userConfirmation';
@@ -16,6 +17,7 @@ const reducers = {
   entities: entityReducer,
   forms: formReducer,
   notifications: notificationReducer,
+  plans: planReducer,
   submissions: submissionReducer,
   users: userReducer,
   userConfirmation: userConfirmationReducer,

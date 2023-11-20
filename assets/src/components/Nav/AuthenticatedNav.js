@@ -6,28 +6,28 @@ import { NavContainer, NavItem } from 'components/Nav/Nav';
 
 const AuthenticatedNav = ({ isAdmin, onClick }) => {
   return (
-    <NavContainer onClick={onClick}>
-      <Link href="/dashboard" passHref>
+    <NavContainer role="navigation" onClick={onClick}>
+      <Link href="/dashboard" passHref legacyBehavior>
         <NavItem>dashboard</NavItem>
       </Link>
-      <Link href="/submissions" passHref>
+      <Link href="/submissions" passHref legacyBehavior>
         <NavItem>submissions</NavItem>
       </Link>
-      <Link href="/forms" passHref>
+      <Link href="/forms" passHref legacyBehavior>
         <NavItem>forms</NavItem>
       </Link>
-      <Link href="/account" passHref>
+      <Link href="/account" passHref legacyBehavior>
         <NavItem>account</NavItem>
       </Link>
-      <Link href="/support" passHref>
+      <Link href="/support" passHref legacyBehavior>
         <NavItem>support</NavItem>
       </Link>
       {isAdmin && (
-        <Link href="/admin" passHref>
+        <Link href="/admin" passHref legacyBehavior>
           <NavItem>admin</NavItem>
         </Link>
       )}
-      <Link href="/logout" passHref>
+      <Link href="/logout" passHref legacyBehavior>
         <NavItem>logout</NavItem>
       </Link>
     </NavContainer>
