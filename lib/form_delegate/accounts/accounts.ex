@@ -19,7 +19,7 @@ defmodule FormDelegate.Accounts do
 
   """
   def list_users do
-    User |> order_by(:id) |> Repo.all() |> Repo.preload(team: :subscriptions)
+    User |> order_by(:id) |> Repo.all() |> Repo.preload(team: [subscriptions: [:plan]])
   end
 
   @doc """
@@ -38,7 +38,7 @@ defmodule FormDelegate.Accounts do
   """
   def get_user!(id) do
     Repo.get!(User, id)
-    |> Repo.preload(team: :subscriptions)
+    |> Repo.preload(team: [subscriptions: [:plan]])
   end
 
   @doc """

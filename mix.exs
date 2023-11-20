@@ -7,7 +7,6 @@ defmodule FormDelegate.Mixfile do
       version: "0.0.1",
       elixir: "~> 1.13",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       dialyzer: [
@@ -37,19 +36,20 @@ defmodule FormDelegate.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.6.7"},
-      {:phoenix_pubsub, "~> 2.1.1"},
-      {:ecto_sql, "~> 3.8.1"},
-      {:phoenix_ecto, "~> 4.4.0"},
-      {:postgrex, "~> 0.16.3"},
-      {:phoenix_html, "~> 3.2.0"},
-      {:jason, "~> 1.3.0"},
-      {:gettext, "~> 0.19.1"},
-      {:plug_cowboy, "~> 2.5.2"},
-      {:guardian, "~> 2.2.3"},
+      {:phoenix, "~> 1.7.10"},
+      {:phoenix_pubsub, "~> 2.1.3"},
+      {:ecto_sql, "~> 3.10"},
+      {:phoenix_ecto, "~> 4.4.3"},
+      {:postgrex, "~> 0.17.0"},
+      {:phoenix_html, "~> 3.3.3"},
+      {:phoenix_view, "~> 2.0.3"},
+      {:jason, "~> 1.4.1"},
+      {:gettext, "~> 0.23.1"},
+      {:plug_cowboy, "~> 2.6.1"},
+      {:guardian, "~> 2.3.2"},
       {:guardian_phoenix, "~> 2.0"},
-      {:pbkdf2_elixir, "~> 2.0"},
-      {:bamboo, "~> 2.2"},
+      {:pbkdf2_elixir, "~> 2.2"},
+      {:bamboo, "~> 2.3"},
       {:bamboo_phoenix, "~> 1.0"},
       {:bamboo_postmark, "~> 1.0"},
       {:scrivener_ecto, "~> 2.7.0"},
@@ -59,16 +59,19 @@ defmodule FormDelegate.Mixfile do
       {:tesla, "~> 1.4.4"},
       {:waffle, "~> 1.1.6"},
       {:waffle_ecto, "~> 0.0.11"},
-      {:hackney, "~> 1.18.1"},
-      {:ex_aws, "~> 2.3.1"},
-      {:ex_aws_s3, "~> 2.3.2"},
+      {:hackney, "~> 1.20.1"},
+      {:ex_aws, "~> 2.5.0"},
+      {:ex_aws_s3, "~> 2.5.2"},
       {:sweet_xml, "~> 0.7.3"},
-      {:stripity_stripe, "~> 2.13.0"},
+      {:stripity_stripe, "~> 3.1.0"},
+
+      # Override telemetry due to rihanna mismatch
+      {:telemetry, "~> 1.2.1", override: true},
 
       # dev, test
       {:ex_machina, "~> 2.7.0", only: :test},
-      {:credo, "~> 1.6.4", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7.1", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4.2", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.11.1", only: [:dev, :test], runtime: false}
     ]
   end

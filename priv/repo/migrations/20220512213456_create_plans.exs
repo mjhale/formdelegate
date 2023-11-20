@@ -9,12 +9,18 @@ defmodule FormDelegate.Repo.Migrations.CreatePlans do
 
       add :limit_submissions, :integer, default: 100
       add :limit_forms, :integer, default: 0
-      add :limit_storage, :integer, default: 1_000
+      add :limit_storage, :bigint, default: 5_000
 
       timestamps(type: :timestamptz)
     end
 
+    alter table("subscriptions") do
+      add(:plan_id, references(:plans, type: :uuid), null: false)
+    end
+
     create index(:plans, :name)
     create unique_index(:plans, :stripe_product_id)
+
+    create index(:subscriptions, :plan_id)
   end
 end

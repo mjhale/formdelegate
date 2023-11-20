@@ -9,6 +9,8 @@ defmodule FormDelegate.Plan do
     field :name, :string
     field :stripe_product_id, :string
 
+    has_many :subscriptions, FormDelegate.Subscriptions.Subscription
+
     timestamps()
   end
 

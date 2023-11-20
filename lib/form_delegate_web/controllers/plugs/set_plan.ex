@@ -1,8 +1,6 @@
 defmodule FormDelegateWeb.Plugs.SetPlan do
   import Plug.Conn
 
-  # alias FormDelegate.Plans.Plan
-
   def init(_), do: nil
 
   def call(%{method: "POST"} = conn, opts), do: set_plan(conn, opts)
@@ -24,7 +22,7 @@ defmodule FormDelegateWeb.Plugs.SetPlan do
   defp get_plan_for_user(user) do
     case Enum.at(user.team.subscriptions, 0) do
       nil ->
-        FormDelegate.Plans.get_plan_by(name: "Free")
+        FormDelegate.Plans.get_plan_by!(name: "Free")
 
       subscriptions ->
         {:ok, stripe_subscription} =
@@ -33,7 +31,7 @@ defmodule FormDelegateWeb.Plugs.SetPlan do
         stripe_subscription_item = Enum.at(stripe_subscription.items.data, 0)
         stripe_product_id = stripe_subscription_item.price.product
 
-        FormDelegate.Plans.get_plan_by(stripe_product_id: stripe_product_id)
+        FormDelegate.Plans.get_plan_by!(stripe_product_id: stripe_product_id)
     end
   end
 end

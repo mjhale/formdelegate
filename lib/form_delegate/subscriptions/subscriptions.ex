@@ -69,7 +69,9 @@ defmodule FormDelegate.Subscriptions do
   """
   def list_subscriptions_by_user(%User{team_id: team_id}) do
     query = from s in Subscription, where: s.team_id == ^team_id
+
     Repo.all(query)
+    |> Repo.preload([:plan, :team])
   end
 
   @doc """

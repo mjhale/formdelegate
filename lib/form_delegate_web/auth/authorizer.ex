@@ -2,6 +2,7 @@ defmodule FormDelegateWeb.Authorizer do
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
   alias FormDelegate.Plans.Plan
+  alias FormDelegate.Subscriptions.Subscription
   alias FormDelegate.Submissions.Submission
 
   def authorize(:create_submission, _current_user) do
@@ -45,6 +46,10 @@ defmodule FormDelegateWeb.Authorizer do
   end
 
   def authorize(:show_user_submissions, %User{} = _current_user) do
+    :ok
+  end
+
+  def authorize(:show_user_subscriptions, %User{} = _current_user) do
     :ok
   end
 
@@ -154,6 +159,30 @@ defmodule FormDelegateWeb.Authorizer do
 
   def authorize(:delete_plan, %User{} = current_user, %Plan{} = _plan) do
     if current_user.is_admin do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  def authorize(
+        :retrieve_subscription,
+        %User{} = current_user,
+        %Subscription{} = subscription
+      ) do
+    if current_user.team_id == subscription.team_id or current_user.is_admin do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  def authorize(
+        :update_stripe_subscription,
+        %User{} = current_user,
+        %Subscription{} = subscription
+      ) do
+    if current_user.team_id == subscription.team_id or current_user.is_admin do
       :ok
     else
       {:error, :forbidden}

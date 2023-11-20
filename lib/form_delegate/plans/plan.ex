@@ -13,7 +13,7 @@ defmodule FormDelegate.Plans.Plan do
 
     field :limit_submissions, :integer, default: 100
     field :limit_forms, :integer, default: 0
-    field :limit_storage, :integer, default: 1_000
+    field :limit_storage, :integer, default: 5_000_000
 
     timestamps()
   end

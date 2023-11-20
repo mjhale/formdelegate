@@ -5,16 +5,24 @@
 
 alias FormDelegate.Repo
 alias FormDelegate.Accounts.User
+alias FormDelegate.BillingCounts.BillingCount
 alias FormDelegate.Forms.Form
 alias FormDelegate.Integrations.{EmailIntegration, EmailIntegrationRecipient}
+alias FormDelegate.Plans.Plan
 alias FormDelegate.Submissions.Submission
+alias FormDelegate.Teams.Team
 
 # Scrub prior data before seeding
 Repo.delete_all(User)
+Repo.delete_all(Team)
+Repo.delete_all(BillingCount)
 Repo.delete_all(Submission)
 Repo.delete_all(Form)
+Repo.delete_all(Plan)
 
 # Seed Users
+admin_team = FormDelegate.Repo.insert!(%Team{})
+
 admin_user =
   Repo.insert!(%User{
     name: "The Administrator",
@@ -23,15 +31,46 @@ admin_user =
     # pre-set the counter cache
     form_count: 2,
     confirmed_at: DateTime.utc_now(),
+    team: admin_team,
     is_admin: true
   })
+
+user_team = FormDelegate.Repo.insert!(%Team{})
 
 user =
   Repo.insert!(%User{
     name: "Joshua Fern",
     email: "josh.f@gmail.com",
-    password_hash: Pbkdf2.hash_pwd_salt("securepass")
+    password_hash: Pbkdf2.hash_pwd_salt("securepass"),
+    # pre-set the counter cache
+    form_count: 1,
+    team: user_team
   })
+
+# Create billing count tracker for teams
+Repo.insert!(%BillingCount{
+  team: admin_team,
+  # pre-set the counter based on seed data
+  submission_count: 3,
+  form_count: 2
+})
+
+Repo.insert!(%BillingCount{
+  team: user_team,
+  # pre-set the counter based on seed data
+  submission_count: 1,
+  form_count: 1
+})
+
+# Plans
+Repo.insert!(%Plan{
+  name: "Free",
+  limit_submissions: 100,
+  limit_forms: 5,
+  limit_storage: 5_000_000,
+  # Replace with your Stripe product ID
+  stripe_product_id: "prod_LbAPNMP79ulNj4"
+})
 
 # Seed Forms
 admin_contact_form =
@@ -39,7 +78,7 @@ admin_contact_form =
     name: "Contact Form",
     user: admin_user,
     verified: true,
-    # pre-set the counter cache
+    # pre-set the counter cache based on seed data
     submission_count: 2
   })
 
@@ -48,7 +87,7 @@ admin_error_form =
     name: "Error Form",
     user: admin_user,
     verified: true,
-    # pre-set the counter cache
+    # pre-set the counter cache based on seed data
     submission_count: 1
   })
 

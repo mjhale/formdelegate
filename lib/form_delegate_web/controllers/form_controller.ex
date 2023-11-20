@@ -67,7 +67,7 @@ defmodule FormDelegateWeb.FormController do
 
     # @TODO: Send warnings when limit is approached and exceeded
     cond do
-      billing_count.form_count >= plan.limit_forms ->
+      plan.limit_forms !== 0 && billing_count.form_count >= plan.limit_forms ->
         {:error, :plan_limit_exceeded}
 
       true ->

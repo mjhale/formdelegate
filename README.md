@@ -149,7 +149,9 @@ FormDelegate.Repo.insert!(%FormDelegate.Plans.Plan{
   name: "Free",
   limit_submissions: 100,
   limit_forms: 5,
-  limit_storage: 5000000
+  limit_storage: 5000000,
+  # Replace with your Stripe product ID
+  stripe_product_id: "prod_LbAPNMP79ulNj4"
 })
 ```
 

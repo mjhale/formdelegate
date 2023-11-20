@@ -58,16 +58,16 @@ defmodule FormDelegate.Plans do
 
   ## Examples
 
-      iex> get_plan_by("price_1Ktyana5")
+      iex> get_plan_by!(stripe_product_id: "prod_1Ktyana5")
       %Plan{}
 
-      iex> get_plan_by("bad_id")
-      nil
+      iex> get_plan_by!(stripe_product_id: "bad_id")
+      ** (Ecto.NoResultsError)
 
   """
-  def get_plan_by(keyword) do
+  def get_plan_by!(keyword) do
     Plan
-    |> Repo.get_by(keyword)
+    |> Repo.get_by!(keyword)
   end
 
   @doc """

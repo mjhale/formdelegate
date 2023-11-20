@@ -68,11 +68,20 @@ defmodule FormDelegateWeb.Router do
     post "/stripe/checkout-sessions", StripeController, :create_checkout_session,
       as: :stripe_checkout_session
 
-    # stripe details of current sub?
+    get "/stripe/subscriptions/:id", StripeController, :retrieve_subscription,
+      as: :stripe_subscription
+
+    put "/stripe/subscriptions/:id/price_id", StripeController, :update_subscription_price,
+      as: :stripe_subscription
+
+    patch "/stripe/subscriptions/:id/price_id", StripeController, :update_subscription_price,
+      as: :stripe_subscription
 
     get "/stripe/portal", StripeController, :create_portal, as: :stripe_portal
 
     resources "/forms", FormController, except: [:edit, :new]
+
+    resources "/subscriptions", SubscriptionController, only: [:index, :show]
 
     scope "/submissions" do
       # @TODO: Refactor and move to different namespace
