@@ -49,8 +49,8 @@ Form Delegate uses Elixir and [Phoenix](http://www.phoenixframework.org/) for th
 To install the necessary dependencies on your machine:
 
 - _Recommended: Install [asdf-vm](https://github.com/asdf-vm/asdf) to manage versions of [Erlang](https://github.com/asdf-vm/asdf-erlang), [Elixir](https://github.com/asdf-vm/asdf-elixir), [Node.js](https://github.com/asdf-vm/asdf-nodejs), and [Yarn](https://github.com/twuni/asdf-yarn)._
-- Install Erlang: `asdf install erlang 24.3.4`
-- Install Elixir\*: `asdf install elixir 1.13.4-otp-24`
+- Install Erlang: `asdf install erlang 26.1.2`
+- Install Elixir\*: `asdf install elixir 1.15.7-otp-26`
 - Install Node.js: `asdf install nodejs latest`
 - Install Yarn: `asdf install yarn latest `
 - Install Postgres (see the [official installation instructions](https://www.postgresql.org/download/))
@@ -149,9 +149,9 @@ FormDelegate.Repo.insert!(%FormDelegate.Plans.Plan{
   name: "Free",
   limit_submissions: 100,
   limit_forms: 5,
-  limit_storage: 5000000,
+  limit_storage: 1000000000,
   # Replace with your Stripe product ID
-  stripe_product_id: "prod_LbAPNMP79ulNj4"
+  stripe_product_id: ""
 })
 ```
 

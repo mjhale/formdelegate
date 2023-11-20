@@ -12,9 +12,9 @@
 #   - https://pkgs.org/ - resource for finding needed packages
 #   - Ex: hexpm/elixir:1.13.4-erlang-24.3.4-debian-bullseye-20210902-slim
 #
-ARG ELIXIR_VERSION=1.13.4
-ARG OTP_VERSION=24.3.4
-ARG DEBIAN_VERSION=bullseye-20210902-slim
+ARG ELIXIR_VERSION=1.15.7
+ARG OTP_VERSION=26.1.2
+ARG DEBIAN_VERSION=bookworm-20231009-slim
 
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
@@ -90,6 +90,7 @@ COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/form_delegate
 USER nobody
 
 CMD ["/app/bin/server"]
+
 # Appended by flyctl
 ENV ECTO_IPV6 true
 ENV ERL_AFLAGS "-proto_dist inet6_tcp"
