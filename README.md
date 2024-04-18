@@ -48,11 +48,10 @@ Form Delegate uses Elixir and [Phoenix](http://www.phoenixframework.org/) for th
 
 To install the necessary dependencies on your machine:
 
-- _Recommended: Install [asdf-vm](https://github.com/asdf-vm/asdf) to manage versions of [Erlang](https://github.com/asdf-vm/asdf-erlang), [Elixir](https://github.com/asdf-vm/asdf-elixir), [Node.js](https://github.com/asdf-vm/asdf-nodejs), and [Yarn](https://github.com/twuni/asdf-yarn)._
+- _Recommended: Install [asdf-vm](https://github.com/asdf-vm/asdf) to manage versions of [Erlang](https://github.com/asdf-vm/asdf-erlang), [Elixir](https://github.com/asdf-vm/asdf-elixir), and [Node.js](https://github.com/asdf-vm/asdf-nodejs)._
 - Install Erlang: `asdf install erlang 26.1.2`
 - Install Elixir\*: `asdf install elixir 1.15.7-otp-26`
 - Install Node.js: `asdf install nodejs latest`
-- Install Yarn: `asdf install yarn latest `
 - Install Postgres (see the [official installation instructions](https://www.postgresql.org/download/))
 
 _\* By default, asdf-vm will install Elixir with a binary compiled for the oldest OTP release supported
@@ -65,6 +64,7 @@ use._
 - Create and migrate your database with `mix ecto.create && mix ecto.migrate`
 - Ensure the [necessary environment variables](./.sample.env) are set via `source .env`
 - Start the Phoenix endpoint with `mix phx.server`
+- Start a local Stripe listener with `stripe listen --forward-to localhost:4000/webhooks/stripe --api-key sk_test_...`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
@@ -76,8 +76,8 @@ collection by following this link:
 
 **To start the React app:**
 
-- Install dependencies with `yarn --cwd ./assets/ install`
-- Start the React development server with `yarn --cwd ./assets/ dev`
+- Install dependencies with `npm install --prefix ./assets`
+- Start the React development server with `npm run dev --prefix ./assets`
 
 Now you can visit [`localhost:3000`](http://localhost:3000) from your browser.
 

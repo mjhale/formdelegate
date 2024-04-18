@@ -40,7 +40,7 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "lint": "next lint",
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start"
   },
