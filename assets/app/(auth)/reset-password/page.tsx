@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { Lato } from 'next/font/google';
 import Link from 'next/link';
 
@@ -36,3 +38,9 @@ export default async function ResetPasswordPage({ searchParams }) {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Reset Password - Form Delegate',
+  description:
+    'Forgot your password? Reset it or contact support for additional help.',
+};

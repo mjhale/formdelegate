@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import '../globals.css';
 
 import NavBar from './_components/navbar';
@@ -45,3 +47,9 @@ export default async function DashboardLayout({
     </html>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Form Delegate',
+  description:
+    'Form Delegate is a simple and secure form management solution for surveys, registrations, feedback, and more. No server code required.',
+};

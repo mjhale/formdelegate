@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { cookies } from 'next/headers';
 
 import Submissions from './submissions';
@@ -52,3 +54,8 @@ export default async function SubmissionsPage({
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Submissions - Form Delegate',
+  description: 'View and manage your form submissions.',
+};

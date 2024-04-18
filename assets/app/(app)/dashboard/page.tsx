@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { cookies } from 'next/headers';
 
 import SubmissionActivity from './submissionActivity';
@@ -44,3 +46,8 @@ export default async function DashboardPage() {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Account Dashboard - Form Delegate',
+  description: 'An overview of your Form Delegate account and service status.',
+};

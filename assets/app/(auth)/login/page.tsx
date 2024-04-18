@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { Suspense } from 'react';
 import { Lato } from 'next/font/google';
 import Link from 'next/link';
@@ -42,3 +44,8 @@ export default async function LoginPage() {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Log In - Form Delegate',
+  description: 'Log in to the Form Delegate service and manage your forms.',
+};

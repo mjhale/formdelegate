@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 export default async function FaqPage() {
   return (
     <>
@@ -68,3 +70,9 @@ export default async function FaqPage() {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Frequently Asked Questions on Form Processing - Form Delegate',
+  description:
+    'Explore our FAQ to learn how you can manage HTML form responses without any server-side code. Our service simplifies your workflow, making data handling accessible and efficient.',
+};

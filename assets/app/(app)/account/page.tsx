@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { cookies } from 'next/headers';
 
 import Profile from './profile';
@@ -31,3 +33,8 @@ export default async function AccountProfilePage() {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Manage Account - Form Delegate',
+  description: 'Manage your Form Delegate account details.',
+};

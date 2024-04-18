@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import SignupForm from './form';
 
 export default async function SignupPage() {
@@ -15,3 +17,9 @@ export default async function SignupPage() {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Create an Account - Form Delegate',
+  description:
+    'Sign up for Form Delegate with no credit card required and start processing your HTML forms for free.',
+};

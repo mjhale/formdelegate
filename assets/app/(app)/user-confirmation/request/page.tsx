@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { cookies } from 'next/headers';
 
 async function fetchUser() {
@@ -60,3 +62,8 @@ export default async function UserConfirmationRequestPage() {
     <>{!!confirmationLinkRequest?.message && confirmationLinkRequest.message}</>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Request New Confirmation Code - Form Delegate',
+  description: 'Request a new confirmation code for your account.',
+};

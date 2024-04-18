@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { cookies } from 'next/headers';
 
 import { updateForm } from '../../actions';
@@ -38,3 +40,8 @@ export default async function EditFormPage({
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Edit Form Details - Form Delegate',
+  description: 'Manage your form as well as any integrations.',
+};

@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 
@@ -69,3 +71,8 @@ export default async function ShowFormPage({
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Form Details - Form Delegate',
+  description: 'View details and stats on your form.',
+};

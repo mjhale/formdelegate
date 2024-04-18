@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { cookies } from 'next/headers';
 
 import StripePortalButton from './stripePortalButton';
@@ -97,3 +99,9 @@ export default async function BillingPage() {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Manage Billing and Subscription Details - Form Delegate',
+  description:
+    'Manage your Form Delegate billing and subscription information.',
+};

@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import Link from 'next/link';
 
 export default async function PricingPage() {
@@ -69,3 +71,9 @@ export default async function PricingPage() {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Pricing and Free Tier Information - Form Delegate',
+  description:
+    'Discover our pricing options for managing HTML forms with no server-side code. Get started with our free tier today.',
+};

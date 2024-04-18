@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 export default async function SupportPage() {
   const SUPPORT_TICKET_ENDPOINT =
     process.env.NEXT_PUBLIC_SUPPORT_TICKET_ENDPOINT;
@@ -61,3 +63,9 @@ export default async function SupportPage() {
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Support - Form Delegate',
+  description:
+    'Need help? We are available through our contact form to help with any issues.',
+};

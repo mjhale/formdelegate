@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import NavBar from './_components/navbar';
 
 import '../globals.css';
@@ -41,3 +43,9 @@ export default function RootLayout({
     </html>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Manage Custom HTML Forms With No Code - Form Delegate',
+  description:
+    'Form Delegate is a simple and secure form management solution for surveys, registrations, feedback, and more. No server code required.',
+};

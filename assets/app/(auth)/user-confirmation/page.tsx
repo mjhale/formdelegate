@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { cookies } from 'next/headers';
 import { Lato } from 'next/font/google';
 import Link from 'next/link';
@@ -110,3 +112,8 @@ export default async function UserConfirmationPage({ searchParams }) {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Account Confirmation - Form Delegate',
+  description: 'Confirm and secure your Form Delegate account.',
+};
