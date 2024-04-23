@@ -53,6 +53,13 @@ config :form_delegate, :akismet_api, FormDelegate.Services.Akismet.InMemory
 # Configures Hcaptcha module to use an in-memory mock
 config :form_delegate, :hcaptcha_api, FormDelegate.Services.Hcaptcha.InMemory
 
+# Configures CORS options
+config :cors_plug,
+  origin: ["http://localhost:3000", "http://0.0.0.0:3000"],
+  credentials: true,
+  max_age: 86400,
+  expose: ["Per-Page", "Total", "Link"]
+
 # Configures Waffle for local disk storage
 config :waffle,
   storage: Waffle.Storage.Local,

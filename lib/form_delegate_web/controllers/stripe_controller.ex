@@ -48,8 +48,8 @@ defmodule FormDelegateWeb.StripeController do
           }
         ],
         success_url:
-          "#{@frontend_url}/account/subscriptions/confirmed?stripe_session_id={CHECKOUT_SESSION_ID}",
-        cancel_url: "#{@frontend_url}/account/subscriptions/abandoned",
+          "#{@frontend_url}/account/billing?status=confirmed&stripe_session_id={CHECKOUT_SESSION_ID}",
+        cancel_url: "#{@frontend_url}/account/billing?status=abandoned",
         subscription_data: %{
           items: [],
           metadata: %{
@@ -106,7 +106,7 @@ defmodule FormDelegateWeb.StripeController do
          items: %Stripe.List{
            data: stripe_subscription_items
          }
-       } = stripe_subscription} = Stripe.Subscription.retrieve(stripe_subscription_id)
+       } = _stripe_subscription} = Stripe.Subscription.retrieve(stripe_subscription_id)
 
       # Assumes a subscription only has one active subscription item
       %Stripe.SubscriptionItem{} =

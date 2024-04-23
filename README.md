@@ -49,8 +49,8 @@ Form Delegate uses Elixir and [Phoenix](http://www.phoenixframework.org/) for th
 To install the necessary dependencies on your machine:
 
 - _Recommended: Install [asdf-vm](https://github.com/asdf-vm/asdf) to manage versions of [Erlang](https://github.com/asdf-vm/asdf-erlang), [Elixir](https://github.com/asdf-vm/asdf-elixir), and [Node.js](https://github.com/asdf-vm/asdf-nodejs)._
-- Install Erlang: `asdf install erlang 26.1.2`
-- Install Elixir\*: `asdf install elixir 1.15.7-otp-26`
+- Install Erlang: `asdf install erlang 26.2.4`
+- Install Elixir\*: `asdf install elixir 1.16.2-otp-26`
 - Install Node.js: `asdf install nodejs latest`
 - Install Postgres (see the [official installation instructions](https://www.postgresql.org/download/))
 

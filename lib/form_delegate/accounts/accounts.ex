@@ -304,14 +304,10 @@ defmodule FormDelegate.Accounts do
         Pbkdf2.no_user_verify()
         {:error, :invalid_credentials}
 
-      user ->
-        case Pbkdf2.check_pass(user, password) do
-          {:ok, %User{} = user} ->
-            {:ok, user}
-
-          {:error, _} ->
-            {:error, :invalid_credentials}
-        end
+      %User{password_hash: password_hash} = user ->
+        if Pbkdf2.verify_pass(password, password_hash),
+          do: {:ok, user},
+          else: {:error, :invalid_credentials}
     end
   end
 
