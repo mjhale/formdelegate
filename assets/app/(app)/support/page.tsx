@@ -22,6 +22,7 @@ export default async function SupportPage() {
             </label>
             <input
               id="name"
+              name="name"
               type="text"
               className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
             />
@@ -34,6 +35,7 @@ export default async function SupportPage() {
             </label>
             <input
               id="email"
+              name="email"
               type="text"
               className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
             />
@@ -46,6 +48,7 @@ export default async function SupportPage() {
             </label>
             <textarea
               id="message"
+              name="message"
               rows={5}
               className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
             />
