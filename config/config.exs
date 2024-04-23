@@ -37,13 +37,15 @@ config :form_delegate, FormDelegateWeb.Guardian,
   ttl: {14, :days},
   verify_issuer: true
 
+config :form_delegate, Oban,
+  engine: Oban.Engines.Basic,
+  plugins: [{Oban.Plugins.Pruner, max_age: 86_400}],
+  queues: [default: 10, billing_count: 1, submission_integrations: 5, mailer: 5],
+  repo: FormDelegate.Repo
+
 # Use Jason for JSON parsing in Phoenix and Bamboo
 config :phoenix, :json_library, Jason
 config :bamboo, :json_library, Jason
-
-# Use Ecto Repo with Rihanna queue
-config :rihanna,
-  producer_postgres_connection: {Ecto, FormDelegate.Repo}
 
 # HTTP client adapter for Tesla
 config :tesla, adapter: Tesla.Adapter.Hackney

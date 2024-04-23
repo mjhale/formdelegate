@@ -2,7 +2,7 @@ defmodule FormDelegateWeb.UserConfirmationController do
   use FormDelegateWeb, :controller
 
   alias FormDelegate.{Accounts, Accounts.User}
-  alias FormDelegateWeb.Mailers
+  alias FormDelegate.Jobs.UserConfirmationEmail
 
   require Logger
 
@@ -12,7 +12,9 @@ defmodule FormDelegateWeb.UserConfirmationController do
     if user = Accounts.get_user_by_email(email) do
       # @TODO: Prevent multiple reset confirmation attempts in a short period
       with {:ok, %User{} = user} <- Accounts.reset_user_confirmation(user) do
-        Mailers.UserConfirmationMailer.send_user_confirmation_email(user)
+        %{user_id: user.id}
+        |> UserConfirmationEmail.new()
+        |> Oban.insert()
       else
         {:error, %Ecto.Changeset{} = changeset} ->
           Logger.error("FD User Confirmation Token: Unable to create token for #{email}")

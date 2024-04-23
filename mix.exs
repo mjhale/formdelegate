@@ -55,7 +55,6 @@ defmodule FormDelegate.Mixfile do
       {:scrivener_ecto, "~> 2.7.0"},
       {:scrivener_headers, "~> 3.2.2"},
       {:cors_plug, "~> 3.0.3"},
-      {:rihanna, "~> 2.3.1"},
       {:tesla, "~> 1.4.4"},
       {:waffle, "~> 1.1.6"},
       {:waffle_ecto, "~> 0.0.11"},
@@ -64,9 +63,7 @@ defmodule FormDelegate.Mixfile do
       {:ex_aws_s3, "~> 2.5.2"},
       {:sweet_xml, "~> 0.7.3"},
       {:stripity_stripe, "~> 3.1.0"},
-
-      # Override telemetry due to rihanna mismatch
-      {:telemetry, "~> 1.2.1", override: true},
+      {:oban, "~> 2.17"},
 
       # dev, test
       {:ex_machina, "~> 2.7.0", only: :test},

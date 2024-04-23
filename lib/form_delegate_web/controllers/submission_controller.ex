@@ -48,8 +48,9 @@ defmodule FormDelegateWeb.SubmissionController do
       # @TODO: Allow user-specified Akismet API key per form
       case akismet_api().is_spam?(@akismet_api_key, submission) do
         {:ok, false} ->
-          Logger.info("FD: No spam detected for #{submission.id}")
-          Rihanna.enqueue(FormDelegate.SubmissionQueueJob, [submission])
+          %{submission_id: submission.id, form_id: form.id}
+          |> FormDelegate.Jobs.SubmissionIntegrations.new()
+          |> Oban.insert()
 
         {:ok, true} ->
           Logger.info("FD: Spam detected for #{submission.id}")

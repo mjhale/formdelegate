@@ -1,10 +1,11 @@
 defmodule FormDelegateWeb.UserController do
   use FormDelegateWeb, :controller
 
-  alias FormDelegate.{Accounts, Accounts.User, BillingCounts, BillingCounts.BillingCount}
+  alias FormDelegate.{Accounts, Accounts.User}
+  alias FormDelegate.{BillingCounts, BillingCounts.BillingCount}
+  alias FormDelegate.Jobs.WelcomeEmail
   alias FormDelegateWeb.Authorizer
   alias FormDelegateWeb.Guardian
-  alias FormDelegateWeb.Mailers
 
   action_fallback FormDelegateWeb.FallbackController
 
@@ -29,7 +30,9 @@ defmodule FormDelegateWeb.UserController do
            BillingCounts.create_billing_count(%BillingCount{}, %{team_id: user.team_id}),
          {:ok, token, _claims} <-
            Guardian.encode_and_sign(user, %{}, token_type: "access") do
-      Mailers.UserWelcomeMailer.send_user_welcome_email(user)
+      %{user_id: user.id}
+      |> WelcomeEmail.new()
+      |> Oban.insert()
 
       conn
       |> put_status(:created)

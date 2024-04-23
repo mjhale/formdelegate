@@ -3,13 +3,8 @@ defmodule FormDelegateWeb.Mailers.UserWelcomeMailer do
   import FormDelegateWeb.Mailers.BaseEmail, only: [base_email: 0]
 
   alias FormDelegate.Accounts.User
-  alias FormDelegateWeb.Mailers
 
-  def send_user_welcome_email(%User{} = user) do
-    Rihanna.enqueue(Mailers.EnqueueEmail, user_welcome_email(user))
-  end
-
-  defp user_welcome_email(%User{} = user) do
+  def user_welcome_email(%User{} = user) do
     base_email()
     |> to({user.name, user.email})
     |> subject("Welcome to Form Delegate")

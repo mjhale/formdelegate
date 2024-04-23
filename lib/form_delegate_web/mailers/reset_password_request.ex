@@ -1,15 +1,10 @@
-defmodule FormDelegateWeb.Mailers.ResetPasswordRequestMailer do
+defmodule FormDelegateWeb.Mailers.ResetPasswordRequest do
   use Bamboo.Phoenix, view: FormDelegateWeb.EmailView
   import FormDelegateWeb.Mailers.BaseEmail, only: [base_email: 0]
 
   alias FormDelegate.Accounts.User
-  alias FormDelegateWeb.Mailers
 
-  def send_reset_password_request_email(%User{} = user) do
-    Rihanna.enqueue(Mailers.EnqueueEmail, reset_password_request_email(user))
-  end
-
-  defp reset_password_request_email(%User{} = user) do
+  def reset_password_request_email(%User{} = user) do
     base_email()
     |> to({user.name, user.email})
     |> subject("Password Reset Request for Form Delegate")

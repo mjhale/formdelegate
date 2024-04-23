@@ -2,7 +2,7 @@ defmodule FormDelegateWeb.ResetPasswordController do
   use FormDelegateWeb, :controller
 
   alias FormDelegate.{Accounts, Accounts.User}
-  alias FormDelegateWeb.Mailers
+  alias FormDelegate.Jobs.ResetPasswordEmail
 
   action_fallback FormDelegateWeb.FallbackController
 
@@ -11,16 +11,16 @@ defmodule FormDelegateWeb.ResetPasswordController do
   def create(conn, %{"user" => %{"email" => email}}) do
     with %User{} = user <- Accounts.get_user_by_email(email),
          {:ok, %User{} = user} <- Accounts.create_reset_password_token(user) do
-      Mailers.ResetPasswordRequestMailer.send_reset_password_request_email(user)
+      %{user_id: user.id}
+      |> ResetPasswordEmail.new()
+      |> Oban.insert()
     else
       nil ->
         Logger.info("FD Create Reset Password: Unable to find user #{email}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         Logger.info(
-          "FD Create Reset Password: Unable to create new token for user #{email}: #{
-            inspect(changeset, pretty: true)
-          }"
+          "FD Create Reset Password: Unable to create new token for user #{email}: #{inspect(changeset, pretty: true)}"
         )
     end
 

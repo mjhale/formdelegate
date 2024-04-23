@@ -3,13 +3,8 @@ defmodule FormDelegateWeb.Mailers.UserConfirmationMailer do
   import FormDelegateWeb.Mailers.BaseEmail, only: [base_email: 0]
 
   alias FormDelegate.Accounts.User
-  alias FormDelegateWeb.Mailers
 
-  def send_user_confirmation_email(%User{} = user) do
-    Rihanna.enqueue(Mailers.EnqueueEmail, user_confirmation_email(user))
-  end
-
-  defp user_confirmation_email(%User{} = user) do
+  def user_confirmation_email(%User{} = user) do
     base_email()
     |> to({user.name, user.email})
     |> subject("Confirm Your Form Delegate Account")
