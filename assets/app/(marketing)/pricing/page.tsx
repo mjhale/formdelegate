@@ -10,6 +10,7 @@ export default async function PricingPage() {
           <h1 className="text-3xl lowercase tracking-wide font-semibold">
             Pricing Information
           </h1>
+
           <p>
             Sign up for free, and then choose a plan that best meets your needs.
           </p>
@@ -58,7 +59,7 @@ export default async function PricingPage() {
             </div>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-8">
             <Link
               href="/signup"
               className="inline-block px-3 py-1 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"

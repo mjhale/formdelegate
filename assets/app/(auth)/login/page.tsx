@@ -37,7 +37,7 @@ export default async function LoginPage() {
       </div>
       <div className="flex justify-center text-sm text-gray-800 font-medium mt-4">
         Don't have an account?
-        <Link href="/signup" className="pl-1">
+        <Link href="/signup" className="pl-1 underline">
           Sign up
         </Link>
       </div>
