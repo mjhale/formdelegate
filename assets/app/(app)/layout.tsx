@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import Link from 'next/link';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import '../globals.css';
 
@@ -76,6 +77,7 @@ export default async function DashboardLayout({
             </div>
           </div>
         </div>
+        <SpeedInsights />
       </body>
     </html>
   );

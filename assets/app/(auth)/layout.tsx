@@ -1,6 +1,7 @@
 import '../globals.css';
 
 import Link from 'next/link';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export default function AuthLayout({
   children,
@@ -44,6 +45,7 @@ export default function AuthLayout({
             </Link>
           </div>
         </div>
+        <SpeedInsights />
       </body>
     </html>
   );
