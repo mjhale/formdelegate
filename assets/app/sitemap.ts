@@ -27,10 +27,28 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.5,
     },
     {
+      url: 'https://www.formdelegate.com/contact',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
+    {
       url: 'https://www.formdelegate.com/reset-password',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.2,
+    },
+    {
+      url: 'https://www.formdelegate.com/privacy',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.1,
+    },
+    {
+      url: 'https://www.formdelegate.com/tos',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.1,
     },
   ];
 }
