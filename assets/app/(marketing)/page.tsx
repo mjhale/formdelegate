@@ -18,18 +18,16 @@ const lato = Lato({
 export default async function IndexPage() {
   return (
     <div className="-mx-4 -my-4">
-      <div className="flex relative pt-12 pb-12 justify-center items-center shadow-[inset_0_0_0_1000px_rgba(50,43,40,0.55)] lg:pt-44 lg:pb-32">
-        <div className="fixed overflow-hidden h-[75vw] md:h-[60vw] w-screen -z-10">
-          <Image
-            className="block"
-            src={heroImage}
-            fill={true}
-            priority={true}
-            quality={75}
-            alt="Person using computer at desk"
-          />
-        </div>
-        <div className="leading-6 text-center w-full max-w-4xl">
+      <div className="relative flex pt-12 pb-12 justify-center items-center shadow-[inset_0_0_0_1000px_rgba(50,43,40,0.55)] h-[35vw] md:h-[40vw] lg:h-[25vw] lg:pt-32 lg:pb-32">
+        <Image
+          className="block object-cover -z-10"
+          src={heroImage}
+          priority={true}
+          quality={60}
+          fill={true}
+          alt="Person looking at monitor"
+        />
+        <div className="absolute leading-6 text-center w-full max-w-4xl">
           <div className="flex flex-col gap-y-6 box-border my-4 mx-auto w-full">
             <h1
               className={`text-2xl md:text-4xl font-semibold ${lato.className} text-neutral-100 [text-shadow:_1px_1px_4px_rgb(0_0_0_/_90%)]`}
@@ -100,7 +98,7 @@ export default async function IndexPage() {
                   {`action="https://www.formdelegate.com/f/00000000-1111-2222-3333-4444444444"`}
                 </span>
                 {` method="POST">`}
-                <div className="pl-4">{`<input type="text" placeholder="Message">`}</div>
+                <div className="pl-4">{`<input type="text" name="message" placeholder="Message">`}</div>
                 <div className="pl-4">{`<button type="submit">Send</button>`}</div>
                 {`</form>`}
               </code>
