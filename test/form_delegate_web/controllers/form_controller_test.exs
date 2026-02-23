@@ -1,13 +1,78 @@
 defmodule FormDelegateWeb.FormControllerTest do
   use FormDelegateWeb.ConnCase
 
+  alias FormDelegate.Forms.Form
+  alias FormDelegate.Integrations.EmailIntegration
+  alias FormDelegate.Integrations.EmailProviders.SMTPClient
+  alias FormDelegate.Repo
   alias FormDelegateWeb.Router.Helpers, as: Routes
 
   @valid_attrs %{name: "Contact Form"}
   @update_attrs %{hosts: ["example.com"], name: "Report Form"}
   @invalid_attrs %{name: nil}
 
+  defmodule SMTPClientSuccess do
+    @behaviour SMTPClient
+
+    @impl true
+    def verify(_params), do: :ok
+  end
+
+  defmodule SMTPClientFailure do
+    @behaviour SMTPClient
+
+    @impl true
+    def verify(_params), do: {:error, "invalid SMTP credentials"}
+  end
+
+  defmodule SMTPClientConnectionFailure do
+    @behaviour SMTPClient
+
+    @impl true
+    def verify(_params), do: {:error, "smtp connection failed: timeout"}
+  end
+
+  defmodule SMTPClientConfigFailure do
+    @behaviour SMTPClient
+
+    @impl true
+    def verify(_params), do: {:error, "provider configuration is invalid"}
+  end
+
+  defmodule SMTPClientAuthMethodFailure do
+    @behaviour SMTPClient
+
+    @impl true
+    def verify(_params), do: {:error, "smtp server does not support AUTH PLAIN/LOGIN"}
+  end
+
+  defmodule SMTPClientUnknownFailure do
+    @behaviour SMTPClient
+
+    @impl true
+    def verify(_params), do: {:error, "some unexpected failure"}
+  end
+
   setup %{conn: conn, user: user} do
+    user =
+      case user do
+        nil -> nil
+        _ -> Repo.preload(user, team: :subscriptions)
+      end
+
+    conn = Plug.Conn.assign(conn, :current_user, user)
+
+    previous_smtp_client = Application.get_env(:form_delegate, :email_provider_smtp_client)
+    Application.put_env(:form_delegate, :email_provider_smtp_client, SMTPClientSuccess)
+
+    on_exit(fn ->
+      if previous_smtp_client do
+        Application.put_env(:form_delegate, :email_provider_smtp_client, previous_smtp_client)
+      else
+        Application.delete_env(:form_delegate, :email_provider_smtp_client)
+      end
+    end)
+
     jwt =
       case FormDelegateWeb.Guardian.encode_and_sign(user) do
         {:ok, jwt, _full_claims} ->
@@ -90,6 +155,128 @@ defmodule FormDelegateWeb.FormControllerTest do
       }
 
       assert response == expected
+    end
+
+    @tag :as_inserted_user
+    test "creates and verifies email integrations marked pending_verification", %{
+      conn: conn,
+      jwt: jwt
+    } do
+      attrs = %{
+        name: "Contact Form",
+        email_integrations: [
+          %{
+            enabled: true,
+            email_provider: "smtp",
+            email_provider_status: "pending_verification",
+            verify_provider: true,
+            email_provider_config: %{
+              host: "smtp.example.com",
+              port: 587,
+              username: "mailer@example.com",
+              from_address: "mailer@example.com"
+            },
+            email_provider_secrets: %{
+              password: "secret"
+            },
+            email_integration_recipients: [
+              %{email: "owner@example.com", type: "to"}
+            ]
+          }
+        ]
+      }
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> post(Routes.form_path(conn, :create), form: attrs)
+        |> json_response(201)
+
+      [integration] = response["data"]["email_integrations"]
+      assert integration["email_provider_status"] == "verified"
+      assert integration["email_provider_last_verified_at"] != nil
+    end
+
+    @tag :as_inserted_user
+    test "returns verification error and rolls back create when provider check fails", %{
+      conn: conn,
+      jwt: jwt
+    } do
+      Application.put_env(:form_delegate, :email_provider_smtp_client, SMTPClientFailure)
+      form_count_before = Repo.aggregate(Form, :count, :id)
+
+      attrs = %{
+        name: "Contact Form",
+        email_integrations: [
+          %{
+            enabled: true,
+            email_provider: "smtp",
+            email_provider_status: "pending_verification",
+            verify_provider: true,
+            email_provider_config: %{
+              host: "smtp.example.com",
+              port: 587,
+              username: "mailer@example.com",
+              from_address: "mailer@example.com"
+            },
+            email_provider_secrets: %{
+              password: "secret"
+            },
+            email_integration_recipients: [
+              %{email: "owner@example.com", type: "to"}
+            ]
+          }
+        ]
+      }
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> post(Routes.form_path(conn, :create), form: attrs)
+        |> json_response(400)
+
+      assert response == %{
+               "error" => %{
+                 "code" => 400,
+                 "type" => "EMAIL_PROVIDER_VERIFICATION_FAILED_INVALID_CREDENTIALS"
+               }
+             }
+
+      form_count_after = Repo.aggregate(Form, :count, :id)
+      assert form_count_after == form_count_before
+    end
+
+    @tag :as_inserted_user
+    test "returns typed verification failure codes for classified provider errors", %{
+      conn: conn,
+      jwt: jwt
+    } do
+      cases = [
+        {SMTPClientConnectionFailure, "EMAIL_PROVIDER_VERIFICATION_FAILED_CONNECTION_FAILED"},
+        {SMTPClientConfigFailure, "EMAIL_PROVIDER_VERIFICATION_FAILED_INVALID_CONFIGURATION"},
+        {SMTPClientAuthMethodFailure,
+         "EMAIL_PROVIDER_VERIFICATION_FAILED_UNSUPPORTED_AUTH_METHOD"},
+        {SMTPClientUnknownFailure, "EMAIL_PROVIDER_VERIFICATION_FAILED_UNKNOWN"}
+      ]
+
+      Enum.each(cases, fn {smtp_client_module, expected_type} ->
+        Application.put_env(:form_delegate, :email_provider_smtp_client, smtp_client_module)
+
+        response =
+          conn
+          |> recycle()
+          |> put_req_header("accept", "application/json")
+          |> put_req_header("authorization", "bearer: " <> jwt)
+          |> post(Routes.form_path(conn, :create), form: build_form_create_attrs())
+          |> json_response(400)
+
+        assert response == %{
+                 "error" => %{
+                   "code" => 400,
+                   "type" => expected_type
+                 }
+               }
+      end)
     end
   end
 
@@ -174,6 +361,151 @@ defmodule FormDelegateWeb.FormControllerTest do
       |> put(Routes.form_path(conn, :update, form.id), form: @invalid_attrs)
       |> json_response(:unprocessable_entity)
     end
+
+    @tag :as_inserted_user
+    test "updates and verifies email integrations marked pending_verification", %{
+      conn: conn,
+      jwt: jwt,
+      user: user
+    } do
+      form = FormDelegate.Factory.insert(:form, user: user)
+      integration = insert_email_integration(form)
+
+      attrs = %{
+        name: "Updated Form",
+        email_integrations: [
+          %{
+            id: integration.id,
+            enabled: true,
+            email_provider: "smtp",
+            email_provider_status: "pending_verification",
+            verify_provider: true,
+            email_provider_config: %{
+              host: "smtp.example.com",
+              port: 587,
+              username: "mailer@example.com",
+              from_address: "mailer@example.com"
+            },
+            email_provider_secrets: %{
+              password: "secret"
+            },
+            email_integration_recipients: [
+              %{email: "owner@example.com", type: "to"}
+            ]
+          }
+        ]
+      }
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> put(Routes.form_path(conn, :update, form.id), form: attrs)
+        |> json_response(200)
+
+      assert response["data"]["name"] == "Updated Form"
+      [updated_integration] = response["data"]["email_integrations"]
+      assert updated_integration["id"] == integration.id
+      assert updated_integration["email_provider_status"] == "verified"
+      assert updated_integration["email_provider_last_verified_at"] != nil
+    end
+
+    @tag :as_inserted_user
+    test "returns verification error and rolls back update when provider check fails", %{
+      conn: conn,
+      jwt: jwt,
+      user: user
+    } do
+      Application.put_env(:form_delegate, :email_provider_smtp_client, SMTPClientFailure)
+
+      form = FormDelegate.Factory.insert(:form, user: user, name: "Original Form")
+      integration = insert_email_integration(form)
+
+      attrs = %{
+        name: "Should Not Persist",
+        email_integrations: [
+          %{
+            id: integration.id,
+            enabled: true,
+            email_provider: "smtp",
+            email_provider_status: "pending_verification",
+            verify_provider: true,
+            email_provider_config: %{
+              host: "smtp.example.com",
+              port: 587,
+              username: "mailer@example.com",
+              from_address: "mailer@example.com"
+            },
+            email_provider_secrets: %{
+              password: "secret"
+            },
+            email_integration_recipients: [
+              %{email: "owner@example.com", type: "to"}
+            ]
+          }
+        ]
+      }
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> put(Routes.form_path(conn, :update, form.id), form: attrs)
+        |> json_response(400)
+
+      assert response == %{
+               "error" => %{
+                 "code" => 400,
+                 "type" => "EMAIL_PROVIDER_VERIFICATION_FAILED_INVALID_CREDENTIALS"
+               }
+             }
+
+      reloaded_form = Repo.get!(Form, form.id)
+      assert reloaded_form.name == "Original Form"
+
+      reloaded_integration = Repo.get!(EmailIntegration, integration.id)
+      assert reloaded_integration.enabled == false
+      assert reloaded_integration.email_provider_status == :unconfigured
+      assert is_nil(reloaded_integration.email_provider_last_verified_at)
+    end
+
+    @tag :as_inserted_user
+    test "returns typed verification failure codes on update for classified provider errors", %{
+      conn: conn,
+      jwt: jwt,
+      user: user
+    } do
+      form = FormDelegate.Factory.insert(:form, user: user, name: "Original Form")
+      integration = insert_email_integration(form)
+
+      cases = [
+        {SMTPClientConnectionFailure, "EMAIL_PROVIDER_VERIFICATION_FAILED_CONNECTION_FAILED"},
+        {SMTPClientConfigFailure, "EMAIL_PROVIDER_VERIFICATION_FAILED_INVALID_CONFIGURATION"},
+        {SMTPClientAuthMethodFailure,
+         "EMAIL_PROVIDER_VERIFICATION_FAILED_UNSUPPORTED_AUTH_METHOD"},
+        {SMTPClientUnknownFailure, "EMAIL_PROVIDER_VERIFICATION_FAILED_UNKNOWN"}
+      ]
+
+      Enum.each(cases, fn {smtp_client_module, expected_type} ->
+        Application.put_env(:form_delegate, :email_provider_smtp_client, smtp_client_module)
+
+        response =
+          conn
+          |> recycle()
+          |> put_req_header("accept", "application/json")
+          |> put_req_header("authorization", "bearer: " <> jwt)
+          |> put(
+            Routes.form_path(conn, :update, form.id),
+            form: build_form_update_attrs(integration.id, "Should Not Persist")
+          )
+          |> json_response(400)
+
+        assert response == %{
+                 "error" => %{
+                   "code" => 400,
+                   "type" => expected_type
+                 }
+               }
+      end)
+    end
   end
 
   describe "delete/3" do
@@ -254,5 +586,67 @@ defmodule FormDelegateWeb.FormControllerTest do
         end
       )
     end
+  end
+
+  defp insert_email_integration(form) do
+    %EmailIntegration{}
+    |> EmailIntegration.changeset(%{
+      "enabled" => false,
+      "form_id" => form.id,
+      "email_provider" => "smtp",
+      "email_provider_config" => %{
+        "host" => "smtp.example.com",
+        "port" => 587,
+        "username" => "mailer@example.com",
+        "from_address" => "mailer@example.com"
+      },
+      "email_provider_secrets" => %{"password" => "secret"},
+      "email_integration_recipients" => [
+        %{"email" => "owner@example.com", "type" => "to"}
+      ]
+    })
+    |> Repo.insert!()
+  end
+
+  defp build_form_create_attrs do
+    %{
+      name: "Contact Form",
+      email_integrations: [build_email_integration_attrs()]
+    }
+  end
+
+  defp build_form_update_attrs(integration_id, form_name) do
+    %{
+      name: form_name,
+      email_integrations: [
+        build_email_integration_attrs(%{
+          id: integration_id
+        })
+      ]
+    }
+  end
+
+  defp build_email_integration_attrs(extra_attrs \\ %{}) do
+    Map.merge(
+      %{
+        enabled: true,
+        email_provider: "smtp",
+        email_provider_status: "pending_verification",
+        verify_provider: true,
+        email_provider_config: %{
+          host: "smtp.example.com",
+          port: 587,
+          username: "mailer@example.com",
+          from_address: "mailer@example.com"
+        },
+        email_provider_secrets: %{
+          password: "secret"
+        },
+        email_integration_recipients: [
+          %{email: "owner@example.com", type: "to"}
+        ]
+      },
+      extra_attrs
+    )
   end
 end

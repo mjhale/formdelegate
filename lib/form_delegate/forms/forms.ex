@@ -7,6 +7,7 @@ defmodule FormDelegate.Forms do
 
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
+  alias FormDelegate.Integrations
   alias FormDelegate.Integrations.EmailIntegration
   alias FormDelegate.Repo
 
@@ -66,11 +67,26 @@ defmodule FormDelegate.Forms do
 
   """
   def create_form(attrs \\ %{}, %User{} = user) do
-    %Form{}
-    |> Form.changeset(attrs)
-    |> Ecto.Changeset.cast_assoc(:email_integrations, with: &EmailIntegration.changeset/2)
-    |> Ecto.Changeset.put_assoc(:user, user)
-    |> Repo.insert()
+    Repo.transaction(fn ->
+      with {:ok, %Form{} = form} <-
+             %Form{}
+             |> Form.changeset(attrs)
+             |> Ecto.Changeset.cast_assoc(:email_integrations,
+               with: &EmailIntegration.changeset/2
+             )
+             |> Ecto.Changeset.put_assoc(:user, user)
+             |> Repo.insert(),
+           {:ok, %Form{} = form} <- maybe_verify_email_integrations(form) do
+        form
+      else
+        {:error, status, metadata} when is_atom(status) and is_map(metadata) ->
+          Repo.rollback({status, metadata})
+
+        {:error, reason} ->
+          Repo.rollback(reason)
+      end
+    end)
+    |> normalize_transaction_result()
   end
 
   @doc """
@@ -86,10 +102,25 @@ defmodule FormDelegate.Forms do
 
   """
   def update_form(%Form{} = form, attrs) do
-    form
-    |> Form.changeset(attrs)
-    |> Ecto.Changeset.cast_assoc(:email_integrations, with: &EmailIntegration.changeset/2)
-    |> Repo.update(returning: true)
+    Repo.transaction(fn ->
+      with {:ok, %Form{} = form} <-
+             form
+             |> Form.changeset(attrs)
+             |> Ecto.Changeset.cast_assoc(:email_integrations,
+               with: &EmailIntegration.changeset/2
+             )
+             |> Repo.update(returning: true),
+           {:ok, %Form{} = form} <- maybe_verify_email_integrations(form) do
+        form
+      else
+        {:error, status, metadata} when is_atom(status) and is_map(metadata) ->
+          Repo.rollback({status, metadata})
+
+        {:error, reason} ->
+          Repo.rollback(reason)
+      end
+    end)
+    |> normalize_transaction_result()
   end
 
   @doc """
@@ -119,5 +150,41 @@ defmodule FormDelegate.Forms do
   """
   def change_form(%Form{} = form) do
     Form.changeset(form, %{})
+  end
+
+  defp normalize_transaction_result({:ok, %Form{} = form}), do: {:ok, form}
+
+  defp normalize_transaction_result({:error, {:error, status, metadata}}),
+    do: {:error, status, metadata}
+
+  defp normalize_transaction_result({:error, {status, metadata}}), do: {:error, status, metadata}
+  defp normalize_transaction_result({:error, reason}), do: {:error, reason}
+
+  defp maybe_verify_email_integrations(%Form{} = form) do
+    form = Repo.preload(form, [email_integrations: [:email_integration_recipients]], force: true)
+
+    verification_result =
+      form.email_integrations
+      |> Enum.filter(&(&1.enabled and &1.email_provider_status == :pending_verification))
+      |> Enum.reduce_while(:ok, fn email_integration, _acc ->
+        case Integrations.verify_email_integration_provider(email_integration) do
+          {:ok, _email_integration} ->
+            {:cont, :ok}
+
+          {:error, verification_error} ->
+            {:halt,
+             {:error, :bad_request,
+              %{type: Integrations.verification_error_type(verification_error)}}}
+        end
+      end)
+
+    case verification_result do
+      :ok ->
+        {:ok,
+         Repo.preload(form, [email_integrations: [:email_integration_recipients]], force: true)}
+
+      {:error, _status, _metadata} = error ->
+        error
+    end
   end
 end

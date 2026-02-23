@@ -12,7 +12,8 @@ defmodule FormDelegateWeb.FormEmailIntegrationView do
         render_many(
           email_integrations,
           FormEmailIntegrationView,
-          "form_email_integration.json"
+          "form_email_integration.json",
+          as: :email_integration
         )
     }
   end
@@ -23,15 +24,18 @@ defmodule FormDelegateWeb.FormEmailIntegrationView do
         render_one(
           email_integration,
           FormEmailIntegrationView,
-          "form_email_integration.json"
+          "form_email_integration.json",
+          as: :email_integration
         )
     }
   end
 
   def render("form_email_integration.json", %{email_integration: email_integration}) do
     %{
-      email_api_key: email_integration.email_api_key,
-      email_from_address: email_integration.email_from_address,
+      email_provider: email_integration.email_provider,
+      email_provider_config: email_integration.email_provider_config,
+      email_provider_last_verified_at: email_integration.email_provider_last_verified_at,
+      email_provider_status: email_integration.email_provider_status,
       email_integration_recipients:
         render_many(
           email_integration.email_integration_recipients,

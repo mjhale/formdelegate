@@ -11,8 +11,15 @@ defmodule FormDelegate.Integrations.FormIntegration do
   schema "form_integrations" do
     field :enabled, :boolean, default: false
 
-    field :email_api_key, :string
-    field :email_from_address, :string
+    field :email_provider, Ecto.Enum, values: [:smtp, :postmark, :sendgrid]
+    field :email_provider_config, :map
+    field :email_provider_secrets, :map
+
+    field :email_provider_status, Ecto.Enum,
+      values: [:unconfigured, :pending_verification, :verified, :invalid],
+      default: :unconfigured
+
+    field :email_provider_last_verified_at, :utc_datetime_usec
 
     has_many :email_integration_recipients, EmailIntegrationRecipient,
       foreign_key: :form_integration_id

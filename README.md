@@ -42,6 +42,51 @@ automatically filtered for spam via [Akismet](https://akismet.com/).
 - Integrate Stripe payments into frontend
 - Refactor notification and alert system
 
+## Email Provider Verification (BYO Credentials)
+
+Form email integrations now require user-owned provider credentials.
+Integrations are verified against the configured provider before they can become `verified`.
+
+### Supported Providers
+
+- `smtp`
+- `postmark`
+- `sendgrid`
+
+### Form Create/Update Verification Trigger
+
+When creating/updating forms with enabled email integrations, set:
+
+- `email_provider_status: "pending_verification"`
+- `verify_provider: true`
+
+The backend will verify credentials during the same request and either:
+
+- Persist integration with `email_provider_status: "verified"` and `email_provider_last_verified_at`
+- Return `400` with typed verification error and roll back the mutation
+
+### Manual Verification Endpoint
+
+Authenticated users can verify an integration directly:
+
+- `POST /v1/forms/:form_id/email_integrations/:id/verify`
+
+Successful response returns the updated integration with:
+
+- `email_provider_status`
+- `email_provider_last_verified_at`
+
+### Verification Error Types
+
+`400` responses use one of:
+
+- `UNSUPPORTED_EMAIL_PROVIDER`
+- `EMAIL_PROVIDER_VERIFICATION_FAILED_INVALID_CREDENTIALS`
+- `EMAIL_PROVIDER_VERIFICATION_FAILED_CONNECTION_FAILED`
+- `EMAIL_PROVIDER_VERIFICATION_FAILED_INVALID_CONFIGURATION`
+- `EMAIL_PROVIDER_VERIFICATION_FAILED_UNSUPPORTED_AUTH_METHOD`
+- `EMAIL_PROVIDER_VERIFICATION_FAILED_UNKNOWN`
+
 ## Local Development
 
 Form Delegate uses Elixir and [Phoenix](http://www.phoenixframework.org/) for the API, JavaScript and [React](https://reactjs.org/) for the frontend, and [Postgres](https://www.postgresql.org/) for the database.

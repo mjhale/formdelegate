@@ -81,6 +81,9 @@ defmodule FormDelegateWeb.Router do
 
     resources "/forms", FormController, except: [:edit, :new]
 
+    post "/forms/:form_id/email_integrations/:id/verify", FormEmailIntegrationController, :verify,
+      as: :form_email_integration
+
     resources "/subscriptions", SubscriptionController, only: [:index, :show]
 
     scope "/submissions" do
