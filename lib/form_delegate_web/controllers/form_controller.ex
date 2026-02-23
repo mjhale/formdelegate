@@ -63,7 +63,22 @@ defmodule FormDelegateWeb.FormController do
   end
 
   defp validate_and_update_billing_count(plan, team_id) do
-    billing_count = BillingCounts.get_latest_billing_count_of_team(team_id)
+    billing_count =
+      case BillingCounts.get_latest_billing_count_of_team(team_id) do
+        nil ->
+          {:ok, new_billing_count} =
+            BillingCounts.create_billing_count(%FormDelegate.BillingCounts.BillingCount{}, %{
+              team_id: team_id,
+              submission_count: 0,
+              storage_count: 0,
+              form_count: 0
+            })
+
+          new_billing_count
+
+        existing_billing_count ->
+          existing_billing_count
+      end
 
     # @TODO: Send warnings when limit is approached and exceeded
     cond do

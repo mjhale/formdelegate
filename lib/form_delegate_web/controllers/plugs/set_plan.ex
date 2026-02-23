@@ -1,5 +1,7 @@
 defmodule FormDelegateWeb.Plugs.SetPlan do
   import Plug.Conn
+  alias FormDelegate.Plans
+  alias FormDelegate.Plans.Plan
 
   def init(_), do: nil
 
@@ -20,9 +22,18 @@ defmodule FormDelegateWeb.Plugs.SetPlan do
   end
 
   defp get_plan_for_user(user) do
-    case Enum.at(user.team.subscriptions, 0) do
+    subscriptions =
+      user
+      |> Map.get(:team)
+      |> case do
+        nil -> []
+        %Ecto.Association.NotLoaded{} -> []
+        team -> Map.get(team, :subscriptions, [])
+      end
+
+    case Enum.at(subscriptions, 0) do
       nil ->
-        FormDelegate.Plans.get_plan_by!(name: "Free")
+        get_free_plan()
 
       subscriptions ->
         {:ok, stripe_subscription} =
@@ -31,7 +42,22 @@ defmodule FormDelegateWeb.Plugs.SetPlan do
         stripe_subscription_item = Enum.at(stripe_subscription.items.data, 0)
         stripe_product_id = stripe_subscription_item.price.product
 
-        FormDelegate.Plans.get_plan_by!(stripe_product_id: stripe_product_id)
+        Plans.get_plan_by!(stripe_product_id: stripe_product_id)
+    end
+  end
+
+  defp get_free_plan do
+    case FormDelegate.Repo.get_by(Plan, name: "Free") do
+      nil ->
+        %Plan{
+          name: "Free",
+          limit_submissions: 100,
+          limit_forms: 0,
+          limit_storage: 5_000_000
+        }
+
+      plan ->
+        plan
     end
   end
 end

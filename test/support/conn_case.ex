@@ -16,6 +16,10 @@ defmodule FormDelegateWeb.ConnCase do
   use ExUnit.CaseTemplate
 
   alias FormDelegate.Factory
+  alias FormDelegate.BillingCounts
+  alias FormDelegate.BillingCounts.BillingCount
+  alias FormDelegate.Plans.Plan
+  alias FormDelegate.Repo
 
   using do
     quote do
@@ -37,6 +41,8 @@ defmodule FormDelegateWeb.ConnCase do
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(FormDelegate.Repo, {:shared, self()})
     end
+
+    ensure_free_plan_exists()
 
     user =
       cond do
@@ -62,10 +68,46 @@ defmodule FormDelegateWeb.ConnCase do
           nil
       end
 
+    ensure_billing_count_exists(user)
+
     conn =
       Phoenix.ConnTest.build_conn()
       |> Plug.Conn.assign(:current_user, user)
 
     {:ok, conn: conn, user: user}
+  end
+
+  defp ensure_free_plan_exists do
+    case Repo.get_by(Plan, name: "Free") do
+      nil ->
+        Repo.insert!(%Plan{
+          name: "Free",
+          limit_submissions: 100,
+          limit_forms: 0,
+          limit_storage: 5_000_000
+        })
+
+      _plan ->
+        :ok
+    end
+  end
+
+  defp ensure_billing_count_exists(nil), do: :ok
+
+  defp ensure_billing_count_exists(%{team_id: nil}), do: :ok
+
+  defp ensure_billing_count_exists(%{team_id: team_id}) do
+    case BillingCounts.get_latest_billing_count_of_team(team_id) do
+      nil ->
+        BillingCounts.create_billing_count(%BillingCount{}, %{
+          team_id: team_id,
+          submission_count: 0,
+          storage_count: 0,
+          form_count: 0
+        })
+
+      _billing_count ->
+        :ok
+    end
   end
 end
