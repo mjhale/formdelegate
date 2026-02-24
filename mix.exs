@@ -64,6 +64,7 @@ defmodule FormDelegate.Mixfile do
       {:sweet_xml, "~> 0.7.3"},
       {:stripity_stripe, "~> 3.1.0"},
       {:oban, "~> 2.17"},
+      {:telemetry, "~> 1.3"},
 
       # dev, test
       {:ex_machina, "~> 2.7.0", only: :test},

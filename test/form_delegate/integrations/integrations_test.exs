@@ -53,26 +53,45 @@ defmodule FormDelegate.IntegrationsTest do
     test "marks integration as verified when provider verification succeeds" do
       integration = insert_email_integration()
 
-      assert {:ok, updated} =
-               Integrations.verify_email_integration_provider(integration, %{
-                 smtp: SuccessProvider
-               })
+      {result, telemetry} =
+        capture_verification_event(fn ->
+          Integrations.verify_email_integration_provider(integration, %{
+            smtp: SuccessProvider
+          })
+        end)
+
+      assert {:ok, updated} = result
 
       assert updated.email_provider_status == :verified
       assert %DateTime{} = updated.email_provider_last_verified_at
+
+      assert telemetry.metadata.status == :verified
+      assert telemetry.metadata.failure_code == nil
+      assert telemetry.metadata.provider == :smtp
+      assert telemetry.metadata.integration_id == integration.id
     end
 
     test "marks integration as invalid when provider verification fails" do
       integration = insert_email_integration()
 
+      {result, telemetry} =
+        capture_verification_event(fn ->
+          Integrations.verify_email_integration_provider(integration, %{
+            smtp: FailureProvider
+          })
+        end)
+
       assert {:error, {:verification_failed, "invalid credentials", "INVALID_CREDENTIALS"}} =
-               Integrations.verify_email_integration_provider(integration, %{
-                 smtp: FailureProvider
-               })
+               result
 
       reloaded = Repo.get!(EmailIntegration, integration.id)
       assert reloaded.email_provider_status == :invalid
       assert is_nil(reloaded.email_provider_last_verified_at)
+
+      assert telemetry.metadata.status == :failed
+      assert telemetry.metadata.failure_code == "INVALID_CREDENTIALS"
+      assert telemetry.metadata.provider == :smtp
+      assert telemetry.metadata.integration_id == integration.id
     end
 
     test "returns unsupported_provider error when module mapping is missing" do
@@ -136,5 +155,30 @@ defmodule FormDelegate.IntegrationsTest do
       "email_provider_secrets" => %{"password" => "secret"}
     })
     |> Repo.insert!()
+  end
+
+  defp capture_verification_event(fun) do
+    test_pid = self()
+    handler_id = "verification-test-#{System.unique_integer([:positive, :monotonic])}"
+    event_name = [:form_delegate, :email_integration, :verification]
+
+    :telemetry.attach(
+      handler_id,
+      event_name,
+      fn event, measurements, metadata, _config ->
+        send(test_pid, {:verification_event, event, measurements, metadata})
+      end,
+      nil
+    )
+
+    try do
+      result = fun.()
+
+      assert_receive {:verification_event, ^event_name, measurements, metadata}
+
+      {result, %{measurements: measurements, metadata: metadata}}
+    after
+      :telemetry.detach(handler_id)
+    end
   end
 end
