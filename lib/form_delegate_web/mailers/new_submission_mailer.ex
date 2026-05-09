@@ -17,6 +17,6 @@ defmodule FormDelegateWeb.Mailers.NewSubmissionMailer do
   end
 
   defp frontend_url do
-    Application.get_env(:form_delegate, :frontend_url)
+    Application.get_env(:form_delegate, :frontend_url) || "https://www.formdelegate.com"
   end
 end

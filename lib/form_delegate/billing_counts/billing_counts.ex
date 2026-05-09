@@ -22,6 +22,8 @@ defmodule FormDelegate.BillingCounts do
       nil
 
   """
+  def get_latest_billing_count_of_team(nil), do: nil
+
   def get_latest_billing_count_of_team(team_id) do
     Repo.one(
       from bc in BillingCount,

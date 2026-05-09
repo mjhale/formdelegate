@@ -4,8 +4,8 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
   alias Bamboo.Email
 
   alias FormDelegate.Forms.Form
+  alias FormDelegate.Integrations.EmailDispatcher
   alias FormDelegate.{Submissions, Submissions.Submission}
-  alias FormDelegateWeb.MailService
   alias FormDelegateWeb.Mailers.NewSubmissionMailer
 
   require Logger
@@ -30,13 +30,26 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
             end
           )
 
-        {:ok, %Email{} = _email, _response} =
-          submission
-          |> NewSubmissionMailer.new_submission_email(recipient_groups)
-          |> MailService.deliver_now(response: true)
+        submission
+        |> NewSubmissionMailer.new_submission_email(recipient_groups)
+        |> deliver_with_provider(email_integration)
       end
     end)
 
     :ok
+  end
+
+  defp deliver_with_provider(%Email{} = email, email_integration) do
+    case EmailDispatcher.deliver_submission_email(email_integration, email) do
+      {:ok, _delivery_result} = success ->
+        success
+
+      {:error, reason} ->
+        Logger.warning(
+          "FD: Email integration delivery failed integration_id=#{email_integration.id} provider=#{email_integration.email_provider} reason=#{reason}"
+        )
+
+        {:error, reason}
+    end
   end
 end
