@@ -282,8 +282,17 @@ podman build \
 podman build \
   --platform linux/amd64,linux/arm64 \
   --manifest ghcr.io/mjhale/formdelegate-web:latest \
+  --build-arg NEXT_PUBLIC_API_HOST=https://api.formdelegate.com \
+  --build-arg NEXT_PUBLIC_SUPPORT_TICKET_ENDPOINT=https://www.formdelegate.com/f/ce88c8f2-f9a2-4e59-b3d5-72d69e4eb17c \
+  --build-arg NEXT_PUBLIC_CONTACT_FORM_ENDPOINT=https://www.formdelegate.com/f/7c052c73-c5e2-488c-bead-4625b6a7c8d7 \
+  --build-arg NEXT_PUBLIC_CAPTCHA_SITE_KEY=d60280d0-5ee7-4371-8a16-070cb0dc5297 \
+  --build-arg NEXT_PUBLIC_DEPLOYMENT_ENV=production \
+  --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_replace_me \
   ./assets
 ```
+
+The `NEXT_PUBLIC_*` values are embedded in the browser bundle during the Next.js build. Rebuild and
+republish the web image whenever one of these values changes.
 
 Push the manifests to GHCR:
 
