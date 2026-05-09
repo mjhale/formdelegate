@@ -12,9 +12,9 @@
 #   - https://pkgs.org/ - resource for finding needed packages
 #   - Ex: hexpm/elixir:1.13.4-erlang-24.3.4-debian-bullseye-20210902-slim
 #
-ARG ELIXIR_VERSION=1.16.2
-ARG OTP_VERSION=26.2.4
-ARG DEBIAN_VERSION=bookworm-20240408-slim
+ARG ELIXIR_VERSION=1.19.5
+ARG OTP_VERSION=28.5
+ARG DEBIAN_VERSION=bookworm-20260505-slim
 
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
@@ -27,6 +27,14 @@ RUN apt-get update -y && apt-get install -y build-essential git \
 
 # prepare build dir
 WORKDIR /app
+
+# This flag disables JIT behaviour that causes a segfault under QEMU.
+# Note that we set this runtime flag only during the build stage and
+# it has no impact when running the final image. See [1] for more
+# information.
+#
+# [1]: https://github.com/erlang/otp/pull/6340
+ENV ERL_FLAGS="+JMsingle true"
 
 # install hex + rebar
 RUN mix local.hex --force && \
