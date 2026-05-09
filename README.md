@@ -128,9 +128,16 @@ Now you can visit [`localhost:3000`](http://localhost:3000) from your browser.
 
 ## Running Your Own Instance
 
-Form Delegate runs on [Fly.io](https://fly.io/) for the Phoenix API and
-[Vercel](https://vercel.com/) for the React frontend. Both services offer free tiers that are
-suitable for development.
+Form Delegate is self-hosted with container images. The Phoenix API and Next.js frontend are
+published as separate images and are intended to run behind a reverse proxy such as Traefik.
+
+The runtime stack should include:
+
+- The Phoenix API container, published as `ghcr.io/mjhale/formdelegate-api`
+- The Next.js frontend container, published as `ghcr.io/mjhale/formdelegate-web`
+- Postgres for application data
+- A reverse proxy for HTTPS, routing, compression, and redirects
+- An S3-compatible object storage service for submission files
 
 Additionally, Form Delegate uses the following services:
 
@@ -140,33 +147,66 @@ Additionally, Form Delegate uses the following services:
 
 - [Amazon S3](https://aws.amazon.com/s3/) for block storage of submission files
 
-- [Postmark](https://postmarkapp.com/) for email delivery
+- [Postmark](https://postmarkapp.com/) for transactional email delivery
 
-_Note: This repository is currently hardcoded with our official domain. You will need to create a fork
-and replace `formdelegate.com` where appropriate._
+_Note: Production domains, CORS origins, frontend URLs, and public form endpoints must match your
+own deployment. Update environment variables rather than reusing the official Form Delegate domains._
 
-### Create a Free Fly.io Account
+### Container Environment
 
-Visit the [Fly.io website](https://fly.io/docs/speedrun/) to create a free account.
+Set the API container environment from your Compose stack or container orchestrator:
 
-### Install and Set Up the Fly.io CLI
+- `DATABASE_URL`
+- `POOL_SIZE`
+- `SECRET_KEY_BASE`
+- `GUARDIAN_SECRET`
+- `POSTMARK_API_KEY`
+- `AKISMET_API_KEY`
+- `HCAPTCHA_SECRET_API_KEY`
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION`
+- `AWS_S3_SCHEME`
+- `AWS_S3_HOST`
+- `AWS_S3_BUCKET`
+- `AWS_S3_ASSET_HOST`
+- `STRIPE_SECRET`
+- `STRIPE_WEBHOOK_SECRET`
+- `FRONTEND_URL`
+- `CORS_ORIGINS`
+- `PHX_HOST`
+- `PORT`
 
-Visit [Fly.io's flyctl installation guide](https://fly.io/docs/hands-on/install-flyctl/) for instructions on how to set up and configure the CLI.
+Build the frontend image with the public Next.js environment values for your deployment:
 
-### Set Up Your Fly.io Instance
+- `NEXT_PUBLIC_API_HOST`
+- `NEXT_PUBLIC_SUPPORT_TICKET_ENDPOINT`
+- `NEXT_PUBLIC_CONTACT_FORM_ENDPOINT`
+- `NEXT_PUBLIC_CAPTCHA_SITE_KEY`
+- `NEXT_PUBLIC_DEPLOYMENT_ENV`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
 
-1. Run `fly launch` inside the project directory and follow the configuration prompts. Set up the Postgres database during this process.
+### First Run
 
-2. Configure the project secrets found in `.env` via the flyctl: e.g., `fly secrets set HCAPTCHA_SECRET_API_KEY=0x9623`
+Run database migrations before starting traffic against the API:
 
-3. Deploy the project: `fly deploy`
+```bash
+docker compose run --rm api /app/bin/migrate
+```
 
-4. Run the following one-time setup commands to enable SSH access to the Fly.io app: `fly ssh establish`
-and `fly ssh issue --agent`
+Then start the stack:
 
-5. Open a shell connection to the app's machine: `fly ssh console`
+```bash
+docker compose up -d
+```
 
-6. Set up your initial data via the remote IEx shell `app/bin/form_delegate remote`:
+Set up your initial data via a remote shell in the API container:
+
+```bash
+docker compose exec api /app/bin/form_delegate remote
+```
+
+Then run:
 
 ```
 team = FormDelegate.Repo.insert!(%FormDelegate.Teams.Team{})
@@ -200,11 +240,72 @@ FormDelegate.Repo.insert!(%FormDelegate.Plans.Plan{
 })
 ```
 
-### Create a Vercel account
+### Deployment Checklist
 
-[Visit the Vercel website](https://vercel.com/) and sign up for a free Vercel account.
+- Route the frontend domain to the web container.
+- Route the API domain to the API container.
+- Configure Stripe webhooks to post to `/webhooks/stripe` on the API domain.
+- Allow your production frontend origins in `CORS_ORIGINS`.
+- Configure hCaptcha allowed domains.
+- Configure Postmark sender/domain authentication.
+- Confirm S3 upload and asset URLs work.
+- Back up Postgres and your object storage bucket.
 
-Add a new project via the Git repository import. Add the project's environment variables found in `assets/.env.production`.
+## Publishing Container Images
+
+The API and web containers are published to GHCR as multi-architecture images for `linux/amd64`
+and `linux/arm64`.
+
+Log in to GHCR with a GitHub personal access token that has `write:packages` access:
+
+```bash
+podman login ghcr.io
+```
+
+If local `latest` tags already exist as regular images or stale manifests, remove them first:
+
+```bash
+podman rmi ghcr.io/mjhale/formdelegate-api:latest 2>/dev/null || true
+podman rmi ghcr.io/mjhale/formdelegate-web:latest 2>/dev/null || true
+podman manifest rm ghcr.io/mjhale/formdelegate-api:latest 2>/dev/null || true
+podman manifest rm ghcr.io/mjhale/formdelegate-web:latest 2>/dev/null || true
+```
+
+Build both architectures into local manifest lists:
+
+```bash
+podman build \
+  --platform linux/amd64,linux/arm64 \
+  --manifest ghcr.io/mjhale/formdelegate-api:latest \
+  .
+
+podman build \
+  --platform linux/amd64,linux/arm64 \
+  --manifest ghcr.io/mjhale/formdelegate-web:latest \
+  ./assets
+```
+
+Push the manifests to GHCR:
+
+```bash
+podman manifest push --format docker \
+  ghcr.io/mjhale/formdelegate-api:latest \
+  docker://ghcr.io/mjhale/formdelegate-api:latest
+
+podman manifest push --format docker \
+  ghcr.io/mjhale/formdelegate-web:latest \
+  docker://ghcr.io/mjhale/formdelegate-web:latest
+```
+
+Verify the published manifests:
+
+```bash
+podman manifest inspect ghcr.io/mjhale/formdelegate-api:latest
+podman manifest inspect ghcr.io/mjhale/formdelegate-web:latest
+```
+
+When building the API image under QEMU emulation, the Dockerfile sets `ERL_FLAGS="+JMsingle true"`
+to avoid Erlang JIT issues during `mix` compilation.
 
 ## Learn More
 
