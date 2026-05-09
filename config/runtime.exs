@@ -89,7 +89,9 @@ if config_env() == :prod do
 
   # Configures CORS options
   config :cors_plug,
-    origin: ["https://www.formdelegate.com"],
+    origin:
+      System.get_env("CORS_ORIGINS", "https://www.formdelegate.com")
+      |> String.split(",", trim: true),
     max_age: 86400,
     expose: ["Per-Page", "Total", "Link"]
 
@@ -117,7 +119,7 @@ if config_env() == :prod do
     secret_access_key:
       System.get_env("AWS_SECRET_ACCESS_KEY") || raise("Env var not set: AWS_SECRET_ACCESS_KEY"),
     region:
-      System.get_env("AWS_SECRET_ACCESS_KEY") || raise("Env var not set: AWS_SECRET_ACCESS_KEY")
+      System.get_env("AWS_REGION") || raise("Env var not set: AWS_REGION")
 
   config :ex_aws, :s3,
     storage: Waffle.Storage.S3,
