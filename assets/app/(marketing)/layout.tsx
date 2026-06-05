@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 
 import Link from 'next/link';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import NavBar from './_components/navbar';
 
@@ -73,7 +72,6 @@ export default function RootLayout({
             </div>
           </div>
         </div>
-        <SpeedInsights />
       </body>
     </html>
   );
