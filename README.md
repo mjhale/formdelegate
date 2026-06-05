@@ -107,7 +107,7 @@ use._
 
 - Install dependencies with `mix deps.get`
 - Create and migrate your database with `mix ecto.create && mix ecto.migrate`
-- Ensure the [necessary environment variables](./.sample.env) are set via `source .env`
+- Ensure the [necessary environment variables](./.sample.env) are set via `set -a && source .env && set +a`
 - Start the Phoenix endpoint with `mix phx.server`
 - Start a local Stripe listener with `stripe listen --forward-to localhost:4000/webhooks/stripe --api-key sk_test_...`
 
@@ -188,10 +188,23 @@ Build the frontend image with the public Next.js environment values for your dep
 
 ### First Run
 
+On the server, this deployment is managed from:
+
+```bash
+cd ~/lentiira/stacks/formdelegate
+```
+
+Create a `.env` file next to `compose.yaml` using `.sample.env` as the variable checklist. For the
+bundled Postgres service, `DATABASE_URL` should point at the Compose service host, for example:
+
+```bash
+DATABASE_URL=ecto://formdelegate:replace_me@db:5432/formdelegate_prod
+```
+
 Run database migrations before starting traffic against the API:
 
 ```bash
-docker compose run --rm api /app/bin/migrate
+docker compose --profile tools run --rm migrate
 ```
 
 Then start the stack:
@@ -260,6 +273,7 @@ Log in to GHCR with a GitHub personal access token that has `write:packages` acc
 
 ```bash
 podman login ghcr.io
+GIT_SHA=$(git rev-parse --short HEAD)
 ```
 
 If local `latest` tags already exist as regular images or stale manifests, remove them first:
@@ -285,7 +299,7 @@ podman build \
   --build-arg NEXT_PUBLIC_API_HOST=https://api.formdelegate.com \
   --build-arg NEXT_PUBLIC_SUPPORT_TICKET_ENDPOINT=https://www.formdelegate.com/f/ce88c8f2-f9a2-4e59-b3d5-72d69e4eb17c \
   --build-arg NEXT_PUBLIC_CONTACT_FORM_ENDPOINT=https://www.formdelegate.com/f/7c052c73-c5e2-488c-bead-4625b6a7c8d7 \
-  --build-arg NEXT_PUBLIC_CAPTCHA_SITE_KEY=d60280d0-5ee7-4371-8a16-070cb0dc5297 \
+  --build-arg NEXT_PUBLIC_CAPTCHA_SITE_KEY=captcha_public_key \
   --build-arg NEXT_PUBLIC_DEPLOYMENT_ENV=production \
   --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_replace_me \
   ./assets
@@ -294,7 +308,7 @@ podman build \
 The `NEXT_PUBLIC_*` values are embedded in the browser bundle during the Next.js build. Rebuild and
 republish the web image whenever one of these values changes.
 
-Push the manifests to GHCR:
+Push the manifests to GHCR with both `latest` and the current git SHA:
 
 ```bash
 podman manifest push --format docker \
@@ -302,15 +316,25 @@ podman manifest push --format docker \
   docker://ghcr.io/mjhale/formdelegate-api:latest
 
 podman manifest push --format docker \
+  ghcr.io/mjhale/formdelegate-api:latest \
+  docker://ghcr.io/mjhale/formdelegate-api:$GIT_SHA
+
+podman manifest push --format docker \
   ghcr.io/mjhale/formdelegate-web:latest \
   docker://ghcr.io/mjhale/formdelegate-web:latest
+
+podman manifest push --format docker \
+  ghcr.io/mjhale/formdelegate-web:latest \
+  docker://ghcr.io/mjhale/formdelegate-web:$GIT_SHA
 ```
 
 Verify the published manifests:
 
 ```bash
 podman manifest inspect ghcr.io/mjhale/formdelegate-api:latest
+podman manifest inspect ghcr.io/mjhale/formdelegate-api:$GIT_SHA
 podman manifest inspect ghcr.io/mjhale/formdelegate-web:latest
+podman manifest inspect ghcr.io/mjhale/formdelegate-web:$GIT_SHA
 ```
 
 When building the API image under QEMU emulation, the Dockerfile sets `ERL_FLAGS="+JMsingle true"`
