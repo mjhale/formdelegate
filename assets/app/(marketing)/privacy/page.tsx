@@ -195,8 +195,7 @@ export default async function PrivacyPage() {
             </p>
 
             <ul className="list-disc list-inside">
-              <li>Vercel (USA) - Web host</li>
-              <li>Fly.io (USA) - Web host and database host</li>
+              <li>Hetzner (Germany) - Web host and database host</li>
               <li>GitHub (USA) - Code repository provider</li>
               <li>Digital Ocean (USA) - Cloud storage provider</li>
               <li>hCaptcha (USA) - Spam detection provider</li>
@@ -206,7 +205,6 @@ export default async function PrivacyPage() {
               </li>
               <li>Stripe (USA) - Payment processor</li>
               <li>Postmark (USA) - Mail delivery processor</li>
-              <li>Fastmail (AUS) - Mail host</li>
             </ul>
           </div>
 
