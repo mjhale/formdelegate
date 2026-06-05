@@ -20,6 +20,10 @@ config :form_delegate, FormDelegateWeb.Endpoint,
 config :form_delegate,
   stripe_webhook_secret: System.get_env("STRIPE_WEBHOOK_SECRET")
 
+config :form_delegate,
+  akismet_api_key: System.get_env("AKISMET_API_KEY"),
+  hcaptcha_secret_api_key: System.get_env("HCAPTCHA_SECRET_API_KEY")
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

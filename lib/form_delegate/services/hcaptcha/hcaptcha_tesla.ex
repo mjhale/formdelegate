@@ -2,7 +2,6 @@ defmodule FormDelegate.Services.Hcaptcha.Tesla do
   alias FormDelegate.Services.Hcaptcha
 
   @behaviour Hcaptcha
-  @hcaptcha_secret_api_key System.get_env("HCAPTCHA_SECRET_API_KEY")
 
   use Tesla, only: [:post], docs: false
 
@@ -17,7 +16,7 @@ defmodule FormDelegate.Services.Hcaptcha.Tesla do
 
   @impl Hcaptcha
   def verify_token(token) do
-    request_body = %{remoteip: nil, response: token, secret: @hcaptcha_secret_api_key}
+    request_body = %{remoteip: nil, response: token, secret: hcaptcha_secret_api_key()}
 
     case post("https://hcaptcha.com/siteverify", request_body) do
       {:ok, %Tesla.Env{status: 200, body: %{"success" => true} = body}} ->
@@ -27,5 +26,9 @@ defmodule FormDelegate.Services.Hcaptcha.Tesla do
         Logger.error("FD Registration: Invalid CAPTCHA challenge for request token #{token}")
         {:error, :invalid_or_expired_captcha}
     end
+  end
+
+  defp hcaptcha_secret_api_key do
+    Application.fetch_env!(:form_delegate, :hcaptcha_secret_api_key)
   end
 end

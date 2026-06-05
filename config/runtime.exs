@@ -16,7 +16,7 @@ import Config
 #
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
-if System.get_env("PHX_SERVER") do
+if System.get_env("PHX_SERVER") == "true" do
   config :form_delegate, FormDelegateWeb.Endpoint, server: true
 end
 
@@ -109,8 +109,17 @@ if config_env() == :prod do
   # Configures Akismet module to use Tesla HTTP client
   config :form_delegate, :akismet_api, FormDelegate.Services.Akismet.Tesla
 
+  config :form_delegate,
+    akismet_api_key:
+      System.get_env("AKISMET_API_KEY") || raise("Env var not set: AKISMET_API_KEY")
+
   # Configures Hcaptcha module to use Tesla HTTP client
   config :form_delegate, :hcaptcha_api, FormDelegate.Services.Hcaptcha.Tesla
+
+  config :form_delegate,
+    hcaptcha_secret_api_key:
+      System.get_env("HCAPTCHA_SECRET_API_KEY") ||
+        raise("Env var not set: HCAPTCHA_SECRET_API_KEY")
 
   # Configures ExAws and ExAws S3
   config :ex_aws,
@@ -118,8 +127,7 @@ if config_env() == :prod do
       System.get_env("AWS_ACCESS_KEY_ID") || raise("Env var not set: AWS_ACCESS_KEY_ID"),
     secret_access_key:
       System.get_env("AWS_SECRET_ACCESS_KEY") || raise("Env var not set: AWS_SECRET_ACCESS_KEY"),
-    region:
-      System.get_env("AWS_REGION") || raise("Env var not set: AWS_REGION")
+    region: System.get_env("AWS_REGION") || raise("Env var not set: AWS_REGION")
 
   config :ex_aws, :s3,
     storage: Waffle.Storage.S3,
@@ -135,6 +143,10 @@ if config_env() == :prod do
   # Configures Stripe
   config :stripity_stripe,
     api_key: System.get_env("STRIPE_SECRET") || raise("Env var not set: STRIPE_SECRET")
+
+  config :form_delegate,
+    stripe_webhook_secret:
+      System.get_env("STRIPE_WEBHOOK_SECRET") || raise("Env var not set: STRIPE_WEBHOOK_SECRET")
 
   # Configure frontend URL for user-targetted actions and messaging
   config :form_delegate,

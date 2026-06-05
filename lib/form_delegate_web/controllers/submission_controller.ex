@@ -11,8 +11,6 @@ defmodule FormDelegateWeb.SubmissionController do
   alias FormDelegateWeb.Authorizer
   alias FormDelegateWeb.SubmissionView
 
-  @akismet_api_key System.get_env("AKISMET_API_KEY")
-
   action_fallback FormDelegateWeb.FallbackController
 
   def action(conn, _opts) do
@@ -46,7 +44,7 @@ defmodule FormDelegateWeb.SubmissionController do
          {:ok, %Submission{form: %Form{callback_success_url: callback_success_url}} = submission} <-
            Submissions.create_submission(merged_params) do
       # @TODO: Allow user-specified Akismet API key per form
-      case akismet_api().is_spam?(@akismet_api_key, submission) do
+      case akismet_api().is_spam?(akismet_api_key(), submission) do
         {:ok, false} ->
           %{submission_id: submission.id, form_id: form.id}
           |> FormDelegate.Jobs.SubmissionIntegrations.new()
@@ -108,7 +106,7 @@ defmodule FormDelegateWeb.SubmissionController do
              flagged_at: nil,
              flagged_type: nil
            }),
-         {:ok} <- akismet_api().submit_ham(@akismet_api_key, submission) do
+         {:ok} <- akismet_api().submit_ham(akismet_api_key(), submission) do
       render(conn, "show.json", submission: submission)
     end
   end
@@ -147,7 +145,7 @@ defmodule FormDelegateWeb.SubmissionController do
                  type: "spam"
                })
            }),
-         {:ok} <- akismet_api().submit_spam(@akismet_api_key, submission) do
+         {:ok} <- akismet_api().submit_spam(akismet_api_key(), submission) do
       render(conn, "show.json", submission: submission)
     end
   end
@@ -161,6 +159,10 @@ defmodule FormDelegateWeb.SubmissionController do
 
   defp akismet_api do
     Application.get_env(:form_delegate, :akismet_api)
+  end
+
+  defp akismet_api_key do
+    Application.get_env(:form_delegate, :akismet_api_key)
   end
 
   defp broadcast_submission(%Submission{} = submission) do

@@ -25,7 +25,7 @@ defmodule FormDelegateWeb.Endpoint do
   plug Stripe.WebhookPlug,
     at: "/webhooks/stripe",
     handler: FormDelegateWeb.StripeHandler,
-    secret: Application.get_env(:form_delegate, :stripe_webhook_secret)
+    secret: {Application, :get_env, [:form_delegate, :stripe_webhook_secret]}
 
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],

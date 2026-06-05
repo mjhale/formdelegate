@@ -13,8 +13,6 @@ defmodule FormDelegateWeb.StripeController do
 
   action_fallback FormDelegateWeb.FallbackController
 
-  @frontend_url Application.get_env(:form_delegate, :frontend_url)
-
   def action(%Plug.Conn{assigns: %{current_user: current_user}} = conn, _opts) do
     args = [conn, conn.params, current_user]
     apply(__MODULE__, action_name(conn), args)
@@ -48,8 +46,8 @@ defmodule FormDelegateWeb.StripeController do
           }
         ],
         success_url:
-          "#{@frontend_url}/account/billing?status=confirmed&stripe_session_id={CHECKOUT_SESSION_ID}",
-        cancel_url: "#{@frontend_url}/account/billing?status=abandoned",
+          "#{frontend_url()}/account/billing?status=confirmed&stripe_session_id={CHECKOUT_SESSION_ID}",
+        cancel_url: "#{frontend_url()}/account/billing?status=abandoned",
         subscription_data: %{
           items: [],
           metadata: %{
@@ -137,10 +135,14 @@ defmodule FormDelegateWeb.StripeController do
     {:ok, %{url: portal_url}} =
       Stripe.BillingPortal.Session.create(%{
         customer: current_user.stripe_customer_id,
-        return_url: "#{@frontend_url}/account/billing"
+        return_url: "#{frontend_url()}/account/billing"
       })
 
     json(conn, %{url: portal_url})
+  end
+
+  defp frontend_url do
+    Application.fetch_env!(:form_delegate, :frontend_url)
   end
 
   defp get_stripe_customer_id_for_user(%User{} = user) do
