@@ -7,7 +7,7 @@
 # To ensure security and compatibility, regularly update the NODE_VERSION ARG to the latest LTS version.
 ARG NODE_VERSION=24.13.0-slim
 
-FROM node:${NODE_VERSION} AS dependencies
+FROM --platform=$BUILDPLATFORM node:${NODE_VERSION} AS dependencies
 
 # Set working directory
 WORKDIR /app
@@ -33,7 +33,7 @@ RUN --mount=type=cache,target=/root/.npm \
 # Stage 2: Build Next.js application in standalone mode
 # ============================================
 
-FROM node:${NODE_VERSION} AS builder
+FROM --platform=$BUILDPLATFORM node:${NODE_VERSION} AS builder
 
 # Set working directory
 WORKDIR /app
@@ -83,7 +83,7 @@ RUN if [ -f package-lock.json ]; then \
 # Stage 3: Run Next.js application
 # ============================================
 
-FROM node:${NODE_VERSION} AS runner
+FROM --platform=$TARGETPLATFORM node:${NODE_VERSION} AS runner
 LABEL org.opencontainers.image.source="https://github.com/mjhale/formdelegate"
 
 # Set working directory
