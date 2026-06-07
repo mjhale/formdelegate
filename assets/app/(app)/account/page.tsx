@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 
+import { Suspense } from 'react';
 import { cookies } from 'next/headers';
+
+import { AccountProfileSkeleton } from '../_components/skeletons';
 
 import Profile from './profile';
 
@@ -25,13 +28,17 @@ async function fetchUser() {
 }
 
 export default async function AccountProfilePage() {
+  return (
+    <Suspense fallback={<AccountProfileSkeleton />}>
+      <AccountProfileContent />
+    </Suspense>
+  );
+}
+
+async function AccountProfileContent() {
   const user = await fetchUser();
 
-  return (
-    <>
-      <Profile user={user} />
-    </>
-  );
+  return <Profile user={user} />;
 }
 
 export const metadata: Metadata = {

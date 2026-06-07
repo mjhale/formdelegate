@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 
+import { Suspense } from 'react';
 import { cookies } from 'next/headers';
+
+import { SubmissionsSkeleton } from '../_components/skeletons';
 
 import Submissions from './submissions';
 
@@ -40,20 +43,35 @@ export default async function SubmissionsPage({
   const query = resolvedSearchParams?.query || '';
   const currentPage = Number(resolvedSearchParams?.page) || 1;
 
-  const { data: submissions, pagination } = await fetchSubmissions(
-    currentPage,
-    query
-  );
-
   return (
     <>
       <h1 className="text-2xl lowercase pb-4 tracking-wide font-semibold">
         Submissions
       </h1>
 
-      <Submissions submissions={submissions} pagination={pagination} />
+      <Suspense
+        fallback={<SubmissionsSkeleton />}
+        key={`${currentPage}:${query}`}
+      >
+        <SubmissionsContent currentPage={currentPage} query={query} />
+      </Suspense>
     </>
   );
+}
+
+async function SubmissionsContent({
+  currentPage,
+  query,
+}: {
+  currentPage: number;
+  query: string;
+}) {
+  const { data: submissions, pagination } = await fetchSubmissions(
+    currentPage,
+    query
+  );
+
+  return <Submissions submissions={submissions} pagination={pagination} />;
 }
 
 export const metadata: Metadata = {

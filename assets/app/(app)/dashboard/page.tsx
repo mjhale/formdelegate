@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 
+import { Suspense } from 'react';
 import { cookies } from 'next/headers';
+
+import { DashboardSkeleton } from '../_components/skeletons';
 
 import SubmissionActivity from './submissionActivity';
 
@@ -23,27 +26,35 @@ async function getSubmissionActivity() {
 }
 
 export default async function DashboardPage() {
-  const submissionActivity = await getSubmissionActivity();
-
   return (
     <>
       <h1 className="text-2xl lowercase pb-4 tracking-wide font-semibold">
         my Dashboard
       </h1>
 
-      <div className="flex flex-col gap-y-4">
-        <SubmissionActivity activity={submissionActivity} />
+      <Suspense fallback={<DashboardSkeleton />}>
+        <DashboardContent />
+      </Suspense>
+    </>
+  );
+}
 
-        <div className="border border-grey-600 rounded-t">
-          <div className="bg-carnation-400 text-white rounded-t border-stone-200 block text-sm font-semibold leading-6 p-2 uppercase">
-            Recent Updates
-          </div>
-          <div className="p-2 bg-white rounded-lg">
-            Billing management has been added to the account page.
-          </div>
+async function DashboardContent() {
+  const submissionActivity = await getSubmissionActivity();
+
+  return (
+    <div className="flex flex-col gap-y-4">
+      <SubmissionActivity activity={submissionActivity} />
+
+      <div className="border border-grey-600 rounded-t">
+        <div className="bg-carnation-400 text-white rounded-t border-stone-200 block text-sm font-semibold leading-6 p-2 uppercase">
+          Recent Updates
+        </div>
+        <div className="p-2 bg-white rounded-lg">
+          Billing management has been added to the account page.
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

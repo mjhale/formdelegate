@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 
+import { Suspense } from 'react';
 import { cookies } from 'next/headers';
+
+import { BillingSkeleton } from '../../_components/skeletons';
 
 import StripePortalButton from './stripePortalButton';
 import PlanSubscribeButton from './planSubscribeButton';
@@ -42,6 +45,14 @@ async function fetchUser() {
 }
 
 export default async function BillingPage() {
+  return (
+    <Suspense fallback={<BillingSkeleton />}>
+      <BillingContent />
+    </Suspense>
+  );
+}
+
+async function BillingContent() {
   const [user, plans] = await Promise.all([fetchUser(), fetchPlans()]);
 
   // Retrieve team subscription plan (assuming one active plan per team)
