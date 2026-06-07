@@ -8,7 +8,7 @@ import { deleteForm } from './actions';
 import CopyToClipboardButton from './copyToClipboardButton';
 
 async function fetchForms() {
-  const accessToken = cookies().get('access_token')?.value;
+  const accessToken = (await cookies()).get('access_token')?.value;
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/v1/forms`, {
     headers: {

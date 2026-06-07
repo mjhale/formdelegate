@@ -13,8 +13,12 @@ const lato = Lato({
   variable: '--font-lato',
 });
 
-export default async function ResetPasswordPage({ searchParams }) {
-  const { token } = searchParams;
+export default async function ResetPasswordPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ token?: string }>;
+}) {
+  const { token } = await searchParams;
 
   return (
     <>

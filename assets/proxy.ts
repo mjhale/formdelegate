@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 
 const protectedRoutes = [
   '/account',
@@ -11,7 +10,7 @@ const protectedRoutes = [
 ];
 const publicRoutes = ['/login', '/signup', '/reset-password'];
 
-export default async function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
   const isProtectedRoute = protectedRoutes.find((route) =>
@@ -19,9 +18,8 @@ export default async function middleware(req: NextRequest) {
   );
   const isPublicRoute = publicRoutes.find((route) => path.startsWith(route));
 
-  const cookieStore = cookies();
-  const accessToken = cookieStore.get('access_token')?.value;
-  const userId = cookieStore.get('user_id')?.value;
+  const accessToken = req.cookies.get('access_token')?.value;
+  const userId = req.cookies.get('user_id')?.value;
 
   if (isProtectedRoute && (!accessToken || !userId)) {
     const redirectParams = new URLSearchParams([['destination', path]]);

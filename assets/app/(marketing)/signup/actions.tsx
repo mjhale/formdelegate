@@ -58,7 +58,7 @@ export async function createUserAction(_currentState, rawFormData: FormData) {
 
     const { data } = await res.json();
 
-    cookies().set({
+    (await cookies()).set({
       name: 'access_token',
       value: data.token,
       httpOnly: true,
@@ -68,7 +68,7 @@ export async function createUserAction(_currentState, rawFormData: FormData) {
       secure: process.env.NODE_ENV !== 'development',
     });
 
-    cookies().set({
+    (await cookies()).set({
       name: 'user_id',
       value: data.id,
       httpOnly: false,

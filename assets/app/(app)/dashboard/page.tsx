@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import SubmissionActivity from './submissionActivity';
 
 async function getSubmissionActivity() {
-  const accessToken = cookies().get('access_token')?.value;
+  const accessToken = (await cookies()).get('access_token')?.value;
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_HOST}/v1/submissions/recent_activity`,

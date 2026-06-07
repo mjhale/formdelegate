@@ -118,8 +118,8 @@ export default async function IndexPage() {
                   className="mr-2"
                   src={iconFolder}
                   alt=""
-                  height="24"
-                  width="24"
+                  height={24}
+                  width={24}
                   aria-hidden={true}
                   role="presentation"
                 />
@@ -136,8 +136,8 @@ export default async function IndexPage() {
                   className="mr-2"
                   src={iconBlocker}
                   alt=""
-                  height="24"
-                  width="24"
+                  height={24}
+                  width={24}
                   aria-hidden={true}
                   role="presentation"
                 />
@@ -154,8 +154,8 @@ export default async function IndexPage() {
                   className="mr-2"
                   src={iconConnection}
                   alt=""
-                  height="24"
-                  width="24"
+                  height={24}
+                  width={24}
                   aria-hidden={true}
                   role="presentation"
                 />
@@ -173,8 +173,8 @@ export default async function IndexPage() {
                   className="mr-2"
                   src={iconLock}
                   alt=""
-                  height="24"
-                  width="24"
+                  height={24}
+                  width={17}
                   aria-hidden={true}
                   role="presentation"
                 />

@@ -6,7 +6,7 @@ import StripePortalButton from './stripePortalButton';
 import PlanSubscribeButton from './planSubscribeButton';
 
 async function fetchPlans() {
-  const accessToken = cookies().get('access_token')?.value;
+  const accessToken = (await cookies()).get('access_token')?.value;
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/v1/plans`, {
     headers: {
@@ -21,7 +21,7 @@ async function fetchPlans() {
 }
 
 async function fetchUser() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const accessToken = cookieStore.get('access_token')?.value;
   const userId = cookieStore.get('user_id')?.value;
 

@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { useSearchParams } from 'next/navigation';
 
 import { loginUser } from '../actions';
@@ -11,7 +12,7 @@ const initialState = {
 };
 
 export default function LoginForm() {
-  const [state, formAction] = useFormState(loginUser, initialState);
+  const [state, formAction] = useActionState(loginUser, initialState);
   const searchParams = useSearchParams();
 
   const destination = searchParams.get('destination') ?? '';

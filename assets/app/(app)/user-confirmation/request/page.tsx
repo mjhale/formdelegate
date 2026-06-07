@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 
 async function fetchUser() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const accessToken = cookieStore.get('access_token')?.value;
   const userId = cookieStore.get('user_id')?.value;
 
@@ -23,7 +23,7 @@ async function fetchUser() {
 }
 
 async function requestUserConfirmationLink(user) {
-  const accessToken = cookies().get('access_token')?.value;
+  const accessToken = (await cookies()).get('access_token')?.value;
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_HOST}/v1/users/confirm`,

@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import Profile from './profile';
 
 async function fetchUser() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const accessToken = cookieStore.get('access_token')?.value;
   const userId = cookieStore.get('user_id')?.value;
 

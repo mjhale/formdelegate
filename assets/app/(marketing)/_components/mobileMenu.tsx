@@ -1,13 +1,11 @@
 'use client';
 
 import clsx from 'clsx';
-import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 
 export default function MobileMenu({ links }) {
-  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -20,11 +18,7 @@ export default function MobileMenu({ links }) {
     window.addEventListener('resize', handleResize);
 
     return () => window.removeEventListener('resize', handleResize);
-  }, [isOpen]);
-
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
+  }, []);
 
   return (
     <>
@@ -82,6 +76,7 @@ export default function MobileMenu({ links }) {
             <li key={link.name}>
               <Link
                 href={link.href}
+                onClick={() => setIsOpen(false)}
                 className="block text-slate-300 lowercase tracking-wide p-4 font-sans hover:text-white hover:bg-red-900 hover:border-r-8 border-red-300"
               >
                 {link.name}

@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import Submissions from './submissions';
 
 async function fetchSubmissions(page: number, query: string) {
-  const accessToken = cookies().get('access_token')?.value;
+  const accessToken = (await cookies()).get('access_token')?.value;
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_HOST}/v1/submissions?page=${page}${
@@ -31,13 +31,14 @@ async function fetchSubmissions(page: number, query: string) {
 export default async function SubmissionsPage({
   searchParams,
 }: {
-  searchParams?: {
+  searchParams?: Promise<{
     query?: string;
     page?: string;
-  };
+  }>;
 }) {
-  const query = searchParams?.query || '';
-  const currentPage = Number(searchParams?.page) || 1;
+  const resolvedSearchParams = await searchParams;
+  const query = resolvedSearchParams?.query || '';
+  const currentPage = Number(resolvedSearchParams?.page) || 1;
 
   const { data: submissions, pagination } = await fetchSubmissions(
     currentPage,

@@ -119,34 +119,25 @@ function ExpandedSubmissionView({
       {submission.data &&
         Object.keys(submission.data).length > 0 &&
         Object.keys(submission.data).map((key, index) => {
+          const fieldValue = submission.data[key];
+
           // Handle non-string field values such as file upload object
-          if (typeof submission.data[key] !== 'string') {
+          if (typeof fieldValue !== 'string') {
             // Handle file upload object
             // - A file upload object should always have the following props: url, field_name, file_size
             if (
-              Object.prototype.hasOwnProperty.call(
-                submission.data[key],
-                'url'
-              ) &&
-              Object.prototype.hasOwnProperty.call(
-                submission.data[key],
-                'field_name'
-              ) &&
-              Object.prototype.hasOwnProperty.call(
-                submission.data[key],
-                'file_size'
-              )
+              Object.prototype.hasOwnProperty.call(fieldValue, 'url') &&
+              Object.prototype.hasOwnProperty.call(fieldValue, 'field_name') &&
+              Object.prototype.hasOwnProperty.call(fieldValue, 'file_size')
             ) {
               return (
                 <div className="mb-2" key={index}>
                   <div className="font-bold text-sm">
-                    File Field: {submission.data[key].field_name}
+                    File Field: {fieldValue.field_name}
                   </div>
                   <div>
-                    <a href={submission.data[key].url}>
-                      {submission.data[key].file_name}
-                    </a>
-                    <>({submission.data[key].file_size})</>
+                    <a href={fieldValue.url}>{fieldValue.file_name}</a>
+                    <>({fieldValue.file_size})</>
                   </div>
                 </div>
               );
@@ -164,7 +155,7 @@ function ExpandedSubmissionView({
           return (
             <div className="mb-2" key={index}>
               <div className="font-bold text-sm">Field: {key}</div>
-              <div>{submission.data[key]}</div>
+              <div>{fieldValue}</div>
             </div>
           );
         })}

@@ -9,13 +9,15 @@ import Form from '../../form';
 export default async function EditFormPage({
   params,
 }: {
-  params: { formId: string };
+  params: Promise<{ formId: string }>;
 }) {
+  const { formId } = await params;
+
   async function fetchForm() {
-    const accessToken = cookies().get('access_token')?.value;
+    const accessToken = (await cookies()).get('access_token')?.value;
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST}/v1/forms/${params.formId}`,
+      `${process.env.NEXT_PUBLIC_API_HOST}/v1/forms/${formId}`,
       {
         headers: {
           Accept: 'application/json',

@@ -64,7 +64,7 @@ export async function loginUser(_currentState, formData: FormData) {
 
     const { data } = await res.json();
 
-    cookies().set('access_token', data.token, {
+    (await cookies()).set('access_token', data.token, {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
@@ -72,7 +72,7 @@ export async function loginUser(_currentState, formData: FormData) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
-    cookies().set('user_id', data.id, {
+    (await cookies()).set('user_id', data.id, {
       httpOnly: false,
       secure: true,
       sameSite: 'lax',

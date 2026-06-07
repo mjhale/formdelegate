@@ -17,7 +17,7 @@ export async function updateForm(_currentState, formData) {
   //   set(data, key, val);
   // }
 
-  const accessToken = cookies().get('access_token')?.value;
+  const accessToken = (await cookies()).get('access_token')?.value;
 
   const validatedData = schema.safeParse(formData);
 
@@ -59,7 +59,7 @@ export async function updateForm(_currentState, formData) {
 }
 
 export async function createForm(_currentState, formData) {
-  const accessToken = cookies().get('access_token')?.value;
+  const accessToken = (await cookies()).get('access_token')?.value;
   const validatedData = schema.safeParse(formData);
 
   if (!validatedData.success) {
@@ -95,7 +95,7 @@ export async function createForm(_currentState, formData) {
 }
 
 export async function deleteForm(formId) {
-  const accessToken = cookies().get('access_token')?.value;
+  const accessToken = (await cookies()).get('access_token')?.value;
 
   try {
     const res = await fetch(

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 import { createUserAction } from './actions';
@@ -12,7 +12,7 @@ const initialState = {
 };
 
 export default function SignupForm() {
-  const [state, formAction] = useFormState(createUserAction, initialState);
+  const [state, formAction] = useActionState(createUserAction, initialState);
   const [captchaKey, setCaptchaKey] = useState('');
 
   const CAPTCHA_SITE_KEY: string = process.env

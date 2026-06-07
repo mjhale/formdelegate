@@ -1,2 +1,7 @@
 .next
-build
+out/
+build/
+node_modules/
+
+# Auto-generated Next.js TypeScript declaration
+next-env.d.ts

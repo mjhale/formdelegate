@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 
 import { resetPasswordAction } from '../actions';
 
@@ -10,7 +10,7 @@ const initialState = {
 };
 
 export default function ResetPasswordForm({ token }) {
-  const [state, formAction] = useFormState(resetPasswordAction, initialState);
+  const [state, formAction] = useActionState(resetPasswordAction, initialState);
 
   return (
     <>

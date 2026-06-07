@@ -1,8 +1,8 @@
 'use client';
 
-import { Fragment, useTransition } from 'react';
+import { Fragment, ReactNode, useTransition } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 
 interface IFormInput {
   id: string;
@@ -19,17 +19,30 @@ interface IFormInput {
   }>;
 }
 
-const initialState = {
+interface FormActionState {
+  message: ReactNode | null;
+  errors: {
+    name?: {
+      _errors: Array<string>;
+    };
+    email_integrations?: any;
+  };
+}
+
+const initialState: FormActionState = {
   message: null,
   errors: {},
 };
 
 export default function Form({ form, saveFormAction }) {
-  const [state, formAction] = useFormState(saveFormAction, initialState);
+  const [state, formAction] = useActionState<FormActionState, IFormInput>(
+    saveFormAction,
+    initialState
+  );
   const [isPending, startTransition] = useTransition();
   const { register, control, handleSubmit, getValues } = useForm<IFormInput>({
     defaultValues: {
-      id: form?.id ?? null,
+      id: form?.id ?? '',
       name: form?.name ?? '',
       email_integrations: form?.email_integrations ?? [],
     },
@@ -48,7 +61,7 @@ export default function Form({ form, saveFormAction }) {
         <input
           {...register(`id`)}
           type="hidden"
-          defaultValue={form?.id ?? null}
+          defaultValue={form?.id ?? ''}
         />
 
         {/* Form name */}

@@ -7,7 +7,7 @@ export async function markSelectedAsSpam(formData: FormData) {
   const selectedSubmissionIds = formData.getAll('submissionSelect');
 
   for (const submissionId of selectedSubmissionIds) {
-    const accessToken = cookies().get('access_token')?.value;
+    const accessToken = (await cookies()).get('access_token')?.value;
 
     try {
       const res = await fetch(
@@ -41,7 +41,7 @@ export async function markSelectedAsHam(formData: FormData) {
   const selectedSubmissionIds = formData.getAll('submissionSelect');
 
   for (const submissionId of selectedSubmissionIds) {
-    const accessToken = cookies().get('access_token')?.value;
+    const accessToken = (await cookies()).get('access_token')?.value;
 
     try {
       const res = await fetch(

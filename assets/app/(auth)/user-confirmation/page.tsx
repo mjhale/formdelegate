@@ -12,7 +12,7 @@ const lato = Lato({
 });
 
 async function verifyConfirmationToken(token) {
-  const accessToken = cookies().get('access_token')?.value;
+  const accessToken = (await cookies()).get('access_token')?.value;
 
   try {
     const res = await fetch(
@@ -86,8 +86,12 @@ async function verifyConfirmationToken(token) {
   }
 }
 
-export default async function UserConfirmationPage({ searchParams }) {
-  const { token } = searchParams;
+export default async function UserConfirmationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ token?: string }>;
+}) {
+  const { token } = await searchParams;
 
   if (!token) {
     return <>Please check your email for a verification request.</>;

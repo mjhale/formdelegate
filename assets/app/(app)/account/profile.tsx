@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 
 import { updateUserAction, updatePasswordAction } from './actions';
 
@@ -26,11 +26,11 @@ const initialPasswordState = {
 
 export default function AccountProfile({ user }) {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [userState, userFormAction] = useFormState(
+  const [userState, userFormAction] = useActionState(
     updateUserAction,
     initialUserState
   );
-  const [passwordState, passwordFormAction] = useFormState(
+  const [passwordState, passwordFormAction] = useActionState(
     updatePasswordAction,
     initialPasswordState
   );

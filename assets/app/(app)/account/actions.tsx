@@ -17,7 +17,7 @@ const passwordSchema = z.object({
 });
 
 export async function fetchCheckoutSession(userEmail, planPriceId) {
-  const accessToken = cookies().get('access_token')?.value;
+  const accessToken = (await cookies()).get('access_token')?.value;
 
   const checkoutSessionRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_HOST}/v1/stripe/checkout-sessions`,
@@ -39,7 +39,7 @@ export async function fetchCheckoutSession(userEmail, planPriceId) {
 }
 
 export async function fetchStripePortalUrl() {
-  const accessToken = cookies().get('access_token')?.value;
+  const accessToken = (await cookies()).get('access_token')?.value;
 
   const stripePortalRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_HOST}/v1/stripe/portal`,
@@ -67,7 +67,7 @@ export async function updateUserAction(_currentState, formData: FormData) {
     name: formData.get('name'),
   };
 
-  const accessToken = cookies().get('access_token')?.value;
+  const accessToken = (await cookies()).get('access_token')?.value;
   const validatedData = userSchema.safeParse(rawFormData);
 
   if (!validatedData.success) {
@@ -112,7 +112,7 @@ export async function updatePasswordAction(_currentState, formData: FormData) {
     newPassword: formData.get('new_password'),
   };
 
-  const accessToken = cookies().get('access_token')?.value;
+  const accessToken = (await cookies()).get('access_token')?.value;
   const validatedData = passwordSchema.safeParse(rawFormData);
 
   if (!validatedData.success) {
