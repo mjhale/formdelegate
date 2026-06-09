@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 // import { set } from 'lodash';
 
-import { schema } from './formSchema';
+import { createFormSchema, updateFormSchema } from './formSchema';
 
 export async function updateForm(_currentState, formData) {
   // @TODO: Use native FormData when RHF supports server actions in stable
@@ -19,7 +19,7 @@ export async function updateForm(_currentState, formData) {
 
   const accessToken = (await cookies()).get('access_token')?.value;
 
-  const validatedData = schema.safeParse(formData);
+  const validatedData = updateFormSchema.safeParse(formData);
 
   if (!validatedData.success) {
     return {
@@ -30,7 +30,7 @@ export async function updateForm(_currentState, formData) {
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST}/v1/forms/${formData.id}`,
+      `${process.env.NEXT_PUBLIC_API_HOST}/v1/forms/${validatedData.data.id}`,
       {
         body: JSON.stringify({
           form: {
@@ -48,11 +48,13 @@ export async function updateForm(_currentState, formData) {
 
     if (!res.ok) {
       throw new Error(
-        `Network response failure while updating form ${formData.id}`
+        `Network response failure while updating form ${validatedData.data.id}`
       );
     }
   } catch (error) {
-    throw new Error(`Fetch Error: Failed to update form ${formData.id}`);
+    throw new Error(
+      `Fetch Error: Failed to update form ${validatedData.data.id}`
+    );
   }
 
   redirect('/forms');
@@ -60,11 +62,11 @@ export async function updateForm(_currentState, formData) {
 
 export async function createForm(_currentState, formData) {
   const accessToken = (await cookies()).get('access_token')?.value;
-  const validatedData = schema.safeParse(formData);
+  const validatedData = createFormSchema.safeParse(formData);
 
   if (!validatedData.success) {
     return {
-      message: 'Failed to update form due to field errors.',
+      message: 'Failed to create form due to field errors.',
       errors: validatedData.error.format(),
     };
   }
