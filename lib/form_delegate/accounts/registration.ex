@@ -3,6 +3,7 @@ defmodule FormDelegate.Accounts.Registration do
   import Ecto.Changeset
 
   alias FormDelegate.Accounts.{Registration, User}
+  alias FormDelegate.Memberships.Membership
 
   @primary_key false
   embedded_schema do
@@ -22,9 +23,16 @@ defmodule FormDelegate.Accounts.Registration do
   def to_multi(%{valid?: true} = changeset) do
     data = Ecto.Changeset.apply_changes(changeset)
 
-    # @TODO: Add multi insert for logging system once it's merged
     Ecto.Multi.new()
     |> Ecto.Multi.insert(:user, to_user_struct(data))
+    |> Ecto.Multi.insert(:membership, fn %{user: user} ->
+      %Membership{}
+      |> Membership.changeset(%{
+        user_id: user.id,
+        team_id: user.team_id,
+        is_billing_account: true
+      })
+    end)
   end
 
   @doc false

@@ -10,6 +10,7 @@ defmodule FormDelegate.Plans.Plan do
   schema "plans" do
     field :name, :string
     field :stripe_product_id, :string
+    field :stripe_price_id, :string
 
     field :limit_submissions, :integer, default: 100
     field :limit_forms, :integer, default: 0
@@ -23,6 +24,14 @@ defmodule FormDelegate.Plans.Plan do
   """
   def changeset(%Plan{} = plan, attrs) do
     plan
-    |> cast(attrs, [:name, :stripe_product_id, :limit_submissions, :limit_forms, :limit_storage])
+    |> cast(attrs, [
+      :name,
+      :stripe_product_id,
+      :stripe_price_id,
+      :limit_submissions,
+      :limit_forms,
+      :limit_storage
+    ])
+    |> unique_constraint(:stripe_price_id)
   end
 end

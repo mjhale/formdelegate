@@ -10,6 +10,7 @@ defmodule FormDelegateWeb.TeamView do
     %{
       id: team.id,
       name: team.name,
+      stripe_customer_id: team.stripe_customer_id,
       subscriptions: render_many(team.subscriptions, SubscriptionView, "subscription.json")
     }
   end

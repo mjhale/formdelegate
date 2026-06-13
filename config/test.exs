@@ -26,4 +26,7 @@ config :form_delegate, :akismet_api, FormDelegate.Services.Akismet.InMemory
 # Configures Hcaptcha module to use an in-memory mock
 config :form_delegate, :hcaptcha_api, FormDelegate.Services.Hcaptcha.InMemory
 
+# Configures Stripe module to use mock client
+config :form_delegate, :stripe_api, FormDelegate.Services.Stripe.Mock
+
 config :form_delegate, Oban, testing: :inline

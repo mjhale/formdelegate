@@ -4,15 +4,19 @@ defmodule FormDelegate.Teams.Team do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias FormDelegate.Memberships.Membership
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "teams" do
     field :name, :string
+    field :stripe_customer_id, :string
 
     has_many :users, FormDelegate.Accounts.User
     has_many :subscriptions, FormDelegate.Subscriptions.Subscription
     has_many :billing_counts, FormDelegate.BillingCounts.BillingCount
+    has_many :memberships, Membership, on_delete: :delete_all
 
     timestamps()
   end
@@ -22,7 +26,8 @@ defmodule FormDelegate.Teams.Team do
   """
   def changeset(%Team{} = team, attrs) do
     team
-    |> cast(attrs, [:name])
+    |> cast(attrs, [:name, :stripe_customer_id])
+    |> unique_constraint(:stripe_customer_id)
   end
 
   @doc """

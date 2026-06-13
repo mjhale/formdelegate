@@ -5,7 +5,6 @@ defmodule FormDelegateWeb.StripeController do
   require IEx
   require Protocol
 
-  alias FormDelegate.Accounts
   alias FormDelegate.Accounts.User
   alias FormDelegate.Subscriptions
   alias FormDelegate.Subscriptions.Subscription
@@ -32,39 +31,36 @@ defmodule FormDelegateWeb.StripeController do
         },
         current_user
       ) do
-    {:ok, stripe_customer_id} = get_stripe_customer_id_for_user(current_user)
-
-    stripe_session =
-      Stripe.Checkout.Session.create(%{
-        payment_method_types: [:card],
-        mode: :subscription,
-        customer: stripe_customer_id,
-        line_items: [
-          %{
-            price: price_id,
-            quantity: 1
-          }
-        ],
-        success_url:
-          "#{frontend_url()}/account/billing?status=confirmed&stripe_session_id={CHECKOUT_SESSION_ID}",
-        cancel_url: "#{frontend_url()}/account/billing?status=abandoned",
-        subscription_data: %{
-          items: [],
-          metadata: %{
-            "team_id" => current_user.team_id
-          }
-        }
-      })
-
-    case stripe_session do
-      {:ok, %Stripe.Checkout.Session{} = session} ->
-        json(conn, session)
+    with :ok <- Authorizer.authorize(:create_checkout_session, current_user),
+         {:ok, stripe_customer_id} <- get_stripe_customer_id_for_team(current_user),
+         {:ok, %Stripe.Checkout.Session{} = session} <-
+           stripe_api().create_checkout_session(%{
+             payment_method_types: [:card],
+             mode: :subscription,
+             customer: stripe_customer_id,
+             line_items: [
+               %{
+                 price: price_id,
+                 quantity: 1
+               }
+             ],
+             success_url:
+               "#{frontend_url()}/account/billing?status=confirmed&stripe_session_id={CHECKOUT_SESSION_ID}",
+             cancel_url: "#{frontend_url()}/account/billing?status=abandoned",
+             subscription_data: %{
+               items: [],
+               metadata: %{
+                 "team_id" => current_user.team_id
+               }
+             }
+           }) do
+      json(conn, session)
+    else
+      {:error, :forbidden} ->
+        {:error, :forbidden}
 
       {:error, error} ->
-        Logger.error("Stripe checkout session error: #{inspect(error)}", %{
-          stripe: %{session_create: stripe_session}
-        })
-
+        Logger.error("Stripe checkout session error: #{inspect(error)}")
         {:error, :bad_request}
     end
   end
@@ -74,7 +70,7 @@ defmodule FormDelegateWeb.StripeController do
            Subscriptions.get_subscription!(stripe_subscription_id),
          :ok <-
            Authorizer.authorize(:retrieve_subscription, current_user, subscription) do
-      stripe_subscription = Stripe.Subscription.retrieve(stripe_subscription_id)
+      stripe_subscription = stripe_api().retrieve_subscription(stripe_subscription_id)
 
       case stripe_subscription do
         {:ok, %Stripe.Subscription{} = subscription} ->
@@ -104,7 +100,7 @@ defmodule FormDelegateWeb.StripeController do
          items: %Stripe.List{
            data: stripe_subscription_items
          }
-       } = _stripe_subscription} = Stripe.Subscription.retrieve(stripe_subscription_id)
+       } = _stripe_subscription} = stripe_api().retrieve_subscription(stripe_subscription_id)
 
       # Assumes a subscription only has one active subscription item
       %Stripe.SubscriptionItem{} =
@@ -113,7 +109,7 @@ defmodule FormDelegateWeb.StripeController do
         |> Enum.at(0)
 
       updated_subscription =
-        Stripe.Subscription.update(stripe_subscription_id, %{
+        stripe_api().update_subscription(stripe_subscription_id, %{
           "items" => [%{"id" => stripe_subscription_item.id, "price" => stripe_price_id}]
         })
 
@@ -132,34 +128,52 @@ defmodule FormDelegateWeb.StripeController do
   end
 
   def create_portal(conn, _params, current_user) do
-    {:ok, %{url: portal_url}} =
-      Stripe.BillingPortal.Session.create(%{
-        customer: current_user.stripe_customer_id,
-        return_url: "#{frontend_url()}/account/billing"
-      })
+    with :ok <- Authorizer.authorize(:create_portal, current_user),
+         {:ok, stripe_customer_id} <- get_stripe_customer_id_for_team(current_user),
+         {:ok, %{url: portal_url}} <-
+           stripe_api().create_billing_portal_session(%{
+             customer: stripe_customer_id,
+             return_url: "#{frontend_url()}/account/billing"
+           }) do
+      json(conn, %{url: portal_url})
+    else
+      {:error, :forbidden} ->
+        {:error, :forbidden}
 
-    json(conn, %{url: portal_url})
+      {:error, error} ->
+        Logger.error("Stripe portal session creation error: #{inspect(error)}")
+        {:error, :bad_request}
+    end
   end
 
   defp frontend_url do
     Application.fetch_env!(:form_delegate, :frontend_url)
   end
 
-  defp get_stripe_customer_id_for_user(%User{} = user) do
-    # Create a Stripe customer for the user if it doesn't exist
-    if is_nil(user.stripe_customer_id) do
-      case Stripe.Customer.create(%{name: user.name, email: user.email}) do
+  defp stripe_api do
+    Application.get_env(:form_delegate, :stripe_api)
+  end
+
+  defp get_stripe_customer_id_for_team(%User{} = user) do
+    team = user.team
+
+    # Create a Stripe customer for the team if it doesn't exist
+    if is_nil(team.stripe_customer_id) do
+      customer_name = team.name || "#{user.name} (Team)"
+
+      case stripe_api().create_customer(%{name: customer_name, email: user.email}) do
         {:ok, stripe_customer} ->
-          {:ok, _user} = Accounts.update_user(user, %{stripe_customer_id: stripe_customer.id})
+          {:ok, _team} =
+            FormDelegate.Teams.update_team(team, %{stripe_customer_id: stripe_customer.id})
+
           {:ok, stripe_customer.id}
 
-        {error, stripe_customer} ->
-          Logger.error("Failed to create Stripe customer for user #{user.id}: #{inspect(error)}")
-          {:ok, _response} = Stripe.Customer.delete(stripe_customer["id"])
+        {:error, error} ->
+          Logger.error("Failed to create Stripe customer for team #{team.id}: #{inspect(error)}")
           {:error, :stripe_customer_create_failed}
       end
     else
-      {:ok, user.stripe_customer_id}
+      {:ok, team.stripe_customer_id}
     end
   end
 end

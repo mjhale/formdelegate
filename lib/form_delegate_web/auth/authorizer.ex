@@ -1,9 +1,12 @@
 defmodule FormDelegateWeb.Authorizer do
+  import Ecto.Query, warn: false
+
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
   alias FormDelegate.Plans.Plan
   alias FormDelegate.Subscriptions.Subscription
   alias FormDelegate.Submissions.Submission
+  alias FormDelegate.Memberships.Membership
 
   def authorize(:create_submission, _current_user) do
     :ok
@@ -61,7 +64,11 @@ defmodule FormDelegateWeb.Authorizer do
     end
   end
 
-  def authorize(:show_plans, %User{} = current_user) do
+  def authorize(:show_plans, %User{} = _current_user) do
+    :ok
+  end
+
+  def authorize(:update_integration, %User{} = current_user) do
     if current_user.is_admin do
       :ok
     else
@@ -69,8 +76,16 @@ defmodule FormDelegateWeb.Authorizer do
     end
   end
 
-  def authorize(:update_integration, %User{} = current_user) do
-    if current_user.is_admin do
+  def authorize(:create_checkout_session, %User{} = current_user) do
+    if billing_manager?(current_user) do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  def authorize(:create_portal, %User{} = current_user) do
+    if billing_manager?(current_user) do
       :ok
     else
       {:error, :forbidden}
@@ -141,12 +156,8 @@ defmodule FormDelegateWeb.Authorizer do
     end
   end
 
-  def authorize(:show_plan, %User{} = current_user, %Plan{} = _plan) do
-    if current_user.is_admin do
-      :ok
-    else
-      {:error, :forbidden}
-    end
+  def authorize(:show_plan, %User{} = _current_user, %Plan{} = _plan) do
+    :ok
   end
 
   def authorize(:update_plan, %User{} = current_user, %Plan{} = _plan) do
@@ -170,7 +181,8 @@ defmodule FormDelegateWeb.Authorizer do
         %User{} = current_user,
         %Subscription{} = subscription
       ) do
-    if current_user.team_id == subscription.team_id or current_user.is_admin do
+    if current_user.is_admin or
+         (current_user.team_id == subscription.team_id and billing_manager?(current_user)) do
       :ok
     else
       {:error, :forbidden}
@@ -182,10 +194,24 @@ defmodule FormDelegateWeb.Authorizer do
         %User{} = current_user,
         %Subscription{} = subscription
       ) do
-    if current_user.team_id == subscription.team_id or current_user.is_admin do
+    if current_user.is_admin or
+         (current_user.team_id == subscription.team_id and billing_manager?(current_user)) do
       :ok
     else
       {:error, :forbidden}
+    end
+  end
+
+  defp billing_manager?(%User{} = user) do
+    if user.is_admin do
+      true
+    else
+      query =
+        from m in Membership,
+          where:
+            m.user_id == ^user.id and m.team_id == ^user.team_id and m.is_billing_account == true
+
+      FormDelegate.Repo.exists?(query)
     end
   end
 end

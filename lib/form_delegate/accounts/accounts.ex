@@ -19,7 +19,7 @@ defmodule FormDelegate.Accounts do
 
   """
   def list_users do
-    User |> order_by(:id) |> Repo.all() |> Repo.preload(team: [subscriptions: [:plan]])
+    User |> order_by(:id) |> Repo.all() |> Repo.preload(user_preloads())
   end
 
   @doc """
@@ -38,7 +38,7 @@ defmodule FormDelegate.Accounts do
   """
   def get_user!(id) do
     Repo.get!(User, id)
-    |> Repo.preload(team: [subscriptions: [:plan]])
+    |> Repo.preload(user_preloads())
   end
 
   @doc """
@@ -336,5 +336,9 @@ defmodule FormDelegate.Accounts do
     else
       {:error, :invalid_or_expired_token}
     end
+  end
+
+  defp user_preloads do
+    [:memberships, team: [subscriptions: [:plan]]]
   end
 end

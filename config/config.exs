@@ -18,9 +18,6 @@ config :form_delegate, FormDelegateWeb.Endpoint,
   pubsub_server: FormDelegate.PubSub
 
 config :form_delegate,
-  stripe_webhook_secret: System.get_env("STRIPE_WEBHOOK_SECRET")
-
-config :form_delegate,
   akismet_api_key: System.get_env("AKISMET_API_KEY"),
   hcaptcha_secret_api_key: System.get_env("HCAPTCHA_SECRET_API_KEY")
 
@@ -72,8 +69,7 @@ config :waffle,
   asset_host: {:system, "AWS_S3_ASSET_HOST"}
 
 # Configures Stripe
-config :stripity_stripe,
-  api_key: System.get_env("STRIPE_SECRET")
+config :form_delegate, :stripe_api, FormDelegate.Services.Stripe.Impl
 
 # Configures frontend URL for user-targetted actions and messaging
 config :form_delegate, frontend_url: System.get_env("FRONTEND_URL")

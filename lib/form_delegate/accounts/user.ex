@@ -3,6 +3,7 @@ defmodule FormDelegate.Accounts.User do
   import Ecto.Changeset
 
   alias FormDelegate.Accounts.User
+  alias FormDelegate.Memberships.Membership
 
   @timestamps_opts [type: :utc_datetime_usec]
 
@@ -27,11 +28,9 @@ defmodule FormDelegate.Accounts.User do
 
     field :is_admin, :boolean, default: false
 
-    field :is_billing_account, :boolean, default: true
-    field :stripe_customer_id, :string
-
     belongs_to :team, FormDelegate.Teams.Team, type: Ecto.UUID
     has_many :forms, FormDelegate.Forms.Form, on_delete: :delete_all
+    has_many :memberships, Membership, on_delete: :delete_all
 
     timestamps()
   end
@@ -39,7 +38,7 @@ defmodule FormDelegate.Accounts.User do
   @doc false
   def changeset(%User{} = user, params \\ %{}) do
     user
-    |> cast(params, [:email, :name, :stripe_customer_id])
+    |> cast(params, [:email, :name])
     |> validate_required([:email, :name])
     |> validate_length(:email, min: 3, max: 254)
     |> unique_constraint(:email)

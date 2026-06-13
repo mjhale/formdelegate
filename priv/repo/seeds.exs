@@ -8,11 +8,13 @@ alias FormDelegate.Accounts.User
 alias FormDelegate.BillingCounts.BillingCount
 alias FormDelegate.Forms.Form
 alias FormDelegate.Integrations.{EmailIntegration, EmailIntegrationRecipient}
+alias FormDelegate.Memberships.Membership
 alias FormDelegate.Plans.Plan
 alias FormDelegate.Submissions.Submission
 alias FormDelegate.Teams.Team
 
 # Scrub prior data before seeding
+Repo.delete_all(Membership)
 Repo.delete_all(User)
 Repo.delete_all(Team)
 Repo.delete_all(BillingCount)
@@ -47,6 +49,19 @@ user =
     team: user_team
   })
 
+# Create memberships
+Repo.insert!(%Membership{
+  user_id: admin_user.id,
+  team_id: admin_team.id,
+  is_billing_account: true
+})
+
+Repo.insert!(%Membership{
+  user_id: user.id,
+  team_id: user_team.id,
+  is_billing_account: true
+})
+
 # Create billing count tracker for teams
 Repo.insert!(%BillingCount{
   team: admin_team,
@@ -68,8 +83,29 @@ Repo.insert!(%Plan{
   limit_submissions: 100,
   limit_forms: 5,
   limit_storage: 5_000_000,
-  # Replace with your Stripe product ID
   stripe_product_id: "prod_LbAPNMP79ulNj4"
+})
+
+Repo.insert!(%Plan{
+  id: "7682f531-e326-4e00-9691-99858e6f5aaa",
+  name: "Professional",
+  limit_submissions: 5000,
+  limit_forms: 0,
+  # 10 GB
+  limit_storage: 10_000_000_000,
+  stripe_product_id: "prod_KVODnj3MBjuDTJ",
+  stripe_price_id: "price_1JqNR8AZx7ESoF8IrQIAiTGr"
+})
+
+Repo.insert!(%Plan{
+  id: "06539042-4b76-4d97-a41d-9f505c298924",
+  name: "Enterprise",
+  limit_submissions: 100_000,
+  limit_forms: 0,
+  # 100 GB
+  limit_storage: 100_000_000_000,
+  stripe_product_id: "prod_Pw8LFemakwJiNG",
+  stripe_price_id: "price_1P6G51AZx7ESoF8IEhPmTT4u"
 })
 
 # Seed Forms
@@ -103,10 +139,11 @@ user_form =
 admin_contact_form_email_integration =
   Repo.insert!(%EmailIntegration{
     form: admin_contact_form,
-    email_api_key: nil,
-    email_from_address: nil,
-    enabled: true,
-    integration_type: :email
+    enabled: false,
+    email_provider: :smtp,
+    email_provider_status: :unconfigured,
+    email_provider_config: %{},
+    email_provider_secrets: %{}
   })
 
 Repo.insert!(%EmailIntegrationRecipient{

@@ -1,6 +1,5 @@
 defmodule FormDelegateWeb.Plugs.SetPlan do
   import Plug.Conn
-  alias FormDelegate.Plans
   alias FormDelegate.Plans.Plan
 
   def init(_), do: nil
@@ -35,14 +34,18 @@ defmodule FormDelegateWeb.Plugs.SetPlan do
       nil ->
         get_free_plan()
 
-      subscriptions ->
-        {:ok, stripe_subscription} =
-          Stripe.Subscription.retrieve(Map.get(subscriptions, :stripe_subscription_id))
+      subscription ->
+        if subscription.stripe_subscription_status in ["active", "trialing"] do
+          case subscription.plan do
+            %FormDelegate.Plans.Plan{} = plan ->
+              plan
 
-        stripe_subscription_item = Enum.at(stripe_subscription.items.data, 0)
-        stripe_product_id = stripe_subscription_item.price.product
-
-        Plans.get_plan_by!(stripe_product_id: stripe_product_id)
+            _ ->
+              get_free_plan()
+          end
+        else
+          get_free_plan()
+        end
     end
   end
 

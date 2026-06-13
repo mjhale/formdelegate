@@ -1,5 +1,13 @@
 import Config
 
+if config_env() in [:dev, :test] do
+  config :stripity_stripe,
+    api_key: System.get_env("STRIPE_SECRET")
+
+  config :form_delegate,
+    stripe_webhook_secret: System.get_env("STRIPE_WEBHOOK_SECRET")
+end
+
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the
 # system starts, so it is typically used to load production configuration

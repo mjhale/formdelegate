@@ -15,6 +15,7 @@ defmodule FormDelegateWeb.PlanView do
       id: plan.id,
       name: plan.name,
       stripe_product_id: plan.stripe_product_id,
+      stripe_price_id: plan.stripe_price_id,
       limit_submissions: plan.limit_submissions,
       limit_forms: plan.limit_forms,
       limit_storage: plan.limit_storage,

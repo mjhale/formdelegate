@@ -34,4 +34,13 @@ defmodule FormDelegate.Teams do
   def list_teams do
     Team |> order_by(:id) |> Repo.all()
   end
+
+  @doc """
+  Updates a team.
+  """
+  def update_team(%Team{} = team, attrs \\ %{}) do
+    team
+    |> Team.changeset(attrs)
+    |> Repo.update()
+  end
 end

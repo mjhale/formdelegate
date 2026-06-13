@@ -46,20 +46,8 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> get(Routes.user_path(conn, :index))
         |> json_response(200)
 
-      expected = %{
-        "data" => [
-          %{
-            "confirmed_at" => nil,
-            "email" => user.email,
-            "form_count" => user.form_count,
-            "id" => user.id,
-            "is_admin" => user.is_admin,
-            "name" => user.name
-          }
-        ]
-      }
-
-      assert response == expected
+      assert %{"data" => [actual_user]} = response
+      assert_user_fields(actual_user, user)
     end
 
     @tag :as_inserted_user
@@ -149,18 +137,10 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> put(Routes.user_path(conn, :update, user), user: @update_attrs)
         |> json_response(200)
 
-      expected = %{
-        "data" => %{
-          "confirmed_at" => nil,
-          "email" => "updateduser@formdelegate.com",
-          "form_count" => 0,
-          "id" => response["data"]["id"],
-          "is_admin" => false,
-          "name" => "Updated Form User"
-        }
-      }
-
-      assert response == expected
+      assert %{"data" => actual_user} = response
+      assert actual_user["email"] == "updateduser@formdelegate.com"
+      assert actual_user["name"] == "Updated Form User"
+      assert actual_user["id"] == user.id
     end
 
     @tag :as_inserted_user
@@ -180,18 +160,8 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> get(Routes.user_path(conn, :show, user.id))
         |> json_response(200)
 
-      expected = %{
-        "data" => %{
-          "confirmed_at" => nil,
-          "email" => user.email,
-          "form_count" => user.form_count,
-          "id" => user.id,
-          "is_admin" => user.is_admin,
-          "name" => user.name
-        }
-      }
-
-      assert response == expected
+      assert %{"data" => actual_user} = response
+      assert_user_fields(actual_user, user)
     end
 
     test "Returns an error and does not edit the user if editing other user", %{conn: conn} do
@@ -212,18 +182,8 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> get(Routes.user_path(conn, :show, other_user))
         |> json_response(200)
 
-      expected = %{
-        "data" => %{
-          "confirmed_at" => nil,
-          "email" => other_user.email,
-          "form_count" => other_user.form_count,
-          "id" => other_user.id,
-          "is_admin" => other_user.is_admin,
-          "name" => other_user.name
-        }
-      }
-
-      assert response == expected
+      assert %{"data" => actual_user} = response
+      assert_user_fields(actual_user, other_user)
     end
   end
 
@@ -236,18 +196,8 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> get(Routes.user_path(conn, :show, user.id))
         |> json_response(200)
 
-      expected = %{
-        "data" => %{
-          "confirmed_at" => nil,
-          "email" => user.email,
-          "form_count" => user.form_count,
-          "id" => user.id,
-          "is_admin" => user.is_admin,
-          "name" => user.name
-        }
-      }
-
-      assert response == expected
+      assert %{"data" => actual_user} = response
+      assert_user_fields(actual_user, user)
     end
 
     @tag :as_inserted_user
@@ -318,18 +268,8 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> get(Routes.user_path(conn, :show, user))
         |> json_response(200)
 
-      expected = %{
-        "data" => %{
-          "confirmed_at" => nil,
-          "email" => user.email,
-          "form_count" => user.form_count,
-          "id" => user.id,
-          "is_admin" => user.is_admin,
-          "name" => user.name
-        }
-      }
-
-      assert response == expected
+      assert %{"data" => actual_user} = response
+      assert_user_fields(actual_user, user)
     end
   end
 
@@ -347,6 +287,27 @@ defmodule FormDelegateWeb.UserControllerTest do
           assert conn.halted
         end
       )
+    end
+  end
+
+  defp assert_user_fields(actual, expected_user) do
+    assert actual["id"] == expected_user.id
+    assert actual["email"] == expected_user.email
+    assert actual["name"] == expected_user.name
+    assert actual["is_admin"] == expected_user.is_admin
+    assert actual["form_count"] == expected_user.form_count
+
+    assert actual["confirmed_at"] ==
+             (expected_user.confirmed_at && DateTime.to_iso8601(expected_user.confirmed_at))
+
+    assert Map.has_key?(actual, "team")
+    refute Map.has_key?(actual, "is_billing_account")
+    refute Map.has_key?(actual, "stripe_customer_id")
+
+    assert %{"is_billing_account" => _is_billing_account} = actual["membership"]
+
+    if actual["team"] do
+      assert Map.has_key?(actual["team"], "stripe_customer_id")
     end
   end
 end

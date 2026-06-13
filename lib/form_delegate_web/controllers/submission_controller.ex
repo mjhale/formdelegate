@@ -292,8 +292,20 @@ defmodule FormDelegateWeb.SubmissionController do
     }
   end
 
+  defp validate_and_update_billing_count(_plan, nil, _attachments), do: :ok
+
   defp validate_and_update_billing_count(plan, team_id, attachments) do
-    billing_count = BillingCounts.get_latest_billing_count_of_team(team_id)
+    billing_count =
+      case BillingCounts.get_latest_billing_count_of_team(team_id) do
+        nil ->
+          {:ok, new_bc} =
+            BillingCounts.create_billing_count(%BillingCounts.BillingCount{}, %{team_id: team_id})
+
+          new_bc
+
+        bc ->
+          bc
+      end
 
     grace_multiplier = 2.25
     submission_grace_limit = plan.limit_submissions * grace_multiplier

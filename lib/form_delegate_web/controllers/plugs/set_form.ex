@@ -14,7 +14,7 @@ defmodule FormDelegateWeb.Plugs.SetForm do
            from f in FormDelegate.Forms.Form,
              where: f.id == ^form_id,
              preload: [
-               user: [team: [:subscriptions]],
+               user: [team: [subscriptions: [:plan]]],
                email_integrations: [:email_integration_recipients]
              ]
          ) do

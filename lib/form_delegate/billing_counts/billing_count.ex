@@ -7,9 +7,9 @@ defmodule FormDelegate.BillingCounts.BillingCount do
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "billing_counts" do
-    field :form_count, :integer
-    field :storage_count, :integer
-    field :submission_count, :integer
+    field :form_count, :integer, default: 0
+    field :storage_count, :integer, default: 0
+    field :submission_count, :integer, default: 0
     field :started_at, :utc_datetime_usec
     field :ended_at, :utc_datetime_usec
 

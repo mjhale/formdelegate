@@ -8,6 +8,7 @@ defmodule FormDelegate.Plan do
     field :limit_submissions, :integer
     field :name, :string
     field :stripe_product_id, :string
+    field :stripe_price_id, :string
 
     has_many :subscriptions, FormDelegate.Subscriptions.Subscription
 
@@ -17,7 +18,14 @@ defmodule FormDelegate.Plan do
   @doc false
   def changeset(plan, attrs) do
     plan
-    |> cast(attrs, [:name, :stripe_product_id, :limit_submissions, :limit_forms, :limit_storage])
+    |> cast(attrs, [
+      :name,
+      :stripe_product_id,
+      :stripe_price_id,
+      :limit_submissions,
+      :limit_forms,
+      :limit_storage
+    ])
     |> validate_required([
       :name,
       :limit_submissions,
