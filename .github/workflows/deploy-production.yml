@@ -1,0 +1,106 @@
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_image_tag:
+        description: API image tag to deploy
+        required: true
+        default: latest
+      web_image_tag:
+        description: Web image tag to deploy
+        required: true
+        default: latest
+      run_migrations:
+        description: Run database migrations before updating services
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy Compose stack
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Validate deployment configuration
+        env:
+          PRODUCTION_SSH_HOST: ${{ secrets.PRODUCTION_SSH_HOST }}
+          PRODUCTION_SSH_USER: ${{ secrets.PRODUCTION_SSH_USER }}
+          PRODUCTION_SSH_PRIVATE_KEY: ${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}
+        run: |
+          if [ -z "$PRODUCTION_SSH_HOST" ]; then
+            echo "::error title=Missing secret::PRODUCTION_SSH_HOST is required"
+            exit 1
+          fi
+
+          if [ -z "$PRODUCTION_SSH_USER" ]; then
+            echo "::error title=Missing secret::PRODUCTION_SSH_USER is required"
+            exit 1
+          fi
+
+          if [ -z "$PRODUCTION_SSH_PRIVATE_KEY" ]; then
+            echo "::error title=Missing secret::PRODUCTION_SSH_PRIVATE_KEY is required"
+            exit 1
+          fi
+
+          if [ -z "${{ inputs.api_image_tag }}" ]; then
+            echo "::error title=Missing input::api_image_tag is required"
+            exit 1
+          fi
+
+          if [[ ! "${{ inputs.api_image_tag }}" =~ ^[A-Za-z0-9._-]+$ ]]; then
+            echo "::error title=Invalid input::api_image_tag may only contain letters, numbers, dots, underscores, and hyphens"
+            exit 1
+          fi
+
+          if [ -z "${{ inputs.web_image_tag }}" ]; then
+            echo "::error title=Missing input::web_image_tag is required"
+            exit 1
+          fi
+
+          if [[ ! "${{ inputs.web_image_tag }}" =~ ^[A-Za-z0-9._-]+$ ]]; then
+            echo "::error title=Invalid input::web_image_tag may only contain letters, numbers, dots, underscores, and hyphens"
+            exit 1
+          fi
+
+      - name: Install SSH key
+        env:
+          PRODUCTION_SSH_HOST: ${{ secrets.PRODUCTION_SSH_HOST }}
+          PRODUCTION_SSH_PRIVATE_KEY: ${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}
+          PRODUCTION_SSH_KNOWN_HOSTS: ${{ secrets.PRODUCTION_SSH_KNOWN_HOSTS }}
+          PRODUCTION_SSH_PORT: ${{ vars.PRODUCTION_SSH_PORT || '22' }}
+        run: |
+          install -m 700 -d ~/.ssh
+          install -m 600 /dev/null ~/.ssh/deploy_key
+          printf '%s\n' "$PRODUCTION_SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+
+          if [ -n "$PRODUCTION_SSH_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$PRODUCTION_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          else
+            ssh-keyscan -p "$PRODUCTION_SSH_PORT" "$PRODUCTION_SSH_HOST" >> ~/.ssh/known_hosts
+          fi
+
+      - name: Deploy over SSH
+        env:
+          SSH_HOST: ${{ secrets.PRODUCTION_SSH_HOST }}
+          SSH_USER: ${{ secrets.PRODUCTION_SSH_USER }}
+          SSH_PORT: ${{ vars.PRODUCTION_SSH_PORT || '22' }}
+          API_IMAGE_TAG: ${{ inputs.api_image_tag }}
+          WEB_IMAGE_TAG: ${{ inputs.web_image_tag }}
+          RUN_MIGRATIONS: ${{ inputs.run_migrations }}
+        run: |
+          ssh \
+            -i ~/.ssh/deploy_key \
+            -p "$SSH_PORT" \
+            "$SSH_USER@$SSH_HOST" \
+            "sudo -n /usr/local/bin/deploy-formdelegate '$API_IMAGE_TAG' '$WEB_IMAGE_TAG' '$RUN_MIGRATIONS'"
