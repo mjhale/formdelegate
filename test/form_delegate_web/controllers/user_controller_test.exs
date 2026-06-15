@@ -138,9 +138,12 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> json_response(200)
 
       assert %{"data" => actual_user} = response
-      assert actual_user["email"] == "updateduser@formdelegate.com"
-      assert actual_user["name"] == "Updated Form User"
-      assert actual_user["id"] == user.id
+
+      assert_profile_fields(actual_user, %{
+        user
+        | email: "updateduser@formdelegate.com",
+          name: "Updated Form User"
+      })
     end
 
     @tag :as_inserted_user
@@ -161,14 +164,16 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> json_response(200)
 
       assert %{"data" => actual_user} = response
-      assert_user_fields(actual_user, user)
+      assert_profile_fields(actual_user, user)
     end
 
     test "Returns an error and does not edit the user if editing other user", %{conn: conn} do
-      user = FormDelegate.Factory.insert(:user)
+      {user, _team, _membership} = FormDelegate.Factory.insert_user_with_membership()
       {:ok, user_jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(user)
 
-      other_user = FormDelegate.Factory.insert(:user)
+      {other_user, _other_team, _other_membership} =
+        FormDelegate.Factory.insert_user_with_membership()
+
       {:ok, other_user_jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(other_user)
 
       conn
@@ -183,7 +188,7 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> json_response(200)
 
       assert %{"data" => actual_user} = response
-      assert_user_fields(actual_user, other_user)
+      assert_profile_fields(actual_user, other_user)
     end
   end
 
@@ -197,7 +202,7 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> json_response(200)
 
       assert %{"data" => actual_user} = response
-      assert_user_fields(actual_user, user)
+      assert_profile_fields(actual_user, user)
     end
 
     @tag :as_inserted_user
@@ -212,9 +217,11 @@ defmodule FormDelegateWeb.UserControllerTest do
     test "Returns an error and does not show another user's info", %{
       conn: conn
     } do
-      user = FormDelegate.Factory.insert(:user)
+      {user, _team, _membership} = FormDelegate.Factory.insert_user_with_membership()
 
-      other_user = FormDelegate.Factory.insert(:user)
+      {other_user, _other_team, _other_membership} =
+        FormDelegate.Factory.insert_user_with_membership()
+
       {:ok, other_user_jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(other_user)
 
       response =
@@ -251,10 +258,12 @@ defmodule FormDelegateWeb.UserControllerTest do
     test "Returns an error and does not delete another user", %{
       conn: conn
     } do
-      user = FormDelegate.Factory.insert(:user)
+      {user, _team, _membership} = FormDelegate.Factory.insert_user_with_membership()
       {:ok, jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(user)
 
-      other_user = FormDelegate.Factory.insert(:user)
+      {other_user, _other_team, _other_membership} =
+        FormDelegate.Factory.insert_user_with_membership()
+
       {:ok, other_user_jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(other_user)
 
       conn
@@ -269,7 +278,7 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> json_response(200)
 
       assert %{"data" => actual_user} = response
-      assert_user_fields(actual_user, user)
+      assert_profile_fields(actual_user, user)
     end
   end
 
@@ -300,14 +309,31 @@ defmodule FormDelegateWeb.UserControllerTest do
     assert actual["confirmed_at"] ==
              (expected_user.confirmed_at && DateTime.to_iso8601(expected_user.confirmed_at))
 
-    assert Map.has_key?(actual, "team")
+    refute Map.has_key?(actual, "team")
+    refute Map.has_key?(actual, "membership")
     refute Map.has_key?(actual, "is_billing_account")
     refute Map.has_key?(actual, "stripe_customer_id")
+  end
 
-    assert %{"is_billing_account" => _is_billing_account} = actual["membership"]
+  defp assert_profile_fields(actual, expected_user) do
+    assert_user_fields(actual["user"], expected_user)
 
-    if actual["team"] do
-      assert Map.has_key?(actual["team"], "stripe_customer_id")
-    end
+    assert %{"id" => _team_id, "stripe_customer_id" => _stripe_customer_id} =
+             actual["current_team"]
+
+    assert %{
+             "id" => _membership_id,
+             "is_billing_account" => _is_billing_account,
+             "team" => %{"id" => _membership_team_id}
+           } = actual["current_membership"]
+
+    assert [
+             %{
+               "id" => _membership_id,
+               "is_billing_account" => _membership_is_billing_account,
+               "team" => %{"id" => _team_id}
+             }
+             | _
+           ] = actual["memberships"]
   end
 end

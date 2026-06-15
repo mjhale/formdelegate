@@ -33,7 +33,6 @@ admin_user =
     # pre-set the counter cache
     form_count: 2,
     confirmed_at: DateTime.utc_now(),
-    team: admin_team,
     is_admin: true
   })
 
@@ -45,8 +44,7 @@ user =
     email: "josh.f@gmail.com",
     password_hash: Pbkdf2.hash_pwd_salt("securepass"),
     # pre-set the counter cache
-    form_count: 1,
-    team: user_team
+    form_count: 1
   })
 
 # Create memberships
@@ -113,6 +111,7 @@ admin_contact_form =
   Repo.insert!(%Form{
     name: "Contact Form",
     user: admin_user,
+    team: admin_team,
     verified: true,
     # pre-set the counter cache based on seed data
     submission_count: 2
@@ -122,6 +121,7 @@ admin_error_form =
   Repo.insert!(%Form{
     name: "Error Form",
     user: admin_user,
+    team: admin_team,
     verified: true,
     # pre-set the counter cache based on seed data
     submission_count: 1
@@ -131,6 +131,7 @@ user_form =
   Repo.insert!(%Form{
     name: "More Info Form",
     user: user,
+    team: user_team,
     verified: false,
     # pre-set the counter cache
     submission_count: 1

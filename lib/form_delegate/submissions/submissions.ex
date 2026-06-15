@@ -10,6 +10,7 @@ defmodule FormDelegate.Submissions do
   alias FormDelegate.Forms.Form
   alias FormDelegate.Submissions.{FlaggedType, Submission}
   alias FormDelegate.Repo
+  alias FormDelegate.Teams.Team
 
   @doc """
   Returns a paginated list of submissions for a user.
@@ -34,6 +35,31 @@ defmodule FormDelegate.Submissions do
 
     query
     |> Repo.paginate(params)
+  end
+
+  @doc """
+  Returns a paginated list of submissions for a team.
+
+  ## Examples
+
+      iex> list_submissions_of_team(team, params)
+      [%Submission{}, ...]
+
+  """
+  def list_submissions_of_team(%Team{} = team, params) do
+    query =
+      from s in Submission,
+        inner_join: form in Form,
+        on: form.id == s.form_id,
+        where: form.team_id == ^team.id,
+        order_by: [desc: s.inserted_at],
+        preload: [
+          :attachments,
+          :flagged_type,
+          form: {form, email_integrations: [:email_integration_recipients]}
+        ]
+
+    Repo.paginate(query, params)
   end
 
   @doc """
@@ -67,6 +93,36 @@ defmodule FormDelegate.Submissions do
   end
 
   @doc """
+  Returns a paginated list of matching submissions for a team.
+
+  @TODO: Allow searches of particular forms.
+
+  ## Examples
+
+      iex> list_search_submissions_of_team(team, params)
+      [%Submission{}, ...]
+
+  """
+  def list_search_submissions_of_team(%Team{} = team, params) do
+    query =
+      from s in Submission,
+        inner_join: form in Form,
+        on: form.id == s.form_id,
+        where:
+          form.team_id == ^team.id and
+            (ilike(s.sender, ^"%#{params["query"]}%") or
+               fragment("?::text ilike ?", s.fields, ^"%#{params["query"]}%")),
+        order_by: [desc: s.inserted_at],
+        preload: [
+          :attachments,
+          :flagged_type,
+          form: {form, email_integrations: [:email_integration_recipients]}
+        ]
+
+    Repo.paginate(query, params)
+  end
+
+  @doc """
   Returns the daily count of recent submission activity of a user for past 365 days.
 
   ## Examples
@@ -80,6 +136,35 @@ defmodule FormDelegate.Submissions do
       from s in Submission,
         inner_join: form in Form,
         on: form.user_id == ^user.id and form.id == s.form_id,
+        right_join:
+          day in fragment(
+            "SELECT generate_series(CURRENT_DATE - INTERVAL '365 days', CURRENT_DATE, '1 day') :: date AS d"
+          ),
+        on: day.d == fragment("date(?)", s.inserted_at),
+        group_by: day.d,
+        order_by: day.d,
+        select: %{
+          day: fragment("date(?)", day.d),
+          submission_count: count(s.id)
+        }
+
+    Repo.all(query)
+  end
+
+  @doc """
+  Returns the daily count of recent submission activity for a team for past 365 days.
+
+  ## Examples
+
+      iex> get_submission_activity_of_team(team)
+      [%{day, count}, ...]
+
+  """
+  def get_submission_activity_of_team(%Team{} = team) do
+    query =
+      from s in Submission,
+        inner_join: form in Form,
+        on: form.id == s.form_id and form.team_id == ^team.id,
         right_join:
           day in fragment(
             "SELECT generate_series(CURRENT_DATE - INTERVAL '365 days', CURRENT_DATE, '1 day') :: date AS d"
@@ -116,7 +201,7 @@ defmodule FormDelegate.Submissions do
         preload: [
           :attachments,
           :flagged_type,
-          form: [email_integrations: [:email_integration_recipients]]
+          form: [:team, :user, email_integrations: [:email_integration_recipients]]
         ]
     )
   end

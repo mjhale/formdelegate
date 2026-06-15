@@ -4,7 +4,10 @@ defmodule FormDelegate.Factory do
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
   alias FormDelegate.Integrations.EmailIntegrationRecipient
+  alias FormDelegate.Memberships.Membership
+  alias FormDelegate.Repo
   alias FormDelegate.Submissions.Submission
+  alias FormDelegate.Teams.Team
 
   def valid_user_password, do: "a sufficiently long password"
 
@@ -17,6 +20,26 @@ defmodule FormDelegate.Factory do
       name: sequence(:name, &"User #{&1}"),
       password_hash: "not an actual password hash"
     }
+  end
+
+  def team_factory do
+    %Team{
+      name: sequence(:team_name, &"Team #{&1}")
+    }
+  end
+
+  def insert_user_with_membership(user_attrs \\ [], membership_attrs \\ []) do
+    user = insert(:user, user_attrs)
+    team = insert(:team)
+
+    membership =
+      Repo.insert!(%Membership{
+        user_id: user.id,
+        team_id: team.id,
+        is_billing_account: Keyword.get(membership_attrs, :is_billing_account, true)
+      })
+
+    {user, team, membership}
   end
 
   def submission_factory do
@@ -41,6 +64,7 @@ defmodule FormDelegate.Factory do
   def form_factory do
     %Form{
       name: sequence(:form, &"Form #{&1}"),
+      team: build(:team),
       user: build(:user)
     }
   end

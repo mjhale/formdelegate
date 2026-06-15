@@ -10,25 +10,23 @@ defmodule FormDelegateWeb.Plugs.SetPlan do
 
   # Valid for situations where current_user does not exist or is not relevant (e.g., external form submissions)
   defp set_plan(%{assigns: %{form: form}} = conn, _opts) do
-    plan = get_plan_for_user(form.user)
+    plan = get_plan_for_team(form.team)
     assign(conn, :plan, plan)
   end
 
-  # Valid for where current_user does exist (e.g., on form creation)
-  defp set_plan(%{assigns: %{current_user: current_user}} = conn, _opts) do
-    plan = get_plan_for_user(current_user)
+  defp set_plan(%{assigns: %{current_team: current_team}} = conn, _opts) do
+    plan = get_plan_for_team(current_team)
     assign(conn, :plan, plan)
   end
 
-  defp get_plan_for_user(user) do
-    subscriptions =
-      user
-      |> Map.get(:team)
-      |> case do
-        nil -> []
-        %Ecto.Association.NotLoaded{} -> []
-        team -> Map.get(team, :subscriptions, [])
-      end
+  defp get_plan_for_team(nil), do: get_free_plan()
+  defp get_plan_for_team(%Ecto.Association.NotLoaded{}), do: get_free_plan()
+
+  defp get_plan_for_team(team) do
+    team =
+      FormDelegate.Repo.preload(team, subscriptions: [:plan])
+
+    subscriptions = Map.get(team, :subscriptions, [])
 
     case Enum.at(subscriptions, 0) do
       nil ->

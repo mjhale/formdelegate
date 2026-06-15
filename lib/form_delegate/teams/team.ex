@@ -13,7 +13,6 @@ defmodule FormDelegate.Teams.Team do
     field :name, :string
     field :stripe_customer_id, :string
 
-    has_many :users, FormDelegate.Accounts.User
     has_many :subscriptions, FormDelegate.Subscriptions.Subscription
     has_many :billing_counts, FormDelegate.BillingCounts.BillingCount
     has_many :memberships, Membership, on_delete: :delete_all

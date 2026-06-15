@@ -44,10 +44,13 @@ defmodule FormDelegate.Repo.Migrations.MigrateStripeBillingFields do
     WHERE team_id IS NOT NULL;
     """)
 
-    # 5. Drop columns from users table
+    # 5. Drop billing and legacy team ownership columns from users table
+    drop_if_exists(index(:users, [:team_id]))
+
     alter table(:users) do
       remove(:stripe_customer_id)
       remove(:is_billing_account)
+      remove(:team_id)
     end
   end
 
@@ -57,7 +60,25 @@ defmodule FormDelegate.Repo.Migrations.MigrateStripeBillingFields do
       add(:is_billing_account, :boolean, default: true, null: false)
     end
 
+    execute("""
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS team_id uuid REFERENCES teams(id) ON DELETE SET NULL;
+    """)
+
+    execute("CREATE INDEX IF NOT EXISTS users_team_id_index ON users(team_id)")
     create(unique_index(:users, [:stripe_customer_id]))
+
+    # Restore the legacy user team pointer from the first membership for rollback.
+    execute("""
+    UPDATE users
+    SET team_id = user_memberships.team_id
+    FROM (
+      SELECT DISTINCT ON (user_id) user_id, team_id
+      FROM memberships
+      ORDER BY user_id, inserted_at ASC
+    ) AS user_memberships
+    WHERE users.id = user_memberships.user_id;
+    """)
 
     # Restore stripe_customer_id to users from teams
     execute("""

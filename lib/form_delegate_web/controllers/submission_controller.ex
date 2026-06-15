@@ -1,5 +1,8 @@
 defmodule FormDelegateWeb.SubmissionController do
   use FormDelegateWeb, :controller
+
+  plug FormDelegateWeb.Plugs.LoadCurrentTeam
+       when action in [:index, :show, :ham, :spam, :recent_activity]
   plug FormDelegateWeb.Plugs.SetForm when action in [:create]
   plug FormDelegateWeb.Plugs.SetPlan when action in [:create]
 
@@ -38,7 +41,7 @@ defmodule FormDelegateWeb.SubmissionController do
          :ok <-
            validate_and_update_billing_count(
              plan,
-             form.user.team_id,
+             form_team_id(form),
              merged_params["attachments"]
            ),
          {:ok, %Submission{form: %Form{callback_success_url: callback_success_url}} = submission} <-
@@ -99,8 +102,18 @@ defmodule FormDelegateWeb.SubmissionController do
   end
 
   def ham(conn, %{"id" => id}, current_user) do
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
     with %Submission{} = submission <- Submissions.get_submission!(id),
-         :ok <- Authorizer.authorize(:update_submission_state, current_user, submission),
+         :ok <-
+           Authorizer.authorize(
+             :update_submission_state,
+             current_user,
+             current_team,
+             current_membership,
+             submission
+           ),
          {:ok, submission} <-
            Submissions.flag_submission(submission, %{
              flagged_at: nil,
@@ -112,12 +125,15 @@ defmodule FormDelegateWeb.SubmissionController do
   end
 
   def index(conn, params, current_user) do
-    with :ok <- Authorizer.authorize(:show_user_submissions, current_user) do
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
+    with :ok <- Authorizer.authorize(:show_user_submissions, current_user, current_membership) do
       page =
         if params["query"] do
-          Submissions.list_search_submissions_of_user(current_user, params)
+          Submissions.list_search_submissions_of_team(current_team, params)
         else
-          Submissions.list_submissions_of_user(current_user, params)
+          Submissions.list_submissions_of_team(current_team, params)
         end
 
       conn
@@ -127,16 +143,34 @@ defmodule FormDelegateWeb.SubmissionController do
   end
 
   def recent_activity(conn, _params, current_user) do
-    with :ok <- Authorizer.authorize(:show_recent_submission_activity, current_user) do
-      activity = Submissions.get_submission_activity_of_user(current_user)
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
+    with :ok <-
+           Authorizer.authorize(
+             :show_recent_submission_activity,
+             current_user,
+             current_membership
+           ) do
+      activity = Submissions.get_submission_activity_of_team(current_team)
 
       render(conn, "recent_activity.json", activity: activity)
     end
   end
 
   def spam(conn, %{"id" => id}, current_user) do
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
     with %Submission{} = submission <- Submissions.get_submission!(id),
-         :ok <- Authorizer.authorize(:update_submission_state, current_user, submission),
+         :ok <-
+           Authorizer.authorize(
+             :update_submission_state,
+             current_user,
+             current_team,
+             current_membership,
+             submission
+           ),
          {:ok, submission} <-
            Submissions.flag_submission(submission, %{
              flagged_at: DateTime.utc_now(),
@@ -151,8 +185,18 @@ defmodule FormDelegateWeb.SubmissionController do
   end
 
   def show(conn, %{"id" => id}, current_user) do
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
     with %Submission{} = submission <- Submissions.get_submission!(id),
-         :ok <- Authorizer.authorize(:show_submission, current_user, submission) do
+         :ok <-
+           Authorizer.authorize(
+             :show_submission,
+             current_user,
+             current_team,
+             current_membership,
+             submission
+           ) do
       render(conn, "show.json", submission: submission)
     end
   end
@@ -164,6 +208,8 @@ defmodule FormDelegateWeb.SubmissionController do
   defp akismet_api_key do
     Application.get_env(:form_delegate, :akismet_api_key)
   end
+
+  defp form_team_id(%Form{team_id: team_id}), do: team_id
 
   defp broadcast_submission(%Submission{} = submission) do
     %Submission{form: %{user_id: user_id}} = submission

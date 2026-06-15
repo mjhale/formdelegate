@@ -84,8 +84,13 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
 
   describe "index/3" do
     @tag :as_inserted_user
-    test "Responds with a list of user submissions", %{conn: conn, jwt: jwt, user: user} do
-      form = FormDelegate.Factory.insert(:form, user: user)
+    test "Responds with a list of user submissions", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
       submission = FormDelegate.Factory.insert(:submission, form: form)
 
       response =
@@ -133,9 +138,10 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
     test "Responds with submission info if the submission is found", %{
       conn: conn,
       jwt: jwt,
-      user: user
+      user: user,
+      team: team
     } do
-      form = FormDelegate.Factory.insert(:form, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
       submission = FormDelegate.Factory.insert(:submission, form: form)
 
       response =
@@ -182,8 +188,8 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
   end
 
   defp create_form(_context) do
-    user = FormDelegate.Factory.insert(:user)
-    form = FormDelegate.Factory.insert(:form, user: user)
+    {user, team, _membership} = FormDelegate.Factory.insert_user_with_membership()
+    form = FormDelegate.Factory.insert(:form, user: user, team: team)
 
     {:ok, form: form}
   end

@@ -6,6 +6,7 @@ defmodule FormDelegate.Forms.Form do
   alias FormDelegate.Forms.Form
   alias FormDelegate.Integrations.{EmailIntegration, FormIntegration}
   alias FormDelegate.Submissions.Submission
+  alias FormDelegate.Teams.Team
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @timestamps_opts [type: :utc_datetime_usec]
@@ -19,6 +20,7 @@ defmodule FormDelegate.Forms.Form do
     field :verified, :boolean, default: false
 
     belongs_to :user, User
+    belongs_to :team, Team, type: Ecto.UUID
     has_many :submissions, Submission, on_delete: :delete_all
 
     has_many :form_integrations, FormIntegration, on_delete: :delete_all, on_replace: :delete

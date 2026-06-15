@@ -65,6 +65,44 @@ defmodule FormDelegateWeb.Router do
   scope "/v1", FormDelegateWeb do
     pipe_through [:api, :check_authenticated, :ensure_authenticated, :load_user]
 
+    post "/teams/:team_id/stripe/checkout-sessions", StripeController, :create_checkout_session,
+      as: :team_stripe_checkout_session
+
+    get "/teams/:team_id/stripe/subscriptions/:id", StripeController, :retrieve_subscription,
+      as: :team_stripe_subscription
+
+    put "/teams/:team_id/stripe/subscriptions/:id/price_id",
+        StripeController,
+        :update_subscription_price, as: :team_stripe_subscription
+
+    patch "/teams/:team_id/stripe/subscriptions/:id/price_id",
+          StripeController,
+          :update_subscription_price, as: :team_stripe_subscription
+
+    get "/teams/:team_id/stripe/portal", StripeController, :create_portal, as: :team_stripe_portal
+
+    resources "/teams/:team_id/subscriptions", SubscriptionController,
+      only: [:index],
+      as: :team_subscription
+
+    resources "/teams/:team_id/forms", FormController,
+      except: [:edit, :new],
+      as: :team_form
+
+    scope "/teams/:team_id/submissions" do
+      get "/recent_activity", SubmissionController, :recent_activity,
+        as: :team_submission_recent_activity
+
+      patch "/:id/ham", SubmissionController, :ham, as: :team_submission_ham
+      put "/:id/ham", SubmissionController, :ham, as: :team_submission_ham
+      patch "/:id/spam", SubmissionController, :spam, as: :team_submission_spam
+      put "/:id/spam", SubmissionController, :spam, as: :team_submission_spam
+    end
+
+    resources "/teams/:team_id/submissions", SubmissionController,
+      only: [:index, :show],
+      as: :team_submission
+
     post "/stripe/checkout-sessions", StripeController, :create_checkout_session,
       as: :stripe_checkout_session
 

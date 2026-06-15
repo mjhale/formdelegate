@@ -1,5 +1,6 @@
 defmodule FormDelegateWeb.FormEmailIntegrationController do
   use FormDelegateWeb, :controller
+  plug FormDelegateWeb.Plugs.LoadCurrentTeam
 
   alias FormDelegate.{Forms, Integrations}
   alias FormDelegate.Forms.Form
@@ -14,8 +15,18 @@ defmodule FormDelegateWeb.FormEmailIntegrationController do
   end
 
   def verify(conn, %{"form_id" => form_id, "id" => email_integration_id}, current_user) do
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
     with %Form{} = form <- Forms.get_form!(form_id),
-         :ok <- Authorizer.authorize(:update_form, current_user, form),
+         :ok <-
+           Authorizer.authorize(
+             :update_form,
+             current_user,
+             current_team,
+             current_membership,
+             form
+           ),
          %EmailIntegration{} = email_integration <-
            Integrations.get_form_email_integration(form.id, email_integration_id),
          {:ok, %EmailIntegration{} = email_integration} <-

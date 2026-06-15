@@ -1,5 +1,6 @@
 defmodule FormDelegateWeb.FormController do
   use FormDelegateWeb, :controller
+  plug FormDelegateWeb.Plugs.LoadCurrentTeam
   plug FormDelegateWeb.Plugs.SetPlan when action in [:create]
 
   alias FormDelegate.BillingCounts
@@ -14,19 +15,26 @@ defmodule FormDelegateWeb.FormController do
   end
 
   def index(conn, _params, current_user) do
-    with :ok <- Authorizer.authorize(:show_user_forms, current_user) do
-      forms = Forms.list_forms_of_user(current_user)
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
+    with :ok <- Authorizer.authorize(:show_user_forms, current_user, current_membership) do
+      forms = Forms.list_forms_of_team(current_team)
       render(conn, "index.json", forms: forms)
     end
   end
 
   def create(%{assigns: %{plan: plan}} = conn, %{"form" => form_params}, current_user) do
-    with :ok <- Authorizer.authorize(:create_form, current_user),
-         :ok <- validate_and_update_billing_count(plan, current_user.team_id),
-         {:ok, %Form{} = form} <- Forms.create_form(form_params, current_user) do
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
+    with :ok <- Authorizer.authorize(:create_form, current_user, current_membership),
+         :ok <- validate_and_update_billing_count(plan, current_team.id),
+         {:ok, %Form{} = form} <- Forms.create_form(form_params, current_user, current_team) do
       form =
         FormDelegate.Repo.preload(form, [
           [email_integrations: [:email_integration_recipients]],
+          :team,
           :user
         ])
 
@@ -38,23 +46,47 @@ defmodule FormDelegateWeb.FormController do
   end
 
   def show(conn, %{"id" => id}, current_user) do
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
     with %Form{} = form <- Forms.get_form!(id),
-         :ok <- Authorizer.authorize(:show_form, current_user, form) do
+         :ok <-
+           Authorizer.authorize(:show_form, current_user, current_team, current_membership, form) do
       render(conn, "show.json", form: form)
     end
   end
 
   def update(conn, %{"id" => id, "form" => form_params}, current_user) do
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
     with %Form{} = form <- Forms.get_form!(id),
-         :ok <- Authorizer.authorize(:update_form, current_user, form),
+         :ok <-
+           Authorizer.authorize(
+             :update_form,
+             current_user,
+             current_team,
+             current_membership,
+             form
+           ),
          {:ok, %Form{} = form} <- Forms.update_form(form, form_params) do
       render(conn, "show.json", form: form)
     end
   end
 
   def delete(conn, %{"id" => id}, current_user) do
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
     with %Form{} = form <- Forms.get_form!(id),
-         :ok <- Authorizer.authorize(:delete_form, current_user, form),
+         :ok <-
+           Authorizer.authorize(
+             :delete_form,
+             current_user,
+             current_team,
+             current_membership,
+             form
+           ),
          {:ok, %Form{} = _form} <- Forms.delete_form(form) do
       conn
       |> put_resp_header("content-type", "application/json")

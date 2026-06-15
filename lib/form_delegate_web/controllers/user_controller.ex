@@ -1,8 +1,9 @@
 defmodule FormDelegateWeb.UserController do
   use FormDelegateWeb, :controller
 
+  plug FormDelegateWeb.Plugs.LoadCurrentTeam when action in [:show, :update]
+
   alias FormDelegate.{Accounts, Accounts.User}
-  alias FormDelegate.{BillingCounts, BillingCounts.BillingCount}
   alias FormDelegate.Jobs.WelcomeEmail
   alias FormDelegateWeb.Authorizer
   alias FormDelegateWeb.Guardian
@@ -25,9 +26,6 @@ defmodule FormDelegateWeb.UserController do
     with :ok <- Authorizer.authorize(:register_user, current_user),
          {:ok, _captcha_response} <- hcaptcha_api().verify_token(captcha_token),
          {:ok, %User{} = user} <- Accounts.register_user(registration_params),
-         # @TODO: Move billing count creation to team creation instead of user creation
-         {:ok, %BillingCount{} = _billing_count} <-
-           BillingCounts.create_billing_count(%BillingCount{}, %{team_id: user.team_id}),
          {:ok, token, _claims} <-
            Guardian.encode_and_sign(user, %{}, token_type: "access") do
       %{user_id: user.id}
@@ -44,7 +42,11 @@ defmodule FormDelegateWeb.UserController do
   def show(conn, %{"id" => id}, current_user) do
     with %User{} = user <- Accounts.get_user!(id),
          :ok <- Authorizer.authorize(:show_user, current_user, user) do
-      render(conn, :show, user: user)
+      render(conn, :show,
+        user: user,
+        current_team: conn.assigns.current_team,
+        current_membership: conn.assigns.current_membership
+      )
     end
   end
 
@@ -52,7 +54,13 @@ defmodule FormDelegateWeb.UserController do
     with %User{} = user <- Accounts.get_user!(id),
          :ok <- Authorizer.authorize(:update_user, current_user, user),
          {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
-      render(conn, :show, user: user)
+      user = Accounts.get_user!(user.id)
+
+      render(conn, :show,
+        user: user,
+        current_team: conn.assigns.current_team,
+        current_membership: conn.assigns.current_membership
+      )
     end
   end
 

@@ -54,12 +54,6 @@ defmodule FormDelegateWeb.FormControllerTest do
   end
 
   setup %{conn: conn, user: user} do
-    user =
-      case user do
-        nil -> nil
-        _ -> Repo.preload(user, team: :subscriptions)
-      end
-
     conn = Plug.Conn.assign(conn, :current_user, user)
 
     previous_smtp_client = Application.get_env(:form_delegate, :email_provider_smtp_client)
@@ -87,8 +81,8 @@ defmodule FormDelegateWeb.FormControllerTest do
 
   describe "index/2" do
     @tag :as_inserted_user
-    test "Responds with with all user forms", %{conn: conn, jwt: jwt, user: user} do
-      form = FormDelegate.Factory.insert(:form, user: user)
+    test "Responds with with all user forms", %{conn: conn, jwt: jwt, user: user, team: team} do
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
 
       response =
         conn
@@ -285,9 +279,10 @@ defmodule FormDelegateWeb.FormControllerTest do
     test "Responds with form info if the form is found", %{
       conn: conn,
       jwt: jwt,
-      user: user
+      user: user,
+      team: team
     } do
-      form = FormDelegate.Factory.insert(:form, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
 
       response =
         conn
@@ -331,9 +326,10 @@ defmodule FormDelegateWeb.FormControllerTest do
     test "Edits, and responds with the form if attributes are valid", %{
       conn: conn,
       jwt: jwt,
-      user: user
+      user: user,
+      team: team
     } do
-      form = FormDelegate.Factory.insert(:form, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
 
       response =
         conn
@@ -352,9 +348,10 @@ defmodule FormDelegateWeb.FormControllerTest do
          %{
            conn: conn,
            jwt: jwt,
-           user: user
+           user: user,
+           team: team
          } do
-      form = FormDelegate.Factory.insert(:form, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
 
       conn
       |> put_req_header("authorization", "bearer: " <> jwt)
@@ -366,9 +363,10 @@ defmodule FormDelegateWeb.FormControllerTest do
     test "updates and verifies email integrations marked pending_verification", %{
       conn: conn,
       jwt: jwt,
-      user: user
+      user: user,
+      team: team
     } do
-      form = FormDelegate.Factory.insert(:form, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
       integration = insert_email_integration(form)
 
       attrs = %{
@@ -413,11 +411,12 @@ defmodule FormDelegateWeb.FormControllerTest do
     test "returns verification error and rolls back update when provider check fails", %{
       conn: conn,
       jwt: jwt,
-      user: user
+      user: user,
+      team: team
     } do
       Application.put_env(:form_delegate, :email_provider_smtp_client, SMTPClientFailure)
 
-      form = FormDelegate.Factory.insert(:form, user: user, name: "Original Form")
+      form = FormDelegate.Factory.insert(:form, user: user, team: team, name: "Original Form")
       integration = insert_email_integration(form)
 
       attrs = %{
@@ -471,9 +470,10 @@ defmodule FormDelegateWeb.FormControllerTest do
     test "returns typed verification failure codes on update for classified provider errors", %{
       conn: conn,
       jwt: jwt,
-      user: user
+      user: user,
+      team: team
     } do
-      form = FormDelegate.Factory.insert(:form, user: user, name: "Original Form")
+      form = FormDelegate.Factory.insert(:form, user: user, team: team, name: "Original Form")
       integration = insert_email_integration(form)
 
       cases = [
@@ -514,9 +514,10 @@ defmodule FormDelegateWeb.FormControllerTest do
          %{
            conn: conn,
            jwt: jwt,
-           user: user
+           user: user,
+           team: team
          } do
-      form = FormDelegate.Factory.insert(:form, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
 
       conn
       |> put_req_header("authorization", "bearer: " <> jwt)
@@ -533,11 +534,13 @@ defmodule FormDelegateWeb.FormControllerTest do
     test "Returns an error and does not delete the form if other user", %{
       conn: conn
     } do
-      user = FormDelegate.Factory.insert(:user)
+      {user, user_team, _membership} = FormDelegate.Factory.insert_user_with_membership()
       {:ok, user_jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(user)
-      user_form = FormDelegate.Factory.insert(:form, user: user)
+      user_form = FormDelegate.Factory.insert(:form, user: user, team: user_team)
 
-      other_user = FormDelegate.Factory.insert(:user)
+      {other_user, _other_team, _other_membership} =
+        FormDelegate.Factory.insert_user_with_membership()
+
       {:ok, other_user_jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(other_user)
 
       conn

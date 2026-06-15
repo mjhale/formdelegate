@@ -274,7 +274,7 @@ defmodule FormDelegate.Accounts do
 
     with %Ecto.Multi{} = multi <- Registration.to_multi(changeset),
          {:ok, %{user: user}} <- Repo.transaction(multi) do
-      {:ok, user}
+      {:ok, Repo.preload(user, user_preloads())}
     else
       {:error, changeset} ->
         {:error, changeset}
@@ -339,6 +339,6 @@ defmodule FormDelegate.Accounts do
   end
 
   defp user_preloads do
-    [:memberships, team: [subscriptions: [:plan]]]
+    [memberships: [team: [subscriptions: [:plan]]]]
   end
 end

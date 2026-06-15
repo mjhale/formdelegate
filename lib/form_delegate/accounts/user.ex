@@ -28,7 +28,6 @@ defmodule FormDelegate.Accounts.User do
 
     field :is_admin, :boolean, default: false
 
-    belongs_to :team, FormDelegate.Teams.Team, type: Ecto.UUID
     has_many :forms, FormDelegate.Forms.Form, on_delete: :delete_all
     has_many :memberships, Membership, on_delete: :delete_all
 
@@ -51,9 +50,6 @@ defmodule FormDelegate.Accounts.User do
     |> cast(params, [:password])
     |> validate_required([:password])
     |> validate_length(:password, min: 8)
-    # @TODO: Allow a user to sign up with an existing team.
-    # But for now, create a new team with each registration.
-    |> put_assoc(:team, %{})
     |> put_password_hash()
     |> put_confirmation_token()
     |> put_confirmation_sent_at()

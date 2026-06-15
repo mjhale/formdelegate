@@ -3,7 +3,9 @@ defmodule FormDelegate.Accounts.Registration do
   import Ecto.Changeset
 
   alias FormDelegate.Accounts.{Registration, User}
+  alias FormDelegate.BillingCounts.BillingCount
   alias FormDelegate.Memberships.Membership
+  alias FormDelegate.Teams.Team
 
   @primary_key false
   embedded_schema do
@@ -25,12 +27,21 @@ defmodule FormDelegate.Accounts.Registration do
 
     Ecto.Multi.new()
     |> Ecto.Multi.insert(:user, to_user_struct(data))
-    |> Ecto.Multi.insert(:membership, fn %{user: user} ->
+    |> Ecto.Multi.insert(:team, Team.changeset(%Team{}, %{}))
+    |> Ecto.Multi.insert(:membership, fn %{user: user, team: team} ->
       %Membership{}
       |> Membership.changeset(%{
         user_id: user.id,
-        team_id: user.team_id,
+        team_id: team.id,
         is_billing_account: true
+      })
+    end)
+    |> Ecto.Multi.insert(:billing_count, fn %{team: team} ->
+      BillingCount.create_changeset(%BillingCount{}, %{
+        team_id: team.id,
+        submission_count: 0,
+        storage_count: 0,
+        form_count: 0
       })
     end)
   end

@@ -14,12 +14,15 @@ defmodule FormDelegateWeb.ConnCase do
   """
 
   use ExUnit.CaseTemplate
+  import Ecto.Query, only: [from: 2]
 
   alias FormDelegate.Factory
   alias FormDelegate.BillingCounts
   alias FormDelegate.BillingCounts.BillingCount
+  alias FormDelegate.Memberships.Membership
   alias FormDelegate.Plans.Plan
   alias FormDelegate.Repo
+  alias FormDelegate.Teams.Team
 
   using do
     quote do
@@ -68,13 +71,15 @@ defmodule FormDelegateWeb.ConnCase do
           nil
       end
 
-    ensure_billing_count_exists(user)
+    membership = ensure_membership_exists(user)
+    ensure_billing_count_exists(membership)
+    team = membership && Repo.preload(membership, :team).team
 
     conn =
       Phoenix.ConnTest.build_conn()
       |> Plug.Conn.assign(:current_user, user)
 
-    {:ok, conn: conn, user: user}
+    {:ok, conn: conn, user: user, team: team, membership: membership}
   end
 
   defp ensure_free_plan_exists do
@@ -94,9 +99,7 @@ defmodule FormDelegateWeb.ConnCase do
 
   defp ensure_billing_count_exists(nil), do: :ok
 
-  defp ensure_billing_count_exists(%{team_id: nil}), do: :ok
-
-  defp ensure_billing_count_exists(%{team_id: team_id}) do
+  defp ensure_billing_count_exists(%Membership{team_id: team_id}) do
     case BillingCounts.get_latest_billing_count_of_team(team_id) do
       nil ->
         BillingCounts.create_billing_count(%BillingCount{}, %{
@@ -108,6 +111,26 @@ defmodule FormDelegateWeb.ConnCase do
 
       _billing_count ->
         :ok
+    end
+  end
+
+  defp ensure_membership_exists(nil), do: nil
+
+  defp ensure_membership_exists(%{id: user_id}) when is_nil(user_id), do: nil
+
+  defp ensure_membership_exists(%{id: user_id}) do
+    case Repo.one(from m in Membership, where: m.user_id == ^user_id, limit: 1) do
+      nil ->
+        team = Repo.insert!(%Team{})
+
+        Repo.insert!(%Membership{
+          user_id: user_id,
+          team_id: team.id,
+          is_billing_account: true
+        })
+
+      membership ->
+        membership
     end
   end
 end

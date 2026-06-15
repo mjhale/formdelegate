@@ -1,12 +1,11 @@
 defmodule FormDelegateWeb.Authorizer do
-  import Ecto.Query, warn: false
-
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
-  alias FormDelegate.Plans.Plan
-  alias FormDelegate.Subscriptions.Subscription
-  alias FormDelegate.Submissions.Submission
   alias FormDelegate.Memberships.Membership
+  alias FormDelegate.Plans.Plan
+  alias FormDelegate.Submissions.Submission
+  alias FormDelegate.Subscriptions.Subscription
+  alias FormDelegate.Teams.Team
 
   def authorize(:create_submission, _current_user) do
     :ok
@@ -76,16 +75,40 @@ defmodule FormDelegateWeb.Authorizer do
     end
   end
 
-  def authorize(:create_checkout_session, %User{} = current_user) do
-    if billing_manager?(current_user) do
+  def authorize(:create_form, %User{} = _current_user, %Membership{} = _membership) do
+    :ok
+  end
+
+  def authorize(:show_user_forms, %User{} = _current_user, %Membership{} = _membership) do
+    :ok
+  end
+
+  def authorize(
+        :show_recent_submission_activity,
+        %User{} = _current_user,
+        %Membership{} = _membership
+      ) do
+    :ok
+  end
+
+  def authorize(:show_user_submissions, %User{} = _current_user, %Membership{} = _membership) do
+    :ok
+  end
+
+  def authorize(:show_user_subscriptions, %User{} = _current_user, %Membership{} = _membership) do
+    :ok
+  end
+
+  def authorize(:create_checkout_session, %User{} = current_user, %Membership{} = membership) do
+    if current_user.is_admin or membership.is_billing_account do
       :ok
     else
       {:error, :forbidden}
     end
   end
 
-  def authorize(:create_portal, %User{} = current_user) do
-    if billing_manager?(current_user) do
+  def authorize(:create_portal, %User{} = current_user, %Membership{} = membership) do
+    if current_user.is_admin or membership.is_billing_account do
       :ok
     else
       {:error, :forbidden}
@@ -177,12 +200,92 @@ defmodule FormDelegateWeb.Authorizer do
   end
 
   def authorize(
+        :show_form,
+        %User{} = current_user,
+        %Team{} = current_team,
+        %Membership{} = membership,
+        %Form{} = form
+      ) do
+    if current_user.is_admin or
+         (membership.team_id == current_team.id and form_team_id(form) == current_team.id) do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  def authorize(
+        :update_form,
+        %User{} = current_user,
+        %Team{} = current_team,
+        %Membership{} = membership,
+        %Form{} = form
+      ) do
+    if current_user.is_admin or
+         (membership.team_id == current_team.id and form_team_id(form) == current_team.id) do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  def authorize(
+        :delete_form,
+        %User{} = current_user,
+        %Team{} = current_team,
+        %Membership{} = membership,
+        %Form{} = form
+      ) do
+    if current_user.is_admin or
+         (membership.team_id == current_team.id and form_team_id(form) == current_team.id) do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  def authorize(
+        :show_submission,
+        %User{} = current_user,
+        %Team{} = current_team,
+        %Membership{} = membership,
+        %Submission{} = submission
+      ) do
+    if current_user.is_admin or
+         (membership.team_id == current_team.id and
+            form_team_id(submission.form) == current_team.id) do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  def authorize(
+        :update_submission_state,
+        %User{} = current_user,
+        %Team{} = current_team,
+        %Membership{} = membership,
+        %Submission{} = submission
+      ) do
+    if current_user.is_admin or
+         (membership.team_id == current_team.id and
+            form_team_id(submission.form) == current_team.id) do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  def authorize(
         :retrieve_subscription,
         %User{} = current_user,
+        %Team{} = current_team,
+        %Membership{} = membership,
         %Subscription{} = subscription
       ) do
     if current_user.is_admin or
-         (current_user.team_id == subscription.team_id and billing_manager?(current_user)) do
+         (membership.team_id == current_team.id and membership.is_billing_account and
+            subscription.team_id == current_team.id) do
       :ok
     else
       {:error, :forbidden}
@@ -192,26 +295,18 @@ defmodule FormDelegateWeb.Authorizer do
   def authorize(
         :update_stripe_subscription,
         %User{} = current_user,
+        %Team{} = current_team,
+        %Membership{} = membership,
         %Subscription{} = subscription
       ) do
     if current_user.is_admin or
-         (current_user.team_id == subscription.team_id and billing_manager?(current_user)) do
+         (membership.team_id == current_team.id and membership.is_billing_account and
+            subscription.team_id == current_team.id) do
       :ok
     else
       {:error, :forbidden}
     end
   end
 
-  defp billing_manager?(%User{} = user) do
-    if user.is_admin do
-      true
-    else
-      query =
-        from m in Membership,
-          where:
-            m.user_id == ^user.id and m.team_id == ^user.team_id and m.is_billing_account == true
-
-      FormDelegate.Repo.exists?(query)
-    end
-  end
+  defp form_team_id(%Form{team_id: team_id}), do: team_id
 end

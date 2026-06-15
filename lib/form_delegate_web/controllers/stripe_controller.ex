@@ -1,6 +1,8 @@
 defmodule FormDelegateWeb.StripeController do
   use FormDelegateWeb, :controller
 
+  plug FormDelegateWeb.Plugs.LoadCurrentTeam
+
   require Logger
   require IEx
   require Protocol
@@ -8,6 +10,7 @@ defmodule FormDelegateWeb.StripeController do
   alias FormDelegate.Accounts.User
   alias FormDelegate.Subscriptions
   alias FormDelegate.Subscriptions.Subscription
+  alias FormDelegate.Teams.Team
   alias FormDelegateWeb.Authorizer
 
   action_fallback FormDelegateWeb.FallbackController
@@ -31,8 +34,11 @@ defmodule FormDelegateWeb.StripeController do
         },
         current_user
       ) do
-    with :ok <- Authorizer.authorize(:create_checkout_session, current_user),
-         {:ok, stripe_customer_id} <- get_stripe_customer_id_for_team(current_user),
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
+    with :ok <- Authorizer.authorize(:create_checkout_session, current_user, current_membership),
+         {:ok, stripe_customer_id} <- get_stripe_customer_id_for_team(current_user, current_team),
          {:ok, %Stripe.Checkout.Session{} = session} <-
            stripe_api().create_checkout_session(%{
              payment_method_types: [:card],
@@ -50,7 +56,7 @@ defmodule FormDelegateWeb.StripeController do
              subscription_data: %{
                items: [],
                metadata: %{
-                 "team_id" => current_user.team_id
+                 "team_id" => current_team.id
                }
              }
            }) do
@@ -66,10 +72,19 @@ defmodule FormDelegateWeb.StripeController do
   end
 
   def retrieve_subscription(conn, %{"id" => stripe_subscription_id}, current_user) do
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
     with %Subscription{} = subscription <-
            Subscriptions.get_subscription!(stripe_subscription_id),
          :ok <-
-           Authorizer.authorize(:retrieve_subscription, current_user, subscription) do
+           Authorizer.authorize(
+             :retrieve_subscription,
+             current_user,
+             current_team,
+             current_membership,
+             subscription
+           ) do
       stripe_subscription = stripe_api().retrieve_subscription(stripe_subscription_id)
 
       case stripe_subscription do
@@ -91,10 +106,19 @@ defmodule FormDelegateWeb.StripeController do
         %{"id" => stripe_subscription_id, "subscription" => %{"price_id" => stripe_price_id}},
         current_user
       ) do
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
     with %Subscription{} = subscription <-
            Subscriptions.get_subscription!(stripe_subscription_id),
          :ok <-
-           Authorizer.authorize(:update_stripe_subscription, current_user, subscription) do
+           Authorizer.authorize(
+             :update_stripe_subscription,
+             current_user,
+             current_team,
+             current_membership,
+             subscription
+           ) do
       {:ok,
        %Stripe.Subscription{
          items: %Stripe.List{
@@ -128,8 +152,11 @@ defmodule FormDelegateWeb.StripeController do
   end
 
   def create_portal(conn, _params, current_user) do
-    with :ok <- Authorizer.authorize(:create_portal, current_user),
-         {:ok, stripe_customer_id} <- get_stripe_customer_id_for_team(current_user),
+    current_team = conn.assigns.current_team
+    current_membership = conn.assigns.current_membership
+
+    with :ok <- Authorizer.authorize(:create_portal, current_user, current_membership),
+         {:ok, stripe_customer_id} <- get_stripe_customer_id_for_team(current_user, current_team),
          {:ok, %{url: portal_url}} <-
            stripe_api().create_billing_portal_session(%{
              customer: stripe_customer_id,
@@ -154,9 +181,7 @@ defmodule FormDelegateWeb.StripeController do
     Application.get_env(:form_delegate, :stripe_api)
   end
 
-  defp get_stripe_customer_id_for_team(%User{} = user) do
-    team = user.team
-
+  defp get_stripe_customer_id_for_team(%User{} = user, %Team{} = team) do
     # Create a Stripe customer for the team if it doesn't exist
     if is_nil(team.stripe_customer_id) do
       customer_name = team.name || "#{user.name} (Team)"

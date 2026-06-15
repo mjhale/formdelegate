@@ -10,6 +10,7 @@ defmodule FormDelegate.Forms do
   alias FormDelegate.Integrations
   alias FormDelegate.Integrations.EmailIntegration
   alias FormDelegate.Repo
+  alias FormDelegate.Teams.Team
 
   @doc """
   Returns the list of forms.
@@ -24,6 +25,24 @@ defmodule FormDelegate.Forms do
     Repo.all(
       from f in Form,
         where: f.user_id == ^user.id,
+        preload: [email_integrations: [:email_integration_recipients]],
+        order_by: f.inserted_at
+    )
+  end
+
+  @doc """
+  Returns the list of forms belonging to a team.
+
+  ## Examples
+
+      iex> list_forms_of_team(team)
+      [%Form{}, ...]
+
+  """
+  def list_forms_of_team(%Team{} = team) do
+    Repo.all(
+      from f in Form,
+        where: f.team_id == ^team.id,
         preload: [email_integrations: [:email_integration_recipients]],
         order_by: f.inserted_at
     )
@@ -48,7 +67,8 @@ defmodule FormDelegate.Forms do
       from f in Form,
         preload: [
           [email_integrations: [:email_integration_recipients]],
-          user: [team: :subscriptions]
+          :team,
+          :user
         ],
         where: f.id == ^id
     )
@@ -66,7 +86,7 @@ defmodule FormDelegate.Forms do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_form(attrs \\ %{}, %User{} = user) do
+  def create_form(attrs, %User{} = user, %Team{} = team) do
     Repo.transaction(fn ->
       with {:ok, %Form{} = form} <-
              %Form{}
@@ -75,6 +95,7 @@ defmodule FormDelegate.Forms do
                with: &EmailIntegration.changeset/2
              )
              |> Ecto.Changeset.put_assoc(:user, user)
+             |> Ecto.Changeset.put_assoc(:team, team)
              |> Repo.insert(),
            {:ok, %Form{} = form} <- maybe_verify_email_integrations(form) do
         form

@@ -1,15 +1,24 @@
 defmodule FormDelegateWeb.UserView do
   use FormDelegateWeb, :view
-  import Ecto.Query, warn: false
   alias FormDelegateWeb.{TeamView, UserView}
-  alias FormDelegate.Memberships.Membership
 
   def render("index.json", %{users: users}) do
     %{data: render_many(users, UserView, "user.json")}
   end
 
-  def render("show.json", %{user: user}) do
-    %{data: render_one(user, UserView, "user.json")}
+  def render("show.json", %{
+        user: user,
+        current_team: current_team,
+        current_membership: current_membership
+      }) do
+    %{
+      data: %{
+        user: render_one(user, UserView, "user.json"),
+        current_team: render_one(current_team, TeamView, "team.json"),
+        current_membership: render_membership(current_membership),
+        memberships: render_memberships(user)
+      }
+    }
   end
 
   def render("sign_up.json", %{token: token, user: user}) do
@@ -29,34 +38,23 @@ defmodule FormDelegateWeb.UserView do
       form_count: user.form_count,
       id: user.id,
       is_admin: user.is_admin,
-      name: user.name,
-      membership: %{
-        is_billing_account: get_is_billing_account(user)
-      },
-      team: render_one(user.team, TeamView, "team.json")
+      name: user.name
     }
   end
 
-  defp get_is_billing_account(user) do
-    case user.memberships do
-      %Ecto.Association.NotLoaded{} ->
-        if is_nil(user.team_id) do
-          false
-        else
-          query =
-            from m in Membership,
-              where:
-                m.user_id == ^user.id and m.team_id == ^user.team_id and
-                  m.is_billing_account == true
+  defp render_memberships(%{memberships: memberships}) when is_list(memberships) do
+    Enum.map(memberships, &render_membership/1)
+  end
 
-          FormDelegate.Repo.exists?(query)
-        end
+  defp render_memberships(_user), do: []
 
-      memberships when is_list(memberships) ->
-        Enum.any?(memberships, fn m -> m.team_id == user.team_id and m.is_billing_account end)
+  defp render_membership(nil), do: nil
 
-      _ ->
-        false
-    end
+  defp render_membership(membership) do
+    %{
+      id: membership.id,
+      is_billing_account: membership.is_billing_account,
+      team: render_one(membership.team, TeamView, "team.json")
+    }
   end
 end

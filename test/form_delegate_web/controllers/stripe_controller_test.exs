@@ -12,6 +12,7 @@ defmodule FormDelegateWeb.StripeControllerTest do
   setup %{conn: conn} do
     # Create a team
     team = Repo.insert!(%Team{name: "Test Team"})
+    other_team = Repo.insert!(%Team{name: "Other Team"})
 
     # Create plan
     plan =
@@ -34,7 +35,6 @@ defmodule FormDelegateWeb.StripeControllerTest do
         email: "billing@test.com",
         password_hash: password_hash
       )
-      |> Map.put(:team_id, team.id)
       |> Repo.insert!()
 
     normal_user =
@@ -43,7 +43,6 @@ defmodule FormDelegateWeb.StripeControllerTest do
         email: "normal@test.com",
         password_hash: password_hash
       )
-      |> Map.put(:team_id, team.id)
       |> Repo.insert!()
 
     # Create membership for billing user
@@ -53,6 +52,12 @@ defmodule FormDelegateWeb.StripeControllerTest do
       is_billing_account: true
     })
 
+    Repo.insert!(%Membership{
+      user_id: billing_user.id,
+      team_id: other_team.id,
+      is_billing_account: false
+    })
+
     # Create membership for normal user (is_billing_account is false by default)
     Repo.insert!(%Membership{
       user_id: normal_user.id,
@@ -60,9 +65,8 @@ defmodule FormDelegateWeb.StripeControllerTest do
       is_billing_account: false
     })
 
-    # Preload the team so that it matches what load_user / Guardian resources will load
-    billing_user = Repo.preload(billing_user, team: [subscriptions: [:plan]])
-    normal_user = Repo.preload(normal_user, team: [subscriptions: [:plan]])
+    billing_user = Repo.preload(billing_user, memberships: [team: [subscriptions: [:plan]]])
+    normal_user = Repo.preload(normal_user, memberships: [team: [subscriptions: [:plan]]])
 
     {:ok, billing_jwt, _} = FormDelegateWeb.Guardian.encode_and_sign(billing_user)
     {:ok, normal_jwt, _} = FormDelegateWeb.Guardian.encode_and_sign(normal_user)
@@ -70,6 +74,7 @@ defmodule FormDelegateWeb.StripeControllerTest do
     {:ok,
      conn: conn,
      team: team,
+     other_team: other_team,
      plan: plan,
      billing_user: billing_user,
      normal_user: normal_user,
@@ -91,6 +96,42 @@ defmodule FormDelegateWeb.StripeControllerTest do
         })
 
       assert json_response(conn, 200)["id"] == "cs_mock123"
+    end
+
+    test "creates team-scoped checkout session for billing manager", %{
+      conn: conn,
+      billing_jwt: jwt,
+      team: team,
+      plan: plan
+    } do
+      conn =
+        conn
+        |> put_req_header("authorization", "bearer " <> jwt)
+        |> post(Routes.team_stripe_checkout_session_path(conn, :create_checkout_session, team), %{
+          "priceId" => plan.stripe_price_id
+        })
+
+      assert json_response(conn, 200)["id"] == "cs_mock123"
+    end
+
+    test "returns 403 for team-scoped checkout when user is not billing account for selected team",
+         %{
+           conn: conn,
+           billing_jwt: jwt,
+           other_team: other_team,
+           plan: plan
+         } do
+      conn =
+        conn
+        |> put_req_header("authorization", "bearer " <> jwt)
+        |> post(
+          Routes.team_stripe_checkout_session_path(conn, :create_checkout_session, other_team),
+          %{
+            "priceId" => plan.stripe_price_id
+          }
+        )
+
+      assert json_response(conn, 403)
     end
 
     test "returns 403 for user without billing access", %{
@@ -120,6 +161,33 @@ defmodule FormDelegateWeb.StripeControllerTest do
         |> get(Routes.stripe_portal_path(conn, :create_portal))
 
       assert json_response(conn, 200)["url"] == "https://billing.stripe.com/mock"
+    end
+
+    test "opens team-scoped billing portal for billing manager", %{
+      conn: conn,
+      billing_jwt: jwt,
+      team: team
+    } do
+      conn =
+        conn
+        |> put_req_header("authorization", "bearer " <> jwt)
+        |> get(Routes.team_stripe_portal_path(conn, :create_portal, team))
+
+      assert json_response(conn, 200)["url"] == "https://billing.stripe.com/mock"
+    end
+
+    test "returns 403 for team-scoped billing portal when user is not billing account for selected team",
+         %{
+           conn: conn,
+           billing_jwt: jwt,
+           other_team: other_team
+         } do
+      conn =
+        conn
+        |> put_req_header("authorization", "bearer " <> jwt)
+        |> get(Routes.team_stripe_portal_path(conn, :create_portal, other_team))
+
+      assert json_response(conn, 403)
     end
 
     test "returns 403 for user without billing access", %{

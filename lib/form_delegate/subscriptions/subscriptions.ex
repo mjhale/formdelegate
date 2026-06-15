@@ -8,7 +8,6 @@ defmodule FormDelegate.Subscriptions do
   require Logger
 
   alias FormDelegate.Repo
-  alias FormDelegate.Accounts.User
   alias FormDelegate.Subscriptions.Subscription
   alias FormDelegate.Teams.Team
 
@@ -55,26 +54,6 @@ defmodule FormDelegate.Subscriptions do
   def get_subscription(id), do: Repo.get_by(Subscription, stripe_subscription_id: id)
 
   @doc """
-  Returns the list of subscriptions belonging to a user's team.
-
-  Returns an empty list when no subscriptions exist.
-
-  ## Examples
-
-      iex> list_subscriptions_by_user(%User{})
-      [%Subscription{}, ...]
-
-      iex> list_subscriptions_by_user(%User{})
-      []
-  """
-  def list_subscriptions_by_user(%User{team_id: team_id}) do
-    query = from s in Subscription, where: s.team_id == ^team_id
-
-    Repo.all(query)
-    |> Repo.preload([:plan, :team])
-  end
-
-  @doc """
   Updates a subscription.
 
   ## Examples
@@ -99,15 +78,17 @@ defmodule FormDelegate.Subscriptions do
 
   ## Examples
 
-      iex> list_subscriptions_by_user(%Team{})
+      iex> list_subscriptions_by_team(%Team{})
       [%Subscription{}, ...]
 
-      iex> list_subscriptions_by_user(%Team{})
+      iex> list_subscriptions_by_team(%Team{})
       []
   """
   def list_subscriptions_by_team(%Team{id: team_id}) do
     query = from s in Subscription, where: s.team_id == ^team_id
+
     Repo.all(query)
+    |> Repo.preload([:plan, :team])
   end
 
   @doc """

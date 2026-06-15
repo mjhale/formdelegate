@@ -77,9 +77,10 @@ defmodule FormDelegateWeb.FormEmailIntegrationControllerTest do
     test "verifies provider and returns updated status fields", %{
       conn: conn,
       jwt: jwt,
-      user: user
+      user: user,
+      team: team
     } do
-      form = FormDelegate.Factory.insert(:form, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
       integration = insert_email_integration(form)
 
       response =
@@ -99,8 +100,8 @@ defmodule FormDelegateWeb.FormEmailIntegrationControllerTest do
 
     @tag :as_inserted_user
     test "returns forbidden for non-owner", %{conn: conn, jwt: jwt} do
-      owner = FormDelegate.Factory.insert(:user)
-      form = FormDelegate.Factory.insert(:form, user: owner)
+      {owner, owner_team, _membership} = FormDelegate.Factory.insert_user_with_membership()
+      form = FormDelegate.Factory.insert(:form, user: owner, team: owner_team)
       integration = insert_email_integration(form)
 
       response =
@@ -116,9 +117,10 @@ defmodule FormDelegateWeb.FormEmailIntegrationControllerTest do
     test "returns not found when integration does not belong to form", %{
       conn: conn,
       jwt: jwt,
-      user: user
+      user: user,
+      team: team
     } do
-      form = FormDelegate.Factory.insert(:form, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
 
       response =
         conn
@@ -140,10 +142,11 @@ defmodule FormDelegateWeb.FormEmailIntegrationControllerTest do
     test "returns typed verification failure for invalid credentials", %{
       conn: conn,
       jwt: jwt,
-      user: user
+      user: user,
+      team: team
     } do
       Application.put_env(:form_delegate, :email_provider_smtp_client, SMTPClientFailure)
-      form = FormDelegate.Factory.insert(:form, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
       integration = insert_email_integration(form)
 
       response =
@@ -164,9 +167,10 @@ defmodule FormDelegateWeb.FormEmailIntegrationControllerTest do
     test "returns unsupported provider for unconfigured integration", %{
       conn: conn,
       jwt: jwt,
-      user: user
+      user: user,
+      team: team
     } do
-      form = FormDelegate.Factory.insert(:form, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
       integration = insert_unconfigured_email_integration(form)
 
       response =
@@ -187,7 +191,8 @@ defmodule FormDelegateWeb.FormEmailIntegrationControllerTest do
     test "returns typed verification failure for connection errors", %{
       conn: conn,
       jwt: jwt,
-      user: user
+      user: user,
+      team: team
     } do
       Application.put_env(
         :form_delegate,
@@ -195,7 +200,7 @@ defmodule FormDelegateWeb.FormEmailIntegrationControllerTest do
         SMTPClientConnectionFailure
       )
 
-      form = FormDelegate.Factory.insert(:form, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
       integration = insert_email_integration(form)
 
       response =
@@ -216,10 +221,11 @@ defmodule FormDelegateWeb.FormEmailIntegrationControllerTest do
     test "returns typed verification failure for invalid configuration", %{
       conn: conn,
       jwt: jwt,
-      user: user
+      user: user,
+      team: team
     } do
       Application.put_env(:form_delegate, :email_provider_smtp_client, SMTPClientConfigFailure)
-      form = FormDelegate.Factory.insert(:form, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
       integration = insert_email_integration(form)
 
       response =
@@ -240,7 +246,8 @@ defmodule FormDelegateWeb.FormEmailIntegrationControllerTest do
     test "returns typed verification failure for unsupported auth method", %{
       conn: conn,
       jwt: jwt,
-      user: user
+      user: user,
+      team: team
     } do
       Application.put_env(
         :form_delegate,
@@ -248,7 +255,7 @@ defmodule FormDelegateWeb.FormEmailIntegrationControllerTest do
         SMTPClientAuthMethodFailure
       )
 
-      form = FormDelegate.Factory.insert(:form, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
       integration = insert_email_integration(form)
 
       response =
@@ -269,10 +276,11 @@ defmodule FormDelegateWeb.FormEmailIntegrationControllerTest do
     test "returns typed verification failure for unknown errors", %{
       conn: conn,
       jwt: jwt,
-      user: user
+      user: user,
+      team: team
     } do
       Application.put_env(:form_delegate, :email_provider_smtp_client, SMTPClientUnknownFailure)
-      form = FormDelegate.Factory.insert(:form, user: user)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
       integration = insert_email_integration(form)
 
       response =
