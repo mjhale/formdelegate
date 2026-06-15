@@ -274,8 +274,9 @@ defmodule FormDelegateWeb.FormControllerTest do
     end
   end
 
-  @tag :as_inserted_user
   describe "show/2" do
+    @describetag :as_inserted_user
+
     test "Responds with form info if the form is found", %{
       conn: conn,
       jwt: jwt,

@@ -13,6 +13,7 @@ defmodule FormDelegate.Mixfile do
         plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
         ignore_warnings: ".dialyzer_ignore.exs"
       ],
+      listeners: [Phoenix.CodeReloader],
       deps: deps()
     ]
   end

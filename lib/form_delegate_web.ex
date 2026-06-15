@@ -19,7 +19,7 @@ defmodule FormDelegateWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: FormDelegateWeb
+      use Phoenix.Controller, formats: [json: "View"]
 
       alias FormDelegate.Repo
       import Ecto
@@ -27,7 +27,7 @@ defmodule FormDelegateWeb do
 
       import Plug.Conn
       alias FormDelegateWeb.Router.Helpers, as: Routes
-      import FormDelegateWeb.Gettext
+      use Gettext, backend: FormDelegateWeb.Gettext
     end
   end
 
@@ -42,7 +42,7 @@ defmodule FormDelegateWeb do
 
       alias FormDelegateWeb.Router.Helpers, as: Routes
       import FormDelegateWeb.ErrorHelpers
-      import FormDelegateWeb.Gettext
+      use Gettext, backend: FormDelegateWeb.Gettext
     end
   end
 
@@ -57,7 +57,7 @@ defmodule FormDelegateWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import FormDelegateWeb.Gettext
+      use Gettext, backend: FormDelegateWeb.Gettext
     end
   end
 
