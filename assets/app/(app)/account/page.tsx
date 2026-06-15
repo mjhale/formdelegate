@@ -1,31 +1,11 @@
 import type { Metadata } from 'next';
 
 import { Suspense } from 'react';
-import { cookies } from 'next/headers';
+
+import { getProfileContext } from 'utils/profile';
 
 import { AccountProfileSkeleton } from '../_components/skeletons';
-
 import Profile from './profile';
-
-async function fetchUser() {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get('access_token')?.value;
-  const userId = cookieStore.get('user_id')?.value;
-
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_HOST}/v1/users/${userId}`,
-    {
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
-
-  const { data } = await res.json();
-
-  return data;
-}
 
 export default async function AccountProfilePage() {
   return (
@@ -36,9 +16,9 @@ export default async function AccountProfilePage() {
 }
 
 async function AccountProfileContent() {
-  const user = await fetchUser();
+  const { profile } = await getProfileContext();
 
-  return <Profile user={user} />;
+  return <Profile user={profile.user} />;
 }
 
 export const metadata: Metadata = {

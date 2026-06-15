@@ -1,24 +1,27 @@
 import type { Metadata } from 'next';
 
 import { Suspense } from 'react';
-import { cookies } from 'next/headers';
 import Link from 'next/link';
 
-import { FormsSkeleton } from '../_components/skeletons';
-
 import { deleteForm } from './actions';
+import { getProfileContext } from 'utils/profile';
+
+import { FormsSkeleton } from '../_components/skeletons';
 
 import CopyToClipboardButton from './copyToClipboardButton';
 
 async function fetchForms() {
-  const accessToken = (await cookies()).get('access_token')?.value;
+  const { accessToken, selectedTeam } = await getProfileContext();
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/v1/forms`, {
-    headers: {
-      Accept: 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/forms`,
+    {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
 
   const { data } = await res.json();
 

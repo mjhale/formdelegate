@@ -1,17 +1,17 @@
 'use server';
 
-import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
+
+import { getProfileContext } from 'utils/profile';
 
 export async function markSelectedAsSpam(formData: FormData) {
   const selectedSubmissionIds = formData.getAll('submissionSelect');
+  const { accessToken, selectedTeam } = await getProfileContext();
 
   for (const submissionId of selectedSubmissionIds) {
-    const accessToken = (await cookies()).get('access_token')?.value;
-
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_HOST}/v1/submissions/${submissionId}/spam`,
+        `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/submissions/${submissionId}/spam`,
         {
           method: 'PUT',
           headers: {
@@ -34,18 +34,17 @@ export async function markSelectedAsSpam(formData: FormData) {
     }
   }
 
-  revalidatePath('/dashboard/submissions');
+  revalidatePath('/submissions');
 }
 
 export async function markSelectedAsHam(formData: FormData) {
   const selectedSubmissionIds = formData.getAll('submissionSelect');
+  const { accessToken, selectedTeam } = await getProfileContext();
 
   for (const submissionId of selectedSubmissionIds) {
-    const accessToken = (await cookies()).get('access_token')?.value;
-
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_HOST}/v1/submissions/${submissionId}/ham`,
+        `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/submissions/${submissionId}/ham`,
         {
           method: 'PUT',
           headers: {
@@ -67,5 +66,5 @@ export async function markSelectedAsHam(formData: FormData) {
     }
   }
 
-  revalidatePath('/dashboard/submissions');
+  revalidatePath('/submissions');
 }

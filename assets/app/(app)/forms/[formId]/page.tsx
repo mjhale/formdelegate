@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
-import { cookies } from 'next/headers';
+import { getProfileContext } from 'utils/profile';
+
 import Link from 'next/link';
 
 export default async function ShowFormPage({
@@ -11,10 +12,10 @@ export default async function ShowFormPage({
   const { formId } = await params;
 
   async function fetchForm() {
-    const accessToken = (await cookies()).get('access_token')?.value;
+    const { accessToken, selectedTeam } = await getProfileContext();
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST}/v1/forms/${formId}`,
+      `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/forms/${formId}`,
       {
         headers: {
           Accept: 'application/json',

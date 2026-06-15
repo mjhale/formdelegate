@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { cookies } from 'next/headers';
 
+import { getProfileContext } from 'utils/profile';
+
 import { BillingSkeleton } from '../../_components/skeletons';
 
 import StripePortalButton from './stripePortalButton';
@@ -23,27 +25,6 @@ async function fetchPlans() {
   return data;
 }
 
-async function fetchUser() {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get('access_token')?.value;
-  const userId = cookieStore.get('user_id')?.value;
-
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_HOST}/v1/users/${userId}`,
-    {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
-
-  const { data } = await res.json();
-
-  return data;
-}
-
 export default async function BillingPage() {
   return (
     <Suspense fallback={<BillingSkeleton />}>
@@ -53,10 +34,13 @@ export default async function BillingPage() {
 }
 
 async function BillingContent() {
-  const [user, plans] = await Promise.all([fetchUser(), fetchPlans()]);
+  const [{ profile, selectedTeam }, plans] = await Promise.all([
+    getProfileContext(),
+    fetchPlans(),
+  ]);
 
   // Retrieve team subscription plan (assuming one active plan per team)
-  let currentSubscriptionPlanId = user.team?.subscriptions[0]?.plan?.id;
+  let currentSubscriptionPlanId = selectedTeam.subscriptions[0]?.plan?.id;
 
   if (currentSubscriptionPlanId === undefined) {
     currentSubscriptionPlanId = plans.find((plan) => plan.name === 'Free').id;
@@ -96,7 +80,7 @@ async function BillingContent() {
             <div className="items-center p-4 flex justify-center">
               <PlanSubscribeButton
                 plan={plan}
-                user={user}
+                user={profile.user}
                 currentSubscriptionPlanId={currentSubscriptionPlanId}
               />
             </div>

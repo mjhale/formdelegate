@@ -5,13 +5,6 @@ import { useState } from 'react';
 import getStripe from 'utils/getStripe';
 import { fetchCheckoutSession } from '../actions';
 
-const PLAN_TO_PRICE_TABLE = {
-  // Professional
-  '7682f531-e326-4e00-9691-99858e6f5aaa': 'price_1JqNR8AZx7ESoF8IrQIAiTGr',
-  // Enterprise
-  '06539042-4b76-4d97-a41d-9f505c298924': 'price_1P6G51AZx7ESoF8IEhPmTT4u',
-};
-
 export default function PlanSubscribeButton({
   plan,
   user,
@@ -19,12 +12,12 @@ export default function PlanSubscribeButton({
 }) {
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  async function handleSubscribe(userEmail, planId) {
+  async function handleSubscribe(userEmail, stripePriceId) {
     setIsRedirecting(true);
 
     const checkoutSession = await fetchCheckoutSession(
       userEmail,
-      PLAN_TO_PRICE_TABLE[planId]
+      stripePriceId
     );
 
     if (checkoutSession.statusCode === 500) {
@@ -47,7 +40,7 @@ export default function PlanSubscribeButton({
   }
 
   // @TODO: Implement free plan switching
-  if (!Object.hasOwn(PLAN_TO_PRICE_TABLE, plan.id)) {
+  if (!plan.stripe_price_id) {
     return null;
   }
 
@@ -55,7 +48,7 @@ export default function PlanSubscribeButton({
     <button
       className="inline-flex items-center gap-x-2 px-2 py-1 text-sm font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
       disabled={isRedirecting || plan.id === currentSubscriptionPlanId}
-      onClick={() => handleSubscribe(user.email, plan.id)}
+      onClick={() => handleSubscribe(user.email, plan.stripe_price_id)}
     >
       {plan.id === currentSubscriptionPlanId ? 'Subscribed' : 'Subscribe'}
       {isRedirecting && (

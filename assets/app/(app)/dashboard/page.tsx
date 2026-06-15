@@ -1,17 +1,18 @@
 import type { Metadata } from 'next';
 
 import { Suspense } from 'react';
-import { cookies } from 'next/headers';
+
+import { getProfileContext } from 'utils/profile';
 
 import { DashboardSkeleton } from '../_components/skeletons';
 
 import SubmissionActivity from './submissionActivity';
 
 async function getSubmissionActivity() {
-  const accessToken = (await cookies()).get('access_token')?.value;
+  const { accessToken, selectedTeam } = await getProfileContext();
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_HOST}/v1/submissions/recent_activity`,
+    `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/submissions/recent_activity`,
     {
       headers: {
         Accept: 'application/json',

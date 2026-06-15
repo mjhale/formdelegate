@@ -4,6 +4,12 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+import {
+  CURRENT_TEAM_COOKIE,
+  fetchProfile,
+  setCurrentTeamCookie,
+} from 'utils/profile';
+
 const userSchema = z.object({
   captcha: z.string().min(1, { message: 'Invalid Captcha response' }),
   user: z
@@ -39,6 +45,8 @@ export async function createUserAction(_currentState, rawFormData: FormData) {
     };
   }
 
+  let redirectUrl = '/dashboard';
+
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/v1/users`, {
       body: JSON.stringify({
@@ -57,8 +65,12 @@ export async function createUserAction(_currentState, rawFormData: FormData) {
     }
 
     const { data } = await res.json();
+    const profile = await fetchProfile(data.token, data.id.toString());
+    const selectedTeamId =
+      profile.current_team?.id || profile.memberships[0]?.team.id;
+    const cookieStore = await cookies();
 
-    (await cookies()).set({
+    cookieStore.set({
       name: 'access_token',
       value: data.token,
       httpOnly: true,
@@ -68,7 +80,7 @@ export async function createUserAction(_currentState, rawFormData: FormData) {
       secure: process.env.NODE_ENV !== 'development',
     });
 
-    (await cookies()).set({
+    cookieStore.set({
       name: 'user_id',
       value: data.id,
       httpOnly: false,
@@ -77,9 +89,16 @@ export async function createUserAction(_currentState, rawFormData: FormData) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
       secure: process.env.NODE_ENV !== 'development',
     });
+
+    if (selectedTeamId) {
+      await setCurrentTeamCookie(selectedTeamId);
+    } else {
+      cookieStore.delete(CURRENT_TEAM_COOKIE);
+      redirectUrl = '/account-setup-required';
+    }
   } catch (error) {
     throw new Error(`Fetch Error: Failed to create user`);
   }
 
-  redirect('/dashboard');
+  redirect(redirectUrl);
 }

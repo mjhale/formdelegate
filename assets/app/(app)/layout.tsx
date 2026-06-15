@@ -4,6 +4,8 @@ import Link from 'next/link';
 
 import '../globals.css';
 
+import { getProfileContext } from 'utils/profile';
+
 import NavBar from './_components/navbar';
 
 const navigationLinks = [
@@ -34,12 +36,22 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { profile, selectedTeam } = await getProfileContext();
+  const teams = profile.memberships.map((membership, index) => ({
+    id: membership.team.id,
+    name: membership.team.name || `Team ${index + 1}`,
+  }));
+
   return (
     <html lang="en" className="lg:h-full">
       <body className="antialiased text-slate-900 bg-amber-50 lg:h-full">
         <div className="w-full max-w-screen-xl mx-auto px-6 lg:h-full">
           <div className="lg:flex -mx-6 lg:h-full">
-            <NavBar links={navigationLinks} />
+            <NavBar
+              links={navigationLinks}
+              selectedTeamId={selectedTeam.id}
+              teams={teams}
+            />
             <div className="my-16 mx-4 lg:my-4 lg:w-full">
               <section className="">{children}</section>
               <div className="flex justify-center pt-8 pb-4 my-4 space-x-4">

@@ -5,6 +5,7 @@ import { logoutUser } from '../actions';
 import Link from 'next/link';
 
 import MobileMenu from './mobileMenu';
+import TeamSwitcher from './teamSwitcher';
 
 const lato = Lato({
   weight: ['700', '900'],
@@ -13,7 +14,7 @@ const lato = Lato({
   variable: '--font-lato',
 });
 
-export default function Navbar({ links }) {
+export default function Navbar({ links, selectedTeamId, teams }) {
   return (
     <section className="fixed inset-0 flex flex-wrap items-center justify-between h-12 z-10 w-full bg-nav-pattern bg-center bg-no-repeat bg-cover bg-red-900 px-4 lg:mt-4 lg:my-4 lg:ml-4 lg:rounded-lg lg:z-0 lg:static lg:content-start lg:h-auto lg:p-0 lg:w-1/4 xl:w-1/5">
       <div className="lg:text-center lg:p-6 lg:m-auto">
@@ -24,8 +25,9 @@ export default function Navbar({ links }) {
           Form Delegate
         </Link>
       </div>
-      <MobileMenu links={links} />
+      <MobileMenu links={links} selectedTeamId={selectedTeamId} teams={teams} />
       <nav className="hidden lg:block lg:w-full lg:bg-transparent lg:border-t-0 lg:shadow-none">
+        <TeamSwitcher selectedTeamId={selectedTeamId} teams={teams} />
         <ul>
           {links.map((link) => (
             <li key={link.name}>

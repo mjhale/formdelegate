@@ -6,8 +6,9 @@ import { useEffect, useState } from 'react';
 import { logoutUser } from '../actions';
 
 import Link from 'next/link';
+import TeamSwitcher from './teamSwitcher';
 
-export default function MobileMenu({ links }) {
+export default function MobileMenu({ links, selectedTeamId, teams }) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -74,6 +75,9 @@ export default function MobileMenu({ links }) {
         )}
       >
         <ul>
+          <li>
+            <TeamSwitcher selectedTeamId={selectedTeamId} teams={teams} />
+          </li>
           {links.map((link) => (
             <li key={link.name}>
               <Link

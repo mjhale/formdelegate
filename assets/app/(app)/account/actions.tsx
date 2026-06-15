@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
 
+import { getProfileContext } from 'utils/profile';
+
 const userSchema = z.object({
   id: z.coerce.number(),
   email: z.string().email(),
@@ -17,10 +19,10 @@ const passwordSchema = z.object({
 });
 
 export async function fetchCheckoutSession(userEmail, planPriceId) {
-  const accessToken = (await cookies()).get('access_token')?.value;
+  const { accessToken, selectedTeam } = await getProfileContext();
 
   const checkoutSessionRequest = await fetch(
-    `${process.env.NEXT_PUBLIC_API_HOST}/v1/stripe/checkout-sessions`,
+    `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/stripe/checkout-sessions`,
     {
       method: 'POST',
       headers: {
@@ -39,10 +41,10 @@ export async function fetchCheckoutSession(userEmail, planPriceId) {
 }
 
 export async function fetchStripePortalUrl() {
-  const accessToken = (await cookies()).get('access_token')?.value;
+  const { accessToken, selectedTeam } = await getProfileContext();
 
   const stripePortalRequest = await fetch(
-    `${process.env.NEXT_PUBLIC_API_HOST}/v1/stripe/portal`,
+    `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/stripe/portal`,
     {
       headers: {
         Accept: 'application/json',

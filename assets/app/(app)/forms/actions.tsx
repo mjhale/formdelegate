@@ -1,10 +1,10 @@
 'use server';
 
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 // import { set } from 'lodash';
 
 import { createFormSchema, updateFormSchema } from './formSchema';
+import { getProfileContext } from 'utils/profile';
 
 export async function updateForm(_currentState, formData) {
   // @TODO: Use native FormData when RHF supports server actions in stable
@@ -17,7 +17,7 @@ export async function updateForm(_currentState, formData) {
   //   set(data, key, val);
   // }
 
-  const accessToken = (await cookies()).get('access_token')?.value;
+  const { accessToken, selectedTeam } = await getProfileContext();
 
   const validatedData = updateFormSchema.safeParse(formData);
 
@@ -30,7 +30,7 @@ export async function updateForm(_currentState, formData) {
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST}/v1/forms/${validatedData.data.id}`,
+      `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/forms/${validatedData.data.id}`,
       {
         body: JSON.stringify({
           form: {
@@ -61,7 +61,7 @@ export async function updateForm(_currentState, formData) {
 }
 
 export async function createForm(_currentState, formData) {
-  const accessToken = (await cookies()).get('access_token')?.value;
+  const { accessToken, selectedTeam } = await getProfileContext();
   const validatedData = createFormSchema.safeParse(formData);
 
   if (!validatedData.success) {
@@ -72,19 +72,22 @@ export async function createForm(_currentState, formData) {
   }
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/v1/forms`, {
-      body: JSON.stringify({
-        form: {
-          ...validatedData.data,
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/forms`,
+      {
+        body: JSON.stringify({
+          form: {
+            ...validatedData.data,
+          },
+        }),
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
         },
-      }),
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+      }
+    );
 
     if (!res.ok) {
       throw new Error(`Network response failure while creating form`);
@@ -97,11 +100,11 @@ export async function createForm(_currentState, formData) {
 }
 
 export async function deleteForm(formId) {
-  const accessToken = (await cookies()).get('access_token')?.value;
+  const { accessToken, selectedTeam } = await getProfileContext();
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST}/v1/forms/${formId}`,
+      `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/forms/${formId}`,
       {
         method: 'DELETE',
         headers: {

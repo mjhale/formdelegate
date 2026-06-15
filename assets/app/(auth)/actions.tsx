@@ -4,6 +4,12 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { cookies } from 'next/headers';
 
+import {
+  CURRENT_TEAM_COOKIE,
+  fetchProfile,
+  setCurrentTeamCookie,
+} from 'utils/profile';
+
 import Link from 'next/link';
 
 const loginSchema = z.object({
@@ -43,6 +49,11 @@ export async function loginUser(_currentState, formData: FormData) {
     };
   }
 
+  let redirectUrl =
+    validatedData.data.destination === ''
+      ? '/dashboard'
+      : validatedData.data.destination;
+
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/v1/sessions`, {
       body: JSON.stringify({
@@ -63,8 +74,12 @@ export async function loginUser(_currentState, formData: FormData) {
     }
 
     const { data } = await res.json();
+    const profile = await fetchProfile(data.token, data.id.toString());
+    const selectedTeamId =
+      profile.current_team?.id || profile.memberships[0]?.team.id;
+    const cookieStore = await cookies();
 
-    (await cookies()).set('access_token', data.token, {
+    cookieStore.set('access_token', data.token, {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
@@ -72,21 +87,23 @@ export async function loginUser(_currentState, formData: FormData) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
-    (await cookies()).set('user_id', data.id, {
+    cookieStore.set('user_id', data.id, {
       httpOnly: false,
       secure: true,
       sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });
+
+    if (selectedTeamId) {
+      await setCurrentTeamCookie(selectedTeamId);
+    } else {
+      cookieStore.delete(CURRENT_TEAM_COOKIE);
+      redirectUrl = '/account-setup-required';
+    }
   } catch (error) {
     throw new Error(`Fetch Error: Failed to login.`);
   }
-
-  const redirectUrl =
-    validatedData.data.destination === ''
-      ? '/dashboard'
-      : validatedData.data.destination;
 
   redirect(redirectUrl);
 }
