@@ -19,13 +19,19 @@ defmodule FormDelegate.Services.Akismet.InMemory do
   end
 
   @impl Akismet
-  def submit_ham(_api_key, _submission = %Submission{}) do
-    {:ok}
+  def submit_ham(api_key, _submission = %Submission{}) do
+    case api_key do
+      "invalid" -> {:error, :nxdomain}
+      _ -> {:ok}
+    end
   end
 
   @impl Akismet
-  def submit_spam(_api_key, _submission = %Submission{}) do
-    {:ok}
+  def submit_spam(api_key, _submission = %Submission{}) do
+    case api_key do
+      "invalid" -> {:error, :nxdomain}
+      _ -> {:ok}
+    end
   end
 
   @impl Akismet

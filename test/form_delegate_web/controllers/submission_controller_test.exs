@@ -1,6 +1,7 @@
 defmodule FormDelegateWeb.SubmissionControllerTest do
   use FormDelegateWeb.ConnCase
 
+  alias FormDelegate.Submissions
   alias FormDelegateWeb.Router.Helpers, as: Routes
 
   @valid_attrs %{
@@ -171,6 +172,72 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
     end
   end
 
+  describe "spam/3" do
+    setup [:use_invalid_akismet_key]
+
+    @tag :as_inserted_user
+    test "marks a submission as spam when Akismet feedback fails", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      submission = FormDelegate.Factory.insert(:submission, form: form)
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> put(Routes.team_submission_spam_path(conn, :spam, team.id, submission.id))
+        |> json_response(200)
+
+      assert %{
+               "data" => %{
+                 "flagged_at" => flagged_at,
+                 "flagged_type" => %{"type" => "spam"}
+               }
+             } = response
+
+      assert flagged_at
+    end
+  end
+
+  describe "ham/3" do
+    setup [:use_invalid_akismet_key]
+
+    @tag :as_inserted_user
+    test "marks a submission as ham when Akismet feedback fails", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      submission = FormDelegate.Factory.insert(:submission, form: form)
+
+      {:ok, submission} =
+        submission.id
+        |> Submissions.get_submission!()
+        |> Submissions.flag_submission(%{
+          flagged_at: DateTime.utc_now(),
+          flagged_type: Submissions.get_or_create_flagged_type(%{type: "spam"})
+        })
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> put(Routes.team_submission_ham_path(conn, :ham, team.id, submission.id))
+        |> json_response(200)
+
+      assert %{
+               "data" => %{
+                 "flagged_at" => nil,
+                 "flagged_type" => nil
+               }
+             } = response
+    end
+  end
+
   describe "without logged in user" do
     test "requires user authentication on all actions", %{conn: conn} do
       Enum.each(
@@ -192,5 +259,15 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
     form = FormDelegate.Factory.insert(:form, user: user, team: team)
 
     {:ok, form: form}
+  end
+
+  defp use_invalid_akismet_key(_context) do
+    previous_api_key = Application.get_env(:form_delegate, :akismet_api_key)
+
+    Application.put_env(:form_delegate, :akismet_api_key, "invalid")
+
+    on_exit(fn ->
+      Application.put_env(:form_delegate, :akismet_api_key, previous_api_key)
+    end)
   end
 end

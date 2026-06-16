@@ -3,6 +3,7 @@ defmodule FormDelegateWeb.SubmissionController do
 
   plug FormDelegateWeb.Plugs.LoadCurrentTeam
        when action in [:index, :show, :ham, :spam, :recent_activity]
+
   plug FormDelegateWeb.Plugs.SetForm when action in [:create]
   plug FormDelegateWeb.Plugs.SetPlan when action in [:create]
 
@@ -118,8 +119,9 @@ defmodule FormDelegateWeb.SubmissionController do
            Submissions.flag_submission(submission, %{
              flagged_at: nil,
              flagged_type: nil
-           }),
-         {:ok} <- akismet_api().submit_ham(akismet_api_key(), submission) do
+           }) do
+      submit_akismet_feedback(:ham, submission)
+
       render(conn, "show.json", submission: submission)
     end
   end
@@ -178,8 +180,9 @@ defmodule FormDelegateWeb.SubmissionController do
                Submissions.get_or_create_flagged_type(%{
                  type: "spam"
                })
-           }),
-         {:ok} <- akismet_api().submit_spam(akismet_api_key(), submission) do
+           }) do
+      submit_akismet_feedback(:spam, submission)
+
       render(conn, "show.json", submission: submission)
     end
   end
@@ -207,6 +210,28 @@ defmodule FormDelegateWeb.SubmissionController do
 
   defp akismet_api_key do
     Application.get_env(:form_delegate, :akismet_api_key)
+  end
+
+  defp submit_akismet_feedback(:ham, %Submission{} = submission) do
+    case akismet_api().submit_ham(akismet_api_key(), submission) do
+      {:ok} ->
+        :ok
+
+      {:error, error} ->
+        Logger.error("FD: Akismet ham submission error for #{submission.id}: #{inspect(error)}")
+        :ok
+    end
+  end
+
+  defp submit_akismet_feedback(:spam, %Submission{} = submission) do
+    case akismet_api().submit_spam(akismet_api_key(), submission) do
+      {:ok} ->
+        :ok
+
+      {:error, error} ->
+        Logger.error("FD: Akismet spam submission error for #{submission.id}: #{inspect(error)}")
+        :ok
+    end
   end
 
   defp form_team_id(%Form{team_id: team_id}), do: team_id
