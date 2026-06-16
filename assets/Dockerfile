@@ -6,11 +6,16 @@
 # This Dockerfile uses Node.js 24.13.0-slim, which was the latest LTS version at the time of writing.
 # To ensure security and compatibility, regularly update the NODE_VERSION ARG to the latest LTS version.
 ARG NODE_VERSION=24.13.0-slim
+ARG NPM_VERSION=11.17.0
 
 FROM --platform=$BUILDPLATFORM node:${NODE_VERSION} AS dependencies
 
 # Set working directory
 WORKDIR /app
+
+# npm 11.6.x can fail resolving optional Sharp/Emnapi dependencies in the lockfile.
+ARG NPM_VERSION
+RUN npm install -g npm@${NPM_VERSION}
 
 # Copy package-related files first to leverage Docker's caching mechanism
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
