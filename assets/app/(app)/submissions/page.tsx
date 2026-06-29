@@ -8,13 +8,40 @@ import { SubmissionsSkeleton } from '../_components/skeletons';
 
 import Submissions from './submissions';
 
-async function fetchSubmissions(page: number, query: string) {
+type SubmissionsSearchParams = {
+  query?: string;
+  page?: string;
+  'form[]'?: string | string[];
+};
+
+function selectedFormIds(searchParams?: SubmissionsSearchParams) {
+  const formParam = searchParams?.['form[]'];
+
+  if (Array.isArray(formParam)) {
+    return formParam;
+  }
+
+  return formParam ? [formParam] : [];
+}
+
+async function fetchSubmissions(
+  page: number,
+  query: string,
+  formIds: string[]
+) {
   const { accessToken, selectedTeam } = await getProfileContext();
+  const params = new URLSearchParams({ page: page.toString() });
+
+  if (query) {
+    params.set('query', query);
+  }
+
+  formIds.forEach((formId) => {
+    params.append('form[]', formId);
+  });
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/submissions?page=${page}${
-      query && `&query=${query}`
-    }`,
+    `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/submissions?${params.toString()}`,
     {
       headers: {
         Accept: 'application/json',
@@ -35,14 +62,12 @@ async function fetchSubmissions(page: number, query: string) {
 export default async function SubmissionsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{
-    query?: string;
-    page?: string;
-  }>;
+  searchParams?: Promise<SubmissionsSearchParams>;
 }) {
   const resolvedSearchParams = await searchParams;
   const query = resolvedSearchParams?.query || '';
   const currentPage = Number(resolvedSearchParams?.page) || 1;
+  const selectedForms = selectedFormIds(resolvedSearchParams);
 
   return (
     <>
@@ -52,9 +77,13 @@ export default async function SubmissionsPage({
 
       <Suspense
         fallback={<SubmissionsSkeleton />}
-        key={`${currentPage}:${query}`}
+        key={`${currentPage}:${query}:${selectedForms.join(',')}`}
       >
-        <SubmissionsContent currentPage={currentPage} query={query} />
+        <SubmissionsContent
+          currentPage={currentPage}
+          query={query}
+          selectedForms={selectedForms}
+        />
       </Suspense>
     </>
   );
@@ -63,13 +92,16 @@ export default async function SubmissionsPage({
 async function SubmissionsContent({
   currentPage,
   query,
+  selectedForms,
 }: {
   currentPage: number;
   query: string;
+  selectedForms: string[];
 }) {
   const { data: submissions, pagination } = await fetchSubmissions(
     currentPage,
-    query
+    query,
+    selectedForms
   );
 
   return <Submissions submissions={submissions} pagination={pagination} />;

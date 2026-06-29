@@ -21,6 +21,22 @@ export default function Toolbar({
   const currentPage = Number(searchParams.get('page')) || 1;
   const itemIndexFloor = (currentPage - 1) * limit + 1;
   const itemIndexCeiling = Math.min(itemIndexFloor + limit - 1, total);
+  const selectedFormFilterCount = searchParams.getAll('form[]').length;
+
+  const replaceWithParams = (params: URLSearchParams) => {
+    const paramsString = params.toString();
+    replace(paramsString ? `${pathname}?${paramsString}` : pathname);
+  };
+
+  const resetSelection = () => {
+    if (selectedSubmissionList.size > 0) {
+      setSelectedSubmissionList(new Set());
+    }
+
+    if (isSelectAllChecked) {
+      setIsSelectAllChecked(false);
+    }
+  };
 
   const handleMarkSelectedAsSpam = async (formData: FormData) => {
     await markSelectedAsSpam(formData);
@@ -34,7 +50,7 @@ export default function Toolbar({
     setSelectedSubmissionList(new Set());
   };
 
-  const handleSearch = (term) => {
+  const handleSearch = (term?: string) => {
     const params = new URLSearchParams(searchParams);
 
     if (term) {
@@ -47,15 +63,16 @@ export default function Toolbar({
       params.delete('page');
     }
 
-    replace(`${pathname}?${params.toString()}`);
+    replaceWithParams(params);
+    resetSelection();
+  };
 
-    if (selectedSubmissionList.size > 0) {
-      setSelectedSubmissionList(new Set());
-    }
-
-    if (isSelectAllChecked) {
-      setIsSelectAllChecked(false);
-    }
+  const handleClearFormFilters = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete('form[]');
+    params.delete('page');
+    replaceWithParams(params);
+    resetSelection();
   };
 
   const handleSelectAllSubmissionsToggle = (
@@ -82,7 +99,7 @@ export default function Toolbar({
     }
     setIsSelectAllChecked(false);
     setSelectedSubmissionList(new Set());
-    replace(`${pathname}?${params.toString()}`);
+    replaceWithParams(params);
   };
 
   return (
@@ -121,6 +138,15 @@ export default function Toolbar({
           </div>
         </div>
         <div className="flex gap-x-3 justify-between w-full md:w-auto">
+          {selectedFormFilterCount > 0 ? (
+            <button
+              className="inline-flex items-center justify-center px-3 py-1 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:shadow-none"
+              type="button"
+              onClick={handleClearFormFilters}
+            >
+              Clear Filter
+            </button>
+          ) : null}
           <form
             id="submissions_search"
             action={(formData) => {
