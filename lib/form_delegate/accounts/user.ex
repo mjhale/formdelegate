@@ -25,6 +25,7 @@ defmodule FormDelegate.Accounts.User do
     field :last_activity_at, :utc_datetime_usec
     field :last_sign_in_at, :utc_datetime_usec
 
+    # Incremented after password reset/change to invalidate previously issued JWTs.
     field :auth_token_version, :integer, default: 0
 
     field :reset_password_token, :string

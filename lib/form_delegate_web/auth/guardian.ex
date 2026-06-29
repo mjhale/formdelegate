@@ -4,6 +4,10 @@ defmodule FormDelegateWeb.Guardian do
   alias FormDelegate.Accounts
   alias FormDelegate.Accounts.User
 
+  # Access tokens carry the user's auth_token_version at issue time. Password
+  # reset/change flows increment the database value, which invalidates older
+  # tokens for that user when verify_claims/2 compares the claim to the current
+  # user record.
   @auth_token_version_claim "auth_token_version"
 
   def subject_for_token(user = %User{}, _claims) do
