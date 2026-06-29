@@ -3,20 +3,12 @@
 import { Fragment, ReactNode, useTransition } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useActionState } from 'react';
+import type { EmailIntegration, EmailIntegrationInput } from 'types/form';
 
 interface IFormInput {
   id: string;
   name: string;
-  email_integrations: Array<{
-    id: string;
-    enabled: boolean;
-    email_integration_recipients: Array<{
-      id: number;
-      name: string;
-      email: string;
-      type: 'to' | 'cc' | 'bcc';
-    }>;
-  }>;
+  email_integrations: Array<EmailIntegrationInput>;
 }
 
 interface FormActionState {
@@ -34,6 +26,15 @@ const initialState: FormActionState = {
   errors: {},
 };
 
+const integrationErrorFields = [
+  ['email_provider', 'Email provider'],
+  ['email_provider_config', 'Provider settings'],
+  ['email_provider_secrets', 'Provider secrets'],
+  ['email_provider_status', 'Verification status'],
+  ['email_integration_recipients', 'Recipients'],
+  ['verify_provider', 'Verification request'],
+] as const;
+
 export default function Form({ form, saveFormAction }) {
   const [state, formAction] = useActionState<FormActionState, IFormInput>(
     saveFormAction,
@@ -44,7 +45,9 @@ export default function Form({ form, saveFormAction }) {
     defaultValues: {
       id: form?.id ?? '',
       name: form?.name ?? '',
-      email_integrations: form?.email_integrations ?? [],
+      email_integrations: sanitizeEmailIntegrationDefaults(
+        form?.email_integrations
+      ),
     },
   });
 
@@ -355,6 +358,7 @@ function EmailIntegrationsFieldArray({ state, control, register, getValues }) {
                 />
               </div>
             </div>
+            <IntegrationErrors errors={state?.errors} index={i} />
             <div className="flex max-w-xl py-2">
               <button
                 className="inline-block px-2 py-1 text-sm font-medium leading-tight text-red-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
@@ -380,10 +384,8 @@ function EmailIntegrationsFieldArray({ state, control, register, getValues }) {
           onClick={() =>
             append({
               id: null,
-              enabled: true,
-              email_integration_recipients: [
-                { id: null, name: '', email: '', type: 'to' },
-              ],
+              enabled: false,
+              email_integration_recipients: [],
             })
           }
         >
@@ -392,4 +394,70 @@ function EmailIntegrationsFieldArray({ state, control, register, getValues }) {
       </div>
     </>
   );
+}
+
+function IntegrationErrors({ errors, index }) {
+  const messages = getIntegrationErrorMessages(errors, index);
+
+  if (messages.length === 0) {
+    return null;
+  }
+
+  return (
+    <div aria-live="polite" aria-atomic="true">
+      {messages.map((message) => (
+        <p className="mt-2 text-sm text-red-500" key={message}>
+          {message}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function sanitizeEmailIntegrationDefaults(
+  emailIntegrations?: Array<EmailIntegration>
+): Array<EmailIntegrationInput> {
+  return (emailIntegrations ?? []).map((emailIntegration) => {
+    const needsVerification =
+      emailIntegration.email_provider_status !== 'verified';
+
+    return {
+      _email_provider_status: emailIntegration.email_provider_status,
+      id: emailIntegration.id,
+      enabled: emailIntegration.enabled,
+      email_provider: emailIntegration.email_provider,
+      email_provider_config: emailIntegration.email_provider_config,
+      ...(needsVerification
+        ? {
+            email_provider_status: 'pending_verification' as const,
+            verify_provider: true,
+          }
+        : { verify_provider: false }),
+      email_integration_recipients:
+        emailIntegration.email_integration_recipients.map((recipient) => ({
+          id: recipient.id,
+          name: recipient.name,
+          email: recipient.email,
+          type: recipient.type,
+        })),
+    };
+  });
+}
+
+function getIntegrationErrorMessages(errors, index: number): Array<string> {
+  const integrationErrors = errors?.email_integrations?.[index];
+
+  if (!integrationErrors) {
+    return [];
+  }
+
+  const messages = [...(integrationErrors._errors ?? [])];
+
+  integrationErrorFields.forEach(([field, label]) => {
+    integrationErrors[field]?._errors?.forEach((error: string) => {
+      messages.push(`${label}: ${error}`);
+    });
+  });
+
+  return messages;
 }
