@@ -1,5 +1,10 @@
 import { z } from 'zod';
 
+import {
+  compactRecord,
+  emailProviderRequirements as providerRequirements,
+} from './emailProviderPayload';
+
 const nullableUuid = z.preprocess(
   (value) => (value === '' ? null : value),
   z.string().uuid().nullable()
@@ -59,24 +64,6 @@ const emailProviderSecretsSchemas = {
   postmark: postmarkEmailProviderSecretsSchema,
   sendgrid: sendgridEmailProviderSecretsSchema,
 };
-
-const providerRequirements = {
-  smtp: {
-    config: ['from_address', 'host', 'port', 'use_ssl', 'username'],
-    requiredConfig: ['from_address', 'host', 'port', 'username'],
-    secrets: ['password'],
-  },
-  postmark: {
-    config: ['from_address', 'message_stream'],
-    requiredConfig: ['from_address', 'message_stream'],
-    secrets: ['server_token'],
-  },
-  sendgrid: {
-    config: ['from_address'],
-    requiredConfig: ['from_address'],
-    secrets: ['api_key'],
-  },
-} as const;
 
 const emailIntegrationRecipientSchema = z.object({
   id: z.number().nullable(),
@@ -312,31 +299,4 @@ function addProviderFieldIssues(
       path: [groupPath, ...issue.path],
     });
   });
-}
-
-function compactRecord(
-  value: unknown,
-  allowedKeys?: readonly string[]
-): Record<string, unknown> | undefined {
-  if (!value || typeof value !== 'object') {
-    return undefined;
-  }
-
-  const allowedKeySet = allowedKeys ? new Set(allowedKeys) : null;
-
-  const entries = Object.entries(value)
-    .filter(([, fieldValue]) => {
-      return (
-        fieldValue !== undefined && fieldValue !== null && fieldValue !== ''
-      );
-    })
-    .filter(([fieldKey]) => {
-      return !allowedKeySet || allowedKeySet.has(fieldKey);
-    });
-
-  if (entries.length === 0) {
-    return undefined;
-  }
-
-  return Object.fromEntries(entries);
 }

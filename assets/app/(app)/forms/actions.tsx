@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 // import { set } from 'lodash';
 
+import { serializeFormPayload } from './emailProviderPayload';
 import { createFormSchema, updateFormSchema } from './formSchema';
 import { getProfileContext } from 'utils/profile';
 
@@ -33,9 +34,7 @@ export async function updateForm(_currentState, formData) {
       `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/forms/${validatedData.data.id}`,
       {
         body: JSON.stringify({
-          form: {
-            ...validatedData.data,
-          },
+          form: serializeFormPayload(validatedData.data, formData),
         }),
         method: 'PUT',
         headers: {
@@ -85,9 +84,7 @@ export async function createForm(_currentState, formData) {
       `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/forms`,
       {
         body: JSON.stringify({
-          form: {
-            ...validatedData.data,
-          },
+          form: serializeFormPayload(validatedData.data, formData),
         }),
         method: 'POST',
         headers: {
