@@ -81,6 +81,13 @@ defmodule FormDelegateWeb.Router do
 
     get "/teams/:team_id/stripe/portal", StripeController, :create_portal, as: :team_stripe_portal
 
+    put "/teams/:team_id", TeamController, :update, as: :team
+    patch "/teams/:team_id", TeamController, :update, as: :team
+
+    resources "/teams/:team_id/memberships", TeamMembershipController,
+      only: [:index, :update, :delete],
+      as: :team_membership
+
     resources "/teams/:team_id/subscriptions", SubscriptionController,
       only: [:index],
       as: :team_subscription

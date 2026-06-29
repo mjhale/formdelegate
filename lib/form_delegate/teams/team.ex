@@ -29,6 +29,11 @@ defmodule FormDelegate.Teams.Team do
     |> unique_constraint(:stripe_customer_id)
   end
 
+  def public_update_changeset(%Team{} = team, attrs) do
+    team
+    |> cast(attrs, [:name])
+  end
+
   @doc """
   Builds a registration changeset based on the `struct` and `params`.
   """

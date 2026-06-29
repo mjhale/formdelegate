@@ -37,6 +37,38 @@ defmodule FormDelegate.Teams do
     Team |> order_by(:id) |> Repo.all()
   end
 
+  def get_team!(id) do
+    Team
+    |> Repo.get!(id)
+    |> Repo.preload(team_preloads())
+  end
+
+  def get_team_for_user(%User{is_admin: true}, id) do
+    with {:ok, team_id} <- cast_team_id(id) do
+      case Repo.get(Team, team_id) do
+        %Team{} = team -> {:ok, Repo.preload(team, team_preloads())}
+        nil -> {:error, :not_found}
+      end
+    end
+  end
+
+  def get_team_for_user(%User{id: user_id}, id) do
+    with {:ok, team_id} <- cast_team_id(id) do
+      team =
+        Repo.one(
+          from t in Team,
+            join: m in Membership,
+            on: m.team_id == t.id,
+            where: t.id == ^team_id and m.user_id == ^user_id
+        )
+
+      case team do
+        %Team{} = team -> {:ok, Repo.preload(team, team_preloads())}
+        nil -> {:error, :not_found}
+      end
+    end
+  end
+
   @doc """
   Updates a team.
   """
@@ -44,6 +76,16 @@ defmodule FormDelegate.Teams do
     team
     |> Team.changeset(attrs)
     |> Repo.update()
+  end
+
+  def update_team(%User{} = current_user, %Team{} = team, attrs) do
+    with :ok <- authorize_team_admin(current_user, team),
+         {:ok, %Team{} = team} <-
+           team
+           |> Team.public_update_changeset(attrs)
+           |> Repo.update() do
+      {:ok, Repo.preload(team, team_preloads(), force: true)}
+    end
   end
 
   def team_admin?(%User{is_admin: true}, %Team{}), do: true
@@ -180,6 +222,17 @@ defmodule FormDelegate.Teams do
 
   defp membership_preloads do
     [:team, :user]
+  end
+
+  defp cast_team_id(id) do
+    case Ecto.UUID.cast(id) do
+      {:ok, team_id} -> {:ok, team_id}
+      :error -> {:error, :not_found}
+    end
+  end
+
+  defp team_preloads do
+    [subscriptions: [:plan]]
   end
 
   defp normalize_transaction_result({:ok, %Membership{} = membership}), do: {:ok, membership}
