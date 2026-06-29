@@ -27,4 +27,10 @@ defmodule FormDelegate.Memberships.Membership do
     |> validate_required([:user_id, :team_id])
     |> unique_constraint([:user_id, :team_id])
   end
+
+  def billing_account_changeset(%Membership{} = membership, attrs) do
+    membership
+    |> cast(attrs, [:is_billing_account])
+    |> validate_required([:is_billing_account])
+  end
 end

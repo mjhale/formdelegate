@@ -1,7 +1,10 @@
 defmodule FormDelegate.AccountsTest do
   use FormDelegate.DataCase
 
+  import FormDelegate.Factory
+
   alias FormDelegate.Accounts
+  alias FormDelegate.Memberships.Membership
 
   describe "users" do
     alias FormDelegate.Accounts.User
@@ -164,13 +167,41 @@ defmodule FormDelegate.AccountsTest do
 
     test "delete_user/1 deletes the user" do
       user = user_fixture()
+      add_team_member(user, is_billing_account: true)
+
       assert {:ok, %User{}} = Accounts.delete_user(user)
       assert_raise Ecto.NoResultsError, fn -> Accounts.get_user!(user.id) end
+    end
+
+    test "delete_user/1 blocks deleting the final team member" do
+      user = user_fixture()
+
+      assert {:error, :last_team_member} = Accounts.delete_user(user)
+      assert %User{} = Accounts.get_user!(user.id)
+    end
+
+    test "delete_user/1 blocks deleting the final team admin" do
+      user = user_fixture()
+      add_team_member(user, is_billing_account: false)
+
+      assert {:error, :last_team_admin} = Accounts.delete_user(user)
+      assert %User{} = Accounts.get_user!(user.id)
     end
 
     test "change_user/1 returns a user changeset" do
       user = user_fixture()
       assert %Ecto.Changeset{} = Accounts.change_user(user)
     end
+  end
+
+  defp add_team_member(user, attrs) do
+    team = user.memberships |> List.first() |> Map.fetch!(:team)
+    member = insert(:user)
+
+    Repo.insert!(%Membership{
+      user_id: member.id,
+      team_id: team.id,
+      is_billing_account: Keyword.fetch!(attrs, :is_billing_account)
+    })
   end
 end

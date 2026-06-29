@@ -69,6 +69,20 @@ defmodule FormDelegateWeb.FallbackController do
     |> render(:"400", %{type: "INVALID_OR_EXPIRED_CAPTCHA"})
   end
 
+  def call(conn, {:error, :last_team_member}) do
+    conn
+    |> put_status(:bad_request)
+    |> put_view(FormDelegateWeb.ErrorView)
+    |> render(:"400", %{type: "LAST_TEAM_MEMBER"})
+  end
+
+  def call(conn, {:error, :last_team_admin}) do
+    conn
+    |> put_status(:bad_request)
+    |> put_view(FormDelegateWeb.ErrorView)
+    |> render(:"400", %{type: "LAST_TEAM_ADMIN"})
+  end
+
   def call(conn, {:error, :plan_grace_limit_exceeded}) do
     conn
     |> put_status(:service_unavailable)

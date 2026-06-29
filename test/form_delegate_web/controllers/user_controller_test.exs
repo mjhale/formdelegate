@@ -390,9 +390,12 @@ defmodule FormDelegateWeb.UserControllerTest do
     @tag :as_inserted_user
     test "Deletes, and rejects the deleted user's token", %{
       conn: conn,
+      team: team,
       jwt: jwt,
       user: user
     } do
+      add_team_member(team, is_billing_account: true)
+
       conn
       |> put_req_header("authorization", "bearer: " <> jwt)
       |> delete(Routes.user_path(conn, :delete, user.id))
@@ -405,6 +408,49 @@ defmodule FormDelegateWeb.UserControllerTest do
         |> json_response(401)
 
       assert %{"type" => "invalid_token"} = response
+    end
+
+    @tag :as_inserted_user
+    test "returns an error and does not delete the final team member", %{
+      conn: conn,
+      jwt: jwt,
+      user: user
+    } do
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> delete(Routes.user_path(conn, :delete, user.id))
+        |> json_response(400)
+
+      assert response == %{"error" => %{"code" => 400, "type" => "LAST_TEAM_MEMBER"}}
+
+      conn
+      |> put_req_header("authorization", "bearer: " <> jwt)
+      |> get(Routes.user_path(conn, :show, user.id))
+      |> json_response(200)
+    end
+
+    @tag :as_inserted_user
+    test "returns an error and does not delete the final team admin", %{
+      conn: conn,
+      team: team,
+      jwt: jwt,
+      user: user
+    } do
+      add_team_member(team, is_billing_account: false)
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> delete(Routes.user_path(conn, :delete, user.id))
+        |> json_response(400)
+
+      assert response == %{"error" => %{"code" => 400, "type" => "LAST_TEAM_ADMIN"}}
+
+      conn
+      |> put_req_header("authorization", "bearer: " <> jwt)
+      |> get(Routes.user_path(conn, :show, user.id))
+      |> json_response(200)
     end
 
     test "Returns an error and does not delete another user", %{
@@ -490,5 +536,15 @@ defmodule FormDelegateWeb.UserControllerTest do
              }
              | _
            ] = actual["memberships"]
+  end
+
+  defp add_team_member(team, attrs) do
+    user = insert(:user)
+
+    FormDelegate.Repo.insert!(%FormDelegate.Memberships.Membership{
+      user_id: user.id,
+      team_id: team.id,
+      is_billing_account: Keyword.fetch!(attrs, :is_billing_account)
+    })
   end
 end

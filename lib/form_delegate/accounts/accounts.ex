@@ -8,6 +8,7 @@ defmodule FormDelegate.Accounts do
   alias FormDelegate.Repo
   alias FormDelegate.Accounts.Registration
   alias FormDelegate.Accounts.User
+  alias FormDelegate.Memberships.Membership
 
   @doc """
   Returns the list of users.
@@ -259,7 +260,17 @@ defmodule FormDelegate.Accounts do
 
   """
   def delete_user(%User{} = user) do
-    Repo.delete(user)
+    Repo.transaction(fn ->
+      memberships = lock_user_team_memberships(user)
+
+      with :ok <- validate_user_membership_removal(user, memberships),
+           {:ok, %User{} = user} <- Repo.delete(user) do
+        user
+      else
+        {:error, reason} -> Repo.rollback(reason)
+      end
+    end)
+    |> normalize_delete_user_result()
   end
 
   @doc """
@@ -359,4 +370,50 @@ defmodule FormDelegate.Accounts do
   defp user_preloads do
     [memberships: [team: [subscriptions: [:plan]]]]
   end
+
+  defp lock_user_team_memberships(%User{id: user_id}) do
+    team_ids =
+      Repo.all(
+        from m in Membership,
+          where: m.user_id == ^user_id,
+          select: m.team_id,
+          order_by: [asc: m.team_id]
+      )
+
+    Repo.all(
+      from m in Membership,
+        where: m.team_id in ^team_ids,
+        order_by: [asc: m.team_id, asc: m.inserted_at, asc: m.id],
+        lock: "FOR UPDATE"
+    )
+  end
+
+  defp validate_user_membership_removal(%User{id: user_id}, memberships) do
+    memberships
+    |> Enum.filter(&(&1.user_id == user_id))
+    |> Enum.reduce_while(:ok, fn membership, :ok ->
+      team_memberships = Enum.filter(memberships, &(&1.team_id == membership.team_id))
+
+      case validate_membership_removal(membership, team_memberships) do
+        :ok -> {:cont, :ok}
+        {:error, reason} -> {:halt, {:error, reason}}
+      end
+    end)
+  end
+
+  defp validate_membership_removal(_membership, [_only_membership]),
+    do: {:error, :last_team_member}
+
+  defp validate_membership_removal(%Membership{is_billing_account: false}, _memberships), do: :ok
+
+  defp validate_membership_removal(%Membership{is_billing_account: true}, memberships) do
+    if Enum.count(memberships, & &1.is_billing_account) == 1 do
+      {:error, :last_team_admin}
+    else
+      :ok
+    end
+  end
+
+  defp normalize_delete_user_result({:ok, %User{} = user}), do: {:ok, user}
+  defp normalize_delete_user_result({:error, reason}), do: {:error, reason}
 end
