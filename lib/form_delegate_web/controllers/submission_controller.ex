@@ -125,12 +125,7 @@ defmodule FormDelegateWeb.SubmissionController do
     current_membership = conn.assigns.current_membership
 
     with :ok <- Authorizer.authorize(:show_user_submissions, current_user, current_membership) do
-      page =
-        if params["query"] do
-          Submissions.list_search_submissions_of_team(current_team, params)
-        else
-          Submissions.list_submissions_of_team(current_team, params)
-        end
+      page = Submissions.list_submissions_of_team(current_team, params)
 
       conn
       |> Scrivener.Headers.paginate(page)

@@ -47,19 +47,11 @@ defmodule FormDelegate.Submissions do
 
   """
   def list_submissions_of_team(%Team{} = team, params) do
-    query =
-      from s in Submission,
-        inner_join: form in Form,
-        on: form.id == s.form_id,
-        where: form.team_id == ^team.id,
-        order_by: [desc: s.inserted_at],
-        preload: [
-          :attachments,
-          :flagged_type,
-          form: {form, email_integrations: [:email_integration_recipients]}
-        ]
-
-    Repo.paginate(query, params)
+    team
+    |> team_submissions_query()
+    |> maybe_filter_by_forms(params)
+    |> maybe_filter_by_search(params)
+    |> Repo.paginate(params)
   end
 
   @doc """
@@ -95,8 +87,6 @@ defmodule FormDelegate.Submissions do
   @doc """
   Returns a paginated list of matching submissions for a team.
 
-  @TODO: Allow searches of particular forms.
-
   ## Examples
 
       iex> list_search_submissions_of_team(team, params)
@@ -104,23 +94,78 @@ defmodule FormDelegate.Submissions do
 
   """
   def list_search_submissions_of_team(%Team{} = team, params) do
-    query =
-      from s in Submission,
-        inner_join: form in Form,
-        on: form.id == s.form_id,
-        where:
-          form.team_id == ^team.id and
-            (ilike(s.sender, ^"%#{params["query"]}%") or
-               fragment("?::text ilike ?", s.fields, ^"%#{params["query"]}%")),
-        order_by: [desc: s.inserted_at],
-        preload: [
-          :attachments,
-          :flagged_type,
-          form: {form, email_integrations: [:email_integration_recipients]}
-        ]
-
-    Repo.paginate(query, params)
+    list_submissions_of_team(team, params)
   end
+
+  defp team_submissions_query(%Team{} = team) do
+    from s in Submission,
+      inner_join: form in Form,
+      on: form.id == s.form_id,
+      where: form.team_id == ^team.id,
+      order_by: [desc: s.inserted_at],
+      preload: [
+        :attachments,
+        :flagged_type,
+        form: {form, email_integrations: [:email_integration_recipients]}
+      ]
+  end
+
+  defp maybe_filter_by_forms(query, params) do
+    case form_filter_ids(params) do
+      :none ->
+        query
+
+      {:ok, form_ids} ->
+        where(query, [_s, form], form.id in ^form_ids)
+
+      :error ->
+        where(query, [s], s.id in ^[])
+    end
+  end
+
+  defp maybe_filter_by_search(query, %{"query" => query_string}) when is_binary(query_string) do
+    search = String.trim(query_string)
+
+    if search == "" do
+      query
+    else
+      search_pattern = "%#{search}%"
+
+      where(
+        query,
+        [s],
+        ilike(s.sender, ^search_pattern) or fragment("?::text ilike ?", s.fields, ^search_pattern)
+      )
+    end
+  end
+
+  defp maybe_filter_by_search(query, _params), do: query
+
+  defp form_filter_ids(params) do
+    params
+    |> Map.get("form", Map.get(params, "form[]"))
+    |> cast_form_filter_ids()
+  end
+
+  defp cast_form_filter_ids(nil), do: :none
+  defp cast_form_filter_ids([]), do: :none
+  defp cast_form_filter_ids(form_id) when is_binary(form_id), do: cast_form_filter_ids([form_id])
+
+  defp cast_form_filter_ids(form_ids) when is_list(form_ids) do
+    form_ids
+    |> Enum.reduce_while({:ok, []}, fn form_id, {:ok, acc} ->
+      case Ecto.UUID.cast(form_id) do
+        {:ok, uuid} -> {:cont, {:ok, [uuid | acc]}}
+        :error -> {:halt, :error}
+      end
+    end)
+    |> case do
+      {:ok, ids} -> {:ok, ids |> Enum.reverse() |> Enum.uniq()}
+      :error -> :error
+    end
+  end
+
+  defp cast_form_filter_ids(_form_ids), do: :error
 
   @doc """
   Returns the daily count of recent submission activity of a user for past 365 days.

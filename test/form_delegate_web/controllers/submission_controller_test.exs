@@ -141,6 +141,142 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
 
       assert response == expected
     end
+
+    @tag :as_inserted_user
+    test "filters submissions to an owned form", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      selected_form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      other_form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      selected_submission = FormDelegate.Factory.insert(:submission, form: selected_form)
+      FormDelegate.Factory.insert(:submission, form: other_form)
+
+      response =
+        conn
+        |> authorize(jwt)
+        |> get(Routes.team_submission_path(conn, :index, team.id), %{
+          "form" => [selected_form.id]
+        })
+        |> json_response(200)
+
+      assert submission_ids(response) == [selected_submission.id]
+    end
+
+    @tag :as_inserted_user
+    test "filters submissions to multiple owned forms", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      first_form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      second_form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      third_form = FormDelegate.Factory.insert(:form, user: user, team: team)
+
+      first_submission = FormDelegate.Factory.insert(:submission, form: first_form)
+      second_submission = FormDelegate.Factory.insert(:submission, form: second_form)
+      FormDelegate.Factory.insert(:submission, form: third_form)
+
+      response =
+        conn
+        |> authorize(jwt)
+        |> get(Routes.team_submission_path(conn, :index, team.id), %{
+          "form" => [first_form.id, second_form.id]
+        })
+        |> json_response(200)
+
+      assert response |> submission_ids() |> MapSet.new() ==
+               MapSet.new([first_submission.id, second_submission.id])
+    end
+
+    @tag :as_inserted_user
+    test "does not return submissions for cross-team form filters", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      {_other_user, other_team, _other_membership} =
+        FormDelegate.Factory.insert_user_with_membership()
+
+      owned_form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      other_team_form = FormDelegate.Factory.insert(:form, team: other_team)
+
+      FormDelegate.Factory.insert(:submission, form: owned_form)
+      FormDelegate.Factory.insert(:submission, form: other_team_form)
+
+      response =
+        conn
+        |> authorize(jwt)
+        |> get(Routes.team_submission_path(conn, :index, team.id), %{
+          "form" => [other_team_form.id]
+        })
+        |> json_response(200)
+
+      assert response == %{"data" => []}
+    end
+
+    @tag :as_inserted_user
+    test "does not broaden results for malformed form filters", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      FormDelegate.Factory.insert(:submission, form: form)
+
+      response =
+        conn
+        |> authorize(jwt)
+        |> get(Routes.team_submission_path(conn, :index, team.id), %{
+          "form" => ["not-a-uuid"]
+        })
+        |> json_response(200)
+
+      assert response == %{"data" => []}
+    end
+
+    @tag :as_inserted_user
+    test "combines form filters with search", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      selected_form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      other_form = FormDelegate.Factory.insert(:form, user: user, team: team)
+
+      matching_submission =
+        FormDelegate.Factory.insert(:submission,
+          form: selected_form,
+          fields: %{message: "Needle in selected form"}
+        )
+
+      FormDelegate.Factory.insert(:submission,
+        form: selected_form,
+        fields: %{message: "No match here"}
+      )
+
+      FormDelegate.Factory.insert(:submission,
+        form: other_form,
+        fields: %{message: "Needle in another form"}
+      )
+
+      response =
+        conn
+        |> authorize(jwt)
+        |> get(Routes.team_submission_path(conn, :index, team.id), %{
+          "form" => [selected_form.id],
+          "query" => "Needle"
+        })
+        |> json_response(200)
+
+      assert submission_ids(response) == [matching_submission.id]
+    end
   end
 
   describe "show/3" do
@@ -278,5 +414,11 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
     on_exit(fn ->
       Application.put_env(:form_delegate, :akismet_api_key, previous_api_key)
     end)
+  end
+
+  defp authorize(conn, jwt), do: put_req_header(conn, "authorization", "bearer: " <> jwt)
+
+  defp submission_ids(%{"data" => submissions}) do
+    Enum.map(submissions, & &1["id"])
   end
 end
