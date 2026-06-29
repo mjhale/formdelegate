@@ -159,3 +159,45 @@ export function BillingSkeleton() {
     </div>
   );
 }
+
+export function TeamManagementSkeleton() {
+  return (
+    <div role="status" aria-label="Loading team">
+      <div className="flex items-center justify-between mb-4">
+        <SkeletonBlock className="h-9 w-32" />
+        <SkeletonBlock className="h-8 w-24 bg-white border border-gray-200" />
+      </div>
+
+      <hr className="bg-slate-100 mb-5" />
+
+      <div className="space-y-8">
+        <div>
+          <SkeletonBlock className="h-6 w-36 mb-3" />
+          <SkeletonBlock className="h-10 w-full max-w-md bg-white border border-gray-200" />
+        </div>
+
+        <div>
+          <SkeletonBlock className="h-6 w-28 mb-3" />
+          <div className="bg-white border border-slate-200">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-4 gap-4 px-4 py-4 border-b border-slate-200 last:border-b-0"
+              >
+                <SkeletonBlock className="h-5 w-28" />
+                <SkeletonBlock className="h-5 w-44" />
+                <SkeletonBlock className="h-5 w-24" />
+                <SkeletonBlock className="h-8 w-32 justify-self-end bg-white border border-gray-200" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <SkeletonBlock className="h-6 w-40 mb-3" />
+          <SkeletonBlock className="h-10 w-full max-w-md bg-white border border-gray-200" />
+        </div>
+      </div>
+    </div>
+  );
+}

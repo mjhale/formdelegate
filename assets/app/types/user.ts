@@ -40,6 +40,31 @@ export interface Membership {
   team: Team;
 }
 
+export interface TeamMembershipUser {
+  email: string;
+  id: number;
+  name: string;
+}
+
+export interface TeamMembership {
+  id: string;
+  is_billing_account: boolean;
+  user: TeamMembershipUser;
+}
+
+export interface TeamInvitation {
+  accepted_at: string | null;
+  email: string;
+  expires_at: string;
+  id: string;
+  inviter: TeamMembershipUser | null;
+  status: 'pending' | 'accepted' | 'cancelled';
+  team: {
+    id: string;
+    name: string | null;
+  };
+}
+
 export interface Profile {
   current_membership: Membership | null;
   current_team: Team | null;
