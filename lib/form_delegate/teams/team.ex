@@ -16,6 +16,7 @@ defmodule FormDelegate.Teams.Team do
     has_many :subscriptions, FormDelegate.Subscriptions.Subscription
     has_many :billing_counts, FormDelegate.BillingCounts.BillingCount
     has_many :memberships, Membership, on_delete: :delete_all
+    has_many :team_invitations, FormDelegate.Teams.TeamInvitation, on_delete: :delete_all
 
     timestamps()
   end

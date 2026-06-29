@@ -35,6 +35,7 @@ defmodule FormDelegate.Accounts.User do
 
     has_many :forms, FormDelegate.Forms.Form, on_delete: :delete_all
     has_many :memberships, Membership, on_delete: :delete_all
+    has_many :sent_team_invitations, FormDelegate.Teams.TeamInvitation, foreign_key: :inviter_id
 
     timestamps()
   end

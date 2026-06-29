@@ -83,6 +83,20 @@ defmodule FormDelegateWeb.FallbackController do
     |> render(:"400", %{type: "LAST_TEAM_ADMIN"})
   end
 
+  def call(conn, {:error, :duplicate_invitation}) do
+    conn
+    |> put_status(:bad_request)
+    |> put_view(FormDelegateWeb.ErrorView)
+    |> render(:"400", %{type: "DUPLICATE_INVITATION"})
+  end
+
+  def call(conn, {:error, :already_team_member}) do
+    conn
+    |> put_status(:bad_request)
+    |> put_view(FormDelegateWeb.ErrorView)
+    |> render(:"400", %{type: "ALREADY_TEAM_MEMBER"})
+  end
+
   def call(conn, {:error, :plan_grace_limit_exceeded}) do
     conn
     |> put_status(:service_unavailable)

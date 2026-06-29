@@ -1,0 +1,9 @@
+Hello,
+
+<%= @inviter_name %> invited you to join <%= @team_name %>.
+
+Accept the invitation by visiting the following link:
+
+<%= @team_invitation_frontend_url %>
+
+This invitation expires at <%= DateTime.to_iso8601(@invitation.expires_at) %>.

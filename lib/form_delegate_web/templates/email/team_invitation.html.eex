@@ -1,0 +1,31 @@
+<tr>
+  <td align="center" valign="top">
+    <table border="0" cellpadding="10" cellspacing="0" width="100%" id="emailBody">
+      <tr>
+        <td align="left" valign="top">
+          Hello,
+        </td>
+      </tr>
+      <tr>
+        <td align="left" valign="top">
+          <%= @inviter_name %> invited you to join <%= @team_name %>.
+        </td>
+      </tr>
+      <tr>
+        <td align="left" valign="top">
+          Accept the invitation by visiting the following link:
+        </td>
+      </tr>
+      <tr>
+        <td align="left" valign="top">
+          <a href="<%= @team_invitation_frontend_url %>" target="_blank" rel="noopener"><%= @team_invitation_frontend_url %></a>
+        </td>
+      </tr>
+      <tr>
+        <td align="left" valign="top">
+          This invitation expires at <%= DateTime.to_iso8601(@invitation.expires_at) %>.
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>

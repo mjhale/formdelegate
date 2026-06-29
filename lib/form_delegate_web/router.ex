@@ -88,6 +88,10 @@ defmodule FormDelegateWeb.Router do
       only: [:index, :update, :delete],
       as: :team_membership
 
+    resources "/teams/:team_id/invitations", TeamInvitationController,
+      only: [:index, :create, :delete],
+      as: :team_invitation
+
     resources "/teams/:team_id/subscriptions", SubscriptionController,
       only: [:index],
       as: :team_subscription
@@ -130,6 +134,9 @@ defmodule FormDelegateWeb.Router do
       as: :form_email_integration
 
     resources "/subscriptions", SubscriptionController, only: [:index, :show]
+
+    post "/team-invitations/:token/accept", TeamInvitationController, :accept,
+      as: :team_invitation_acceptance
 
     scope "/submissions" do
       # @TODO: Refactor and move to different namespace
