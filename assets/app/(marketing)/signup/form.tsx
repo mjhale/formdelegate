@@ -11,7 +11,11 @@ const initialState = {
   errors: {},
 };
 
-export default function SignupForm() {
+export default function SignupForm({
+  destination = '',
+}: {
+  destination?: string;
+}) {
   const [state, formAction] = useActionState(createUserAction, initialState);
   const [captchaKey, setCaptchaKey] = useState('');
 
@@ -21,6 +25,13 @@ export default function SignupForm() {
   return (
     <>
       <form className="flex flex-col gap-y-4" action={formAction}>
+        <input
+          id="destination"
+          name="destination"
+          type="hidden"
+          value={destination}
+        />
+
         <div className="flex items-center h-10 max-w-xl">
           {/* Email */}
           <label className="flex-0 w-1/4" htmlFor="user.email">

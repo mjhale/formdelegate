@@ -9,6 +9,7 @@ import {
   fetchProfile,
   setCurrentTeamCookie,
 } from 'utils/profile';
+import { safeRedirectPath } from 'utils/destination';
 
 import Link from 'next/link';
 
@@ -49,10 +50,8 @@ export async function loginUser(_currentState, formData: FormData) {
     };
   }
 
-  let redirectUrl =
-    validatedData.data.destination === ''
-      ? '/dashboard'
-      : validatedData.data.destination;
+  const destination = safeRedirectPath(validatedData.data.destination, '');
+  let redirectUrl = destination || '/dashboard';
 
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/v1/sessions`, {
@@ -99,7 +98,7 @@ export async function loginUser(_currentState, formData: FormData) {
       await setCurrentTeamCookie(selectedTeamId);
     } else {
       cookieStore.delete(CURRENT_TEAM_COOKIE);
-      redirectUrl = '/account-setup-required';
+      redirectUrl = destination || '/account-setup-required';
     }
   } catch (error) {
     throw new Error(`Fetch Error: Failed to login.`);

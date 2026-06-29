@@ -9,9 +9,11 @@ import {
   fetchProfile,
   setCurrentTeamCookie,
 } from 'utils/profile';
+import { safeRedirectPath } from 'utils/destination';
 
 const userSchema = z.object({
   captcha: z.string().min(1, { message: 'Invalid Captcha response' }),
+  destination: z.string(),
   user: z
     .object({
       name: z.string().min(1, { message: 'Full name is required' }),
@@ -28,6 +30,7 @@ const userSchema = z.object({
 export async function createUserAction(_currentState, rawFormData: FormData) {
   const formData = {
     captcha: rawFormData.get('captcha'),
+    destination: rawFormData.get('destination'),
     user: {
       email: rawFormData.get('user.email'),
       name: rawFormData.get('user.name'),
@@ -45,7 +48,8 @@ export async function createUserAction(_currentState, rawFormData: FormData) {
     };
   }
 
-  let redirectUrl = '/dashboard';
+  const destination = safeRedirectPath(validatedData.data.destination, '');
+  let redirectUrl = destination || '/dashboard';
 
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/v1/users`, {
@@ -94,7 +98,7 @@ export async function createUserAction(_currentState, rawFormData: FormData) {
       await setCurrentTeamCookie(selectedTeamId);
     } else {
       cookieStore.delete(CURRENT_TEAM_COOKIE);
-      redirectUrl = '/account-setup-required';
+      redirectUrl = destination || '/account-setup-required';
     }
   } catch (error) {
     throw new Error(`Fetch Error: Failed to create user`);

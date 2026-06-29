@@ -1,8 +1,17 @@
 import type { Metadata } from 'next';
 
+import { safeRedirectPath } from 'utils/destination';
+
 import SignupForm from './form';
 
-export default async function SignupPage() {
+export default async function SignupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ destination?: string }>;
+}) {
+  const { destination } = await searchParams;
+  const safeDestination = safeRedirectPath(destination, '');
+
   return (
     <>
       <div className="flex flex-col items-center">
@@ -11,7 +20,7 @@ export default async function SignupPage() {
             Sign Up for Form Delegate
           </h1>
 
-          <SignupForm />
+          <SignupForm destination={safeDestination} />
         </div>
       </div>
     </>

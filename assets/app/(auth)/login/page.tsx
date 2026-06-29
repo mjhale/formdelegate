@@ -4,6 +4,8 @@ import { Suspense } from 'react';
 import { Lato } from 'next/font/google';
 import Link from 'next/link';
 
+import { safeRedirectPath } from 'utils/destination';
+
 import LoginForm from './form';
 
 const lato = Lato({
@@ -13,7 +15,17 @@ const lato = Lato({
   variable: '--font-lato',
 });
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ destination?: string }>;
+}) {
+  const { destination } = await searchParams;
+  const safeDestination = safeRedirectPath(destination, '');
+  const signupHref = safeDestination
+    ? `/signup?${new URLSearchParams({ destination: safeDestination }).toString()}`
+    : '/signup';
+
   return (
     <>
       <div className="flex justify-center align-middle items-center h-32 mb-4">
@@ -37,7 +49,7 @@ export default async function LoginPage() {
       </div>
       <div className="flex justify-center text-sm text-gray-800 font-medium mt-4">
         Don't have an account?
-        <Link href="/signup" className="pl-1 underline">
+        <Link href={signupHref} className="pl-1 underline">
           Sign up
         </Link>
       </div>
