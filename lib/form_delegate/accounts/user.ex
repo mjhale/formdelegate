@@ -10,7 +10,9 @@ defmodule FormDelegate.Accounts.User do
   schema "users" do
     field :email, :string
     field :unconfirmed_email, :string
+    field :current_password, :string, virtual: true
     field :password, :string, virtual: true
+    field :password_confirmation, :string, virtual: true
     field :password_hash, :string
 
     field :name, :string
@@ -22,6 +24,8 @@ defmodule FormDelegate.Accounts.User do
 
     field :last_activity_at, :utc_datetime_usec
     field :last_sign_in_at, :utc_datetime_usec
+
+    field :auth_token_version, :integer, default: 0
 
     field :reset_password_token, :string
     field :reset_password_sent_at, :utc_datetime_usec
@@ -96,9 +100,57 @@ defmodule FormDelegate.Accounts.User do
     |> validate_required([:password])
     |> validate_length(:password, min: 8)
     |> put_password_hash()
+    |> put_incremented_auth_token_version()
     |> put_change(:reset_password_token, nil)
     |> put_change(:reset_password_sent_at, nil)
   end
+
+  @doc false
+  def change_password_changeset(%User{} = user, params \\ %{}) do
+    user
+    |> cast(params, [:current_password, :password, :password_confirmation])
+    |> validate_required([:current_password, :password, :password_confirmation])
+    |> validate_current_password()
+    |> validate_length(:password, min: 8)
+    |> validate_confirmation(:password)
+    |> put_password_hash()
+    |> put_incremented_auth_token_version()
+    |> put_change(:reset_password_token, nil)
+    |> put_change(:reset_password_sent_at, nil)
+  end
+
+  defp validate_current_password(changeset) do
+    case get_change(changeset, :current_password) do
+      password when is_binary(password) and password != "" ->
+        if current_password_valid?(password, get_field(changeset, :password_hash)) do
+          changeset
+        else
+          add_error(changeset, :current_password, "is invalid")
+        end
+
+      _ ->
+        changeset
+    end
+  end
+
+  defp current_password_valid?(password, password_hash)
+       when is_binary(password) and is_binary(password_hash) do
+    Pbkdf2.verify_pass(password, password_hash)
+  rescue
+    _error -> false
+  end
+
+  defp current_password_valid?(_password, _password_hash), do: false
+
+  defp put_incremented_auth_token_version(%Ecto.Changeset{valid?: true} = changeset) do
+    put_change(
+      changeset,
+      :auth_token_version,
+      (get_field(changeset, :auth_token_version) || 0) + 1
+    )
+  end
+
+  defp put_incremented_auth_token_version(changeset), do: changeset
 
   defp put_password_hash(changeset) do
     case changeset do

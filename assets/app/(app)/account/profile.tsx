@@ -188,20 +188,21 @@ export default function AccountProfile({ user }) {
 
                             <div className="flex items-center h-14">
                               <div className="flex-0 w-2/5 font-semibold">
-                                Old password
+                                Current password
                               </div>
                               <div className="flex-1">
                                 <input
-                                  name="old_password"
-                                  id="old_password"
-                                  aria-describedby="old_password.error"
-                                  type="text"
+                                  name="current_password"
+                                  id="current_password"
+                                  aria-describedby="current_password.error"
+                                  type="password"
+                                  autoComplete="current-password"
                                   className="w-full max-w-sm appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
                                 />
                               </div>
                             </div>
-                            {passwordState?.errors?.oldPassword &&
-                              passwordState?.errors.oldPassword._errors.map(
+                            {passwordState?.errors?.current_password &&
+                              passwordState?.errors.current_password._errors.map(
                                 (error: string) => (
                                   <p
                                     className="mt-2 text-sm text-red-500"
@@ -218,17 +219,46 @@ export default function AccountProfile({ user }) {
                               </div>
                               <div className="flex-1">
                                 <input
-                                  name="new_password"
-                                  id="new_password"
-                                  aria-describedby="new_password.error"
-                                  type="text"
+                                  name="password"
+                                  id="password"
+                                  aria-describedby="password.error"
+                                  type="password"
+                                  autoComplete="new-password"
                                   className="w-full max-w-sm appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
                                 />
                               </div>
                             </div>
 
-                            {passwordState?.errors?.newPassword &&
-                              passwordState?.errors.newPassword._errors.map(
+                            {passwordState?.errors?.password &&
+                              passwordState?.errors.password._errors.map(
+                                (error: string) => (
+                                  <p
+                                    className="mt-2 text-sm text-red-500"
+                                    key={error}
+                                  >
+                                    {error}
+                                  </p>
+                                )
+                              )}
+
+                            <div className="flex items-center h-14">
+                              <div className="flex-0 w-2/5 font-semibold">
+                                Confirm password
+                              </div>
+                              <div className="flex-1">
+                                <input
+                                  name="password_confirmation"
+                                  id="password_confirmation"
+                                  aria-describedby="password_confirmation.error"
+                                  type="password"
+                                  autoComplete="new-password"
+                                  className="w-full max-w-sm appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+                                />
+                              </div>
+                            </div>
+
+                            {passwordState?.errors?.password_confirmation &&
+                              passwordState?.errors.password_confirmation._errors.map(
                                 (error: string) => (
                                   <p
                                     className="mt-2 text-sm text-red-500"

@@ -15,6 +15,7 @@ defmodule FormDelegate.Factory do
     %User{
       confirmation_sent_at: DateTime.utc_now(),
       confirmation_token: User.generate_random_url_safe_string(32),
+      auth_token_version: 0,
       email: sequence(:email, fn n -> "email-#{n}@formdelegate.com" end),
       is_admin: false,
       name: sequence(:name, &"User #{&1}"),

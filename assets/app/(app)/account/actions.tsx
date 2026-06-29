@@ -6,17 +6,34 @@ import { z } from 'zod';
 
 import { getProfileContext } from 'utils/profile';
 
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+
 const userSchema = z.object({
   id: z.coerce.number(),
   email: z.string().email(),
   name: z.string(),
 });
 
-const passwordSchema = z.object({
-  id: z.coerce.number(),
-  oldPassword: z.string().min(8),
-  newPassword: z.string().min(8),
-});
+const passwordSchema = z
+  .object({
+    id: z.coerce.number(),
+    current_password: z.string().min(8),
+    password: z.string().min(8),
+    password_confirmation: z.string().min(8),
+  })
+  .refine((data) => data.password === data.password_confirmation, {
+    message: 'Passwords do not match.',
+    path: ['password_confirmation'],
+  });
+
+function formatApiErrors(errors) {
+  return Object.fromEntries(
+    Object.entries(errors).map(([field, messages]) => [
+      field,
+      { _errors: Array.isArray(messages) ? messages : [String(messages)] },
+    ])
+  );
+}
 
 export async function fetchCheckoutSession(userEmail, planPriceId) {
   const { accessToken, selectedTeam } = await getProfileContext();
@@ -110,16 +127,16 @@ export async function updateUserAction(_currentState, formData: FormData) {
 export async function updatePasswordAction(_currentState, formData: FormData) {
   const rawFormData = {
     id: formData.get('id'),
-    oldPassword: formData.get('old_password'),
-    newPassword: formData.get('new_password'),
+    current_password: formData.get('current_password'),
+    password: formData.get('password'),
+    password_confirmation: formData.get('password_confirmation'),
   };
 
-  const accessToken = (await cookies()).get('access_token')?.value;
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('access_token')?.value;
   const validatedData = passwordSchema.safeParse(rawFormData);
 
   if (!validatedData.success) {
-    console.log(rawFormData);
-    console.log(JSON.stringify(validatedData.error, null, 4));
     return {
       message: 'Failed to update user due to field errors.',
       errors: validatedData.error.format(),
@@ -132,7 +149,9 @@ export async function updatePasswordAction(_currentState, formData: FormData) {
       {
         body: JSON.stringify({
           user: {
-            ...validatedData.data,
+            current_password: validatedData.data.current_password,
+            password: validatedData.data.password,
+            password_confirmation: validatedData.data.password_confirmation,
           },
         }),
         method: 'POST',
@@ -144,12 +163,49 @@ export async function updatePasswordAction(_currentState, formData: FormData) {
       }
     );
 
+    if (res.status === 422) {
+      const { error } = await res.json();
+
+      return {
+        message: 'Failed to update password due to field errors.',
+        errors: formatApiErrors(error?.errors || {}),
+      };
+    }
+
+    if (res.status === 403) {
+      return {
+        message: 'You are not allowed to change this password.',
+        errors: {},
+      };
+    }
+
     if (!res.ok) {
       throw new Error(`Network response failure while updating user password`);
     }
+
+    const { data } = await res.json();
+
+    if (!data?.token) {
+      throw new Error(
+        'Password update response did not include an access token'
+      );
+    }
+
+    cookieStore.set('access_token', data.token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: COOKIE_MAX_AGE,
+      secure: process.env.NODE_ENV !== 'development',
+    });
   } catch (error) {
-    throw new Error(`Fetch Error: Failed to update user passsword`);
+    throw new Error(`Fetch Error: Failed to update user password`);
   }
 
   revalidatePath('/account');
+
+  return {
+    message: 'Password updated.',
+    errors: {},
+  };
 }

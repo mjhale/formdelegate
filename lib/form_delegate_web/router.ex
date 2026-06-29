@@ -137,6 +137,8 @@ defmodule FormDelegateWeb.Router do
 
     resources "/submissions", SubmissionController, only: [:index, :show]
 
+    post "/users/:id/change-password", UserController, :change_password, as: :user_change_password
+
     resources "/users", UserController, except: [:create, :edit, :new]
 
     resources "/plans", PlanController, except: [:edit, :new]

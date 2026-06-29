@@ -171,6 +171,14 @@ defmodule FormDelegateWeb.Authorizer do
     end
   end
 
+  def authorize(:change_user_password, %User{} = current_user, %User{} = user) do
+    if user.id == current_user.id do
+      :ok
+    else
+      {:error, :forbidden}
+    end
+  end
+
   def authorize(:delete_user, %User{} = current_user, %User{} = user) do
     if user.id == current_user.id or current_user.is_admin do
       :ok

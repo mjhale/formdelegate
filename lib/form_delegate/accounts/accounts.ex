@@ -211,6 +211,24 @@ defmodule FormDelegate.Accounts do
   end
 
   @doc """
+  Changes a user's password after validating their current password.
+
+  ## Examples
+
+      iex> change_user_password(user, %{current_password: "current", password: "new password"})
+      {:ok, %User{}}
+
+      iex> change_user_password(user, %{current_password: "invalid"})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def change_user_password(%User{} = user, params \\ %{}) do
+    user
+    |> User.change_password_changeset(params)
+    |> Repo.update()
+  end
+
+  @doc """
   Creates a user reset password token.
 
   ## Examples

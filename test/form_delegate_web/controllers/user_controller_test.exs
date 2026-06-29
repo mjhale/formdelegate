@@ -1,8 +1,11 @@
 defmodule FormDelegateWeb.UserControllerTest do
   use FormDelegateWeb.ConnCase
 
+  alias FormDelegate.Accounts
   alias FormDelegateWeb.Router.Helpers, as: Routes
 
+  @current_password "a sufficiently long password"
+  @new_password "a different valid password!"
   @valid_attrs %{
     captcha: "10000000-aaaa-bbbb-cccc-000000000001",
     user: %{
@@ -24,6 +27,12 @@ defmodule FormDelegateWeb.UserControllerTest do
       password: nil
     }
   }
+  @valid_password_attrs %{
+    "current_password" => @current_password,
+    "password" => @new_password,
+    "password_confirmation" => @new_password
+  }
+
   setup %{conn: conn, user: user} do
     jwt =
       case FormDelegateWeb.Guardian.encode_and_sign(user) do
@@ -35,6 +44,147 @@ defmodule FormDelegateWeb.UserControllerTest do
       end
 
     {:ok, conn: put_req_header(conn, "accept", "application/json"), jwt: jwt}
+  end
+
+  describe "change_password/3" do
+    @tag :as_inserted_user
+    test "Updates the user password with the snake case account payload and returns a fresh token",
+         %{
+           conn: conn,
+           jwt: jwt,
+           user: user
+         } do
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> post(Routes.user_change_password_path(conn, :change_password, user.id),
+          user: @valid_password_attrs
+        )
+        |> json_response(200)
+
+      assert %{"data" => %{"token" => new_jwt}} = response
+
+      assert {:ok, %{id: user_id}} =
+               Accounts.authenticate_user(%{email: user.email, password: @new_password})
+
+      assert user_id == user.id
+
+      assert {:error, :invalid_credentials} =
+               Accounts.authenticate_user(%{email: user.email, password: @current_password})
+
+      assert {:error, :stale_auth_token} = FormDelegateWeb.Guardian.decode_and_verify(jwt)
+      assert {:ok, _claims} = FormDelegateWeb.Guardian.decode_and_verify(new_jwt)
+
+      stale_response =
+        build_conn()
+        |> put_req_header("accept", "application/json")
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> get(Routes.user_path(conn, :show, user.id))
+        |> json_response(401)
+
+      assert %{"type" => "invalid_token"} = stale_response
+
+      fresh_response =
+        build_conn()
+        |> put_req_header("accept", "application/json")
+        |> put_req_header("authorization", "bearer: " <> new_jwt)
+        |> get(Routes.user_path(conn, :show, user.id))
+        |> json_response(200)
+
+      assert %{"data" => actual_user} = fresh_response
+      assert_profile_fields(actual_user, Accounts.get_user!(user.id))
+    end
+
+    @tag :as_inserted_user
+    test "Returns an error when current password is invalid", %{
+      conn: conn,
+      jwt: jwt,
+      user: user
+    } do
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> post(Routes.user_change_password_path(conn, :change_password, user.id),
+          user: Map.put(@valid_password_attrs, "current_password", "wrong current password")
+        )
+        |> json_response(422)
+
+      assert %{"error" => %{"errors" => %{"current_password" => ["is invalid"]}}} = response
+    end
+
+    @tag :as_inserted_user
+    test "Returns an error when password confirmation does not match", %{
+      conn: conn,
+      jwt: jwt,
+      user: user
+    } do
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> post(Routes.user_change_password_path(conn, :change_password, user.id),
+          user: Map.put(@valid_password_attrs, "password_confirmation", "not the same password")
+        )
+        |> json_response(422)
+
+      assert %{"error" => %{"errors" => %{"password_confirmation" => errors}}} = response
+      assert "does not match confirmation" in errors
+    end
+
+    @tag :as_inserted_user
+    test "Returns an error when password is too weak", %{
+      conn: conn,
+      jwt: jwt,
+      user: user
+    } do
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> post(Routes.user_change_password_path(conn, :change_password, user.id),
+          user:
+            Map.merge(@valid_password_attrs, %{
+              "password" => "short",
+              "password_confirmation" => "short"
+            })
+        )
+        |> json_response(422)
+
+      assert %{"error" => %{"errors" => %{"password" => errors}}} = response
+      assert "should be at least 8 character(s)" in errors
+    end
+
+    test "Returns an error when changing another user's password", %{conn: conn} do
+      target_user =
+        build(:user)
+        |> set_password(@current_password)
+        |> insert()
+
+      other_user =
+        build(:user)
+        |> set_password(@current_password)
+        |> insert()
+
+      {:ok, jwt, _full_claims} = FormDelegateWeb.Guardian.encode_and_sign(other_user)
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> post(Routes.user_change_password_path(conn, :change_password, target_user.id),
+          user: @valid_password_attrs
+        )
+        |> json_response(403)
+
+      expected = %{"error" => %{"code" => 403, "type" => "FORBIDDEN"}}
+
+      assert response == expected
+
+      assert {:ok, %{id: target_user_id}} =
+               Accounts.authenticate_user(%{
+                 email: target_user.email,
+                 password: @current_password
+               })
+
+      assert target_user_id == target_user.id
+    end
   end
 
   describe "index/3" do
@@ -238,7 +388,7 @@ defmodule FormDelegateWeb.UserControllerTest do
 
   describe "delete/3" do
     @tag :as_inserted_user
-    test "Deletes, and returns a 404 if the user was deleted", %{
+    test "Deletes, and rejects the deleted user's token", %{
       conn: conn,
       jwt: jwt,
       user: user
@@ -248,11 +398,13 @@ defmodule FormDelegateWeb.UserControllerTest do
       |> delete(Routes.user_path(conn, :delete, user.id))
       |> response(204)
 
-      assert_error_sent 404, fn ->
+      response =
         conn
         |> put_req_header("authorization", "bearer: " <> jwt)
         |> get(Routes.user_path(conn, :show, user.id))
-      end
+        |> json_response(401)
+
+      assert %{"type" => "invalid_token"} = response
     end
 
     test "Returns an error and does not delete another user", %{
@@ -288,6 +440,9 @@ defmodule FormDelegateWeb.UserControllerTest do
         [
           get(conn, Routes.user_path(conn, :index)),
           get(conn, Routes.user_path(conn, :show, "1")),
+          post(conn, Routes.user_change_password_path(conn, :change_password, "1"),
+            user: @valid_password_attrs
+          ),
           put(conn, Routes.user_path(conn, :update, "1", %{})),
           delete(conn, Routes.user_path(conn, :delete, "1"))
         ],

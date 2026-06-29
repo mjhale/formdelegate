@@ -64,6 +64,15 @@ defmodule FormDelegateWeb.UserController do
     end
   end
 
+  def change_password(conn, %{"id" => id, "user" => user_params}, current_user) do
+    with %User{} = user <- Accounts.get_user!(id),
+         :ok <- Authorizer.authorize(:change_user_password, current_user, user),
+         {:ok, %User{} = user} <- Accounts.change_user_password(user, user_params),
+         {:ok, token, _claims} <- Guardian.encode_and_sign(user, %{}, token_type: "access") do
+      json(conn, %{data: %{token: token}})
+    end
+  end
+
   def delete(conn, %{"id" => id}, current_user) do
     with %User{} = user <- Accounts.get_user!(id),
          :ok <- Authorizer.authorize(:delete_user, current_user, user),
