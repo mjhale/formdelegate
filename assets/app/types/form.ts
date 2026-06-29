@@ -14,6 +14,7 @@ export interface SMTPEmailProviderConfig {
   from_address: string;
   host: string;
   port: number;
+  use_ssl?: boolean;
   username: string;
 }
 
@@ -62,6 +63,7 @@ export interface EmailIntegrationRecipient {
 }
 
 export interface EmailIntegrationInput {
+  _email_provider_last_verified_at?: string | null;
   _email_provider_status?: EmailProviderStatus;
   email_provider?: EmailProvider | null;
   email_provider_config?: EmailProviderConfig | null;

@@ -14,6 +14,7 @@ interface IFormInput {
 interface FormActionState {
   message: ReactNode | null;
   errors: {
+    _errors?: Array<string>;
     name?: {
       _errors: Array<string>;
     };
@@ -35,13 +36,34 @@ const integrationErrorFields = [
   ['verify_provider', 'Verification request'],
 ] as const;
 
+const providerLabels = {
+  smtp: 'SMTP',
+  postmark: 'Postmark',
+  sendgrid: 'SendGrid',
+} as const;
+
+const statusLabels = {
+  unconfigured: 'Unconfigured',
+  pending_verification: 'Pending verification',
+  verified: 'Verified',
+  invalid: 'Invalid',
+} as const;
+
 export default function Form({ form, saveFormAction }) {
   const [state, formAction] = useActionState<FormActionState, IFormInput>(
     saveFormAction,
     initialState
   );
   const [isPending, startTransition] = useTransition();
-  const { register, control, handleSubmit, getValues } = useForm<IFormInput>({
+  const {
+    register,
+    control,
+    handleSubmit,
+    getValues,
+    setValue,
+    unregister,
+    watch,
+  } = useForm<IFormInput>({
     defaultValues: {
       id: form?.id ?? '',
       name: form?.name ?? '',
@@ -87,6 +109,12 @@ export default function Form({ form, saveFormAction }) {
             {error}
           </p>
         ))}
+      {state?.errors?._errors &&
+        state.errors._errors.map((error: string) => (
+          <p className="mt-2 text-sm text-red-500" key={error}>
+            {error}
+          </p>
+        ))}
 
       {/* Email integrations */}
       <div className="text-lg font-semibold">Email Integrations</div>
@@ -96,6 +124,9 @@ export default function Form({ form, saveFormAction }) {
           control,
           register,
           getValues,
+          setValue,
+          unregister,
+          watch,
         }}
       />
 
@@ -320,7 +351,15 @@ function EmailRecipientsFieldArray({
   );
 }
 
-function EmailIntegrationsFieldArray({ state, control, register, getValues }) {
+function EmailIntegrationsFieldArray({
+  state,
+  control,
+  register,
+  getValues,
+  setValue,
+  unregister,
+  watch,
+}) {
   const {
     fields: emailIntegrationFields,
     append,
@@ -341,6 +380,40 @@ function EmailIntegrationsFieldArray({ state, control, register, getValues }) {
               name={`email_integrations.${i}.id`}
               defaultValue={getValues(`email_integrations.${i}.id`)}
             />
+            <input
+              {...register(`email_integrations.${i}._email_provider_status`)}
+              type="hidden"
+              defaultValue={getValues(
+                `email_integrations.${i}._email_provider_status`
+              )}
+            />
+            <input
+              {...register(
+                `email_integrations.${i}._email_provider_last_verified_at`
+              )}
+              type="hidden"
+              defaultValue={
+                getValues(
+                  `email_integrations.${i}._email_provider_last_verified_at`
+                ) ?? ''
+              }
+            />
+            {getValues(`email_integrations.${i}.email_provider_status`) && (
+              <input
+                {...register(`email_integrations.${i}.email_provider_status`)}
+                type="hidden"
+                defaultValue={getValues(
+                  `email_integrations.${i}.email_provider_status`
+                )}
+              />
+            )}
+            {getValues(`email_integrations.${i}.verify_provider`) === true && (
+              <input
+                {...register(`email_integrations.${i}.verify_provider`)}
+                type="hidden"
+                defaultValue="true"
+              />
+            )}
             <div className="flex items-center h-10 max-w-xl">
               <label
                 className="flex-0 w-1/4"
@@ -358,6 +431,14 @@ function EmailIntegrationsFieldArray({ state, control, register, getValues }) {
                 />
               </div>
             </div>
+            <EmailProviderSetupFields
+              index={i}
+              register={register}
+              getValues={getValues}
+              setValue={setValue}
+              unregister={unregister}
+              provider={watch(`email_integrations.${i}.email_provider`)}
+            />
             <IntegrationErrors errors={state?.errors} index={i} />
             <div className="flex max-w-xl py-2">
               <button
@@ -383,9 +464,14 @@ function EmailIntegrationsFieldArray({ state, control, register, getValues }) {
           className="inline-block px-2 py-1 text-sm font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
           onClick={() =>
             append({
+              _email_provider_last_verified_at: null,
+              _email_provider_status: 'unconfigured',
               id: null,
               enabled: false,
+              email_provider: null,
+              email_provider_status: 'pending_verification',
               email_integration_recipients: [],
+              verify_provider: true,
             })
           }
         >
@@ -393,6 +479,341 @@ function EmailIntegrationsFieldArray({ state, control, register, getValues }) {
         </button>
       </div>
     </>
+  );
+}
+
+function EmailProviderSetupFields({
+  index: i,
+  register,
+  getValues,
+  setValue,
+  unregister,
+  provider,
+}) {
+  const currentStatus =
+    getValues(`email_integrations.${i}._email_provider_status`) ??
+    'unconfigured';
+  const lastVerifiedAt = getValues(
+    `email_integrations.${i}._email_provider_last_verified_at`
+  );
+  const isVerified = currentStatus === 'verified';
+
+  const resetProviderFields = (nextProvider) => {
+    if (isVerified) {
+      return;
+    }
+
+    unregister(`email_integrations.${i}.email_provider_config`);
+    unregister(`email_integrations.${i}.email_provider_secrets`);
+    setValue(`email_integrations.${i}.email_provider_config`, {});
+    setValue(`email_integrations.${i}.email_provider_secrets`, {});
+
+    if (nextProvider) {
+      setValue(
+        `email_integrations.${i}.email_provider_status`,
+        'pending_verification'
+      );
+      setValue(`email_integrations.${i}.verify_provider`, true);
+    } else {
+      unregister(`email_integrations.${i}.email_provider_status`);
+      unregister(`email_integrations.${i}.verify_provider`);
+    }
+  };
+
+  return (
+    <>
+      <div className="flex items-center h-10 max-w-xl">
+        {isVerified ? (
+          <>
+            <input
+              {...register(`email_integrations.${i}.email_provider`)}
+              type="hidden"
+              defaultValue={getValues(`email_integrations.${i}.email_provider`)}
+            />
+            <div className="flex-0 w-1/4">Provider</div>
+            <div className="flex-1 shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight">
+              {formatProviderLabel(provider)}
+            </div>
+          </>
+        ) : (
+          <>
+            <label
+              className="flex-0 w-1/4"
+              htmlFor={`email_integrations.${i}.email_provider`}
+            >
+              Provider
+            </label>
+            <div className="flex-1">
+              <select
+                {...register(`email_integrations.${i}.email_provider`, {
+                  onChange: (event) => resetProviderFields(event.target.value),
+                })}
+                id={`email_integrations.${i}.email_provider`}
+                className="w-full appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+                defaultValue={
+                  getValues(`email_integrations.${i}.email_provider`) ?? ''
+                }
+              >
+                <option value="">Select provider</option>
+                <option value="smtp">{providerLabels.smtp}</option>
+                <option value="postmark">{providerLabels.postmark}</option>
+                <option value="sendgrid">{providerLabels.sendgrid}</option>
+              </select>
+            </div>
+          </>
+        )}
+      </div>
+      <div className="flex items-center h-10 max-w-xl">
+        <div className="flex-0 w-1/4">Status</div>
+        <div className="flex-1 shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight">
+          {formatProviderStatus(currentStatus)}
+        </div>
+      </div>
+      <div className="flex items-center h-10 max-w-xl">
+        <div className="flex-0 w-1/4">Last Verified</div>
+        <div className="flex-1 shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight">
+          {formatLastVerifiedAt(lastVerifiedAt)}
+        </div>
+      </div>
+      <ProviderConfigFields
+        key={provider ?? 'none'}
+        index={i}
+        register={register}
+        getValues={getValues}
+        provider={provider}
+        readOnly={isVerified}
+      />
+    </>
+  );
+}
+
+function ProviderConfigFields({
+  index,
+  register,
+  getValues,
+  provider,
+  readOnly,
+}) {
+  switch (provider) {
+    case 'smtp':
+      return (
+        <>
+          <ProviderTextInput
+            index={index}
+            register={register}
+            getValues={getValues}
+            path="email_provider_config.from_address"
+            label="From Address"
+            type="email"
+            readOnly={readOnly}
+          />
+          <ProviderTextInput
+            index={index}
+            register={register}
+            getValues={getValues}
+            path="email_provider_config.host"
+            label="SMTP Host"
+            readOnly={readOnly}
+          />
+          <ProviderTextInput
+            index={index}
+            register={register}
+            getValues={getValues}
+            path="email_provider_config.port"
+            label="SMTP Port"
+            type="number"
+            readOnly={readOnly}
+          />
+          <ProviderTextInput
+            index={index}
+            register={register}
+            getValues={getValues}
+            path="email_provider_config.username"
+            label="SMTP Username"
+            readOnly={readOnly}
+          />
+          <ProviderCheckboxInput
+            index={index}
+            register={register}
+            getValues={getValues}
+            path="email_provider_config.use_ssl"
+            label="Use SSL"
+            readOnly={readOnly}
+          />
+          <ProviderTextInput
+            index={index}
+            register={register}
+            getValues={getValues}
+            path="email_provider_secrets.password"
+            label="SMTP Password"
+            type="password"
+            readOnly={readOnly}
+          />
+        </>
+      );
+
+    case 'postmark':
+      return (
+        <>
+          <ProviderTextInput
+            index={index}
+            register={register}
+            getValues={getValues}
+            path="email_provider_config.from_address"
+            label="From Address"
+            type="email"
+            readOnly={readOnly}
+          />
+          <ProviderTextInput
+            index={index}
+            register={register}
+            getValues={getValues}
+            path="email_provider_config.message_stream"
+            label="Message Stream"
+            readOnly={readOnly}
+          />
+          <ProviderTextInput
+            index={index}
+            register={register}
+            getValues={getValues}
+            path="email_provider_secrets.server_token"
+            label="Server Token"
+            type="password"
+            readOnly={readOnly}
+          />
+        </>
+      );
+
+    case 'sendgrid':
+      return (
+        <>
+          <ProviderTextInput
+            index={index}
+            register={register}
+            getValues={getValues}
+            path="email_provider_config.from_address"
+            label="From Address"
+            type="email"
+            readOnly={readOnly}
+          />
+          <ProviderTextInput
+            index={index}
+            register={register}
+            getValues={getValues}
+            path="email_provider_secrets.api_key"
+            label="API Key"
+            type="password"
+            readOnly={readOnly}
+          />
+        </>
+      );
+
+    default:
+      return null;
+  }
+}
+
+function ProviderTextInput({
+  index,
+  register,
+  getValues,
+  path,
+  label,
+  type = 'text',
+  readOnly = false,
+}) {
+  const name = `email_integrations.${index}.${path}`;
+  const isSecretField = path.startsWith('email_provider_secrets.');
+
+  if (readOnly && isSecretField) {
+    return (
+      <div className="flex items-center h-10 max-w-xl">
+        <label className="flex-0 w-1/4" htmlFor={name}>
+          {label}
+        </label>
+        <input
+          id={name}
+          type={type}
+          autoComplete="new-password"
+          className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight bg-gray-50 focus:outline-none"
+          defaultValue=""
+          disabled
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center h-10 max-w-xl">
+      <label className="flex-0 w-1/4" htmlFor={name}>
+        {label}
+      </label>
+      <input
+        {...register(name)}
+        id={name}
+        type={type}
+        autoComplete={type === 'password' ? 'new-password' : 'off'}
+        className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+        readOnly={readOnly}
+        defaultValue={
+          type === 'password' ? '' : getStringFieldValue(getValues(name))
+        }
+      />
+    </div>
+  );
+}
+
+function ProviderCheckboxInput({
+  index,
+  register,
+  getValues,
+  path,
+  label,
+  readOnly = false,
+}) {
+  const name = `email_integrations.${index}.${path}`;
+  const checked = getBooleanFieldValue(getValues(name));
+
+  if (readOnly) {
+    return (
+      <div className="flex items-center h-10 max-w-xl">
+        {checked && (
+          <input
+            {...register(name)}
+            type="hidden"
+            defaultValue={checked ? 'true' : ''}
+          />
+        )}
+        <div className="flex-0 w-1/4">{label}</div>
+        <div className="flex-1">
+          <input
+            id={name}
+            className="w-4 h-4 focus:outline-none"
+            type="checkbox"
+            checked={checked}
+            disabled
+            readOnly
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center h-10 max-w-xl">
+      <label className="flex-0 w-1/4" htmlFor={name}>
+        {label}
+      </label>
+      <div className="flex-1">
+        <input
+          {...register(name)}
+          id={name}
+          className="w-4 h-4 focus:outline-none focus:ring-2"
+          type="checkbox"
+          defaultChecked={checked}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -423,6 +844,8 @@ function sanitizeEmailIntegrationDefaults(
 
     return {
       _email_provider_status: emailIntegration.email_provider_status,
+      _email_provider_last_verified_at:
+        emailIntegration.email_provider_last_verified_at,
       id: emailIntegration.id,
       enabled: emailIntegration.enabled,
       email_provider: emailIntegration.email_provider,
@@ -460,4 +883,49 @@ function getIntegrationErrorMessages(errors, index: number): Array<string> {
   });
 
   return messages;
+}
+
+function getStringFieldValue(value: unknown): string {
+  if (value === undefined || value === null) {
+    return '';
+  }
+
+  return String(value);
+}
+
+function getBooleanFieldValue(value: unknown): boolean {
+  return value === true || value === 'true' || value === 1 || value === '1';
+}
+
+function formatProviderStatus(status: unknown): string {
+  if (typeof status === 'string' && status in statusLabels) {
+    return statusLabels[status];
+  }
+
+  return statusLabels.unconfigured;
+}
+
+function formatProviderLabel(provider: unknown): string {
+  if (typeof provider === 'string' && provider in providerLabels) {
+    return providerLabels[provider];
+  }
+
+  return 'None';
+}
+
+function formatLastVerifiedAt(value: unknown): string {
+  if (typeof value !== 'string' || value === '') {
+    return 'Never';
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.valueOf())) {
+    return 'Never';
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date);
 }

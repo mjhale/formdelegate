@@ -6,8 +6,15 @@ const nullableUuid = z.preprocess(
 );
 
 const emailProviderSchema = z.enum(['smtp', 'postmark', 'sendgrid']);
+const nullableEmailProviderSchema = z.preprocess(
+  (value) => (value === '' ? null : value),
+  emailProviderSchema.nullable().optional()
+);
 const emailProviderCurrentStatusSchema = z
   .enum(['unconfigured', 'pending_verification', 'verified', 'invalid'])
+  .optional();
+const emailProviderLastVerifiedAtSchema = z
+  .preprocess((value) => (value === '' ? null : value), z.string().nullable())
   .optional();
 const emailProviderStatusSchema = z.literal('pending_verification').optional();
 const looseProviderPayloadSchema = z.record(z.string(), z.unknown());
@@ -16,6 +23,7 @@ const smtpEmailProviderConfigSchema = z.object({
   from_address: z.string().email(),
   host: z.string().min(1),
   port: z.coerce.number().int().positive(),
+  use_ssl: z.coerce.boolean().optional(),
   username: z.string().min(1),
 });
 
@@ -54,15 +62,18 @@ const emailProviderSecretsSchemas = {
 
 const providerRequirements = {
   smtp: {
-    config: ['from_address', 'host', 'port', 'username'],
+    config: ['from_address', 'host', 'port', 'use_ssl', 'username'],
+    requiredConfig: ['from_address', 'host', 'port', 'username'],
     secrets: ['password'],
   },
   postmark: {
     config: ['from_address', 'message_stream'],
+    requiredConfig: ['from_address', 'message_stream'],
     secrets: ['server_token'],
   },
   sendgrid: {
     config: ['from_address'],
+    requiredConfig: ['from_address'],
     secrets: ['api_key'],
   },
 } as const;
@@ -76,10 +87,11 @@ const emailIntegrationRecipientSchema = z.object({
 
 const emailIntegrationSchema = z
   .object({
+    _email_provider_last_verified_at: emailProviderLastVerifiedAtSchema,
     _email_provider_status: emailProviderCurrentStatusSchema,
     id: nullableUuid,
     enabled: z.coerce.boolean(),
-    email_provider: emailProviderSchema.nullable().optional(),
+    email_provider: nullableEmailProviderSchema,
     email_provider_config: looseProviderPayloadSchema.nullable().optional(),
     email_provider_secrets: looseProviderPayloadSchema.optional(),
     email_provider_status: emailProviderStatusSchema,
@@ -142,37 +154,22 @@ const emailIntegrationSchema = z
       });
     }
 
-    if (
-      !hasRequiredKeys(
-        integration.email_provider_config,
-        requirements.config
-      ) ||
-      !emailProviderConfigSchemas[provider].safeParse(
-        integration.email_provider_config
-      ).success
-    ) {
-      context.addIssue({
-        code: 'custom',
-        message: 'is required when email integration is enabled',
-        path: ['email_provider_config'],
-      });
-    }
+    addProviderFieldIssues(
+      context,
+      integration.email_provider_config,
+      emailProviderConfigSchemas[provider],
+      'email_provider_config',
+      requirements.requiredConfig
+    );
 
-    if (
-      integration.id === null &&
-      (!hasRequiredKeys(
+    if (integration.id === null) {
+      addProviderFieldIssues(
+        context,
         integration.email_provider_secrets,
+        emailProviderSecretsSchemas[provider],
+        'email_provider_secrets',
         requirements.secrets
-      ) ||
-        !emailProviderSecretsSchemas[provider].safeParse(
-          integration.email_provider_secrets
-        ).success)
-    ) {
-      context.addIssue({
-        code: 'custom',
-        message: 'is required for new enabled email integrations',
-        path: ['email_provider_secrets'],
-      });
+      );
     }
 
     if (integration.id === null && !requestsVerification) {
@@ -209,24 +206,45 @@ const emailIntegrationSchema = z
   })
   .transform(
     ({
+      _email_provider_last_verified_at,
       _email_provider_status,
       email_provider_status,
+      email_provider_secrets,
       verify_provider,
       ...integration
     }) => {
+      const requirements = integration.email_provider
+        ? providerRequirements[integration.email_provider]
+        : null;
+      const compactConfig = requirements
+        ? compactRecord(integration.email_provider_config, requirements.config)
+        : compactRecord(integration.email_provider_config);
+      const compactSecrets = requirements
+        ? compactRecord(email_provider_secrets, requirements.secrets)
+        : compactRecord(email_provider_secrets);
+      const payload = {
+        ...integration,
+        ...(requirements
+          ? { email_provider_config: compactConfig ?? {} }
+          : compactConfig
+            ? { email_provider_config: compactConfig }
+            : {}),
+        ...(compactSecrets ? { email_provider_secrets: compactSecrets } : {}),
+      };
+
       if (
         integration.enabled &&
         email_provider_status === 'pending_verification' &&
         verify_provider === true
       ) {
         return {
-          ...integration,
+          ...payload,
           email_provider_status,
           verify_provider,
         };
       }
 
-      return integration;
+      return payload;
     }
   );
 
@@ -243,19 +261,82 @@ export const updateFormSchema = formSchema.extend({
   id: z.string().uuid(),
 });
 
-function hasRequiredKeys(
+function addProviderFieldIssues(
+  context: z.RefinementCtx,
   value: unknown,
-  keys: readonly string[]
-): value is Record<string, unknown> {
-  if (!value || typeof value !== 'object') {
-    return false;
+  schema: z.ZodType,
+  groupPath: 'email_provider_config' | 'email_provider_secrets',
+  requiredKeys: readonly string[]
+) {
+  const record =
+    value && typeof value === 'object'
+      ? (value as Record<string, unknown>)
+      : {};
+  const missingKeys = new Set(
+    requiredKeys.filter((key) => {
+      const fieldValue = record[key];
+
+      return (
+        fieldValue === undefined || fieldValue === null || fieldValue === ''
+      );
+    })
+  );
+
+  missingKeys.forEach((key) => {
+    context.addIssue({
+      code: 'custom',
+      message: 'is required',
+      path: [groupPath, key],
+    });
+  });
+
+  const result = schema.safeParse(value);
+
+  if (result.success) {
+    return;
   }
 
-  const record = value as Record<string, unknown>;
+  result.error.issues.forEach((issue) => {
+    const field = issue.path[0];
 
-  return keys.every((key) => {
-    const fieldValue = record[key];
+    if (
+      (typeof field === 'string' && missingKeys.has(field)) ||
+      (issue.path.length === 0 && missingKeys.size > 0)
+    ) {
+      return;
+    }
 
-    return fieldValue !== undefined && fieldValue !== null && fieldValue !== '';
+    context.addIssue({
+      code: 'custom',
+      message: issue.message,
+      path: [groupPath, ...issue.path],
+    });
   });
+}
+
+function compactRecord(
+  value: unknown,
+  allowedKeys?: readonly string[]
+): Record<string, unknown> | undefined {
+  if (!value || typeof value !== 'object') {
+    return undefined;
+  }
+
+  const allowedKeySet = allowedKeys ? new Set(allowedKeys) : null;
+
+  const entries = Object.entries(value)
+    .filter(([, fieldValue]) => {
+      return (
+        fieldValue !== undefined && fieldValue !== null && fieldValue !== ''
+      );
+    })
+    .filter(([fieldKey]) => {
+      return !allowedKeySet || allowedKeySet.has(fieldKey);
+    });
+
+  if (entries.length === 0) {
+    return undefined;
+  }
+
+  return Object.fromEntries(entries);
 }
