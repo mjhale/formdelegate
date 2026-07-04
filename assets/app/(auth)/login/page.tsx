@@ -1,10 +1,16 @@
 import type { Metadata } from 'next';
 
-import { Suspense } from 'react';
 import { Lato } from 'next/font/google';
 import Link from 'next/link';
 
-import { safeRedirectPath } from 'utils/destination';
+import {
+  InvitationAccountSwitchLink,
+  TeamInvitationAuthContext,
+} from '_components/teamInvitationAuthContext';
+import {
+  isInvitationAcceptanceDestination,
+  safeRedirectPath,
+} from 'utils/destination';
 
 import LoginForm from './form';
 
@@ -22,9 +28,13 @@ export default async function LoginPage({
 }) {
   const { destination } = await searchParams;
   const safeDestination = safeRedirectPath(destination, '');
+  const isInvitationLogin = isInvitationAcceptanceDestination(safeDestination);
   const signupHref = safeDestination
     ? `/signup?${new URLSearchParams({ destination: safeDestination }).toString()}`
     : '/signup';
+  const resetHref = isInvitationLogin
+    ? `/reset-password?${new URLSearchParams({ destination: safeDestination }).toString()}`
+    : '/reset-password';
 
   return (
     <>
@@ -37,22 +47,45 @@ export default async function LoginPage({
         </Link>
       </div>
       <div className="bg-white border rounded-md p-6 text-black mx-4 md:mx-0 md:rounded-lg">
-        <h1 className="text-2xl font-light text-center mb-4">Sign In</h1>
-        <Suspense>
-          <LoginForm />
-        </Suspense>
-        <div className="flex justify-end max-w-xs mx-auto pt-4">
-          <Link href="/reset-password" className="font-semibold text-sm">
-            Need help?
+        {isInvitationLogin ? (
+          <TeamInvitationAuthContext action="login" className="mb-5" />
+        ) : (
+          <h1 className="text-2xl font-light text-center mb-4">Sign In</h1>
+        )}
+        <LoginForm
+          destination={safeDestination}
+          submitLabel={isInvitationLogin ? 'Sign in to accept' : 'Login'}
+        />
+        {isInvitationLogin ? (
+          <p className="mx-auto max-w-xs pt-4 text-right text-sm text-slate-600">
+            Forgot your password?{' '}
+            <Link href={resetHref} className="font-semibold underline">
+              Reset it
+            </Link>
+            , then return to this invitation.
+          </p>
+        ) : (
+          <div className="flex justify-end max-w-xs mx-auto pt-4">
+            <Link href={resetHref} className="font-semibold text-sm">
+              Need help?
+            </Link>
+          </div>
+        )}
+      </div>
+      {isInvitationLogin ? (
+        <InvitationAccountSwitchLink
+          href={signupHref}
+          label="Need a Form Delegate account for this invitation?"
+          linkText="Create one instead"
+        />
+      ) : (
+        <div className="flex justify-center text-sm text-gray-800 font-medium mt-4">
+          Don't have an account?
+          <Link href={signupHref} className="pl-1 underline">
+            Sign up
           </Link>
         </div>
-      </div>
-      <div className="flex justify-center text-sm text-gray-800 font-medium mt-4">
-        Don't have an account?
-        <Link href={signupHref} className="pl-1 underline">
-          Sign up
-        </Link>
-      </div>
+      )}
     </>
   );
 }

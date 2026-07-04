@@ -3,6 +3,11 @@ import type { Metadata } from 'next';
 import { Lato } from 'next/font/google';
 import Link from 'next/link';
 
+import {
+  isInvitationAcceptanceDestination,
+  safeRedirectPath,
+} from 'utils/destination';
+
 import ResetRequest from './resetRequest';
 import ResetPassword from './resetPassword';
 
@@ -16,9 +21,14 @@ const lato = Lato({
 export default async function ResetPasswordPage({
   searchParams,
 }: {
-  searchParams: Promise<{ token?: string }>;
+  searchParams: Promise<{ destination?: string; token?: string }>;
 }) {
-  const { token } = await searchParams;
+  const { destination, token } = await searchParams;
+  const safeDestination = safeRedirectPath(destination, '');
+  const isInvitationReset = isInvitationAcceptanceDestination(safeDestination);
+  const signupHref = isInvitationReset
+    ? `/signup?${new URLSearchParams({ destination: safeDestination }).toString()}`
+    : '/signup';
 
   return (
     <>
@@ -31,11 +41,15 @@ export default async function ResetPasswordPage({
         </Link>
       </div>
       <div className="bg-white border rounded-lg p-6 text-black mb-4">
-        {token ? <ResetPassword token={token} /> : <ResetRequest />}
+        {token ? (
+          <ResetPassword token={token} />
+        ) : (
+          <ResetRequest isInvitationReset={isInvitationReset} />
+        )}
       </div>
       <div className="flex justify-center text-sm text-gray-800 font-medium">
         Don't have an account?
-        <Link href="/signup" className="pl-1 underline">
+        <Link href={signupHref} className="pl-1 underline">
           Sign up
         </Link>
       </div>

@@ -35,6 +35,19 @@ export function invitationAcceptancePath(token: string) {
   return `/team-invitations/accept?${new URLSearchParams({ token }).toString()}`;
 }
 
+export function isInvitationAcceptanceDestination(destination: string) {
+  try {
+    const parsedUrl = new URL(destination, 'https://formdelegate.local');
+
+    return (
+      parsedUrl.pathname === '/team-invitations/accept' &&
+      Boolean(parsedUrl.searchParams.get('token'))
+    );
+  } catch (_error) {
+    return false;
+  }
+}
+
 function redirectVariants(destination: string) {
   const variants = [destination];
   let current = destination;

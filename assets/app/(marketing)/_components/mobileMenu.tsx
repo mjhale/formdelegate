@@ -1,9 +1,10 @@
 'use client';
 
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
-
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
+
+import NavLink from './navLink';
 
 export default function MobileMenu({ links }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -74,13 +75,24 @@ export default function MobileMenu({ links }) {
         <ul>
           {links.map((link) => (
             <li key={link.name}>
-              <Link
-                href={link.href}
-                onClick={() => setIsOpen(false)}
-                className="block text-slate-300 lowercase tracking-wide p-4 font-sans hover:text-white hover:bg-red-900 hover:border-r-8 border-red-300"
+              <Suspense
+                fallback={
+                  <Link
+                    href={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className="block text-slate-300 lowercase tracking-wide p-4 font-sans hover:text-white hover:bg-red-900 hover:border-r-8 border-red-300"
+                  >
+                    {link.name}
+                  </Link>
+                }
               >
-                {link.name}
-              </Link>
+                <NavLink
+                  href={link.href}
+                  name={link.name}
+                  onClick={() => setIsOpen(false)}
+                  className="block text-slate-300 lowercase tracking-wide p-4 font-sans hover:text-white hover:bg-red-900 hover:border-r-8 border-red-300"
+                />
+              </Suspense>
             </li>
           ))}
         </ul>

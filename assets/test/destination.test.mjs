@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import {
   invitationAcceptancePath,
+  isInvitationAcceptanceDestination,
   safeRedirectPath,
 } from '../app/utils/destination.ts';
 
@@ -44,4 +45,18 @@ test('safeRedirectPath allows generated invitation acceptance destinations', () 
     '/team-invitations/accept?token=invite-token.abc123'
   );
   assert.equal(safeRedirectPath(destination, '/fallback'), destination);
+});
+
+test('isInvitationAcceptanceDestination detects tokenized invitation paths', () => {
+  assert.equal(
+    isInvitationAcceptanceDestination(
+      '/team-invitations/accept?token=invite-token.abc123'
+    ),
+    true
+  );
+  assert.equal(
+    isInvitationAcceptanceDestination('/team-invitations/accept'),
+    false
+  );
+  assert.equal(isInvitationAcceptanceDestination('/dashboard'), false);
 });

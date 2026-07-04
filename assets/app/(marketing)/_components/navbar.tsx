@@ -1,8 +1,10 @@
+import { Suspense } from 'react';
 import { Lato } from 'next/font/google';
 
 import Link from 'next/link';
 
 import MobileMenu from './mobileMenu';
+import NavLink from './navLink';
 
 const lato = Lato({
   weight: ['700', '900'],
@@ -27,12 +29,22 @@ export default function Navbar({ links }) {
         <ul>
           {links.map((link) => (
             <li key={link.name}>
-              <Link
-                href={link.href}
-                className="block text-slate-300 lowercase tracking-wide p-4 font-sans hover:text-white hover:bg-red-900 hover:border-r-8 border-red-300"
+              <Suspense
+                fallback={
+                  <Link
+                    href={link.href}
+                    className="block text-slate-300 lowercase tracking-wide p-4 font-sans hover:text-white hover:bg-red-900 hover:border-r-8 border-red-300"
+                  >
+                    {link.name}
+                  </Link>
+                }
               >
-                {link.name}
-              </Link>
+                <NavLink
+                  href={link.href}
+                  name={link.name}
+                  className="block text-slate-300 lowercase tracking-wide p-4 font-sans hover:text-white hover:bg-red-900 hover:border-r-8 border-red-300"
+                />
+              </Suspense>
             </li>
           ))}
         </ul>

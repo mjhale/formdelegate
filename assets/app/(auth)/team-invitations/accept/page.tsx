@@ -4,6 +4,10 @@ import { cookies } from 'next/headers';
 import { Lato } from 'next/font/google';
 import Link from 'next/link';
 
+import {
+  InvitationAuthActions,
+  TeamInvitationAuthContext,
+} from '_components/teamInvitationAuthContext';
 import { invitationAcceptancePath, safeRedirectPath } from 'utils/destination';
 
 import AcceptInvitationForm from './acceptInvitationForm';
@@ -42,16 +46,22 @@ export default async function AcceptTeamInvitationPage({
       </div>
 
       <div className="bg-white border rounded-md p-6 text-black mx-4 md:mx-0 md:rounded-lg">
-        <h1 className="text-2xl font-light text-center mb-4">
-          Team Invitation
-        </h1>
-
         {!token ? (
-          <p className="text-center text-sm text-slate-700">
-            Invitation link is missing.
-          </p>
+          <>
+            <h1 className="text-2xl font-light text-center mb-4">
+              Team Invitation
+            </h1>
+            <p className="text-center text-sm text-slate-700">
+              Invitation link is missing.
+            </p>
+          </>
         ) : isSignedIn ? (
-          <AcceptInvitationForm token={token} />
+          <>
+            <h1 className="text-2xl font-light text-center mb-4">
+              Team Invitation
+            </h1>
+            <AcceptInvitationForm token={token} />
+          </>
         ) : (
           <SignedOutInvitation destination={destination} />
         )}
@@ -64,25 +74,12 @@ function SignedOutInvitation({ destination }: { destination: string }) {
   const destinationParams = new URLSearchParams({ destination }).toString();
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <p className="text-center text-sm text-slate-700">
-        Sign in or create an account to accept this team invitation.
-      </p>
-
-      <div className="flex flex-wrap justify-center gap-2">
-        <Link
-          href={`/login?${destinationParams}`}
-          className="inline-block px-3 py-1 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
-        >
-          Sign in
-        </Link>
-        <Link
-          href={`/signup?${destinationParams}`}
-          className="inline-block px-3 py-1 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
-        >
-          Create account
-        </Link>
-      </div>
+    <div className="space-y-5">
+      <TeamInvitationAuthContext action="accept" />
+      <InvitationAuthActions
+        loginHref={`/login?${destinationParams}`}
+        signupHref={`/signup?${destinationParams}`}
+      />
     </div>
   );
 }

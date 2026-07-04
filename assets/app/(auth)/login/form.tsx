@@ -2,7 +2,6 @@
 
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { useSearchParams } from 'next/navigation';
 
 import { loginUser } from '../actions';
 
@@ -11,11 +10,14 @@ const initialState = {
   errors: {},
 };
 
-export default function LoginForm() {
+export default function LoginForm({
+  destination = '',
+  submitLabel = 'Login',
+}: {
+  destination?: string;
+  submitLabel?: string;
+}) {
   const [state, formAction] = useActionState(loginUser, initialState);
-  const searchParams = useSearchParams();
-
-  const destination = searchParams.get('destination') ?? '';
 
   return (
     <form
@@ -76,22 +78,22 @@ export default function LoginForm() {
       </p>
 
       <div>
-        <SubmitButton />
+        <SubmitButton submitLabel={submitLabel} />
       </div>
     </form>
   );
 }
 
-function SubmitButton() {
+function SubmitButton({ submitLabel }: { submitLabel: string }) {
   const { pending } = useFormStatus();
 
   return (
     <button
       type="submit"
       aria-disabled={pending}
-      className="block w-full px-3 py-1 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
+      className="block w-full px-3 py-2 text-base font-medium leading-6 text-white whitespace-no-wrap bg-carnation-400 border border-carnation-400 rounded-md shadow-sm hover:bg-red-900 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
     >
-      {pending ? 'Logging in...' : 'Login'}
+      {pending ? 'Logging in...' : submitLabel}
     </button>
   );
 }

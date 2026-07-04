@@ -1,6 +1,13 @@
 import type { Metadata } from 'next';
 
-import { safeRedirectPath } from 'utils/destination';
+import {
+  InvitationAccountSwitchLink,
+  TeamInvitationAuthContext,
+} from '_components/teamInvitationAuthContext';
+import {
+  isInvitationAcceptanceDestination,
+  safeRedirectPath,
+} from 'utils/destination';
 
 import SignupForm from './form';
 
@@ -11,17 +18,40 @@ export default async function SignupPage({
 }) {
   const { destination } = await searchParams;
   const safeDestination = safeRedirectPath(destination, '');
+  const isInvitationSignup = isInvitationAcceptanceDestination(safeDestination);
+  const loginHref = safeDestination
+    ? `/login?${new URLSearchParams({ destination: safeDestination }).toString()}`
+    : '/login';
 
   return (
     <>
       <div className="flex flex-col items-center">
         <div className="flex flex-col gap-y-4 w-full max-w-4xl">
-          <h1 className="text-3xl lowercase tracking-wide font-semibold">
-            Sign Up for Form Delegate
-          </h1>
+          {isInvitationSignup ? (
+            <div className="max-w-xl rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+              <TeamInvitationAuthContext action="signup" className="mb-5" />
+              <SignupForm
+                destination={safeDestination}
+                submitLabel="Create account to accept"
+              />
+            </div>
+          ) : (
+            <>
+              <h1 className="text-3xl lowercase tracking-wide font-semibold">
+                Sign Up for Form Delegate
+              </h1>
 
-          <SignupForm destination={safeDestination} />
+              <SignupForm destination={safeDestination} />
+            </>
+          )}
         </div>
+        {isInvitationSignup && (
+          <InvitationAccountSwitchLink
+            href={loginHref}
+            label="Already have the invited email on an account?"
+            linkText="Sign in instead"
+          />
+        )}
       </div>
     </>
   );
