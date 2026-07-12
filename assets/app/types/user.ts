@@ -71,3 +71,39 @@ export interface Profile {
   memberships: Membership[];
   user: User;
 }
+
+export type BillingUsageStatus =
+  | 'unlimited'
+  | 'ok'
+  | 'warning'
+  | 'over_limit'
+  | 'blocked';
+
+export interface BillingCountUsage {
+  grace_limit: number | null;
+  limit: number;
+  status: BillingUsageStatus;
+  used: number;
+}
+
+export interface BillingStorageUsage {
+  grace_limit_bytes: number;
+  limit_bytes: number;
+  status: BillingUsageStatus;
+  used_bytes: number;
+}
+
+export interface BillingUsage {
+  period: {
+    ended_at: string;
+    started_at: string;
+  };
+  plan: Plan;
+  subscription: Subscription | null;
+  team_id: string;
+  usage: {
+    forms: BillingCountUsage;
+    storage: BillingStorageUsage;
+    submissions: BillingCountUsage;
+  };
+}
