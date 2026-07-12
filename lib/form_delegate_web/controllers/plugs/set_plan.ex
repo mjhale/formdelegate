@@ -1,10 +1,13 @@
 defmodule FormDelegateWeb.Plugs.SetPlan do
   import Plug.Conn
-  alias FormDelegate.Plans.Plan
+  alias FormDelegate.Plans
+  alias FormDelegate.Subscriptions
 
   def init(_), do: nil
 
-  def call(%{method: "POST"} = conn, opts), do: set_plan(conn, opts)
+  def call(%{method: method} = conn, opts) when method in ["POST", "DELETE"] do
+    set_plan(conn, opts)
+  end
 
   def call(conn, _opts), do: conn
 
@@ -26,39 +29,19 @@ defmodule FormDelegateWeb.Plugs.SetPlan do
     team =
       FormDelegate.Repo.preload(team, subscriptions: [:plan])
 
-    subscriptions = Map.get(team, :subscriptions, [])
-
-    case Enum.at(subscriptions, 0) do
+    case Subscriptions.get_active_subscription_for_team(team) do
       nil ->
         get_free_plan()
 
-      subscription ->
-        if subscription.stripe_subscription_status in ["active", "trialing"] do
-          case subscription.plan do
-            %FormDelegate.Plans.Plan{} = plan ->
-              plan
+      %{plan: %FormDelegate.Plans.Plan{} = plan} ->
+        plan
 
-            _ ->
-              get_free_plan()
-          end
-        else
-          get_free_plan()
-        end
+      _subscription ->
+        get_free_plan()
     end
   end
 
   defp get_free_plan do
-    case FormDelegate.Repo.get_by(Plan, name: "Free") do
-      nil ->
-        %Plan{
-          name: "Free",
-          limit_submissions: 100,
-          limit_forms: 0,
-          limit_storage: 5_000_000
-        }
-
-      plan ->
-        plan
-    end
+    Plans.get_free_plan()
   end
 end

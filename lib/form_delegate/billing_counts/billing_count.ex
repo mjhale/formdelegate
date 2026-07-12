@@ -22,6 +22,9 @@ defmodule FormDelegate.BillingCounts.BillingCount do
   def changeset(billing_count, attrs) do
     billing_count
     |> cast(attrs, [:submission_count, :storage_count, :form_count, :started_at, :ended_at])
+    |> validate_number(:submission_count, greater_than_or_equal_to: 0)
+    |> validate_number(:storage_count, greater_than_or_equal_to: 0)
+    |> validate_number(:form_count, greater_than_or_equal_to: 0)
   end
 
   def create_changeset(billing_count, attrs) do
@@ -30,29 +33,37 @@ defmodule FormDelegate.BillingCounts.BillingCount do
       :submission_count,
       :storage_count,
       :form_count,
-      :team_id
+      :team_id,
+      :started_at,
+      :ended_at
     ])
     |> set_started_at()
     |> set_ended_at()
+    |> validate_required([:team_id, :started_at, :ended_at])
+    |> validate_number(:submission_count, greater_than_or_equal_to: 0)
+    |> validate_number(:storage_count, greater_than_or_equal_to: 0)
+    |> validate_number(:form_count, greater_than_or_equal_to: 0)
   end
 
   defp set_started_at(changeset = %Ecto.Changeset{}) do
-    now = DateTime.utc_now()
-
-    changeset
-    |> put_change(:started_at, now)
+    case get_field(changeset, :started_at) do
+      nil -> put_change(changeset, :started_at, DateTime.utc_now())
+      _started_at -> changeset
+    end
   end
 
   defp set_ended_at(changeset = %Ecto.Changeset{}) do
-    scheduled_ended_at = DateTime.utc_now()
+    case get_field(changeset, :ended_at) do
+      nil ->
+        scheduled_ended_at =
+          changeset
+          |> get_field(:started_at)
+          |> DateTime.add(30, :day)
 
-    period_length_in_days = 30
-    period_length_in_milliseconds = :timer.hours(period_length_in_days * 24)
+        put_change(changeset, :ended_at, scheduled_ended_at)
 
-    scheduled_ended_at =
-      DateTime.add(scheduled_ended_at, period_length_in_milliseconds, :millisecond)
-
-    changeset
-    |> put_change(:ended_at, scheduled_ended_at)
+      _ended_at ->
+        changeset
+    end
   end
 end

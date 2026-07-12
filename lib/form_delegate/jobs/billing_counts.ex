@@ -7,7 +7,7 @@ defmodule FormDelegate.Jobs.BillingCounts do
     max_attempts: 5,
     unique: [period: 300, timestamp: :scheduled_at]
 
-  alias FormDelegate.{BillingCounts, BillingCounts.BillingCount}
+  alias FormDelegate.BillingCounts
   alias FormDelegate.Teams
 
   import Logger, only: [debug: 1]
@@ -15,21 +15,21 @@ defmodule FormDelegate.Jobs.BillingCounts do
   # Check if new billing count periods are needed every five minutes
   @five_minutes 60 * 5
 
-  @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"current_time" => current_time}, attempt: 1}) do
-    {:ok, current_time, _offset} = DateTime.from_iso8601(current_time)
-
+  def schedule_next(current_time \\ DateTime.utc_now()) do
     next_job_time = DateTime.add(current_time, :timer.minutes(5), :millisecond)
 
-    %{"current_time" => next_job_time}
+    %{"current_time" => DateTime.to_iso8601(next_job_time)}
     |> new(schedule_in: @five_minutes)
-    |> Oban.insert!()
-
-    renew_billing_count_periods(current_time)
+    |> Oban.insert()
   end
 
-  def perform(%Oban.Job{args: %{"current_time" => current_time}}) do
+  @impl Oban.Worker
+  def perform(%Oban.Job{args: %{"current_time" => current_time}, attempt: attempt}) do
     {:ok, current_time, _offset} = DateTime.from_iso8601(current_time)
+
+    if attempt == 1 do
+      schedule_next(current_time)
+    end
 
     renew_billing_count_periods(current_time)
   end
@@ -38,17 +38,8 @@ defmodule FormDelegate.Jobs.BillingCounts do
     teams = Teams.list_teams()
 
     Enum.each(teams, fn team ->
-      latest_billing_count = BillingCounts.get_latest_billing_count_of_team(team.id)
-
-      if DateTime.diff(current_time, latest_billing_count.ended_at) > 0 do
-        debug("FD: Creating new billing count period for #{team.id} at #{current_time}")
-
-        {:ok, _billing_count} =
-          BillingCounts.create_billing_count(%BillingCount{}, %{
-            form_count: latest_billing_count.form_count,
-            team_id: team.id
-          })
-      end
+      debug("FD: Reconciling billing count period for #{team.id} at #{current_time}")
+      {:ok, _billing_count} = BillingCounts.reconcile_current_period(team.id, current_time)
     end)
   end
 end

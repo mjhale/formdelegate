@@ -38,34 +38,14 @@ defmodule FormDelegateWeb.StripeHandler do
   def handle_event(%Stripe.Event{data: data, type: "customer.subscription.deleted"} = _event) do
     %{object: %Stripe.Subscription{} = stripe_subscription} = data
 
-    case Subscriptions.get_subscription(stripe_subscription.id) do
-      nil ->
-        :ok
-
-      subscription ->
-        # @TODO: Update subscription to canceled instead of deleting, and filter out non-active
-        # subscriptions in user and team subscription queries. Only one active subscription
-        # per team should be allowed at the moment. Note: canceled subscriptions cannot be restarted.
-        {:ok, %Subscription{} = _subscription} = Subscriptions.delete_subscription(subscription)
-        :ok
-    end
+    deactivate_subscription(stripe_subscription, "canceled")
   end
 
   @impl true
   def handle_event(%Stripe.Event{data: data, type: "customer.subscription.canceled"} = _event) do
     %{object: %Stripe.Subscription{} = stripe_subscription} = data
 
-    case Subscriptions.get_subscription(stripe_subscription.id) do
-      nil ->
-        :ok
-
-      subscription ->
-        # @TODO: Update subscription to canceled instead of deleting, and filter out non-active
-        # subscriptions in user and team subscription queries. Only one active subscription
-        # per team should be allowed at the moment. Note: canceled subscriptions cannot be restarted.
-        {:ok, %Subscription{} = _subscription} = Subscriptions.delete_subscription(subscription)
-        :ok
-    end
+    deactivate_subscription(stripe_subscription, "canceled")
   end
 
   @impl true
@@ -103,10 +83,27 @@ defmodule FormDelegateWeb.StripeHandler do
     Application.get_env(:form_delegate, :stripe_api)
   end
 
+  defp deactivate_subscription(%Stripe.Subscription{} = stripe_subscription, fallback_status) do
+    case Subscriptions.get_subscription(stripe_subscription.id) do
+      nil ->
+        :ok
+
+      %Subscription{} = subscription ->
+        attrs =
+          %{stripe_subscription_status: stripe_subscription.status || fallback_status}
+          |> maybe_put_ends_at(stripe_subscription.current_period_end)
+
+        {:ok, %Subscription{} = _subscription} =
+          Subscriptions.update_subscription(subscription, attrs)
+
+        :ok
+    end
+  end
+
   defp upsert_subscription(%Stripe.Subscription{} = stripe_subscription) do
     # Assumes a subscription only has one active subscription item.
     %Stripe.SubscriptionItem{} = subscription_item = Enum.at(stripe_subscription.items.data, 0)
-    %Plan{} = plan = Plans.get_plan_by!(stripe_product_id: subscription_item.plan.product)
+    %Plan{} = plan = resolve_plan!(subscription_item)
 
     attrs =
       %{
@@ -133,4 +130,33 @@ defmodule FormDelegateWeb.StripeHandler do
   end
 
   defp maybe_put_ends_at(attrs, _current_period_end), do: attrs
+
+  defp resolve_plan!(%Stripe.SubscriptionItem{} = subscription_item) do
+    plan =
+      (stripe_price_id(subscription_item) &&
+         Plans.get_plan_by(stripe_price_id: stripe_price_id(subscription_item))) ||
+        (stripe_product_id(subscription_item) &&
+           Plans.get_plan_by(stripe_product_id: stripe_product_id(subscription_item)))
+
+    case plan do
+      %Plan{} = plan ->
+        plan
+
+      nil ->
+        raise "Unable to resolve local plan for Stripe subscription item #{inspect(subscription_item)}"
+    end
+  end
+
+  defp stripe_price_id(%Stripe.SubscriptionItem{price: %Stripe.Price{id: id}}), do: id
+  defp stripe_price_id(_subscription_item), do: nil
+
+  defp stripe_product_id(%Stripe.SubscriptionItem{price: %Stripe.Price{product: product}})
+       when is_binary(product),
+       do: product
+
+  defp stripe_product_id(%Stripe.SubscriptionItem{plan: %Stripe.Plan{product: product}})
+       when is_binary(product),
+       do: product
+
+  defp stripe_product_id(_subscription_item), do: nil
 end

@@ -1,10 +1,12 @@
 defmodule FormDelegateWeb.FormControllerTest do
   use FormDelegateWeb.ConnCase
 
+  alias FormDelegate.BillingCounts
   alias FormDelegate.Forms.Form
   alias FormDelegate.Integrations.EmailIntegration
   alias FormDelegate.Integrations.EmailProviders.SMTPClient
   alias FormDelegate.Repo
+  alias FormDelegate.Submissions.Attachment
   alias FormDelegateWeb.Router.Helpers, as: Routes
 
   @valid_attrs %{name: "Contact Form"}
@@ -115,7 +117,8 @@ defmodule FormDelegateWeb.FormControllerTest do
     @tag :as_inserted_user
     test "Creates, and responds with a newly created form if attributes are valid", %{
       conn: conn,
-      jwt: jwt
+      jwt: jwt,
+      team: team
     } do
       response =
         conn
@@ -127,13 +130,19 @@ defmodule FormDelegateWeb.FormControllerTest do
       assert response["data"]["name"] == "Contact Form"
       assert response["data"]["submission_count"] == 0
       assert response["data"]["verified"] == false
+
+      billing_count = BillingCounts.get_latest_billing_count_of_team(team.id)
+      assert billing_count.form_count == 1
     end
 
     @tag :as_inserted_user
     test "Returns an error and does not create a form if attributes are invalid", %{
       conn: conn,
-      jwt: jwt
+      jwt: jwt,
+      team: team
     } do
+      billing_count_before = BillingCounts.get_latest_billing_count_of_team(team.id)
+
       response =
         conn
         |> put_req_header("authorization", "bearer: " <> jwt)
@@ -149,6 +158,9 @@ defmodule FormDelegateWeb.FormControllerTest do
       }
 
       assert response == expected
+
+      billing_count_after = BillingCounts.get_latest_billing_count_of_team(team.id)
+      assert billing_count_after.form_count == billing_count_before.form_count
     end
 
     @tag :as_inserted_user
@@ -194,10 +206,12 @@ defmodule FormDelegateWeb.FormControllerTest do
     @tag :as_inserted_user
     test "returns verification error and rolls back create when provider check fails", %{
       conn: conn,
-      jwt: jwt
+      jwt: jwt,
+      team: team
     } do
       Application.put_env(:form_delegate, :email_provider_smtp_client, SMTPClientFailure)
       form_count_before = Repo.aggregate(Form, :count, :id)
+      billing_count_before = BillingCounts.get_latest_billing_count_of_team(team.id)
 
       attrs = %{
         name: "Contact Form",
@@ -238,6 +252,9 @@ defmodule FormDelegateWeb.FormControllerTest do
 
       form_count_after = Repo.aggregate(Form, :count, :id)
       assert form_count_after == form_count_before
+
+      billing_count_after = BillingCounts.get_latest_billing_count_of_team(team.id)
+      assert billing_count_after.form_count == billing_count_before.form_count
     end
 
     @tag :as_inserted_user
@@ -519,17 +536,52 @@ defmodule FormDelegateWeb.FormControllerTest do
            team: team
          } do
       form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      {:ok, _billing_count} = BillingCounts.reconcile_current_period(team.id)
 
       conn
       |> put_req_header("authorization", "bearer: " <> jwt)
       |> delete(Routes.form_path(conn, :delete, form.id))
       |> response(204)
 
+      billing_count = BillingCounts.get_latest_billing_count_of_team(team.id)
+      assert billing_count.form_count == 0
+
       assert_error_sent 404, fn ->
         conn
         |> put_req_header("authorization", "bearer: " <> jwt)
         |> get(Routes.form_path(conn, :show, form.id))
       end
+    end
+
+    @tag :as_inserted_user
+    test "decrements stored bytes when deleting a form with attachments",
+         %{
+           conn: conn,
+           jwt: jwt,
+           user: user,
+           team: team
+         } do
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      submission = FormDelegate.Factory.insert(:submission, form: form)
+
+      Repo.insert!(%Attachment{
+        content_type: "text/plain",
+        field_name: "upload",
+        file_name: "notes.txt",
+        file_size: 2048,
+        submission_id: submission.id
+      })
+
+      {:ok, billing_count} = BillingCounts.reconcile_current_period(team.id)
+      assert billing_count.storage_count == 2048
+
+      conn
+      |> put_req_header("authorization", "bearer: " <> jwt)
+      |> delete(Routes.form_path(conn, :delete, form.id))
+      |> response(204)
+
+      billing_count = BillingCounts.get_latest_billing_count_of_team(team.id)
+      assert billing_count.storage_count == 0
     end
 
     test "Returns an error and does not delete the form if other user", %{

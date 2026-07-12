@@ -39,14 +39,8 @@ defmodule FormDelegateWeb.SubmissionController do
 
     # @TODO: Allow submissions without storing attachments if certain storage limits are reached
     with :ok <- Authorizer.authorize(:create_submission, current_user),
-         :ok <-
-           validate_and_update_billing_count(
-             plan,
-             form_team_id(form),
-             merged_params["attachments"]
-           ),
          {:ok, %Submission{form: %Form{callback_success_url: callback_success_url}} = submission} <-
-           Submissions.create_submission(merged_params) do
+           create_submission_with_usage(form, plan, merged_params) do
       # @TODO: Allow user-specified Akismet API key per form
       case akismet_api().is_spam?(akismet_api_key(), submission) do
         {:ok, false} ->
@@ -234,7 +228,15 @@ defmodule FormDelegateWeb.SubmissionController do
     end
   end
 
-  defp form_team_id(%Form{team_id: team_id}), do: team_id
+  defp create_submission_with_usage(%Form{team_id: nil}, _plan, params) do
+    Submissions.create_submission(params)
+  end
+
+  defp create_submission_with_usage(%Form{team_id: team_id}, plan, params) do
+    BillingCounts.create_submission_with_usage(team_id, plan, params["attachments"], fn ->
+      Submissions.create_submission(params)
+    end)
+  end
 
   defp broadcast_submission(%Submission{} = submission) do
     %Submission{form: %{user_id: user_id}} = submission
@@ -361,51 +363,5 @@ defmodule FormDelegateWeb.SubmissionController do
       "form_id" => params["form_id"],
       "sender" => detect_sender_field(sanitized_params)
     }
-  end
-
-  defp validate_and_update_billing_count(_plan, nil, _attachments), do: :ok
-
-  defp validate_and_update_billing_count(plan, team_id, attachments) do
-    billing_count =
-      case BillingCounts.get_latest_billing_count_of_team(team_id) do
-        nil ->
-          {:ok, new_bc} =
-            BillingCounts.create_billing_count(%BillingCounts.BillingCount{}, %{team_id: team_id})
-
-          new_bc
-
-        bc ->
-          bc
-      end
-
-    grace_multiplier = 2.25
-    submission_grace_limit = plan.limit_submissions * grace_multiplier
-    storage_grace_limit = plan.limit_storage * grace_multiplier
-
-    attachments_size_in_bytes =
-      Enum.map(attachments, fn attachment ->
-        {:ok, %File.Stat{size: size}} = File.stat(attachment["file"].path)
-
-        size
-      end)
-      |> Enum.sum()
-
-    # @TODO: Send warnings when limit is approached and exceeded
-    cond do
-      billing_count.submission_count > submission_grace_limit ->
-        {:error, :plan_grace_limit_exceeded}
-
-      billing_count.storage_count > storage_grace_limit ->
-        {:error, :plan_grace_limit_exceeded}
-
-      true ->
-        {:ok, _billing_count} =
-          BillingCounts.update_billing_count(billing_count, %{
-            submission_count: billing_count.submission_count + 1,
-            storage_count: billing_count.storage_count + attachments_size_in_bytes
-          })
-
-        :ok
-    end
   end
 end

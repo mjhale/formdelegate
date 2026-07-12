@@ -35,6 +35,21 @@ defmodule FormDelegate.Plans do
     Plan |> order_by(:id) |> Repo.all()
   end
 
+  def get_free_plan do
+    case Repo.get_by(Plan, name: "Free") do
+      nil ->
+        %Plan{
+          name: "Free",
+          limit_submissions: 100,
+          limit_forms: 0,
+          limit_storage: 5_000_000
+        }
+
+      %Plan{} = plan ->
+        plan
+    end
+  end
+
   @doc """
   Gets a single plan.
 
@@ -68,6 +83,11 @@ defmodule FormDelegate.Plans do
   def get_plan_by!(keyword) do
     Plan
     |> Repo.get_by!(keyword)
+  end
+
+  def get_plan_by(keyword) do
+    Plan
+    |> Repo.get_by(keyword)
   end
 
   @doc """

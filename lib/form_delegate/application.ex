@@ -1,5 +1,6 @@
 defmodule FormDelegate.Application do
   use Application
+  require Logger
 
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
@@ -23,7 +24,15 @@ defmodule FormDelegate.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: FormDelegate.Supervisor]
-    Supervisor.start_link(children, opts)
+
+    case Supervisor.start_link(children, opts) do
+      {:ok, pid} ->
+        maybe_schedule_billing_count_job()
+        {:ok, pid}
+
+      other ->
+        other
+    end
   end
 
   # Tell Phoenix to update the endpoint configuration
@@ -31,5 +40,22 @@ defmodule FormDelegate.Application do
   def config_change(changed, _new, removed) do
     FormDelegateWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp maybe_schedule_billing_count_job do
+    oban_config = Application.get_env(:form_delegate, Oban, [])
+
+    unless Keyword.has_key?(oban_config, :testing) do
+      case FormDelegate.Jobs.BillingCounts.schedule_next() do
+        {:ok, _job} ->
+          :ok
+
+        {:error, error} ->
+          Logger.warning("Unable to schedule billing count worker: #{inspect(error)}")
+      end
+    end
+  rescue
+    error ->
+      Logger.warning("Unable to schedule billing count worker: #{Exception.message(error)}")
   end
 end

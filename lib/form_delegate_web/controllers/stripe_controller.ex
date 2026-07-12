@@ -8,6 +8,8 @@ defmodule FormDelegateWeb.StripeController do
   require Protocol
 
   alias FormDelegate.Accounts.User
+  alias FormDelegate.Plans
+  alias FormDelegate.Plans.Plan
   alias FormDelegate.Subscriptions
   alias FormDelegate.Subscriptions.Subscription
   alias FormDelegate.Teams.Team
@@ -38,6 +40,7 @@ defmodule FormDelegateWeb.StripeController do
     current_membership = conn.assigns.current_membership
 
     with :ok <- Authorizer.authorize(:create_checkout_session, current_user, current_membership),
+         %Plan{} = plan <- Plans.get_plan_by(stripe_price_id: price_id),
          {:ok, stripe_customer_id} <- get_stripe_customer_id_for_team(current_user, current_team),
          {:ok, %Stripe.Checkout.Session{} = session} <-
            stripe_api().create_checkout_session(%{
@@ -46,7 +49,7 @@ defmodule FormDelegateWeb.StripeController do
              customer: stripe_customer_id,
              line_items: [
                %{
-                 price: price_id,
+                 price: plan.stripe_price_id,
                  quantity: 1
                }
              ],
@@ -64,6 +67,9 @@ defmodule FormDelegateWeb.StripeController do
     else
       {:error, :forbidden} ->
         {:error, :forbidden}
+
+      nil ->
+        {:error, :bad_request}
 
       {:error, error} ->
         Logger.error("Stripe checkout session error: #{inspect(error)}")
@@ -111,6 +117,7 @@ defmodule FormDelegateWeb.StripeController do
 
     with %Subscription{} = subscription <-
            Subscriptions.get_subscription!(stripe_subscription_id),
+         %Plan{} = plan <- Plans.get_plan_by(stripe_price_id: stripe_price_id),
          :ok <-
            Authorizer.authorize(
              :update_stripe_subscription,
@@ -134,7 +141,7 @@ defmodule FormDelegateWeb.StripeController do
 
       updated_subscription =
         stripe_api().update_subscription(stripe_subscription_id, %{
-          "items" => [%{"id" => stripe_subscription_item.id, "price" => stripe_price_id}]
+          "items" => [%{"id" => stripe_subscription_item.id, "price" => plan.stripe_price_id}]
         })
 
       case updated_subscription do
@@ -148,6 +155,12 @@ defmodule FormDelegateWeb.StripeController do
 
           {:error, :bad_request}
       end
+    else
+      nil ->
+        {:error, :bad_request}
+
+      {:error, :forbidden} ->
+        {:error, :forbidden}
     end
   end
 

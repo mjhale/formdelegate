@@ -1,6 +1,7 @@
 defmodule FormDelegateWeb.SubmissionControllerTest do
   use FormDelegateWeb.ConnCase
 
+  alias FormDelegate.BillingCounts
   alias FormDelegate.Submissions
   alias FormDelegateWeb.Router.Helpers, as: Routes
 
@@ -44,6 +45,9 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
       expected = %{"submission" => "Accepted"}
 
       assert response == expected
+
+      billing_count = BillingCounts.get_latest_billing_count_of_team(form.team_id)
+      assert billing_count.submission_count == 1
     end
 
     @tag :debug
@@ -65,11 +69,16 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
       conn: conn,
       form: form
     } do
+      period = BillingCounts.current_period_for_team!(form.team_id)
+
       conn =
         conn
         |> post(Routes.submission_path(conn, :create, form.id, @invalid_attrs))
 
       assert json_response(conn, 422)
+
+      billing_count = BillingCounts.get_latest_billing_count_of_team(form.team_id)
+      assert billing_count.submission_count == period.submission_count
     end
 
     test "Responds with :not_found  error for nonexistant form", %{

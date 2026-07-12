@@ -99,6 +99,10 @@ defmodule FormDelegateWeb.Authorizer do
     :ok
   end
 
+  def authorize(:show_billing_usage, %User{} = _current_user, %Membership{} = _membership) do
+    :ok
+  end
+
   def authorize(:create_checkout_session, %User{} = current_user, %Membership{} = membership) do
     if current_user.is_admin or membership.is_billing_account do
       :ok

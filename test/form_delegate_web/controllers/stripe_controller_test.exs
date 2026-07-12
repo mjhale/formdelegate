@@ -233,6 +233,37 @@ defmodule FormDelegateWeb.StripeControllerTest do
       assert sub.plan_id == plan.id
     end
 
+    test "customer.subscription.created resolves the plan by Stripe price id first", %{
+      team: team,
+      plan: plan
+    } do
+      event = %Stripe.Event{
+        type: "customer.subscription.created",
+        data: %{
+          object: %Stripe.Subscription{
+            id: "sub_price123",
+            status: "active",
+            metadata: %{"team_id" => team.id},
+            items: %Stripe.List{
+              data: [
+                %Stripe.SubscriptionItem{
+                  price: %Stripe.Price{
+                    id: plan.stripe_price_id,
+                    product: "prod_not_the_local_plan"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+
+      assert :ok == StripeHandler.handle_event(event)
+
+      sub = Subscriptions.get_subscription!("sub_price123")
+      assert sub.plan_id == plan.id
+    end
+
     test "customer.subscription.created is idempotent after another event creates the subscription",
          %{
            team: team,
@@ -288,7 +319,10 @@ defmodule FormDelegateWeb.StripeControllerTest do
       assert sub.plan_id == plan.id
     end
 
-    test "customer.subscription.deleted deletes the subscription", %{team: team, plan: plan} do
+    test "customer.subscription.deleted marks the subscription canceled", %{
+      team: team,
+      plan: plan
+    } do
       # Pre-create subscription
       {:ok, sub} =
         Subscriptions.create_subscription(%{
@@ -308,7 +342,28 @@ defmodule FormDelegateWeb.StripeControllerTest do
       }
 
       assert :ok == StripeHandler.handle_event(event)
-      assert nil == Subscriptions.get_subscription("sub_test123")
+      sub = Subscriptions.get_subscription("sub_test123")
+      assert sub.stripe_subscription_status == "canceled"
+    end
+
+    test "active subscription selection ignores canceled subscriptions", %{team: team, plan: plan} do
+      {:ok, _canceled_sub} =
+        Subscriptions.create_subscription(%{
+          stripe_subscription_id: "sub_canceled123",
+          stripe_subscription_status: "canceled",
+          team_id: team.id,
+          plan_id: plan.id
+        })
+
+      {:ok, active_sub} =
+        Subscriptions.create_subscription(%{
+          stripe_subscription_id: "sub_active123",
+          stripe_subscription_status: "active",
+          team_id: team.id,
+          plan_id: plan.id
+        })
+
+      assert Subscriptions.get_active_subscription_for_team(team).id == active_sub.id
     end
   end
 end

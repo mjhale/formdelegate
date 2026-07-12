@@ -11,6 +11,8 @@ defmodule FormDelegate.Subscriptions do
   alias FormDelegate.Subscriptions.Subscription
   alias FormDelegate.Teams.Team
 
+  @active_statuses ["active", "trialing"]
+
   @doc """
   Returns the list of subscriptions.
   ## Examples
@@ -89,6 +91,20 @@ defmodule FormDelegate.Subscriptions do
 
     Repo.all(query)
     |> Repo.preload([:plan, :team])
+  end
+
+  def active_statuses, do: @active_statuses
+
+  def active_subscription_status?(status), do: status in @active_statuses
+
+  def get_active_subscription_for_team(%Team{id: team_id}) do
+    Repo.one(
+      from s in Subscription,
+        where: s.team_id == ^team_id and s.stripe_subscription_status in ^@active_statuses,
+        order_by: [desc: s.updated_at, desc: s.inserted_at],
+        limit: 1,
+        preload: [:plan, :team]
+    )
   end
 
   @doc """

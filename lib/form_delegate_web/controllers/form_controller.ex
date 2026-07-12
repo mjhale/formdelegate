@@ -1,7 +1,7 @@
 defmodule FormDelegateWeb.FormController do
   use FormDelegateWeb, :controller
   plug FormDelegateWeb.Plugs.LoadCurrentTeam
-  plug FormDelegateWeb.Plugs.SetPlan when action in [:create]
+  plug FormDelegateWeb.Plugs.SetPlan when action in [:create, :delete]
 
   alias FormDelegate.BillingCounts
   alias FormDelegate.{Forms, Forms.Form}
@@ -29,8 +29,10 @@ defmodule FormDelegateWeb.FormController do
     current_membership = conn.assigns.current_membership
 
     with :ok <- Authorizer.authorize(:create_form, current_user, current_membership),
-         :ok <- validate_and_update_billing_count(plan, current_team.id),
-         {:ok, %Form{} = form} <- Forms.create_form(form_params, current_user, current_team) do
+         {:ok, %Form{} = form} <-
+           BillingCounts.create_form_with_usage(current_team.id, plan, fn ->
+             Forms.create_form(form_params, current_user, current_team)
+           end) do
       form =
         FormDelegate.Repo.preload(form, [
           [email_integrations: [:email_integration_recipients]],
@@ -74,7 +76,7 @@ defmodule FormDelegateWeb.FormController do
     end
   end
 
-  def delete(conn, %{"id" => id}, current_user) do
+  def delete(%{assigns: %{plan: plan}} = conn, %{"id" => id}, current_user) do
     current_team = conn.assigns.current_team
     current_membership = conn.assigns.current_membership
 
@@ -87,43 +89,13 @@ defmodule FormDelegateWeb.FormController do
              current_membership,
              form
            ),
-         {:ok, %Form{} = _form} <- Forms.delete_form(form) do
+         {:ok, %Form{} = _form} <-
+           BillingCounts.delete_form_with_usage(form, plan, fn ->
+             Forms.delete_form(form)
+           end) do
       conn
       |> put_resp_header("content-type", "application/json")
       |> send_resp(:no_content, "")
-    end
-  end
-
-  defp validate_and_update_billing_count(plan, team_id) do
-    billing_count =
-      case BillingCounts.get_latest_billing_count_of_team(team_id) do
-        nil ->
-          {:ok, new_billing_count} =
-            BillingCounts.create_billing_count(%FormDelegate.BillingCounts.BillingCount{}, %{
-              team_id: team_id,
-              submission_count: 0,
-              storage_count: 0,
-              form_count: 0
-            })
-
-          new_billing_count
-
-        existing_billing_count ->
-          existing_billing_count
-      end
-
-    # @TODO: Send warnings when limit is approached and exceeded
-    cond do
-      plan.limit_forms !== 0 && billing_count.form_count >= plan.limit_forms ->
-        {:error, :plan_limit_exceeded}
-
-      true ->
-        {:ok, _billing_count} =
-          BillingCounts.update_billing_count(billing_count, %{
-            form_count: billing_count.form_count + 1
-          })
-
-        :ok
     end
   end
 end
