@@ -31,15 +31,15 @@ defmodule FormDelegate.Jobs.BillingCounts do
       schedule_next(current_time)
     end
 
-    renew_billing_count_periods(current_time)
+    ensure_current_periods(current_time)
   end
 
-  defp renew_billing_count_periods(current_time) do
+  defp ensure_current_periods(current_time) do
     teams = Teams.list_teams()
 
     Enum.each(teams, fn team ->
-      debug("FD: Reconciling billing count period for #{team.id} at #{current_time}")
-      {:ok, _billing_count} = BillingCounts.reconcile_current_period(team.id, current_time)
+      debug("FD: Ensuring current billing count period for #{team.id} at #{current_time}")
+      BillingCounts.current_period_for_team!(team.id, current_time)
     end)
   end
 end
