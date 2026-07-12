@@ -15,8 +15,9 @@ defmodule FormDelegate.BillingCounts do
   @moduledoc """
   Billing-period and usage-counter operations.
 
-  Submissions are counted inside the current 30-day billing period. Forms and
-  storage are current resource usage and carry across billing periods.
+  Submissions are consumed usage inside the current 30-day billing period and
+  never decrease during that period. Forms and storage are current resource
+  usage and carry across billing periods.
   """
 
   @doc """
@@ -124,7 +125,11 @@ defmodule FormDelegate.BillingCounts do
       lock_team!(team_id)
 
       period = current_period_for_team_locked!(team_id, now)
-      period_usage = calculated_current_usage(team_id, period: period)
+
+      period_usage =
+        team_id
+        |> calculated_current_usage(period: period)
+        |> preserve_consumed_submission_count(period)
 
       update_period_counts!(period, period_usage, mode: :replace)
     end)
@@ -322,6 +327,12 @@ defmodule FormDelegate.BillingCounts do
       submission_count: submission_count_for_period(team_id, period),
       storage_count: storage_count_for_team(team_id)
     }
+  end
+
+  # Deleted submissions cannot prove that usage was never consumed, so
+  # reconciliation may repair undercounts but must not restore quota.
+  defp preserve_consumed_submission_count(usage, %BillingCount{} = period) do
+    Map.update!(usage, :submission_count, &max(&1, period.submission_count))
   end
 
   defp form_count_for_team(team_id) do

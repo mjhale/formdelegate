@@ -116,6 +116,34 @@ defmodule FormDelegate.BillingCountsTest do
       assert period.submission_count == 1
       assert period.storage_count == 1234
     end
+
+    test "does not restore consumed submission quota after deleting source rows" do
+      {user, team, _membership} = Factory.insert_user_with_membership()
+      period = BillingCounts.current_period_for_team!(team.id)
+      form = Factory.insert(:form, user: user, team: team)
+      submission = Factory.insert(:submission, form: form)
+
+      Repo.insert!(%Attachment{
+        content_type: "text/plain",
+        field_name: "upload",
+        file_name: "notes.txt",
+        file_size: 1234,
+        submission_id: submission.id
+      })
+
+      {:ok, reconciled_period} = BillingCounts.reconcile_current_period(team.id)
+      assert reconciled_period.submission_count == 1
+      assert reconciled_period.form_count == 1
+      assert reconciled_period.storage_count == 1234
+
+      Repo.delete!(form)
+
+      {:ok, reconciled_period} = BillingCounts.reconcile_current_period(team.id)
+      assert reconciled_period.submission_count == 1
+      assert reconciled_period.form_count == 0
+      assert reconciled_period.storage_count == 0
+      assert reconciled_period.id == period.id
+    end
   end
 
   defp plan(attrs) do

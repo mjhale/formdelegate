@@ -1,7 +1,7 @@
 defmodule Mix.Tasks.BillingCounts.Reconcile do
   use Mix.Task
 
-  @shortdoc "Reconciles billing usage counters from source tables"
+  @shortdoc "Reconciles current resources and repairs submission undercounts"
 
   @impl Mix.Task
   def run(_args) do
@@ -9,6 +9,8 @@ defmodule Mix.Tasks.BillingCounts.Reconcile do
 
     :ok = FormDelegate.BillingCounts.reconcile_all_current_periods()
 
-    Mix.shell().info("Billing usage counters reconciled.")
+    Mix.shell().info(
+      "Billing resources reconciled; submission reconciliation was upward-only to preserve consumed quota."
+    )
   end
 end
