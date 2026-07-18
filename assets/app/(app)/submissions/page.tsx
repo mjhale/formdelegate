@@ -4,10 +4,12 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 
 import { getProfileContext } from 'utils/profile';
+import type { ProfileContext } from 'utils/profile';
 
 import { SubmissionsSkeleton } from '../_components/skeletons';
 
 import Submissions from './submissions';
+import { formFilterSummary, FormFilterMetadata } from './formFilterSummary';
 import {
   buildSubmissionApiSearchParams,
   parseSubmissionFormIds,
@@ -21,11 +23,12 @@ import {
 } from './submissionResponse';
 
 async function fetchSubmissions(
+  profileContext: ProfileContext,
   page: number,
   query: string,
   formIds: string[]
 ) {
-  const { accessToken, selectedTeam } = await getProfileContext();
+  const { accessToken, selectedTeam } = profileContext;
   const params = buildSubmissionApiSearchParams({
     page,
     query,
@@ -60,6 +63,28 @@ async function fetchSubmissions(
   const { data } = payload;
 
   return { data, pagination: { limit, total, offset } };
+}
+
+async function fetchTeamForms(
+  profileContext: ProfileContext
+): Promise<FormFilterMetadata[]> {
+  const { accessToken, selectedTeam } = profileContext;
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/forms`,
+    {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(`Unable to load team forms (HTTP ${res.status})`);
+  }
+
+  const { data } = await res.json();
+  return data;
 }
 
 export default async function SubmissionsPage({
@@ -101,11 +126,19 @@ async function SubmissionsContent({
   query: string;
   selectedForms: string[];
 }) {
-  const result = await fetchSubmissions(
-    currentPage,
-    query,
-    selectedForms
-  );
+  const profileContext = await getProfileContext();
+  const formsPromise =
+    selectedForms.length > 0
+      ? fetchTeamForms(profileContext).catch(() => {
+          console.error('Unable to load submission filter form metadata.');
+          return undefined;
+        })
+      : Promise.resolve(undefined);
+
+  const [result, forms] = await Promise.all([
+    fetchSubmissions(profileContext, currentPage, query, selectedForms),
+    formsPromise,
+  ]);
 
   if ('errorType' in result) {
     return (
@@ -122,7 +155,11 @@ async function SubmissionsContent({
   }
 
   return (
-    <Submissions submissions={result.data} pagination={result.pagination} />
+    <Submissions
+      submissions={result.data}
+      pagination={result.pagination}
+      formFilterSummary={formFilterSummary(selectedForms, forms)}
+    />
   );
 }
 

@@ -10,6 +10,7 @@ import SubmissionsToolbar from './toolbar';
 export default function Submissions({
   submissions,
   pagination,
+  formFilterSummary,
 }: {
   submissions: SubmissionType[];
   pagination: {
@@ -17,6 +18,7 @@ export default function Submissions({
     total: number;
     offset: number;
   };
+  formFilterSummary?: string;
 }) {
   const [selectedSubmissionList, setSelectedSubmissionList] = useState<
     Set<string>
@@ -29,6 +31,7 @@ export default function Submissions({
         setSelectedSubmissionList={setSelectedSubmissionList}
         submissions={submissions}
         paginationMetadata={pagination}
+        formFilterSummary={formFilterSummary}
       />
       <form id="submissions_management">
         <div className="flex flex-wrap md:flex-nowrap flex-col justify-center border border-slate-200 bg-white">

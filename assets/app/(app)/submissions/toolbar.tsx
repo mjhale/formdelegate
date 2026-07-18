@@ -16,6 +16,7 @@ export default function Toolbar({
   setSelectedSubmissionList,
   submissions,
   paginationMetadata,
+  formFilterSummary,
 }) {
   const searchParams = useSearchParams();
   const [isSelectAllChecked, setIsSelectAllChecked] = useState<boolean>(false);
@@ -133,14 +134,17 @@ export default function Toolbar({
           </div>
         </div>
         <div className="flex gap-x-3 justify-between w-full md:w-auto">
-          {selectedFormFilterCount > 0 ? (
-            <button
-              className="inline-flex items-center justify-center px-3 py-1 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:shadow-none"
-              type="button"
-              onClick={handleClearFormFilters}
-            >
-              Clear Filter
-            </button>
+          {selectedFormFilterCount > 0 && formFilterSummary ? (
+            <div className="inline-flex items-center gap-x-2 text-gray-600">
+              <span>{formFilterSummary}</span>
+              <button
+                className="inline-flex items-center justify-center px-3 py-1 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:shadow-none"
+                type="button"
+                onClick={handleClearFormFilters}
+              >
+                Clear Filter
+              </button>
+            </div>
           ) : null}
           <form
             id="submissions_search"
