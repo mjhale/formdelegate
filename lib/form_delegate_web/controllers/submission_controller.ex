@@ -124,12 +124,17 @@ defmodule FormDelegateWeb.SubmissionController do
     current_team = conn.assigns.current_team
     current_membership = conn.assigns.current_membership
 
-    with :ok <- Authorizer.authorize(:show_user_submissions, current_user, current_membership) do
-      page = Submissions.list_submissions_of_team(current_team, params)
-
+    with :ok <- Authorizer.authorize(:show_user_submissions, current_user, current_membership),
+         {:ok, page} <- Submissions.list_submissions_of_team(current_team, params) do
       conn
       |> Scrivener.Headers.paginate(page)
       |> render("index.json", submissions: page.entries)
+    else
+      {:error, :invalid_form_filter} ->
+        {:error, :bad_request, %{type: "INVALID_FORM_FILTER"}}
+
+      error ->
+        error
     end
   end
 

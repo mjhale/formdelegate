@@ -43,15 +43,23 @@ defmodule FormDelegate.Submissions do
   ## Examples
 
       iex> list_submissions_of_team(team, params)
-      [%Submission{}, ...]
+      {:ok, %Scrivener.Page{entries: [%Submission{}, ...]}}
+
+      iex> list_submissions_of_team(team, %{"form" => "not-a-uuid"})
+      {:error, :invalid_form_filter}
 
   """
   def list_submissions_of_team(%Team{} = team, params) do
-    team
-    |> team_submissions_query()
-    |> maybe_filter_by_forms(params)
-    |> maybe_filter_by_search(params)
-    |> Repo.paginate(params)
+    with {:ok, form_ids} <- form_filter_ids(params) do
+      page =
+        team
+        |> team_submissions_query()
+        |> maybe_filter_by_forms(form_ids)
+        |> maybe_filter_by_search(params)
+        |> Repo.paginate(params)
+
+      {:ok, page}
+    end
   end
 
   @doc """
@@ -90,7 +98,7 @@ defmodule FormDelegate.Submissions do
   ## Examples
 
       iex> list_search_submissions_of_team(team, params)
-      [%Submission{}, ...]
+      {:ok, %Scrivener.Page{entries: [%Submission{}, ...]}}
 
   """
   def list_search_submissions_of_team(%Team{} = team, params) do
@@ -110,17 +118,10 @@ defmodule FormDelegate.Submissions do
       ]
   end
 
-  defp maybe_filter_by_forms(query, params) do
-    case form_filter_ids(params) do
-      :none ->
-        query
+  defp maybe_filter_by_forms(query, []), do: query
 
-      {:ok, form_ids} ->
-        where(query, [_s, form], form.id in ^form_ids)
-
-      :error ->
-        where(query, [s], s.id in ^[])
-    end
+  defp maybe_filter_by_forms(query, form_ids) do
+    where(query, [_s, form], form.id in ^form_ids)
   end
 
   defp maybe_filter_by_search(query, %{"query" => query_string}) when is_binary(query_string) do
@@ -142,13 +143,15 @@ defmodule FormDelegate.Submissions do
   defp maybe_filter_by_search(query, _params), do: query
 
   defp form_filter_ids(params) do
-    params
-    |> Map.get("form", Map.get(params, "form[]"))
-    |> cast_form_filter_ids()
+    case {Map.has_key?(params, "form"), Map.has_key?(params, "form[]")} do
+      {true, true} -> {:error, :invalid_form_filter}
+      {true, false} -> cast_form_filter_ids(Map.get(params, "form"))
+      {false, true} -> cast_form_filter_ids(Map.get(params, "form[]"))
+      {false, false} -> {:ok, []}
+    end
   end
 
-  defp cast_form_filter_ids(nil), do: :none
-  defp cast_form_filter_ids([]), do: :none
+  defp cast_form_filter_ids([]), do: {:ok, []}
   defp cast_form_filter_ids(form_id) when is_binary(form_id), do: cast_form_filter_ids([form_id])
 
   defp cast_form_filter_ids(form_ids) when is_list(form_ids) do
@@ -156,16 +159,16 @@ defmodule FormDelegate.Submissions do
     |> Enum.reduce_while({:ok, []}, fn form_id, {:ok, acc} ->
       case Ecto.UUID.cast(form_id) do
         {:ok, uuid} -> {:cont, {:ok, [uuid | acc]}}
-        :error -> {:halt, :error}
+        :error -> {:halt, {:error, :invalid_form_filter}}
       end
     end)
     |> case do
       {:ok, ids} -> {:ok, ids |> Enum.reverse() |> Enum.uniq()}
-      :error -> :error
+      {:error, :invalid_form_filter} = error -> error
     end
   end
 
-  defp cast_form_filter_ids(_form_ids), do: :error
+  defp cast_form_filter_ids(_form_ids), do: {:error, :invalid_form_filter}
 
   @doc """
   Returns the daily count of recent submission activity of a user for past 365 days.

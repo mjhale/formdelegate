@@ -220,7 +220,7 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
     end
 
     @tag :as_inserted_user
-    test "does not broaden results for malformed form filters", %{
+    test "rejects malformed form filters", %{
       conn: conn,
       jwt: jwt,
       user: user,
@@ -235,9 +235,92 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
         |> get(Routes.team_submission_path(conn, :index, team.id), %{
           "form" => ["not-a-uuid"]
         })
-        |> json_response(200)
+        |> json_response(400)
 
-      assert response == %{"data" => []}
+      assert response == %{
+               "error" => %{
+                 "code" => 400,
+                 "type" => "INVALID_FORM_FILTER"
+               }
+             }
+    end
+
+    @tag :as_inserted_user
+    test "rejects blank, mixed, map, and unsupported form filters", %{
+      conn: conn,
+      jwt: jwt,
+      team: team
+    } do
+      valid_id = Ecto.UUID.generate()
+
+      for form_filter <- ["", [valid_id, "not-a-uuid"], %{"id" => valid_id}] do
+        response =
+          conn
+          |> authorize(jwt)
+          |> get(Routes.team_submission_path(conn, :index, team.id), %{
+            "form" => form_filter
+          })
+          |> json_response(400)
+
+        assert get_in(response, ["error", "type"]) == "INVALID_FORM_FILTER"
+      end
+
+      for unsupported_filter <- [nil, 123] do
+        assert {:error, :invalid_form_filter} =
+                 Submissions.list_submissions_of_team(team, %{"form" => unsupported_filter})
+      end
+    end
+
+    @tag :as_inserted_user
+    test "rejects ambiguous form filter keys", %{team: team} do
+      form_id = Ecto.UUID.generate()
+
+      assert {:error, :invalid_form_filter} =
+               Submissions.list_submissions_of_team(team, %{
+                 "form" => form_id,
+                 "form[]" => form_id
+               })
+    end
+
+    @tag :as_inserted_user
+    test "accepts the form bracket key, scalar IDs, empty lists, and duplicate IDs", %{
+      user: user,
+      team: team
+    } do
+      selected_form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      selected_submission = FormDelegate.Factory.insert(:submission, form: selected_form)
+
+      assert {:ok, scalar_page} =
+               Submissions.list_submissions_of_team(team, %{"form[]" => selected_form.id})
+
+      assert Enum.map(scalar_page.entries, & &1.id) == [selected_submission.id]
+
+      assert {:ok, duplicate_page} =
+               Submissions.list_submissions_of_team(team, %{
+                 "form" => [selected_form.id, selected_form.id]
+               })
+
+      assert Enum.map(duplicate_page.entries, & &1.id) == [selected_submission.id]
+
+      assert {:ok, unfiltered_page} =
+               Submissions.list_submissions_of_team(team, %{"form" => []})
+
+      assert Enum.map(unfiltered_page.entries, & &1.id) == [selected_submission.id]
+    end
+
+    @tag :as_inserted_user
+    test "returns an empty page for a valid deleted form ID", %{
+      user: user,
+      team: team
+    } do
+      deleted_form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      deleted_form_id = deleted_form.id
+      FormDelegate.Repo.delete!(deleted_form)
+
+      assert {:ok, page} =
+               Submissions.list_submissions_of_team(team, %{"form" => deleted_form_id})
+
+      assert page.entries == []
     end
 
     @tag :as_inserted_user
