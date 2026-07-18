@@ -383,12 +383,87 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
     end
   end
 
+  describe "recent_activity/3" do
+    @tag :as_inserted_user
+    test "returns recent activity for the requested team only", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      {_other_user, other_team, _other_membership} =
+        FormDelegate.Factory.insert_user_with_membership()
+
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      other_team_form = FormDelegate.Factory.insert(:form, team: other_team)
+
+      FormDelegate.Factory.insert(:submission, form: form)
+      FormDelegate.Factory.insert(:submission, form: other_team_form)
+
+      response =
+        conn
+        |> authorize(jwt)
+        |> get(Routes.team_submission_recent_activity_path(conn, :recent_activity, team.id))
+        |> json_response(200)
+
+      assert %{"submission_count" => 1} = activity_for(response, Date.utc_today())
+    end
+
+    @tag :as_inserted_user
+    test "does not authorize recent activity for another team", %{
+      conn: conn,
+      jwt: jwt
+    } do
+      other_team = FormDelegate.Factory.insert(:team)
+
+      conn =
+        conn
+        |> authorize(jwt)
+        |> get(Routes.team_submission_recent_activity_path(conn, :recent_activity, other_team.id))
+
+      assert json_response(conn, 404)
+    end
+
+    @tag :as_inserted_user
+    test "legacy route returns activity for the user's oldest membership", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: oldest_team
+    } do
+      newer_team = FormDelegate.Factory.insert(:team)
+
+      FormDelegate.Repo.insert!(%FormDelegate.Memberships.Membership{
+        user_id: user.id,
+        team_id: newer_team.id
+      })
+
+      oldest_form = FormDelegate.Factory.insert(:form, user: user, team: oldest_team)
+      newer_form = FormDelegate.Factory.insert(:form, user: user, team: newer_team)
+
+      FormDelegate.Factory.insert(:submission, form: oldest_form)
+      FormDelegate.Factory.insert(:submission, form: newer_form)
+      FormDelegate.Factory.insert(:submission, form: newer_form)
+
+      response =
+        conn
+        |> authorize(jwt)
+        |> get(Routes.submission_recent_activity_path(conn, :recent_activity))
+        |> json_response(200)
+
+      assert %{"submission_count" => 1} = activity_for(response, Date.utc_today())
+    end
+  end
+
   describe "without logged in user" do
     test "requires user authentication on all actions", %{conn: conn} do
+      team_id = Ecto.UUID.generate()
+
       Enum.each(
         [
           get(conn, Routes.submission_path(conn, :index)),
           get(conn, Routes.submission_path(conn, :show, "1")),
+          get(conn, Routes.team_submission_recent_activity_path(conn, :recent_activity, team_id)),
           get(conn, Routes.submission_recent_activity_path(conn, :recent_activity))
         ],
         fn conn ->
@@ -420,5 +495,9 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
 
   defp submission_ids(%{"data" => submissions}) do
     Enum.map(submissions, & &1["id"])
+  end
+
+  defp activity_for(%{"data" => activity}, date) do
+    Enum.find(activity, &(&1["day"] == Date.to_iso8601(date)))
   end
 end
