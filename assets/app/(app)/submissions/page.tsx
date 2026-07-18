@@ -7,22 +7,11 @@ import { getProfileContext } from 'utils/profile';
 import { SubmissionsSkeleton } from '../_components/skeletons';
 
 import Submissions from './submissions';
-
-type SubmissionsSearchParams = {
-  query?: string;
-  page?: string;
-  'form[]'?: string | string[];
-};
-
-function selectedFormIds(searchParams?: SubmissionsSearchParams) {
-  const formParam = searchParams?.['form[]'];
-
-  if (Array.isArray(formParam)) {
-    return formParam;
-  }
-
-  return formParam ? [formParam] : [];
-}
+import {
+  buildSubmissionApiSearchParams,
+  parseSubmissionFormIds,
+  SubmissionsSearchParams,
+} from './filterParams';
 
 async function fetchSubmissions(
   page: number,
@@ -30,14 +19,10 @@ async function fetchSubmissions(
   formIds: string[]
 ) {
   const { accessToken, selectedTeam } = await getProfileContext();
-  const params = new URLSearchParams({ page: page.toString() });
-
-  if (query) {
-    params.set('query', query);
-  }
-
-  formIds.forEach((formId) => {
-    params.append('form[]', formId);
+  const params = buildSubmissionApiSearchParams({
+    page,
+    query,
+    formIds,
   });
 
   const res = await fetch(
@@ -67,7 +52,7 @@ export default async function SubmissionsPage({
   const resolvedSearchParams = await searchParams;
   const query = resolvedSearchParams?.query || '';
   const currentPage = Number(resolvedSearchParams?.page) || 1;
-  const selectedForms = selectedFormIds(resolvedSearchParams);
+  const selectedForms = parseSubmissionFormIds(resolvedSearchParams);
 
   return (
     <>

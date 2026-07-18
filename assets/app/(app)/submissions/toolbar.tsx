@@ -5,6 +5,11 @@ import { useDebouncedCallback } from 'use-debounce';
 import { useState } from 'react';
 
 import { markSelectedAsSpam, markSelectedAsHam } from './actions';
+import {
+  clearSubmissionFormFilters,
+  paginateSubmissionParams,
+  searchSubmissionParams,
+} from './filterParams';
 
 export default function Toolbar({
   selectedSubmissionList,
@@ -51,26 +56,18 @@ export default function Toolbar({
   };
 
   const handleSearch = (term?: string) => {
-    const params = new URLSearchParams(searchParams);
-
-    if (term) {
-      params.set('query', term);
-    } else {
-      params.delete('query');
-    }
-
-    if (params.get('page') !== null) {
-      params.delete('page');
-    }
-
+    const params = searchSubmissionParams(
+      new URLSearchParams(searchParams),
+      term
+    );
     replaceWithParams(params);
     resetSelection();
   };
 
   const handleClearFormFilters = () => {
-    const params = new URLSearchParams(searchParams);
-    params.delete('form[]');
-    params.delete('page');
+    const params = clearSubmissionFormFilters(
+      new URLSearchParams(searchParams)
+    );
     replaceWithParams(params);
     resetSelection();
   };
@@ -91,12 +88,10 @@ export default function Toolbar({
   };
 
   const handlePageChange = (requestedPage: number) => {
-    const params = new URLSearchParams(searchParams);
-    if (requestedPage > 1) {
-      params.set('page', requestedPage.toString());
-    } else {
-      params.delete('page');
-    }
+    const params = paginateSubmissionParams(
+      new URLSearchParams(searchParams),
+      requestedPage
+    );
     setIsSelectAllChecked(false);
     setSelectedSubmissionList(new Set());
     replaceWithParams(params);

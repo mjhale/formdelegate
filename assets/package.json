@@ -43,7 +43,11 @@
     "lint": "eslint .",
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "tsx --test"
+  },
+  "devDependencies": {
+    "tsx": "^4.8.1"
   },
   "lint-staged": {}
 }
