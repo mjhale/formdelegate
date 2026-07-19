@@ -73,8 +73,20 @@ export function paginateSubmissionParams(
 export function clearSubmissionFormFilters(
   currentParams: URLSearchParams
 ): URLSearchParams {
+  return setSubmissionFormFilters(currentParams, []);
+}
+
+export function setSubmissionFormFilters(
+  currentParams: URLSearchParams,
+  formIds: string[]
+): URLSearchParams {
   const params = new URLSearchParams(currentParams);
   params.delete('form[]');
+
+  for (const formId of new Set(formIds)) {
+    params.append('form[]', formId);
+  }
+
   params.delete('page');
   return params;
 }

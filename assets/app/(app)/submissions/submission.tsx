@@ -26,7 +26,7 @@ export default function Submission({
 
   return (
     <div
-      className="flex flex-col flex-wrap items-start w-full shadow-sm"
+      className="flex w-full flex-col flex-wrap items-start overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm md:rounded-none md:border-0 md:border-b md:last:border-b-0"
       key={submission.id}
     >
       <div
@@ -38,9 +38,13 @@ export default function Submission({
           }
         )}
       >
-        <div className="flex items-center px-4">
+        <label className="flex min-h-11 min-w-11 items-center justify-center px-3 md:px-4">
+          <span className="sr-only">
+            Select submission from {submission.sender}
+          </span>
           <input
             checked={selectedSubmissionList.has(submission.id)}
+            className="h-5 w-5"
             name="submissionSelect"
             onChange={() => {
               setSelectedSubmissionList((prevSelectedSubmissionList) => {
@@ -60,21 +64,21 @@ export default function Submission({
             type="checkbox"
             value={submission.id}
           />
-        </div>
+        </label>
         <div
-          className="grid grid-cols-3 auto-rows-min gap-1 content-between justify-between md:flex md:justify-between md:items-center md:content-normal md:gap-0 text-black cursor-pointer text-sm py-4 pr-2 select-none w-full"
+          className="grid w-full cursor-pointer auto-rows-min grid-cols-3 content-between justify-between gap-x-2 gap-y-1 py-4 pr-4 text-sm text-black select-none md:flex md:content-normal md:items-center md:justify-between md:gap-0 md:pr-2"
           onClick={() => {
             setShowExpandedView(
               (prevShowExpandedView) => !prevShowExpandedView
             );
           }}
         >
-          <div className="font-semibold col-start-1 col-span-2 row-start-1 md:w-1/5">
+          <div className="col-start-1 col-span-2 row-start-1 font-semibold md:w-1/5">
             {submission.sender && submission.sender.length > 25
               ? `${submission.sender.substring(0, 25)}...`
               : submission.sender}
           </div>
-          <div className="row-start-2 col-span-full md:w-3/5">
+          <div className="row-start-2 col-span-full text-gray-800 md:w-3/5 md:text-black">
             {submission.flagged_at && (
               <div className="inline-block mr-0.5">
                 <span className="bg-carnation-400 text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded">

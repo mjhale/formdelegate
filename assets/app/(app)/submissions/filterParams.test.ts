@@ -7,6 +7,7 @@ import {
   paginateSubmissionParams,
   parseSubmissionFormIds,
   searchSubmissionParams,
+  setSubmissionFormFilters,
 } from './filterParams';
 
 describe('submission filter parameters', () => {
@@ -70,5 +71,18 @@ describe('submission filter parameters', () => {
     assert.equal(params.get('page'), null);
     assert.equal(params.get('query'), 'needle');
     assert.deepEqual(params.getAll('form[]'), []);
+  });
+
+  it('replaces form filters, removes duplicates, and resets pagination', () => {
+    const current = new URLSearchParams('page=2&query=needle&form%5B%5D=first');
+    const params = setSubmissionFormFilters(current, [
+      'second',
+      'third',
+      'second',
+    ]);
+
+    assert.equal(params.get('page'), null);
+    assert.equal(params.get('query'), 'needle');
+    assert.deepEqual(params.getAll('form[]'), ['second', 'third']);
   });
 });

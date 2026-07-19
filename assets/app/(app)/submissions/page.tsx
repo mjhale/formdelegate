@@ -127,13 +127,10 @@ async function SubmissionsContent({
   selectedForms: string[];
 }) {
   const profileContext = await getProfileContext();
-  const formsPromise =
-    selectedForms.length > 0
-      ? fetchTeamForms(profileContext).catch(() => {
-          console.error('Unable to load submission filter form metadata.');
-          return undefined;
-        })
-      : Promise.resolve(undefined);
+  const formsPromise = fetchTeamForms(profileContext).catch(() => {
+    console.error('Unable to load submission filter form metadata.');
+    return undefined;
+  });
 
   const [result, forms] = await Promise.all([
     fetchSubmissions(profileContext, currentPage, query, selectedForms),
@@ -159,6 +156,7 @@ async function SubmissionsContent({
       submissions={result.data}
       pagination={result.pagination}
       formFilterSummary={formFilterSummary(selectedForms, forms)}
+      forms={forms}
     />
   );
 }
