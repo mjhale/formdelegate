@@ -181,7 +181,7 @@ defmodule FormDelegate.Integrations.EmailIntegration do
   end
 
   defp required_config_keys(:smtp), do: ["host", "port", "username", "from_address"]
-  defp required_config_keys(:postmark), do: ["from_address", "message_stream"]
+  defp required_config_keys(:postmark), do: ["from_address"]
   defp required_config_keys(:sendgrid), do: ["from_address"]
   defp required_config_keys(_provider), do: []
 

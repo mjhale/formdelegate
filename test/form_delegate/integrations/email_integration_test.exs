@@ -39,7 +39,7 @@ defmodule FormDelegate.Integrations.EmailIntegrationTest do
       refute changeset.valid?
 
       errors = errors_on(changeset)
-      assert "missing required keys: message_stream" in errors.email_provider_config
+      refute Map.has_key?(errors, :email_provider_config)
       assert "missing required keys: server_token" in errors.email_provider_secrets
     end
 

@@ -88,6 +88,30 @@ defmodule FormDelegate.Integrations.EmailDispatcherTest do
     assert body["MessageStream"] == "outbound"
   end
 
+  test "lets Postmark use its default transactional stream" do
+    integration = %EmailIntegration{
+      id: "integration-default-stream",
+      email_provider: :postmark,
+      email_provider_config: %{
+        "from_address" => "mailer@example.com",
+        "message_stream" => "   "
+      },
+      email_provider_secrets: %{"server_token" => "token"}
+    }
+
+    email =
+      %Email{}
+      |> Email.to({"Owner", "owner@example.com"})
+      |> Email.subject("New Form Submission")
+      |> Email.text_body("Hello")
+
+    assert {:ok, %{provider: :postmark}} =
+             EmailDispatcher.deliver_submission_email(integration, email)
+
+    assert_receive {:http_post, "https://api.postmarkapp.com/email", _headers, body}
+    refute Map.has_key?(body, "MessageStream")
+  end
+
   test "dispatches submission email via sendgrid provider" do
     integration = %EmailIntegration{
       id: "integration-2",

@@ -35,7 +35,7 @@ defmodule FormDelegate.Integrations.EmailProviderVerificationTest do
 
       assert :ok =
                Postmark.verify_credentials(
-                 %{"from_address" => "mailer@example.com", "message_stream" => "outbound"},
+                 %{"from_address" => "mailer@example.com"},
                  %{"server_token" => "token"}
                )
     end
@@ -45,7 +45,7 @@ defmodule FormDelegate.Integrations.EmailProviderVerificationTest do
 
       assert {:error, "invalid postmark credentials"} =
                Postmark.verify_credentials(
-                 %{"from_address" => "mailer@example.com", "message_stream" => "outbound"},
+                 %{"from_address" => "mailer@example.com"},
                  %{"server_token" => "token"}
                )
     end
@@ -58,7 +58,7 @@ defmodule FormDelegate.Integrations.EmailProviderVerificationTest do
 
       assert {:error, "missing required value: server_token"} =
                Postmark.verify_credentials(
-                 %{"from_address" => "mailer@example.com", "message_stream" => "outbound"},
+                 %{"from_address" => "mailer@example.com"},
                  %{}
                )
     end

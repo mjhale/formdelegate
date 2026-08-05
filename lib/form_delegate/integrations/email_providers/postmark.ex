@@ -9,7 +9,6 @@ defmodule FormDelegate.Integrations.EmailProviders.Postmark do
   @impl true
   def verify_credentials(config, secrets) when is_map(config) and is_map(secrets) do
     with :ok <- validate_present(config, "from_address"),
-         :ok <- validate_present(config, "message_stream"),
          :ok <- validate_present(secrets, "server_token"),
          token <- map_value(secrets, "server_token"),
          {:ok, status, _body} <-
@@ -34,7 +33,6 @@ defmodule FormDelegate.Integrations.EmailProviders.Postmark do
     secrets = email_integration.email_provider_secrets || %{}
 
     with :ok <- validate_present(config, "from_address"),
-         :ok <- validate_present(config, "message_stream"),
          :ok <- validate_present(secrets, "server_token"),
          token <- map_value(secrets, "server_token"),
          body <- build_delivery_body(email, config),
@@ -84,10 +82,20 @@ defmodule FormDelegate.Integrations.EmailProviders.Postmark do
       "Bcc" => blank_to_nil(bcc_header),
       "Subject" => email.subject,
       "HtmlBody" => email.html_body,
-      "TextBody" => email.text_body,
-      "MessageStream" => map_value(config, "message_stream")
+      "TextBody" => email.text_body
     }
+    |> maybe_put_message_stream(map_value(config, "message_stream"))
   end
+
+  defp maybe_put_message_stream(body, stream) when is_binary(stream) do
+    case String.trim(stream) do
+      "" -> body
+      trimmed_stream -> Map.put(body, "MessageStream", trimmed_stream)
+    end
+  end
+
+  defp maybe_put_message_stream(body, nil), do: body
+  defp maybe_put_message_stream(body, stream), do: Map.put(body, "MessageStream", stream)
 
   defp http_client do
     Application.get_env(:form_delegate, :email_provider_http_client, DefaultHTTPClient)
