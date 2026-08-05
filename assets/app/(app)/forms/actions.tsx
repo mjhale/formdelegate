@@ -1,11 +1,20 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { z } from 'zod';
 // import { set } from 'lodash';
 
 import { serializeFormPayload } from './emailProviderPayload';
 import { createFormSchema, updateFormSchema } from './formSchema';
+import { getReverifyFailureStatusUpdate } from './reverifyPolicy';
 import { getProfileContext } from 'utils/profile';
+
+const reverifyEmailIntegrationSchema = z.object({
+  formId: z.string().uuid(),
+  integrationId: z.string().uuid(),
+  integrationIndex: z.number().int().nonnegative(),
+  reverifyRequestId: z.string().min(1),
+});
 
 export async function updateForm(_currentState, formData) {
   // @TODO: Use native FormData when RHF supports server actions in stable
@@ -68,6 +77,59 @@ export async function updateForm(_currentState, formData) {
   redirect('/forms');
 }
 
+export async function reverifyEmailIntegration(_currentState, payload) {
+  const validatedData = reverifyEmailIntegrationSchema.safeParse(payload);
+
+  if (!validatedData.success) {
+    return {
+      message: 'Failed to reverify email provider due to field errors.',
+      errors: {
+        _errors: ['Persisted email integration is required to reverify.'],
+      },
+    };
+  }
+
+  const { accessToken, selectedTeam } = await getProfileContext();
+  const { formId, integrationId, integrationIndex, reverifyRequestId } =
+    validatedData.data;
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/forms/${formId}/email_integrations/${integrationId}/verify`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      const validationErrorState = await getBackendValidationErrorState(
+        res,
+        'Failed to reverify email provider.',
+        { integrationId, integrationIndex, reverifyRequestId }
+      );
+
+      if (validationErrorState) {
+        return validationErrorState;
+      }
+
+      throw new Error(
+        `Network response failure while reverifying email integration ${integrationId}`
+      );
+    }
+  } catch (error) {
+    throw new Error(
+      `Fetch Error: Failed to reverify email integration ${integrationId}`
+    );
+  }
+
+  redirect(`/forms/${formId}/edit`);
+}
+
 export async function createForm(_currentState, formData) {
   const { accessToken, selectedTeam } = await getProfileContext();
   const validatedData = createFormSchema.safeParse(formData);
@@ -114,18 +176,54 @@ export async function createForm(_currentState, formData) {
   redirect('/forms');
 }
 
-async function getBackendValidationErrorState(res, fallbackMessage) {
+async function getBackendValidationErrorState(
+  res,
+  fallbackMessage,
+  options: {
+    integrationId?: string;
+    integrationIndex?: number;
+    reverifyRequestId?: string;
+  } = {}
+) {
   if (res.status !== 400 && res.status !== 422) {
     return null;
   }
 
   const body = await getJsonResponseBody(res);
   const messages = getBackendValidationMessages(body);
+  const errorMessages = messages.length > 0 ? messages : [fallbackMessage];
+  const statusUpdate =
+    options.integrationId !== undefined
+      ? getReverifyFailureStatusUpdate(body, options.integrationId)
+      : null;
+
+  if (
+    options.integrationIndex !== undefined &&
+    options.integrationId !== undefined
+  ) {
+    const emailIntegrations = [];
+    emailIntegrations[options.integrationIndex] = {
+      _email_integration_id: options.integrationId,
+      _errors: errorMessages,
+    };
+
+    return {
+      message: errorMessages[0],
+      reverifyIntegrationId: options.integrationId,
+      reverifyRequestId: options.reverifyRequestId,
+      errors: {
+        email_integrations: emailIntegrations,
+      },
+      ...(statusUpdate
+        ? { emailIntegrationStatusUpdates: [statusUpdate] }
+        : {}),
+    };
+  }
 
   return {
-    message: messages[0] ?? fallbackMessage,
+    message: errorMessages[0],
     errors: {
-      _errors: messages.length > 0 ? messages : [fallbackMessage],
+      _errors: errorMessages,
     },
   };
 }
@@ -158,17 +256,17 @@ function getBackendValidationMessages(body): Array<string> {
 function getBackendErrorTypeMessage(type): string | null {
   switch (type) {
     case 'EMAIL_PROVIDER_VERIFICATION_FAILED_INVALID_CREDENTIALS':
-      return 'Email provider verification failed: invalid credentials.';
+      return 'Email provider verification failed: invalid credentials. Check the provider secret and account credentials, then try again.';
     case 'EMAIL_PROVIDER_VERIFICATION_FAILED_CONNECTION_FAILED':
-      return 'Email provider verification failed: connection failed.';
+      return 'Email provider verification failed: connection failed. Check the provider host, port, SSL setting, and network access.';
     case 'EMAIL_PROVIDER_VERIFICATION_FAILED_INVALID_CONFIGURATION':
-      return 'Email provider verification failed: invalid configuration.';
+      return 'Email provider verification failed: invalid configuration. Check the provider settings and required fields.';
     case 'EMAIL_PROVIDER_VERIFICATION_FAILED_UNSUPPORTED_AUTH_METHOD':
-      return 'Email provider verification failed: unsupported authentication method.';
+      return 'Email provider verification failed: unsupported authentication method. Use provider credentials that support the required authentication method.';
     case 'EMAIL_PROVIDER_VERIFICATION_FAILED_UNKNOWN':
-      return 'Email provider verification failed.';
+      return 'Email provider verification failed. Check the provider settings and try again.';
     case 'UNSUPPORTED_EMAIL_PROVIDER':
-      return 'Unsupported email provider.';
+      return 'Unsupported email provider. Select SMTP, Postmark, or SendGrid before reverifying.';
     case 'UNPROCESSABLE_ENTITY':
       return null;
     default:

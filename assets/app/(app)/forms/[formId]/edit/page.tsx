@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 import { getProfileContext } from 'utils/profile';
-import { updateForm } from '../../actions';
+import { reverifyEmailIntegration, updateForm } from '../../actions';
 
 import Form from '../../form';
 
@@ -37,7 +37,11 @@ export default async function EditFormPage({
         Edit Form
       </h1>
 
-      <Form form={form} saveFormAction={updateForm} />
+      <Form
+        form={form}
+        saveFormAction={updateForm}
+        reverifyEmailIntegrationAction={reverifyEmailIntegration}
+      />
     </>
   );
 }

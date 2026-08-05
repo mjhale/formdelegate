@@ -1,14 +1,28 @@
 'use client';
 
-import { Fragment, ReactNode, useTransition } from 'react';
+import { Fragment, ReactNode, useEffect, useState, useTransition } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useActionState } from 'react';
 import type { EmailIntegration, EmailIntegrationInput } from 'types/form';
+
+import {
+  canReverifyEmailIntegration,
+  getEmailIntegrationIndexById,
+  isReverifyStatusUpdateForIntegration,
+  type EmailIntegrationStatusUpdate,
+} from './reverifyPolicy';
 
 interface IFormInput {
   id: string;
   name: string;
   email_integrations: Array<EmailIntegrationInput>;
+}
+
+interface IReverifyInput {
+  formId: string;
+  integrationId: string;
+  integrationIndex: number;
+  reverifyRequestId: string;
 }
 
 interface FormActionState {
@@ -20,12 +34,27 @@ interface FormActionState {
     };
     email_integrations?: any;
   };
+  emailIntegrationStatusUpdates?: Array<EmailIntegrationStatusUpdate>;
+  reverifyIntegrationId?: string;
+  reverifyRequestId?: string;
 }
 
 const initialState: FormActionState = {
   message: null,
   errors: {},
 };
+
+async function unavailableReverifyAction(
+  _currentState: FormActionState,
+  _payload: IReverifyInput
+): Promise<FormActionState> {
+  return {
+    message: 'Email provider reverify is unavailable.',
+    errors: {
+      _errors: ['Persisted email integration is required to reverify.'],
+    },
+  };
+}
 
 const integrationErrorFields = [
   ['email_provider', 'Email provider'],
@@ -34,6 +63,17 @@ const integrationErrorFields = [
   ['email_provider_status', 'Verification status'],
   ['email_integration_recipients', 'Recipients'],
   ['verify_provider', 'Verification request'],
+] as const;
+
+const providerErrorFields = [
+  ['email_provider_config', 'from_address', 'From Address'],
+  ['email_provider_config', 'host', 'SMTP Host'],
+  ['email_provider_config', 'port', 'SMTP Port'],
+  ['email_provider_config', 'username', 'SMTP Username'],
+  ['email_provider_config', 'message_stream', 'Message Stream'],
+  ['email_provider_secrets', 'password', 'SMTP Password'],
+  ['email_provider_secrets', 'server_token', 'Server Token'],
+  ['email_provider_secrets', 'api_key', 'API Key'],
 ] as const;
 
 const providerLabels = {
@@ -49,12 +89,24 @@ const statusLabels = {
   invalid: 'Invalid',
 } as const;
 
-export default function Form({ form, saveFormAction }) {
+export default function Form({
+  form,
+  saveFormAction,
+  reverifyEmailIntegrationAction = unavailableReverifyAction,
+}) {
   const [state, formAction] = useActionState<FormActionState, IFormInput>(
     saveFormAction,
     initialState
   );
-  const [isPending, startTransition] = useTransition();
+  const [reverifyState, reverifyFormAction] = useActionState<
+    FormActionState,
+    IReverifyInput
+  >(reverifyEmailIntegrationAction, initialState);
+  const [activeReverifyRequestId, setActiveReverifyRequestId] = useState<
+    string | null
+  >(null);
+  const [isPending, startSaveTransition] = useTransition();
+  const [isReverifyPending, startReverifyTransition] = useTransition();
   const {
     register,
     control,
@@ -63,6 +115,7 @@ export default function Form({ form, saveFormAction }) {
     setValue,
     unregister,
     watch,
+    formState: { isDirty },
   } = useForm<IFormInput>({
     defaultValues: {
       id: form?.id ?? '',
@@ -74,69 +127,151 @@ export default function Form({ form, saveFormAction }) {
   });
 
   const onSubmit = handleSubmit((data) => {
-    startTransition(() => {
+    startSaveTransition(() => {
       formAction(data);
     });
   });
 
+  const requestReverify = (
+    payload: Omit<IReverifyInput, 'reverifyRequestId'>
+  ) => {
+    const reverifyRequestId = `${payload.integrationId}:${Date.now()}`;
+
+    setActiveReverifyRequestId(reverifyRequestId);
+    startReverifyTransition(() => {
+      reverifyFormAction({ ...payload, reverifyRequestId });
+    });
+  };
+  const clearReverifyState = () => setActiveReverifyRequestId(null);
+
+  const activeReverifyState =
+    reverifyState.reverifyRequestId === activeReverifyRequestId
+      ? reverifyState
+      : initialState;
+  const reverifyStatusUpdates =
+    activeReverifyState.emailIntegrationStatusUpdates;
+
+  useEffect(() => {
+    if (!reverifyStatusUpdates) {
+      return;
+    }
+
+    reverifyStatusUpdates.forEach((statusUpdate) => {
+      const integrationIndex = getEmailIntegrationIndexById(
+        getValues('email_integrations'),
+        statusUpdate.integrationId
+      );
+
+      if (integrationIndex === -1) {
+        return;
+      }
+
+      setValue(
+        `email_integrations.${integrationIndex}._email_provider_status`,
+        statusUpdate.emailProviderStatus,
+        { shouldDirty: false }
+      );
+      setValue(
+        `email_integrations.${integrationIndex}._email_provider_last_verified_at`,
+        statusUpdate.emailProviderLastVerifiedAt,
+        { shouldDirty: false }
+      );
+
+      if (statusUpdate.emailProviderStatus !== 'verified') {
+        setValue(
+          `email_integrations.${integrationIndex}.email_provider_status`,
+          'pending_verification',
+          {
+            shouldDirty: false,
+          }
+        );
+        setValue(
+          `email_integrations.${integrationIndex}.verify_provider`,
+          true,
+          {
+            shouldDirty: false,
+          }
+        );
+      }
+    });
+  }, [getValues, reverifyStatusUpdates, setValue]);
+
   return (
-    <form className="flex flex-col gap-y-4" onSubmit={onSubmit}>
-      <div className="flex items-center h-10 max-w-xl">
-        {/* Form id */}
-        <input
-          {...register(`id`)}
-          type="hidden"
-          defaultValue={form?.id ?? ''}
+    <form aria-busy={isReverifyPending} onSubmit={onSubmit}>
+      <fieldset
+        className="m-0 flex min-w-0 flex-col gap-y-4 border-0 p-0"
+        disabled={isReverifyPending}
+      >
+        <div className="flex items-center h-10 max-w-xl">
+          {/* Form id */}
+          <input
+            {...register(`id`)}
+            type="hidden"
+            defaultValue={form?.id ?? ''}
+          />
+
+          {/* Form name */}
+          <label className="flex-0 w-1/4" htmlFor="name">
+            Form Name
+          </label>
+          <input
+            {...register(`name`)}
+            id="name"
+            type="text"
+            autoComplete="off"
+            className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+            aria-describedby="name.error"
+            defaultValue={form?.name ?? ''}
+          />
+        </div>
+        {state?.errors?.name &&
+          state?.errors.name._errors.map((error: string) => (
+            <p className="mt-2 text-sm text-red-500" key={error}>
+              {error}
+            </p>
+          ))}
+        {state?.errors?._errors &&
+          state.errors._errors.map((error: string) => (
+            <p className="mt-2 text-sm text-red-500" key={error}>
+              {error}
+            </p>
+          ))}
+        {reverifyState?.errors?._errors &&
+          reverifyState.errors._errors.map((error: string) => (
+            <p className="mt-2 text-sm text-red-500" key={error}>
+              {error}
+            </p>
+          ))}
+
+        {/* Email integrations */}
+        <div className="text-lg font-semibold">Email Integrations</div>
+        <EmailIntegrationsFieldArray
+          {...{
+            state,
+            reverifyState: activeReverifyState,
+            control,
+            register,
+            getValues,
+            setValue,
+            unregister,
+            watch,
+            formId: form?.id ?? '',
+            clearReverifyState,
+            isFormDirty: isDirty,
+            isReverifyPending,
+            requestReverify,
+            reverifyStatusUpdates: reverifyStatusUpdates ?? [],
+          }}
         />
 
-        {/* Form name */}
-        <label className="flex-0 w-1/4" htmlFor="name">
-          Form Name
-        </label>
-        <input
-          {...register(`name`)}
-          id="name"
-          type="text"
-          autoComplete="off"
-          className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
-          aria-describedby="name.error"
-          defaultValue={form?.name ?? ''}
-        />
-      </div>
-      {state?.errors?.name &&
-        state?.errors.name._errors.map((error: string) => (
-          <p className="mt-2 text-sm text-red-500" key={error}>
-            {error}
-          </p>
-        ))}
-      {state?.errors?._errors &&
-        state.errors._errors.map((error: string) => (
-          <p className="mt-2 text-sm text-red-500" key={error}>
-            {error}
-          </p>
-        ))}
+        <p aria-live="polite" className="sr-only">
+          {state?.message && state.message}
+        </p>
 
-      {/* Email integrations */}
-      <div className="text-lg font-semibold">Email Integrations</div>
-      <EmailIntegrationsFieldArray
-        {...{
-          state,
-          control,
-          register,
-          getValues,
-          setValue,
-          unregister,
-          watch,
-        }}
-      />
-
-      <p aria-live="polite" className="sr-only">
-        {state?.message && state.message}
-      </p>
-
-      <div>
-        <SubmitButton isPending={isPending} />
-      </div>
+        <div>
+          <SubmitButton isPending={isPending} />
+        </div>
+      </fieldset>
     </form>
   );
 }
@@ -353,12 +488,19 @@ function EmailRecipientsFieldArray({
 
 function EmailIntegrationsFieldArray({
   state,
+  reverifyState,
   control,
   register,
   getValues,
   setValue,
   unregister,
   watch,
+  formId,
+  clearReverifyState,
+  isFormDirty,
+  isReverifyPending,
+  requestReverify,
+  reverifyStatusUpdates,
 }) {
   const {
     fields: emailIntegrationFields,
@@ -368,6 +510,25 @@ function EmailIntegrationsFieldArray({
     control, // control props comes from useForm (optional: if you are using FormContext)
     name: 'email_integrations', // unique name for your Field Array
   });
+
+  const appendEmailIntegration = () => {
+    clearReverifyState();
+    append({
+      _email_provider_last_verified_at: null,
+      _email_provider_status: 'unconfigured',
+      id: null,
+      enabled: false,
+      email_provider: null,
+      email_provider_status: 'pending_verification',
+      email_integration_recipients: [],
+      verify_provider: true,
+    });
+  };
+
+  const removeEmailIntegration = (index: number) => {
+    clearReverifyState();
+    remove(index);
+  };
 
   return (
     <>
@@ -438,13 +599,27 @@ function EmailIntegrationsFieldArray({
               setValue={setValue}
               unregister={unregister}
               provider={watch(`email_integrations.${i}.email_provider`)}
+              formId={formId}
+              isFormDirty={isFormDirty}
+              isReverifyPending={isReverifyPending}
+              requestReverify={requestReverify}
+              reverifyStatusUpdate={reverifyStatusUpdates.find((statusUpdate) =>
+                isReverifyStatusUpdateForIntegration(
+                  statusUpdate,
+                  getValues(`email_integrations.${i}.id`)
+                )
+              )}
             />
-            <IntegrationErrors errors={state?.errors} index={i} />
+            <IntegrationErrors
+              errors={[state?.errors, reverifyState?.errors]}
+              index={i}
+              integrationId={getValues(`email_integrations.${i}.id`)}
+            />
             <div className="flex max-w-xl py-2">
               <button
                 className="inline-block px-2 py-1 text-sm font-medium leading-tight text-red-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
                 type="button"
-                onClick={() => remove(i)}
+                onClick={() => removeEmailIntegration(i)}
               >
                 Remove Integration
               </button>
@@ -462,18 +637,7 @@ function EmailIntegrationsFieldArray({
         <button
           type="button"
           className="inline-block px-2 py-1 text-sm font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
-          onClick={() =>
-            append({
-              _email_provider_last_verified_at: null,
-              _email_provider_status: 'unconfigured',
-              id: null,
-              enabled: false,
-              email_provider: null,
-              email_provider_status: 'pending_verification',
-              email_integration_recipients: [],
-              verify_provider: true,
-            })
-          }
+          onClick={appendEmailIntegration}
         >
           Add Email Integration
         </button>
@@ -489,14 +653,28 @@ function EmailProviderSetupFields({
   setValue,
   unregister,
   provider,
+  formId,
+  isFormDirty,
+  isReverifyPending,
+  requestReverify,
+  reverifyStatusUpdate,
 }) {
   const currentStatus =
+    reverifyStatusUpdate?.emailProviderStatus ??
     getValues(`email_integrations.${i}._email_provider_status`) ??
     'unconfigured';
-  const lastVerifiedAt = getValues(
-    `email_integrations.${i}._email_provider_last_verified_at`
-  );
+  const lastVerifiedAt = reverifyStatusUpdate
+    ? reverifyStatusUpdate.emailProviderLastVerifiedAt
+    : getValues(`email_integrations.${i}._email_provider_last_verified_at`);
+  const integrationId = getValues(`email_integrations.${i}.id`);
   const isVerified = currentStatus === 'verified';
+  const canReverify = canReverifyEmailIntegration({
+    currentStatus,
+    formId,
+    integrationId,
+    isDirty: isFormDirty,
+    provider,
+  });
 
   const resetProviderFields = (nextProvider) => {
     if (isVerified) {
@@ -575,6 +753,25 @@ function EmailProviderSetupFields({
           {formatLastVerifiedAt(lastVerifiedAt)}
         </div>
       </div>
+      {canReverify && (
+        <div className="flex max-w-xl">
+          <div className="flex-0 w-1/4" />
+          <button
+            type="button"
+            disabled={isReverifyPending}
+            onClick={() =>
+              requestReverify({
+                formId,
+                integrationId,
+                integrationIndex: i,
+              })
+            }
+            className="inline-block px-2 py-1 text-sm font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
+          >
+            Reverify Provider
+          </button>
+        </div>
+      )}
       <ProviderConfigFields
         key={provider ?? 'none'}
         index={i}
@@ -817,8 +1014,8 @@ function ProviderCheckboxInput({
   );
 }
 
-function IntegrationErrors({ errors, index }) {
-  const messages = getIntegrationErrorMessages(errors, index);
+function IntegrationErrors({ errors, index, integrationId }) {
+  const messages = getIntegrationErrorMessages(errors, index, integrationId);
 
   if (messages.length === 0) {
     return null;
@@ -867,19 +1064,41 @@ function sanitizeEmailIntegrationDefaults(
   });
 }
 
-function getIntegrationErrorMessages(errors, index: number): Array<string> {
-  const integrationErrors = errors?.email_integrations?.[index];
+export function getIntegrationErrorMessages(
+  errors,
+  index: number,
+  integrationId?: unknown
+): Array<string> {
+  const errorsList = Array.isArray(errors) ? errors : [errors];
+  const messages = errorsList.flatMap((errorState) => {
+    const integrationErrors = errorState?.email_integrations?.[index];
 
-  if (!integrationErrors) {
-    return [];
-  }
+    if (!integrationErrors) {
+      return [];
+    }
 
-  const messages = [...(integrationErrors._errors ?? [])];
+    if (
+      integrationErrors._email_integration_id !== undefined &&
+      integrationErrors._email_integration_id !== integrationId
+    ) {
+      return [];
+    }
 
-  integrationErrorFields.forEach(([field, label]) => {
-    integrationErrors[field]?._errors?.forEach((error: string) => {
-      messages.push(`${label}: ${error}`);
+    const integrationMessages = [...(integrationErrors._errors ?? [])];
+
+    integrationErrorFields.forEach(([field, label]) => {
+      integrationErrors[field]?._errors?.forEach((error: string) => {
+        integrationMessages.push(`${label}: ${error}`);
+      });
     });
+
+    providerErrorFields.forEach(([group, field, label]) => {
+      integrationErrors[group]?.[field]?._errors?.forEach((error: string) => {
+        integrationMessages.push(`${label}: ${error}`);
+      });
+    });
+
+    return integrationMessages;
   });
 
   return messages;
