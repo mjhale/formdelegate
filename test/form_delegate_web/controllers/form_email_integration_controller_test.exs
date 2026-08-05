@@ -99,6 +99,74 @@ defmodule FormDelegateWeb.FormEmailIntegrationControllerTest do
     end
 
     @tag :as_inserted_user
+    test "verifies provider through the team-scoped route", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      integration = insert_email_integration(form)
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> post(
+          Routes.team_form_email_integration_path(
+            conn,
+            :verify,
+            team.id,
+            form.id,
+            integration.id
+          )
+        )
+        |> json_response(200)
+
+      assert response["data"]["id"] == integration.id
+      assert response["data"]["email_provider_status"] == "verified"
+      assert response["data"]["email_provider_last_verified_at"] != nil
+    end
+
+    @tag :as_inserted_user
+    test "returns forbidden for the team-scoped route when selected team does not own form", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      other_team = FormDelegate.Factory.insert(:team)
+
+      FormDelegate.Repo.insert!(%FormDelegate.Memberships.Membership{
+        user_id: user.id,
+        team_id: other_team.id,
+        is_billing_account: true
+      })
+
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      integration = insert_email_integration(form)
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> post(
+          Routes.team_form_email_integration_path(
+            conn,
+            :verify,
+            other_team.id,
+            form.id,
+            integration.id
+          )
+        )
+        |> json_response(403)
+
+      assert response == %{"error" => %{"code" => 403, "type" => "FORBIDDEN"}}
+
+      reloaded = Repo.get!(EmailIntegration, integration.id)
+      assert reloaded.email_provider_status == :unconfigured
+      assert reloaded.email_provider_last_verified_at == nil
+    end
+
+    @tag :as_inserted_user
     test "returns forbidden for non-owner", %{conn: conn, jwt: jwt} do
       {owner, owner_team, _membership} = FormDelegate.Factory.insert_user_with_membership()
       form = FormDelegate.Factory.insert(:form, user: owner, team: owner_team)

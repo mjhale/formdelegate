@@ -102,6 +102,11 @@ defmodule FormDelegateWeb.Router do
       except: [:edit, :new],
       as: :team_form
 
+    post "/teams/:team_id/forms/:form_id/email_integrations/:id/verify",
+         FormEmailIntegrationController,
+         :verify,
+         as: :team_form_email_integration
+
     scope "/teams/:team_id/submissions" do
       get "/recent_activity", SubmissionController, :recent_activity,
         as: :team_submission_recent_activity
