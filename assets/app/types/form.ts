@@ -20,7 +20,7 @@ export interface SMTPEmailProviderConfig {
 
 export interface PostmarkEmailProviderConfig {
   from_address: string;
-  message_stream: string;
+  message_stream?: string;
 }
 
 export interface SendGridEmailProviderConfig {

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  compactEmailProviderConfig,
   compactRecord,
   emailProviderRequirements as providerRequirements,
 } from './emailProviderPayload';
@@ -34,7 +35,7 @@ const smtpEmailProviderConfigSchema = z.object({
 
 const postmarkEmailProviderConfigSchema = z.object({
   from_address: z.string().email(),
-  message_stream: z.string().min(1),
+  message_stream: z.string().optional(),
 });
 
 const sendgridEmailProviderConfigSchema = z.object({
@@ -203,8 +204,11 @@ const emailIntegrationSchema = z
       const requirements = integration.email_provider
         ? providerRequirements[integration.email_provider]
         : null;
-      const compactConfig = requirements
-        ? compactRecord(integration.email_provider_config, requirements.config)
+      const compactConfig = integration.email_provider
+        ? compactEmailProviderConfig(
+            integration.email_provider,
+            integration.email_provider_config
+          )
         : compactRecord(integration.email_provider_config);
       const compactSecrets = requirements
         ? compactRecord(email_provider_secrets, requirements.secrets)

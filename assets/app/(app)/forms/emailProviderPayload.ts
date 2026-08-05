@@ -8,7 +8,7 @@ export const emailProviderRequirements = {
   },
   postmark: {
     config: ['from_address', 'message_stream'],
-    requiredConfig: ['from_address', 'message_stream'],
+    requiredConfig: ['from_address'],
     secrets: ['server_token'],
   },
   sendgrid: {
@@ -84,9 +84,9 @@ function serializeEmailIntegrationPayload(
 
   if (provider) {
     const requirements = emailProviderRequirements[provider];
-    const config = compactRecord(
-      integration.email_provider_config,
-      requirements.config
+    const config = compactEmailProviderConfig(
+      provider,
+      integration.email_provider_config
     );
     const secrets = compactRecord(
       integration.email_provider_secrets,
@@ -111,6 +111,36 @@ function serializeEmailIntegrationPayload(
   }
 
   return payload;
+}
+
+export function compactEmailProviderConfig(
+  provider: EmailProvider,
+  value: unknown
+): Record<string, unknown> | undefined {
+  const config = compactRecord(
+    value,
+    emailProviderRequirements[provider].config
+  );
+
+  if (!config || provider !== 'postmark') {
+    return config;
+  }
+
+  const messageStream = config.message_stream;
+
+  if (typeof messageStream !== 'string') {
+    return config;
+  }
+
+  const trimmedMessageStream = messageStream.trim();
+
+  if (trimmedMessageStream === '') {
+    delete config.message_stream;
+  } else {
+    config.message_stream = trimmedMessageStream;
+  }
+
+  return Object.keys(config).length === 0 ? undefined : config;
 }
 
 export function compactRecord(

@@ -26,10 +26,7 @@ const providerCases = [
       message_stream: '',
     },
     secrets: { server_token: '' },
-    expectedFields: [
-      ['email_provider_config', 'message_stream'],
-      ['email_provider_secrets', 'server_token'],
-    ],
+    expectedFields: [['email_provider_secrets', 'server_token']],
   },
   {
     provider: 'sendgrid',
@@ -88,4 +85,41 @@ describe('email provider form validation', () => {
       );
     });
   }
+
+  it('accepts Postmark without a message stream', () => {
+    const result = createFormSchema.safeParse({
+      name: 'Contact form',
+      email_integrations: [
+        {
+          id: null,
+          enabled: true,
+          email_provider: 'postmark',
+          email_provider_config: {
+            from_address: 'sender@example.com',
+            message_stream: '',
+          },
+          email_provider_secrets: { server_token: 'token' },
+          email_provider_status: 'pending_verification',
+          verify_provider: true,
+          email_integration_recipients: [
+            {
+              id: null,
+              name: null,
+              email: 'recipient@example.com',
+              type: 'to',
+            },
+          ],
+        },
+      ],
+    });
+
+    assert.equal(result.success, true);
+
+    if (result.success) {
+      const [integration] = result.data.email_integrations;
+      assert.deepEqual(integration.email_provider_config, {
+        from_address: 'sender@example.com',
+      });
+    }
+  });
 });

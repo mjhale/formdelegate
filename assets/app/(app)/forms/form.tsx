@@ -791,6 +791,18 @@ function ProviderConfigFields({
   provider,
   readOnly,
 }) {
+  const [advancedSettingsOpen, setAdvancedSettingsOpen] = useState(
+    () =>
+      provider === 'postmark' &&
+      Boolean(
+        getStringFieldValue(
+          getValues(
+            `email_integrations.${index}.email_provider_config.message_stream`
+          )
+        )
+      )
+  );
+
   switch (provider) {
     case 'smtp':
       return (
@@ -865,19 +877,34 @@ function ProviderConfigFields({
             index={index}
             register={register}
             getValues={getValues}
-            path="email_provider_config.message_stream"
-            label="Message Stream"
-            readOnly={readOnly}
-          />
-          <ProviderTextInput
-            index={index}
-            register={register}
-            getValues={getValues}
             path="email_provider_secrets.server_token"
             label="Server Token"
             type="password"
             readOnly={readOnly}
           />
+          <details
+            className="max-w-xl"
+            open={advancedSettingsOpen}
+            onToggle={(event) =>
+              setAdvancedSettingsOpen(event.currentTarget.open)
+            }
+          >
+            <summary className="py-2 text-sm font-medium text-gray-600 hover:cursor-pointer">
+              Advanced settings
+            </summary>
+            <ProviderTextInput
+              index={index}
+              register={register}
+              getValues={getValues}
+              path="email_provider_config.message_stream"
+              label="Message Stream"
+              readOnly={readOnly}
+            />
+            <p className="ml-[25%] mt-1 text-xs text-gray-500">
+              Optional. Defaults to Postmark&apos;s outbound transactional
+              stream.
+            </p>
+          </details>
         </>
       );
 
