@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "license": "GPL-3.0",
+  "packageManager": "npm@11.17.0",
   "engines": {
     "node": ">=20.9.0"
   },
@@ -19,10 +20,10 @@
     "babel-plugin-styled-components": "^2.1.4",
     "clsx": "^2.1.0",
     "eslint": "^9.39.4",
-    "eslint-config-next": "^16.2.7",
+    "eslint-config-next": "16.3.0",
     "eslint-config-prettier": "^9.1.0",
     "jwt-decode": "^4.0.0",
-    "next": "^16.2.7",
+    "next": "16.3.0",
     "phoenix": "^1.7.12",
     "postcss": "^8.4.38",
     "prettier": "^3.2.5",
@@ -41,10 +42,11 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "lint": "eslint .",
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "tsx --test"
+    "test": "tsx --test",
+    "typecheck": "next typegen && tsc --noEmit --incremental false"
   },
   "devDependencies": {
     "tsx": "^4.8.1"
