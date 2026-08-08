@@ -8,9 +8,8 @@ on:
         required: true
         default: latest
       web_image_tag:
-        description: Web image tag to deploy
+        description: Immutable web image tag to deploy (sha-<commit>)
         required: true
-        default: latest
       run_migrations:
         description: Run database migrations before updating services
         required: true
@@ -68,8 +67,8 @@ jobs:
             exit 1
           fi
 
-          if [[ ! "${{ inputs.web_image_tag }}" =~ ^[A-Za-z0-9._-]+$ ]]; then
-            echo "::error title=Invalid input::web_image_tag may only contain letters, numbers, dots, underscores, and hyphens"
+          if [[ ! "${{ inputs.web_image_tag }}" =~ ^sha-[0-9a-fA-F]{7,40}$ ]]; then
+            echo "::error title=Invalid input::web_image_tag must be an immutable sha-<commit> tag"
             exit 1
           fi
 
