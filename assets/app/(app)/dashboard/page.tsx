@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 
 import { getProfileContext } from 'utils/profile';
 
+import AsyncPanelErrorBoundary from '../_components/asyncPanelErrorBoundary';
 import { DashboardSkeleton } from '../_components/skeletons';
 
 import SubmissionActivity from './submissionActivity';
@@ -14,6 +15,7 @@ async function getSubmissionActivity() {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/submissions/recent_activity`,
     {
+      cache: 'no-store',
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${accessToken}`,
@@ -33,9 +35,11 @@ export default async function DashboardPage() {
         my Dashboard
       </h1>
 
-      <Suspense fallback={<DashboardSkeleton />}>
-        <DashboardContent />
-      </Suspense>
+      <AsyncPanelErrorBoundary title="Unable to load dashboard activity.">
+        <Suspense fallback={<DashboardSkeleton />}>
+          <DashboardContent />
+        </Suspense>
+      </AsyncPanelErrorBoundary>
     </>
   );
 }

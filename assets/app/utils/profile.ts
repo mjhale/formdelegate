@@ -1,7 +1,12 @@
 import type { Membership, Profile, Team } from 'types/user';
 
+import 'server-only';
+
 import { cache } from 'react';
+import { cacheLife, cacheTag } from 'next/cache';
 import { cookies } from 'next/headers';
+
+import { profileCacheTag, teamCacheTag } from './cacheTags';
 
 export const CURRENT_TEAM_COOKIE = 'current_team_id';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
@@ -13,6 +18,8 @@ export interface ProfileContext {
   selectedTeam: Team;
   userId: string;
 }
+
+type PrivateProfileContext = Omit<ProfileContext, 'accessToken'>;
 
 export async function setCurrentTeamCookie(teamId: string) {
   (await cookies()).set({
@@ -50,7 +57,10 @@ export async function fetchProfile(
   return data;
 }
 
-export const getProfileContext = cache(async (): Promise<ProfileContext> => {
+async function getPrivateProfileContext(): Promise<PrivateProfileContext> {
+  'use cache: private';
+  cacheLife({ stale: 60 * 5 });
+
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('access_token')?.value;
   const userId = cookieStore.get('user_id')?.value;
@@ -64,7 +74,9 @@ export const getProfileContext = cache(async (): Promise<ProfileContext> => {
 
   const selectedMembership =
     (selectedTeamId &&
-      profile.memberships.find((membership) => membership.team.id === selectedTeamId)) ||
+      profile.memberships.find(
+        (membership) => membership.team.id === selectedTeamId
+      )) ||
     (profile.current_team &&
       profile.memberships.find(
         (membership) => membership.team.id === profile.current_team?.id
@@ -75,12 +87,28 @@ export const getProfileContext = cache(async (): Promise<ProfileContext> => {
     throw new Error('Authenticated user does not belong to a team.');
   }
 
+  cacheTag(profileCacheTag(userId), teamCacheTag(selectedMembership.team.id));
+
   return {
-    accessToken,
     profile,
     selectedMembership,
     selectedTeam: selectedMembership.team,
     userId,
+  };
+}
+
+export const getProfileContext = cache(async (): Promise<ProfileContext> => {
+  const accessToken = (await cookies()).get('access_token')?.value;
+
+  if (!accessToken) {
+    throw new Error('Missing authenticated user cookies.');
+  }
+
+  const profileContext = await getPrivateProfileContext();
+
+  return {
+    ...profileContext,
+    accessToken,
   };
 });
 

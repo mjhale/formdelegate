@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { Lato } from 'next/font/google';
+import { Suspense } from 'react';
 import Link from 'next/link';
 
 import {
@@ -14,14 +14,19 @@ import {
 
 import LoginForm from './form';
 
-const lato = Lato({
-  weight: ['700', '900'],
-  subsets: ['latin'],
-  style: ['normal', 'italic'],
-  variable: '--font-lato',
-});
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ destination?: string }>;
+}) {
+  return (
+    <Suspense fallback={<LoginPageFallback />}>
+      <LoginPageContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
 
-export default async function LoginPage({
+async function LoginPageContent({
   searchParams,
 }: {
   searchParams: Promise<{ destination?: string }>;
@@ -41,7 +46,7 @@ export default async function LoginPage({
       <div className="flex justify-center align-middle items-center h-32 mb-4">
         <Link
           href="/"
-          className={`block max-w-40 text-center text-4xl leading-7 italic font-black no-underline text-neutral-100 ${lato.className} font-sans md:max-w-[4em] md:leading-8 md:text-5xl lowercase hover:text-white active:animate-scale-increase-fast`}
+          className="block max-w-40 text-center text-4xl leading-7 italic font-black no-underline text-neutral-100 [font-family:var(--font-lato)] md:max-w-[4em] md:leading-8 md:text-5xl lowercase hover:text-white active:animate-scale-increase-fast"
         >
           Form Delegate
         </Link>
@@ -86,6 +91,22 @@ export default async function LoginPage({
           </Link>
         </div>
       )}
+    </>
+  );
+}
+
+function LoginPageFallback() {
+  return (
+    <>
+      <div className="flex h-32 items-center justify-center mb-4">
+        <span className="block max-w-40 text-center text-4xl leading-7 italic font-black text-neutral-100 [font-family:var(--font-lato)] md:max-w-[4em] md:leading-8 md:text-5xl lowercase">
+          Form Delegate
+        </span>
+      </div>
+      <div className="mx-4 rounded-md border bg-white p-6 text-black md:mx-0 md:rounded-lg">
+        <div className="mx-auto h-7 w-24 animate-pulse rounded bg-slate-200" />
+        <div className="mx-auto mt-6 h-40 max-w-xs animate-pulse rounded bg-slate-100" />
+      </div>
     </>
   );
 }

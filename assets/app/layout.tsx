@@ -1,12 +1,22 @@
-/* Note: This bare root layout fixes a redirect() bug when redirecting
-   between layouts which do not share a parent (e.g., when there only
-   exists layouts in the (app) and (marketing) groups). This layout
-   should not be required in the future. */
+import { Lato } from 'next/font/google';
+
+import './globals.css';
+
+const lato = Lato({
+  weight: ['700', '900'],
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  variable: '--font-lato',
+});
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <html lang="en" className={lato.variable}>
+      <body className="antialiased">{children}</body>
+    </html>
+  );
 }

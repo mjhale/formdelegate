@@ -1,17 +1,9 @@
 import { Suspense } from 'react';
-import { Lato } from 'next/font/google';
 
 import Link from 'next/link';
 
 import MobileMenu from './mobileMenu';
 import NavLink from './navLink';
-
-const lato = Lato({
-  weight: ['700', '900'],
-  subsets: ['latin'],
-  style: ['normal', 'italic'],
-  variable: '--font-lato',
-});
 
 export default function Navbar({ links }) {
   return (
@@ -19,7 +11,7 @@ export default function Navbar({ links }) {
       <div className="lg:text-center lg:p-6 lg:m-auto">
         <Link
           href="/"
-          className={`inline-block text-2xl italic font-black no-underline text-neutral-200 ${lato.className} font-sans lowercase hover:text-white active:animate-scale-increase-fast lg:leading-8 lg:text-4xl lg:max-w-[4em]`}
+          className="inline-block text-2xl italic font-black no-underline text-neutral-200 [font-family:var(--font-lato)] lowercase hover:text-white active:animate-scale-increase-fast lg:leading-8 lg:text-4xl lg:max-w-[4em]"
         >
           Form Delegate
         </Link>

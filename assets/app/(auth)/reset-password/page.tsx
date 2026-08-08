@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { Lato } from 'next/font/google';
+import { Suspense } from 'react';
 import Link from 'next/link';
 
 import {
@@ -11,14 +11,19 @@ import {
 import ResetRequest from './resetRequest';
 import ResetPassword from './resetPassword';
 
-const lato = Lato({
-  weight: ['700', '900'],
-  subsets: ['latin'],
-  style: ['normal', 'italic'],
-  variable: '--font-lato',
-});
+export default function ResetPasswordPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ destination?: string; token?: string }>;
+}) {
+  return (
+    <Suspense fallback={<ResetPasswordFallback />}>
+      <ResetPasswordContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
 
-export default async function ResetPasswordPage({
+async function ResetPasswordContent({
   searchParams,
 }: {
   searchParams: Promise<{ destination?: string; token?: string }>;
@@ -35,7 +40,7 @@ export default async function ResetPasswordPage({
       <div className="flex justify-center align-middle items-center h-32 mb-4">
         <Link
           href="/"
-          className={`block md:max-w-[4em] text-center text-2xl italic font-black no-underline text-neutral-100 ${lato.className} font-sans md:leading-8 md:text-5xl lowercase hover:text-white active:animate-scale-increase-fast`}
+          className="block md:max-w-[4em] text-center text-2xl italic font-black no-underline text-neutral-100 [font-family:var(--font-lato)] md:leading-8 md:text-5xl lowercase hover:text-white active:animate-scale-increase-fast"
         >
           Form Delegate
         </Link>
@@ -53,6 +58,19 @@ export default async function ResetPasswordPage({
           Sign up
         </Link>
       </div>
+    </>
+  );
+}
+
+function ResetPasswordFallback() {
+  return (
+    <>
+      <div className="flex h-32 items-center justify-center mb-4">
+        <span className="text-center text-2xl italic font-black text-neutral-100 [font-family:var(--font-lato)] md:max-w-[4em] md:leading-8 md:text-5xl lowercase">
+          Form Delegate
+        </span>
+      </div>
+      <div className="mb-4 h-64 animate-pulse rounded-lg border bg-white/90" />
     </>
   );
 }

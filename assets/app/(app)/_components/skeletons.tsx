@@ -26,6 +26,16 @@ function SkeletonPanel({
   );
 }
 
+export function NavBarSkeleton() {
+  return (
+    <div
+      aria-label="Loading account navigation"
+      className="fixed inset-0 z-10 h-12 w-full animate-pulse bg-red-900 px-4 lg:static lg:z-0 lg:my-4 lg:ml-4 lg:h-auto lg:w-1/4 lg:rounded-lg xl:w-1/5"
+      role="status"
+    />
+  );
+}
+
 export function DashboardSkeleton() {
   return (
     <div
@@ -105,6 +115,23 @@ export function FormsSkeleton() {
             <SkeletonBlock className="h-9 w-24 bg-white border border-gray-200" />
           </div>
         </SkeletonPanel>
+      ))}
+    </div>
+  );
+}
+
+export function FormDetailsSkeleton() {
+  return (
+    <div
+      aria-label="Loading form details"
+      className="flex max-w-xl flex-col gap-y-4"
+      role="status"
+    >
+      {Array.from({ length: 4 }).map((_, index) => (
+        <div className="flex h-10 items-center" key={index}>
+          <SkeletonBlock className="h-5 w-1/4 max-w-32" />
+          <SkeletonBlock className="h-10 flex-1 bg-white border border-gray-200" />
+        </div>
       ))}
     </div>
   );

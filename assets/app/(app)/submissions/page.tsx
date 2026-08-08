@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { cacheLife, cacheTag } from 'next/cache';
 
+import { formsCacheTag } from 'utils/cacheTags';
 import { getProfileContext } from 'utils/profile';
 import type { ProfileContext } from 'utils/profile';
 
@@ -38,6 +40,7 @@ async function fetchSubmissions(
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/submissions?${params.toString()}`,
     {
+      cache: 'no-store',
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${accessToken}`,
@@ -65,13 +68,17 @@ async function fetchSubmissions(
   return { data, pagination: { limit, total, offset } };
 }
 
-async function fetchTeamForms(
-  profileContext: ProfileContext
-): Promise<FormFilterMetadata[]> {
-  const { accessToken, selectedTeam } = profileContext;
+async function fetchTeamForms(): Promise<FormFilterMetadata[]> {
+  'use cache: private';
+  cacheLife({ stale: 60 * 5 });
+
+  const { accessToken, selectedTeam } = await getProfileContext();
+  cacheTag(formsCacheTag(selectedTeam.id));
+
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/forms`,
     {
+      cache: 'no-store',
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${accessToken}`,
@@ -87,7 +94,25 @@ async function fetchTeamForms(
   return data;
 }
 
-export default async function SubmissionsPage({
+export default function SubmissionsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<SubmissionsSearchParams>;
+}) {
+  return (
+    <>
+      <h1 className="text-2xl lowercase pb-4 tracking-wide font-semibold">
+        Submissions
+      </h1>
+
+      <Suspense fallback={<SubmissionsSkeleton />}>
+        <SubmissionsContent searchParams={searchParams} />
+      </Suspense>
+    </>
+  );
+}
+
+async function SubmissionsContent({
   searchParams,
 }: {
   searchParams?: Promise<SubmissionsSearchParams>;
@@ -96,38 +121,8 @@ export default async function SubmissionsPage({
   const query = resolvedSearchParams?.query || '';
   const currentPage = Number(resolvedSearchParams?.page) || 1;
   const selectedForms = parseSubmissionFormIds(resolvedSearchParams);
-
-  return (
-    <>
-      <h1 className="text-2xl lowercase pb-4 tracking-wide font-semibold">
-        Submissions
-      </h1>
-
-      <Suspense
-        fallback={<SubmissionsSkeleton />}
-        key={`${currentPage}:${query}:${selectedForms.join(',')}`}
-      >
-        <SubmissionsContent
-          currentPage={currentPage}
-          query={query}
-          selectedForms={selectedForms}
-        />
-      </Suspense>
-    </>
-  );
-}
-
-async function SubmissionsContent({
-  currentPage,
-  query,
-  selectedForms,
-}: {
-  currentPage: number;
-  query: string;
-  selectedForms: string[];
-}) {
   const profileContext = await getProfileContext();
-  const formsPromise = fetchTeamForms(profileContext).catch(() => {
+  const formsPromise = fetchTeamForms().catch(() => {
     console.error('Unable to load submission filter form metadata.');
     return undefined;
   });

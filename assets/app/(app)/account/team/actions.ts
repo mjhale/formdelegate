@@ -1,9 +1,15 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
 
+import {
+  profileCacheTag,
+  teamCacheTag,
+  teamInvitationsCacheTag,
+  teamMembershipsCacheTag,
+} from 'utils/cacheTags';
 import {
   CURRENT_TEAM_COOKIE,
   fetchProfile,
@@ -275,6 +281,11 @@ async function refreshTeamState(
   } else {
     (await cookies()).delete(CURRENT_TEAM_COOKIE);
   }
+
+  updateTag(profileCacheTag(userId));
+  updateTag(teamCacheTag(preferredTeamId));
+  updateTag(teamMembershipsCacheTag(preferredTeamId));
+  updateTag(teamInvitationsCacheTag(preferredTeamId));
 
   revalidatePath('/account/team');
   revalidatePath('/', 'layout');

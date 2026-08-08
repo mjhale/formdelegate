@@ -1,5 +1,6 @@
 'use server';
 
+import { updateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 // import { set } from 'lodash';
@@ -7,6 +8,7 @@ import { z } from 'zod';
 import { serializeFormPayload } from './emailProviderPayload';
 import { createFormSchema, updateFormSchema } from './formSchema';
 import { getReverifyFailureStatusUpdate } from './reverifyPolicy';
+import { formCacheTag, formsCacheTag } from 'utils/cacheTags';
 import { getProfileContext } from 'utils/profile';
 
 const reverifyEmailIntegrationSchema = z.object({
@@ -74,6 +76,8 @@ export async function updateForm(_currentState, formData) {
     );
   }
 
+  updateTag(formsCacheTag(selectedTeam.id));
+  updateTag(formCacheTag(selectedTeam.id, validatedData.data.id));
   redirect('/forms');
 }
 
@@ -127,6 +131,8 @@ export async function reverifyEmailIntegration(_currentState, payload) {
     );
   }
 
+  updateTag(formsCacheTag(selectedTeam.id));
+  updateTag(formCacheTag(selectedTeam.id, formId));
   redirect(`/forms/${formId}/edit`);
 }
 
@@ -173,6 +179,7 @@ export async function createForm(_currentState, formData) {
     throw new Error(`Fetch Error: Failed to create form`);
   }
 
+  updateTag(formsCacheTag(selectedTeam.id));
   redirect('/forms');
 }
 
@@ -333,5 +340,7 @@ export async function deleteForm(formId) {
     throw new Error(`Fetch Error: Failed to create form`);
   }
 
+  updateTag(formsCacheTag(selectedTeam.id));
+  updateTag(formCacheTag(selectedTeam.id, formId));
   redirect('/forms');
 }

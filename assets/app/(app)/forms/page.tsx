@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 
 import { Suspense } from 'react';
 import Link from 'next/link';
+import { cacheLife, cacheTag } from 'next/cache';
 
 import { deleteForm } from './actions';
+import { formsCacheTag } from 'utils/cacheTags';
 import { getProfileContext } from 'utils/profile';
 
 import { FormsSkeleton } from '../_components/skeletons';
@@ -11,17 +13,26 @@ import { FormsSkeleton } from '../_components/skeletons';
 import CopyToClipboardButton from './copyToClipboardButton';
 
 async function fetchForms() {
+  'use cache: private';
+  cacheLife({ stale: 60 * 5 });
+
   const { accessToken, selectedTeam } = await getProfileContext();
+  cacheTag(formsCacheTag(selectedTeam.id));
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${selectedTeam.id}/forms`,
     {
+      cache: 'no-store',
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${accessToken}`,
       },
     }
   );
+
+  if (!res.ok) {
+    throw new Error('Unable to fetch forms.');
+  }
 
   const { data } = await res.json();
 

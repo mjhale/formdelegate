@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+import { Suspense } from 'react';
+
 import {
   InvitationAccountSwitchLink,
   TeamInvitationAuthContext,
@@ -11,7 +13,19 @@ import {
 
 import SignupForm from './form';
 
-export default async function SignupPage({
+export default function SignupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ destination?: string }>;
+}) {
+  return (
+    <Suspense fallback={<SignupPageFallback />}>
+      <SignupPageContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function SignupPageContent({
   searchParams,
 }: {
   searchParams: Promise<{ destination?: string }>;
@@ -54,6 +68,17 @@ export default async function SignupPage({
         )}
       </div>
     </>
+  );
+}
+
+function SignupPageFallback() {
+  return (
+    <div className="flex flex-col items-center">
+      <div className="flex w-full max-w-4xl flex-col gap-y-4">
+        <div className="h-9 w-72 animate-pulse rounded bg-slate-200" />
+        <div className="h-96 w-full max-w-xl animate-pulse rounded-lg bg-white" />
+      </div>
+    </div>
   );
 }
 

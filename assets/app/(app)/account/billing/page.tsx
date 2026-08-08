@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 import { Suspense } from 'react';
-import { cookies } from 'next/headers';
+import { cacheLife, cacheTag } from 'next/cache';
 
 import type {
   BillingCountUsage,
@@ -9,6 +9,7 @@ import type {
   BillingUsage,
   BillingUsageStatus,
 } from 'types/user';
+import { plansCacheTag } from 'utils/cacheTags';
 import { getProfileContext } from 'utils/profile';
 
 import { BillingSkeleton } from '../../_components/skeletons';
@@ -17,23 +18,33 @@ import StripePortalButton from './stripePortalButton';
 import PlanSubscribeButton from './planSubscribeButton';
 
 async function fetchPlans() {
-  const accessToken = (await cookies()).get('access_token')?.value;
+  'use cache: private';
+  cacheLife('hours');
+  cacheTag(plansCacheTag);
+
+  const { accessToken } = await getProfileContext();
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/v1/plans`, {
+    cache: 'no-store',
     headers: {
       Accept: 'application/json',
       Authorization: `Bearer ${accessToken}`,
     },
   });
 
+  if (!res.ok) {
+    throw new Error('Unable to fetch plans.');
+  }
+
   const { data } = await res.json();
 
   return data;
 }
 
-async function fetchBillingUsage(teamId: string): Promise<BillingUsage> {
-  const accessToken = (await cookies()).get('access_token')?.value;
-
+async function fetchBillingUsage(
+  accessToken: string,
+  teamId: string
+): Promise<BillingUsage> {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_HOST}/v1/teams/${teamId}/billing/usage`,
     {
@@ -65,10 +76,10 @@ export default async function BillingPage() {
 async function BillingContent() {
   const profileContextPromise = getProfileContext();
   const plansPromise = fetchPlans();
-  const { profile, selectedTeam } = await profileContextPromise;
+  const { accessToken, profile, selectedTeam } = await profileContextPromise;
   const [plans, billingUsage] = await Promise.all([
     plansPromise,
-    fetchBillingUsage(selectedTeam.id),
+    fetchBillingUsage(accessToken, selectedTeam.id),
   ]);
 
   let currentSubscriptionPlanId = billingUsage.plan?.id;

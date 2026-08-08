@@ -1,9 +1,10 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
 
+import { profileCacheTag } from 'utils/cacheTags';
 import { getProfileContext } from 'utils/profile';
 
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
@@ -121,6 +122,7 @@ export async function updateUserAction(_currentState, formData: FormData) {
     throw new Error(`Fetch Error: Failed to update user`);
   }
 
+  updateTag(profileCacheTag(validatedData.data.id));
   revalidatePath('/account');
 }
 
@@ -202,6 +204,7 @@ export async function updatePasswordAction(_currentState, formData: FormData) {
     throw new Error(`Fetch Error: Failed to update user password`);
   }
 
+  updateTag(profileCacheTag(validatedData.data.id));
   revalidatePath('/account');
 
   return {

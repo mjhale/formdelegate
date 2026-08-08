@@ -6,7 +6,14 @@ import type {
 } from 'types/user';
 
 import { Suspense } from 'react';
+import { cacheLife, cacheTag } from 'next/cache';
 
+import {
+  profileCacheTag,
+  teamCacheTag,
+  teamInvitationsCacheTag,
+  teamMembershipsCacheTag,
+} from 'utils/cacheTags';
 import { getProfileContext } from 'utils/profile';
 
 import { TeamManagementSkeleton } from '../../_components/skeletons';
@@ -21,8 +28,23 @@ export default async function AccountTeamPage() {
 }
 
 async function AccountTeamContent() {
+  const teamData = await fetchTeamManagementData();
+
+  return <TeamManagement {...teamData} />;
+}
+
+async function fetchTeamManagementData() {
+  'use cache: private';
+  cacheLife({ stale: 60 * 5 });
+
   const { accessToken, profile, selectedMembership, selectedTeam } =
     await getProfileContext();
+  cacheTag(
+    profileCacheTag(profile.user.id),
+    teamCacheTag(selectedTeam.id),
+    teamMembershipsCacheTag(selectedTeam.id),
+    teamInvitationsCacheTag(selectedTeam.id)
+  );
 
   const canManageTeam =
     profile.user.is_admin || selectedMembership.is_billing_account;
@@ -34,15 +56,13 @@ async function AccountTeamContent() {
       ])
     : [currentUserMembership(selectedMembership.id, profile.user), []];
 
-  return (
-    <TeamManagement
-      canManageTeam={canManageTeam}
-      currentUserId={profile.user.id}
-      invitations={invitations}
-      memberships={memberships}
-      selectedTeam={selectedTeam}
-    />
-  );
+  return {
+    canManageTeam,
+    currentUserId: profile.user.id,
+    invitations,
+    memberships,
+    selectedTeam,
+  };
 }
 
 async function fetchTeamMemberships(

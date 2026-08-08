@@ -1,4 +1,3 @@
-import { Lato } from 'next/font/google';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -7,13 +6,6 @@ import iconBlocker from '../../public/images/icon-blocker.svg';
 import iconConnection from '../../public/images/icon-connection.svg';
 import iconFolder from '../../public/images/icon-folder.svg';
 import iconLock from '../../public/images/icon-lock.svg';
-
-const lato = Lato({
-  weight: ['700', '900'],
-  subsets: ['latin'],
-  style: ['normal', 'italic'],
-  variable: '--font-lato',
-});
 
 export default async function IndexPage() {
   return (
@@ -29,9 +21,7 @@ export default async function IndexPage() {
         />
         <div className="absolute leading-6 text-center w-full max-w-4xl">
           <div className="flex flex-col gap-y-6 box-border my-4 mx-auto w-full">
-            <h1
-              className={`text-2xl md:text-4xl font-semibold ${lato.className} text-neutral-100 [text-shadow:_1px_1px_4px_rgb(0_0_0_/_90%)]`}
-            >
+            <h1 className="text-2xl md:text-4xl font-semibold [font-family:var(--font-lato)] text-neutral-100 [text-shadow:_1px_1px_4px_rgb(0_0_0_/_90%)]">
               Simple Form Processing
             </h1>
             <p className="text-lg md:text-3xl text-neutral-200 [text-shadow:_1px_1px_1px_rgb(0_0_0_/_70%)]">

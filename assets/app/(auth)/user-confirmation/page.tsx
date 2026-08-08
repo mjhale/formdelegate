@@ -1,23 +1,17 @@
 import type { Metadata } from 'next';
 
+import { Suspense } from 'react';
 import { cookies } from 'next/headers';
-import { Lato } from 'next/font/google';
 import Link from 'next/link';
 
-const lato = Lato({
-  weight: ['700', '900'],
-  subsets: ['latin'],
-  style: ['normal', 'italic'],
-  variable: '--font-lato',
-});
-
-async function verifyConfirmationToken(token) {
+async function verifyConfirmationToken(token: string) {
   const accessToken = (await cookies()).get('access_token')?.value;
 
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_HOST}/v1/users/confirm?token=${token}`,
       {
+        cache: 'no-store',
         headers: {
           Accept: 'application/json',
           Authorization: `Bearer ${accessToken}`,
@@ -28,7 +22,7 @@ async function verifyConfirmationToken(token) {
     const data = await res.json();
 
     if (!res.ok) {
-      if (data.error.type === 'INVALID_OR_EXPIRED_TOKEN') {
+      if (data?.error?.type === 'INVALID_OR_EXPIRED_TOKEN') {
         return {
           message: (
             <>
@@ -86,7 +80,22 @@ async function verifyConfirmationToken(token) {
   }
 }
 
-export default async function UserConfirmationPage({
+export default function UserConfirmationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ token?: string }>;
+}) {
+  return (
+    <>
+      <BrandLink />
+      <Suspense fallback={<ConfirmationFallback />}>
+        <ConfirmationContent searchParams={searchParams} />
+      </Suspense>
+    </>
+  );
+}
+
+async function ConfirmationContent({
   searchParams,
 }: {
   searchParams: Promise<{ token?: string }>;
@@ -100,20 +109,28 @@ export default async function UserConfirmationPage({
   const confirmation = await verifyConfirmationToken(token);
 
   return (
-    <>
-      <div className="flex justify-center align-middle items-center h-32 mb-4">
-        <Link
-          href="/"
-          className={`block md:max-w-[4em] text-center text-2xl italic font-black no-underline text-neutral-100 ${lato.className} font-sans md:leading-8 md:text-5xl lowercase hover:text-white active:animate-scale-increase-fast`}
-        >
-          Form Delegate
-        </Link>
-      </div>
+    <div className="bg-white border rounded-lg p-6 text-black mb-4">
+      {!!confirmation?.message && confirmation.message}
+    </div>
+  );
+}
 
-      <div className="bg-white border rounded-lg p-6 text-black mb-4">
-        {!!confirmation?.message && confirmation.message}
-      </div>
-    </>
+function BrandLink() {
+  return (
+    <div className="flex justify-center align-middle items-center h-32 mb-4">
+      <Link
+        href="/"
+        className="block md:max-w-[4em] text-center text-2xl italic font-black no-underline text-neutral-100 [font-family:var(--font-lato)] md:leading-8 md:text-5xl lowercase hover:text-white active:animate-scale-increase-fast"
+      >
+        Form Delegate
+      </Link>
+    </div>
+  );
+}
+
+function ConfirmationFallback() {
+  return (
+    <div className="mb-4 h-24 animate-pulse rounded-lg border bg-white/90" />
   );
 }
 
