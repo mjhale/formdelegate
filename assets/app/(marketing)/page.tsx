@@ -10,16 +10,20 @@ import iconLock from '../../public/images/icon-lock.svg';
 export default async function IndexPage() {
   return (
     <div className="-mx-4 -my-4">
-      <div className="relative flex pt-12 pb-12 justify-center items-center shadow-[inset_0_0_0_1000px_rgba(50,43,40,0.55)] h-[35vw] md:h-[40vw] lg:h-[25vw] lg:pt-32 lg:pb-32">
+      <div className="relative isolate flex pt-12 pb-12 justify-center items-center h-[35vw] md:h-[40vw] lg:h-[25vw] lg:pt-32 lg:pb-32">
         <Image
-          className="block object-cover -z-10"
+          className="block object-cover z-0"
           src={heroImage}
           priority={true}
           quality={60}
           fill={true}
           alt="Person looking at monitor"
         />
-        <div className="absolute leading-6 text-center w-full max-w-4xl">
+        <div
+          className="absolute inset-0 z-10 bg-[rgba(50,43,40,0.55)]"
+          aria-hidden="true"
+        />
+        <div className="absolute z-20 leading-6 text-center w-full max-w-4xl">
           <div className="flex flex-col gap-y-6 box-border my-4 mx-auto w-full">
             <h1 className="text-2xl md:text-4xl font-semibold [font-family:var(--font-lato)] text-neutral-100 [text-shadow:_1px_1px_4px_rgb(0_0_0_/_90%)]">
               Simple Form Processing
