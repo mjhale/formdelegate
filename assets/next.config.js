@@ -3,6 +3,7 @@
  */
 const nextConfig = {
   cacheComponents: true,
+  distDir: process.env.NEXT_DIST_DIR || '.next',
   partialPrefetching: true,
   async redirects() {
     return [
