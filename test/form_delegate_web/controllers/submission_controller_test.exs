@@ -1,5 +1,6 @@
 defmodule FormDelegateWeb.SubmissionControllerTest do
   use FormDelegateWeb.ConnCase
+  use Oban.Testing, repo: FormDelegate.Repo
 
   alias FormDelegate.BillingCounts
   alias FormDelegate.Submissions
@@ -79,6 +80,37 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
 
       billing_count = BillingCounts.get_latest_billing_count_of_team(form.team_id)
       assert billing_count.submission_count == period.submission_count
+    end
+
+    test "rejects nested fields without enqueueing integrations", %{
+      conn: conn,
+      form: form
+    } do
+      period = BillingCounts.current_period_for_team!(form.team_id)
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        response =
+          conn
+          |> post(
+            Routes.submission_path(conn, :create, form.id, %{
+              message: "I have an issue with an order",
+              metadata: %{topic: "support"}
+            })
+          )
+          |> json_response(422)
+
+        assert response == %{
+                 "error" => %{
+                   "code" => 422,
+                   "errors" => %{"fields" => ["is invalid"]},
+                   "type" => "UNPROCESSABLE_ENTITY"
+                 }
+               }
+
+        billing_count = BillingCounts.get_latest_billing_count_of_team(form.team_id)
+        assert billing_count.submission_count == period.submission_count
+        refute_enqueued(worker: FormDelegate.Jobs.SubmissionIntegrations)
+      end)
     end
 
     test "Responds with :not_found  error for nonexistant form", %{

@@ -8,7 +8,7 @@
       </tr>
       <tr>
         <td align="left">
-          <%= @submission.body %>
+          <%= format_submission_value(@submission.body) %>
         </td>
       </tr>
 
@@ -16,7 +16,7 @@
         <td align="left">
           <ul>
             <%= for {key, value} <- @submission.fields do %>
-              <li><%= key %>: <%= value %></li>
+              <li><%= key %>: <%= format_submission_value(value) %></li>
             <% end %>
           </ul>
         </td>

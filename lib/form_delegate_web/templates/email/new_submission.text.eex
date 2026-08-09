@@ -1,15 +1,15 @@
 You received a new form submission for <%= @form.name %>
 
 <%= if @submission.sender do %>
-  Sender: <%= @submission.sender %>
+  Sender: <%= format_submission_value(@submission.sender) %>
 <% end %>
 
 <%= if @submission.body do %>
-  Body: <%= @submission.body %>
+  Body: <%= format_submission_value(@submission.body) %>
 <% end %>
 
 <%= for {key, value} <- @submission.fields do %>
-  <%= key %>: <%= value %>
+  <%= key %>: <%= format_submission_value(value) %>
 <% end %>
 
 Visit <%= @submission_frontend_url %> for additional information.
