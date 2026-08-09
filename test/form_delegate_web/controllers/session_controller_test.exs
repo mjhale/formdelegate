@@ -32,18 +32,30 @@ defmodule FormDelegateWeb.SessionControllerTest do
     end
 
     @tag :as_inserted_user
-    test "Returns an error and does not create a session if email and password credentials are invalid",
+    test "Returns the same error for an unknown email and an invalid password",
          %{conn: conn, user: user} do
       credentials = %{email: Map.get(user, :email), password: "wrongpassword"}
 
-      response =
+      invalid_password_response =
         conn
         |> post(Routes.session_path(conn, :create, session: credentials))
         |> json_response(401)
 
+      unknown_email_response =
+        conn
+        |> recycle()
+        |> put_req_header("accept", "application/json")
+        |> post(
+          Routes.session_path(conn, :create,
+            session: %{email: "unknown@example.com", password: "wrongpassword"}
+          )
+        )
+        |> json_response(401)
+
       expected = %{"error" => %{"code" => 401, "type" => "INVALID_CREDENTIALS"}}
 
-      assert response == expected
+      assert invalid_password_response == expected
+      assert unknown_email_response == invalid_password_response
     end
 
     test "Returns an error and does not create a session if email and password credentials are empty",

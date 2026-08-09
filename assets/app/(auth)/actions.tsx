@@ -11,13 +11,16 @@ import {
 } from 'utils/profile';
 import { safeRedirectPath } from 'utils/destination';
 
-import Link from 'next/link';
+import {
+  fieldErrorState,
+  invalidCredentialsState,
+  loginInputSchema,
+  parseLoginSessionResponse,
+  serviceErrorState,
+  type LoginState,
+} from './login/loginContract';
 
-const loginSchema = z.object({
-  email: z.string().trim().email().min(3),
-  password: z.string().trim().min(8),
-  destination: z.string(),
-});
+import Link from 'next/link';
 
 const requestPasswordResetSchema = z.object({
   email: z.string().email(),
@@ -34,24 +37,25 @@ const resetPasswordSchema = z
     path: ['password_confirmation'],
   });
 
-export async function loginUser(_currentState, formData: FormData) {
+export async function loginUser(
+  _currentState: LoginState,
+  formData: FormData
+): Promise<LoginState> {
   const rawFormData = {
-    destination: formData.get('destination'),
-    email: formData.get('email'),
-    password: formData.get('password'),
+    destination: String(formData.get('destination') ?? ''),
+    email: String(formData.get('email') ?? ''),
+    password: String(formData.get('password') ?? ''),
   };
 
-  const validatedData = loginSchema.safeParse(rawFormData);
+  const validatedData = loginInputSchema.safeParse(rawFormData);
 
   if (!validatedData.success) {
-    return {
-      message: 'Failed to login due to field errors.',
-      errors: validatedData.error.format(),
-    };
+    return fieldErrorState(validatedData.error);
   }
 
   const destination = safeRedirectPath(validatedData.data.destination, '');
   let redirectUrl = destination || '/dashboard';
+  let failureStage = 'session_request';
 
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/v1/sessions`, {
@@ -68,17 +72,33 @@ export async function loginUser(_currentState, formData: FormData) {
       },
     });
 
-    if (!res.ok) {
-      throw new Error(`Network response failure while logging in.`);
+    const sessionResult = await parseLoginSessionResponse(res);
+
+    if (sessionResult.status === 'invalid_credentials') {
+      return invalidCredentialsState();
     }
 
-    const { data } = await res.json();
-    const profile = await fetchProfile(data.token, data.id.toString());
+    if (sessionResult.status === 'service_error') {
+      console.error('Login failed.', {
+        stage: 'session_response',
+        status: sessionResult.httpStatus,
+        reason: sessionResult.reason,
+      });
+
+      return serviceErrorState();
+    }
+
+    failureStage = 'profile_request';
+    const profile = await fetchProfile(
+      sessionResult.token,
+      sessionResult.userId
+    );
     const selectedTeamId =
       profile.current_team?.id || profile.memberships[0]?.team.id;
+    failureStage = 'session_setup';
     const cookieStore = await cookies();
 
-    cookieStore.set('access_token', data.token, {
+    cookieStore.set('access_token', sessionResult.token, {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
@@ -86,7 +106,7 @@ export async function loginUser(_currentState, formData: FormData) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
-    cookieStore.set('user_id', data.id, {
+    cookieStore.set('user_id', sessionResult.userId, {
       httpOnly: false,
       secure: true,
       sameSite: 'lax',
@@ -100,8 +120,9 @@ export async function loginUser(_currentState, formData: FormData) {
       cookieStore.delete(CURRENT_TEAM_COOKIE);
       redirectUrl = destination || '/account-setup-required';
     }
-  } catch (error) {
-    throw new Error(`Fetch Error: Failed to login.`);
+  } catch {
+    console.error('Login failed.', { stage: failureStage });
+    return serviceErrorState();
   }
 
   redirect(redirectUrl);

@@ -70,11 +70,12 @@ async function LoginPageContent({
             , then return to this invitation.
           </p>
         ) : (
-          <div className="flex justify-end max-w-xs mx-auto pt-4">
+          <p className="mx-auto max-w-xs pt-4 text-right text-sm text-slate-600">
+            Forgot your password?{' '}
             <Link href={resetHref} className="font-semibold text-sm">
-              Need help?
+              Reset it
             </Link>
-          </div>
+          </p>
         )}
       </div>
       {isInvitationLogin ? (
