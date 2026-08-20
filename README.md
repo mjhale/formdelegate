@@ -7,7 +7,7 @@ effort.
 Using this service requires signing up for an account and creating an endpoint for your
 submissions. Your generated endpoint will look similar to:
 
-`https://formdelegate.com/submissions/6b7bed67-adc5-44cb-ac9d-e37aa1943735`
+`https://www.formdelegate.com/f/6b7bed67-adc5-44cb-ac9d-e37aa1943735`
 
 As an example of using Form Delegate, consider this existing HTML form:
 
@@ -30,12 +30,37 @@ As an example of using Form Delegate, consider this existing HTML form:
 To use this form with Form Delegate, replace the first line with:
 
 ```
-<form action="https://formdelegate.com/submissions/6b7bed67-adc5-44cb-ac9d-e37aa1943735" method="post">
+<form action="https://www.formdelegate.com/f/6b7bed67-adc5-44cb-ac9d-e37aa1943735" method="post">
 ```
 
 And that's it. You can configure your endpoint to automatically send an email when a new submission is
 received, and you can also set up integration hooks with services such as Zapier. Submissions are
 automatically filtered for spam via [Akismet](https://akismet.com/).
+
+## Submission Source Allowlists
+
+Forms can optionally reject browser submissions that do not come from an allowed host. Existing
+and newly created forms default to `unrestricted`; saving host rules alone does not activate them.
+Choose `restricted` in the form editor after reviewing the effective list.
+
+Host rules use normalized hostnames rather than URLs:
+
+- `example.com` matches only that exact host.
+- `*.example.com` matches descendants such as `www.example.com`, but not the apex `example.com`.
+- Schemes, ports, paths, credentials, queries, and fragments are not valid host rules.
+- Restricted forms reject requests when both `Origin` and `Referer` are absent or unusable.
+
+Rejected JSON submissions return `403` with `SUBMISSION_SOURCE_NOT_ALLOWED`. HTML submissions
+receive a generic non-redirecting error page. A rejection creates no submission or attachment,
+uses no billing quota, and starts no spam or integration processing.
+
+This control reduces unintended cross-site browser submissions; it is not caller authentication.
+Non-browser clients can forge source headers. Use rate limits, CAPTCHA, or a trusted server relay
+when stronger abuse protection is required. Exact page allowlists are not supported because an
+`Origin` has no path and browsers may omit the path from `Referer`.
+
+CORS is separate: `CORS_ORIGINS` controls whether browser JavaScript can read API responses, while
+the per-form source policy controls whether the API accepts and persists a submission.
 
 ## TODO
 
@@ -263,6 +288,8 @@ FormDelegate.Repo.insert!(%FormDelegate.Plans.Plan{
 - Configure Postmark sender/domain authentication.
 - Confirm S3 upload and asset URLs work.
 - Back up Postgres and your object storage bucket.
+- Follow the [form host allowlist rollout](docs/form-host-allowlist-rollout.md) before restricting
+  production forms.
 
 ## Publishing Container Images
 
