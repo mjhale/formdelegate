@@ -25,6 +25,7 @@ defmodule FormDelegateWeb.FormView do
       id: form.id,
       inserted_at: form.inserted_at,
       name: form.name,
+      submission_source_policy: form.submission_source_policy,
       submission_count: form.submission_count,
       updated_at: form.updated_at,
       verified: form.verified

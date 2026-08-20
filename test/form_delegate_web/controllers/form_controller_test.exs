@@ -102,6 +102,7 @@ defmodule FormDelegateWeb.FormControllerTest do
             "id" => form.id,
             "inserted_at" => DateTime.to_iso8601(form.inserted_at),
             "name" => form.name,
+            "submission_source_policy" => "unrestricted",
             "submission_count" => 0,
             "updated_at" => DateTime.to_iso8601(form.updated_at),
             "verified" => false
@@ -128,6 +129,7 @@ defmodule FormDelegateWeb.FormControllerTest do
 
       assert response["data"]["host"] == nil
       assert response["data"]["name"] == "Contact Form"
+      assert response["data"]["submission_source_policy"] == "unrestricted"
       assert response["data"]["submission_count"] == 0
       assert response["data"]["verified"] == false
 
@@ -317,6 +319,7 @@ defmodule FormDelegateWeb.FormControllerTest do
           "id" => form.id,
           "inserted_at" => DateTime.to_iso8601(form.inserted_at),
           "name" => form.name,
+          "submission_source_policy" => "unrestricted",
           "submission_count" => 0,
           "updated_at" => DateTime.to_iso8601(form.updated_at),
           "verified" => false
@@ -357,8 +360,60 @@ defmodule FormDelegateWeb.FormControllerTest do
 
       assert response["data"]["hosts"] == ["example.com"]
       assert response["data"]["name"] == "Report Form"
+      assert response["data"]["submission_source_policy"] == "unrestricted"
       assert response["data"]["submission_count"] == 0
       assert response["data"]["verified"] == false
+    end
+
+    @tag :as_inserted_user
+    test "normalizes and returns restricted submission source settings", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> put(Routes.form_path(conn, :update, form.id),
+          form: %{
+            hosts: [" Example.COM. ", "example.com", "*.Example.org"],
+            name: form.name,
+            submission_source_policy: "restricted"
+          }
+        )
+        |> json_response(200)
+
+      assert response["data"]["hosts"] == ["example.com", "*.example.org"]
+      assert response["data"]["submission_source_policy"] == "restricted"
+    end
+
+    @tag :as_inserted_user
+    test "rejects invalid submission source settings", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> put(Routes.form_path(conn, :update, form.id),
+          form: %{
+            hosts: ["https://example.com/contact"],
+            name: form.name,
+            submission_source_policy: "restricted"
+          }
+        )
+        |> json_response(422)
+
+      assert response["error"]["errors"]["hosts"] == [
+               "contains an invalid hostname or wildcard"
+             ]
     end
 
     @tag :as_inserted_user
@@ -616,6 +671,7 @@ defmodule FormDelegateWeb.FormControllerTest do
           "id" => user_form.id,
           "inserted_at" => DateTime.to_iso8601(user_form.inserted_at),
           "name" => user_form.name,
+          "submission_source_policy" => "unrestricted",
           "submission_count" => 0,
           "updated_at" => DateTime.to_iso8601(user_form.updated_at),
           "verified" => false
