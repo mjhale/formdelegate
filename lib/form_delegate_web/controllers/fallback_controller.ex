@@ -41,6 +41,13 @@ defmodule FormDelegateWeb.FallbackController do
     |> render(:"403")
   end
 
+  def call(conn, {:error, :submission_source_not_allowed}) do
+    conn
+    |> put_status(:forbidden)
+    |> put_view(FormDelegateWeb.ErrorView)
+    |> render(:"403", %{type: "SUBMISSION_SOURCE_NOT_ALLOWED"})
+  end
+
   def call(conn, {:error, :bad_request}) do
     conn
     |> put_status(:bad_request)

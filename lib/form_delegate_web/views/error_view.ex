@@ -37,6 +37,15 @@ defmodule FormDelegateWeb.ErrorView do
     }
   end
 
+  def render("403.json", %{type: type}) do
+    %{
+      error: %{
+        code: 403,
+        type: type
+      }
+    }
+  end
+
   def render("403.json", _assigns) do
     %{
       error: %{

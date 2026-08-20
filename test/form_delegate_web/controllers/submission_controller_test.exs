@@ -3,8 +3,30 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
   use Oban.Testing, repo: FormDelegate.Repo
 
   alias FormDelegate.BillingCounts
+  alias FormDelegate.Forms.Form
+  alias FormDelegate.Repo
   alias FormDelegate.Submissions
+  alias FormDelegate.Submissions.{Attachment, Submission}
   alias FormDelegateWeb.Router.Helpers, as: Routes
+
+  defmodule AkismetProbe do
+    @behaviour FormDelegate.Services.Akismet
+
+    @impl true
+    def is_spam?(_api_key, _submission) do
+      send(Application.fetch_env!(:form_delegate, :akismet_probe_pid), :akismet_called)
+      {:ok, false}
+    end
+
+    @impl true
+    def submit_ham(_api_key, _submission), do: {:ok}
+
+    @impl true
+    def submit_spam(_api_key, _submission), do: {:ok}
+
+    @impl true
+    def verify_key(_api_key), do: {:ok, "valid"}
+  end
 
   @valid_attrs %{
     message: "I have an issue with an order",
@@ -121,6 +143,140 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
         |> post(Routes.submission_path(conn, :create, Ecto.UUID.generate(), @valid_attrs))
 
       assert json_response(conn, 404)
+    end
+
+    test "accepts an allowed Origin for a restricted form", %{conn: conn, form: form} do
+      form = restrict_form(form, ["allowed.example"])
+
+      response =
+        conn
+        |> put_req_header("origin", "https://allowed.example")
+        |> post(Routes.submission_path(conn, :create, form.id, @valid_attrs))
+        |> json_response(202)
+
+      assert response == %{"submission" => "Accepted"}
+    end
+
+    test "accepts an allowed Referer when Origin is absent", %{conn: conn, form: form} do
+      form = restrict_form(form, ["allowed.example"])
+
+      response =
+        conn
+        |> put_req_header("referer", "https://allowed.example/contact?campaign=test")
+        |> post(Routes.submission_path(conn, :create, form.id, @valid_attrs))
+        |> json_response(202)
+
+      assert response == %{"submission" => "Accepted"}
+    end
+
+    test "rejects a disallowed source before every submission side effect", %{
+      conn: conn,
+      form: form
+    } do
+      form = restrict_form(form, ["allowed.example"])
+      previous_akismet_api = Application.fetch_env!(:form_delegate, :akismet_api)
+      Application.put_env(:form_delegate, :akismet_api, AkismetProbe)
+      Application.put_env(:form_delegate, :akismet_probe_pid, self())
+
+      on_exit(fn ->
+        Application.put_env(:form_delegate, :akismet_api, previous_akismet_api)
+        Application.delete_env(:form_delegate, :akismet_probe_pid)
+      end)
+
+      event_name = [:form_delegate, :submission, :source_rejected]
+      handler_id = "submission-source-test-#{System.unique_integer([:positive, :monotonic])}"
+      test_pid = self()
+
+      :telemetry.attach(
+        handler_id,
+        event_name,
+        fn event, measurements, metadata, _config ->
+          send(test_pid, {:submission_source_event, event, measurements, metadata})
+        end,
+        nil
+      )
+
+      on_exit(fn -> :telemetry.detach(handler_id) end)
+
+      FormDelegateWeb.Endpoint.subscribe("user_form_submissions:#{form.user_id}")
+
+      submission_count = Repo.aggregate(Submission, :count, :id)
+      attachment_count = Repo.aggregate(Attachment, :count, :id)
+      billing_count = BillingCounts.get_latest_billing_count_of_team(form.team_id)
+      billing_count_rows = Repo.aggregate(FormDelegate.BillingCounts.BillingCount, :count, :id)
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        response =
+          conn
+          |> put_req_header("origin", "https://evil.example")
+          |> post(Routes.submission_path(conn, :create, form.id, @valid_attrs))
+          |> json_response(403)
+
+        assert response == %{
+                 "error" => %{
+                   "code" => 403,
+                   "type" => "SUBMISSION_SOURCE_NOT_ALLOWED"
+                 }
+               }
+
+        refute_enqueued(worker: FormDelegate.Jobs.SubmissionIntegrations)
+      end)
+
+      assert Repo.aggregate(Submission, :count, :id) == submission_count
+      assert Repo.aggregate(Attachment, :count, :id) == attachment_count
+
+      reloaded_billing_count = BillingCounts.get_latest_billing_count_of_team(form.team_id)
+      assert reloaded_billing_count == billing_count
+
+      assert Repo.aggregate(FormDelegate.BillingCounts.BillingCount, :count, :id) ==
+               billing_count_rows
+
+      refute_receive :akismet_called
+      refute_receive %Phoenix.Socket.Broadcast{event: "new_msg"}
+
+      assert_receive {:submission_source_event, ^event_name, %{count: 1}, metadata}
+      assert metadata.form_id == form.id
+      assert metadata.team_id == form.team_id
+      assert metadata.reason == :host_mismatch
+      assert metadata.observed_host == "evil.example"
+      refute Map.has_key?(metadata, :fields)
+    end
+
+    test "restricted forms fail closed for missing, null, and malformed sources", %{
+      form: form
+    } do
+      form = restrict_form(form, ["allowed.example"])
+
+      sources = [nil, "null", "not a URL"]
+
+      for source <- sources do
+        conn = build_conn() |> put_req_header("accept", "application/json")
+        conn = if source, do: put_req_header(conn, "origin", source), else: conn
+
+        response =
+          conn
+          |> post(Routes.submission_path(conn, :create, form.id, @valid_attrs))
+          |> json_response(403)
+
+        assert response["error"]["type"] == "SUBMISSION_SOURCE_NOT_ALLOWED"
+      end
+    end
+
+    test "renders a generic HTML 403 without exposing source rules", %{conn: conn, form: form} do
+      form = restrict_form(form, ["allowed.example"])
+
+      conn =
+        conn
+        |> delete_req_header("accept")
+        |> put_req_header("accept", "text/html")
+        |> put_req_header("origin", "https://evil.example")
+        |> post(Routes.submission_path(conn, :create, form.id, @valid_attrs))
+
+      body = html_response(conn, 403)
+
+      assert body =~ "This form cannot accept submissions from this website."
+      refute body =~ "allowed.example"
+      refute body =~ "evil.example"
     end
   end
 
@@ -595,6 +751,12 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
     form = FormDelegate.Factory.insert(:form, user: user, team: team)
 
     {:ok, form: form}
+  end
+
+  defp restrict_form(form, hosts) do
+    form
+    |> Form.changeset(%{hosts: hosts, submission_source_policy: :restricted})
+    |> Repo.update!()
   end
 
   defp use_invalid_akismet_key(_context) do

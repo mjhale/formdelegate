@@ -9,6 +9,14 @@ defmodule FormDelegateWeb.ErrorViewTest do
              %{error: %{code: 404, type: "PAGE_NOT_FOUND"}}
   end
 
+  test "renders typed and generic 403.json responses" do
+    assert render(FormDelegateWeb.ErrorView, "403.json", %{type: "SOURCE_NOT_ALLOWED"}) ==
+             %{error: %{code: 403, type: "SOURCE_NOT_ALLOWED"}}
+
+    assert render(FormDelegateWeb.ErrorView, "403.json", []) ==
+             %{error: %{code: 403, type: "FORBIDDEN"}}
+  end
+
   test "render 500.json" do
     assert render(FormDelegateWeb.ErrorView, "500.json", []) ==
              %{error: %{code: 500, type: "INTERNAL_SERVER_ERROR"}}

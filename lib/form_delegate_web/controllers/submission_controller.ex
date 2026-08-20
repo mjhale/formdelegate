@@ -11,6 +11,7 @@ defmodule FormDelegateWeb.SubmissionController do
 
   alias FormDelegate.BillingCounts
   alias FormDelegate.Forms.Form
+  alias FormDelegate.Forms.SubmissionSourcePolicy
   alias FormDelegate.{Submissions, Submissions.Submission}
   alias FormDelegateWeb.Authorizer
   alias FormDelegateWeb.SubmissionView
@@ -27,19 +28,31 @@ defmodule FormDelegateWeb.SubmissionController do
   # @TODO: Apply some form of spam filtering before Akismet is used
   # @TODO: Allow user to specify redirect after submission
   def create(%{assigns: %{form: form, plan: plan}} = conn, params, current_user) do
+    with :ok <- Authorizer.authorize(:create_submission, current_user),
+         :ok <- authorize_submission_source(conn, form) do
+      create_allowed_submission(conn, params, form, plan)
+    else
+      {:error, :submission_source_not_allowed} ->
+        {:error, :submission_source_not_allowed}
+
+      {:error, :forbidden} ->
+        {:error, :forbidden}
+    end
+  end
+
+  defp create_allowed_submission(conn, params, form, plan) do
     grouped_submission_params = transform_params_to_submission_map(params)
 
     sender_meta_data = %{
       "sender_ip" => remote_addr(conn),
-      "sender_referrer" => Plug.Conn.get_req_header(conn, "referer") |> to_string(),
-      "sender_user_agent" => Plug.Conn.get_req_header(conn, "user-agent") |> to_string()
+      "sender_referrer" => first_request_header(conn, "referer"),
+      "sender_user_agent" => first_request_header(conn, "user-agent")
     }
 
     merged_params = Map.merge(grouped_submission_params, sender_meta_data)
 
     # @TODO: Allow submissions without storing attachments if certain storage limits are reached
-    with :ok <- Authorizer.authorize(:create_submission, current_user),
-         {:ok, %Submission{form: %Form{callback_success_url: callback_success_url}} = submission} <-
+    with {:ok, %Submission{form: %Form{callback_success_url: callback_success_url}} = submission} <-
            create_submission_with_usage(form, plan, merged_params) do
       # @TODO: Allow user-specified Akismet API key per form
       case akismet_api().is_spam?(akismet_api_key(), submission) do
@@ -88,11 +101,41 @@ defmodule FormDelegateWeb.SubmissionController do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:error, changeset}
 
-      {:error, :forbidden} ->
-        {:error, :forbidden}
-
       {:error, :plan_grace_limit_exceeded} ->
         {:error, :plan_grace_limit_exceeded}
+    end
+  end
+
+  defp authorize_submission_source(conn, form) do
+    case SubmissionSourcePolicy.check(
+           form,
+           Plug.Conn.get_req_header(conn, "origin"),
+           Plug.Conn.get_req_header(conn, "referer")
+         ) do
+      :ok ->
+        :ok
+
+      {:error, reason, observed_host} ->
+        :telemetry.execute(
+          [:form_delegate, :submission, :source_rejected],
+          %{count: 1},
+          %{
+            form_id: form.id,
+            team_id: form.team_id,
+            request_id: get_resp_header(conn, "x-request-id") |> List.first(),
+            reason: reason,
+            observed_host: observed_host
+          }
+        )
+
+        {:error, :submission_source_not_allowed}
+    end
+  end
+
+  defp first_request_header(conn, name) do
+    case Plug.Conn.get_req_header(conn, name) do
+      [value | _rest] -> value
+      [] -> ""
     end
   end
 
