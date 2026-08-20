@@ -60,6 +60,25 @@ async function FormDetails({
           {form.submission_count}
         </div>
       </div>
+      <div className="flex max-w-xl items-start">
+        <div className="w-1/4 pt-2">Submission Sources</div>
+        <div className="flex-1 rounded border px-3 py-2 text-gray-700 shadow-sm">
+          {form.submission_source_policy === 'restricted' ? (
+            <>
+              <p className="font-medium">Only allowed websites</p>
+              <ul className="mt-2 list-disc pl-5">
+                {(form.hosts ?? []).map((host) => (
+                  <li key={host}>
+                    <code>{host}</code>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            'Any website'
+          )}
+        </div>
+      </div>
       <div>
         <Link
           href={`/forms/${form.id}/edit`}

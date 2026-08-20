@@ -1,4 +1,5 @@
 export type EmailProvider = 'smtp' | 'postmark' | 'sendgrid';
+export type SubmissionSourcePolicy = 'unrestricted' | 'restricted';
 
 export type EmailProviderStatus =
   | 'unconfigured'
@@ -95,6 +96,7 @@ export default interface Form {
   id: string;
   inserted_at: string;
   name: string;
+  submission_source_policy: SubmissionSourcePolicy;
   submission_count: number;
   updated_at: string;
   verified: boolean;

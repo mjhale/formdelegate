@@ -1,9 +1,13 @@
 'use client';
 
 import { Fragment, ReactNode, useEffect, useState, useTransition } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { useActionState } from 'react';
-import type { EmailIntegration, EmailIntegrationInput } from 'types/form';
+import type {
+  EmailIntegration,
+  EmailIntegrationInput,
+  SubmissionSourcePolicy,
+} from 'types/form';
 
 import {
   canReverifyEmailIntegration,
@@ -16,6 +20,16 @@ interface IFormInput {
   id: string;
   name: string;
   email_integrations: Array<EmailIntegrationInput>;
+  host_rules: Array<{ value: string }>;
+  submission_source_policy: SubmissionSourcePolicy;
+}
+
+interface IFormActionPayload {
+  id: string;
+  name: string;
+  email_integrations: Array<EmailIntegrationInput>;
+  hosts: Array<string>;
+  submission_source_policy: SubmissionSourcePolicy;
 }
 
 interface IReverifyInput {
@@ -30,6 +44,13 @@ interface FormActionState {
   errors: {
     _errors?: Array<string>;
     name?: {
+      _errors: Array<string>;
+    };
+    hosts?: {
+      _errors?: Array<string>;
+      [index: number]: { _errors?: Array<string> };
+    };
+    submission_source_policy?: {
       _errors: Array<string>;
     };
     email_integrations?: any;
@@ -94,10 +115,10 @@ export default function Form({
   saveFormAction,
   reverifyEmailIntegrationAction = unavailableReverifyAction,
 }) {
-  const [state, formAction] = useActionState<FormActionState, IFormInput>(
-    saveFormAction,
-    initialState
-  );
+  const [state, formAction] = useActionState<
+    FormActionState,
+    IFormActionPayload
+  >(saveFormAction, initialState);
   const [reverifyState, reverifyFormAction] = useActionState<
     FormActionState,
     IReverifyInput
@@ -120,15 +141,36 @@ export default function Form({
     defaultValues: {
       id: form?.id ?? '',
       name: form?.name ?? '',
+      host_rules:
+        (form?.hosts?.length ?? 0) > 0
+          ? form.hosts.map((host) => ({ value: host }))
+          : [{ value: '' }],
+      submission_source_policy:
+        form?.submission_source_policy ?? 'unrestricted',
       email_integrations: sanitizeEmailIntegrationDefaults(
         form?.email_integrations
       ),
     },
   });
+  const {
+    fields: hostRuleFields,
+    append: appendHostRule,
+    remove: removeHostRule,
+  } = useFieldArray({ control, name: 'host_rules' });
+  const submissionSourcePolicy = useWatch({
+    control,
+    name: 'submission_source_policy',
+  });
 
   const onSubmit = handleSubmit((data) => {
     startSaveTransition(() => {
-      formAction(data);
+      formAction({
+        id: data.id,
+        name: data.name,
+        email_integrations: data.email_integrations,
+        hosts: data.host_rules.map((hostRule) => hostRule.value),
+        submission_source_policy: data.submission_source_policy,
+      });
     });
   });
 
@@ -243,6 +285,15 @@ export default function Form({
             </p>
           ))}
 
+        <SubmissionSourcesFields
+          appendHostRule={appendHostRule}
+          hostRuleFields={hostRuleFields}
+          policy={submissionSourcePolicy}
+          register={register}
+          removeHostRule={removeHostRule}
+          state={state}
+        />
+
         {/* Email integrations */}
         <div className="text-lg font-semibold">Email Integrations</div>
         <EmailIntegrationsFieldArray
@@ -273,6 +324,138 @@ export default function Form({
         </div>
       </fieldset>
     </form>
+  );
+}
+
+function SubmissionSourcesFields({
+  appendHostRule,
+  hostRuleFields,
+  policy,
+  register,
+  removeHostRule,
+  state,
+}) {
+  return (
+    <fieldset className="m-0 flex max-w-xl flex-col gap-y-3 rounded-lg border border-slate-200 p-4">
+      <legend className="px-1 text-lg font-semibold">Submission sources</legend>
+
+      <label className="flex items-start gap-x-3">
+        <input
+          {...register('submission_source_policy')}
+          type="radio"
+          value="unrestricted"
+          className="mt-1"
+        />
+        <span>
+          <span className="block font-medium">
+            Allow submissions from any website
+          </span>
+          <span className="block text-sm text-gray-600">
+            Host rules can be saved below, but they are ignored until
+            restrictions are enabled.
+          </span>
+        </span>
+      </label>
+
+      <label className="flex items-start gap-x-3">
+        <input
+          {...register('submission_source_policy')}
+          type="radio"
+          value="restricted"
+          className="mt-1"
+        />
+        <span>
+          <span className="block font-medium">
+            Only allow submissions from these websites
+          </span>
+          <span className="block text-sm text-gray-600">
+            Requests without usable browser source information will be denied.
+          </span>
+        </span>
+      </label>
+
+      {state?.errors?.submission_source_policy?._errors?.map(
+        (error: string) => (
+          <p className="text-sm text-red-700" key={error}>
+            {error}
+          </p>
+        )
+      )}
+
+      {policy === 'restricted' && (
+        <div className="flex flex-col gap-y-3 border-l-2 border-slate-200 pl-4">
+          <p id="host-rules-hint" className="text-sm text-gray-600">
+            <code>example.com</code> matches only that host.{' '}
+            <code>*.example.com</code> matches subdomains, but not the apex
+            domain.
+          </p>
+
+          {hostRuleFields.map((field, index) => {
+            const errorId = `host-rule-${index}-error`;
+            const errors = state?.errors?.hosts?.[index]?._errors ?? [];
+
+            return (
+              <div key={field.id} className="flex flex-col gap-y-1">
+                <div className="flex items-center gap-x-2">
+                  <label className="sr-only" htmlFor={`host-rule-${index}`}>
+                    Allowed host {index + 1}
+                  </label>
+                  <input
+                    {...register(`host_rules.${index}.value`)}
+                    id={`host-rule-${index}`}
+                    type="text"
+                    autoComplete="off"
+                    maxLength={253}
+                    aria-describedby={
+                      errors.length > 0
+                        ? `${errorId} host-rules-hint`
+                        : 'host-rules-hint'
+                    }
+                    aria-invalid={errors.length > 0}
+                    placeholder="example.com"
+                    className="flex-1 appearance-none rounded border px-3 py-2 text-gray-700 shadow-sm focus:outline-none focus:ring-2"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeHostRule(index)}
+                    aria-label={`Remove allowed host ${index + 1}`}
+                    className="rounded border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2"
+                  >
+                    Remove
+                  </button>
+                </div>
+                {errors.length > 0 && (
+                  <div id={errorId}>
+                    {errors.map((error: string) => (
+                      <p className="text-sm text-red-700" key={error}>
+                        {error}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {state?.errors?.hosts?._errors?.map((error: string) => (
+            <p className="text-sm text-red-700" key={error}>
+              {error}
+            </p>
+          ))}
+
+          <div>
+            <button
+              type="button"
+              disabled={hostRuleFields.length >= 50}
+              onClick={() => appendHostRule({ value: '' })}
+              className="rounded border border-gray-200 bg-white px-3 py-1 text-sm text-gray-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Add allowed host
+            </button>
+          </div>
+        </div>
+      )}
+    </fieldset>
   );
 }
 

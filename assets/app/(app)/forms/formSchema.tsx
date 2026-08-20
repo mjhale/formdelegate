@@ -5,6 +5,13 @@ import {
   compactRecord,
   emailProviderRequirements as providerRequirements,
 } from './emailProviderPayload';
+import {
+  isValidHostRule,
+  MAX_HOST_RULE_LENGTH,
+  MAX_HOST_RULES,
+  normalizeHostRule,
+  normalizeHostRules,
+} from './hostRules';
 
 const nullableUuid = z.preprocess(
   (value) => (value === '' ? null : value),
@@ -239,18 +246,69 @@ const emailIntegrationSchema = z
     }
   );
 
-export const formSchema = z.object({
+const hostsSchema = z
+  .array(
+    z
+      .string()
+      .transform(normalizeHostRule)
+      .refine(
+        (rule) => rule.length <= MAX_HOST_RULE_LENGTH,
+        `must be at most ${MAX_HOST_RULE_LENGTH} characters`
+      )
+      .refine(
+        (rule) => rule.length === 0 || isValidHostRule(rule),
+        'must be a valid hostname or leftmost wildcard'
+      )
+  )
+  .max(MAX_HOST_RULES)
+  .transform(normalizeHostRules)
+  .default([]);
+
+const submissionSourcePolicySchema = z
+  .enum(['unrestricted', 'restricted'])
+  .default('unrestricted');
+
+const formObjectSchema = z.object({
   id: nullableUuid,
   name: z.string().min(1),
+  hosts: hostsSchema,
+  submission_source_policy: submissionSourcePolicySchema,
   verified: z.never().optional(),
   email_integrations: emailIntegrationSchema.array(),
 });
 
-export const createFormSchema = formSchema.omit({ id: true });
+function validateSubmissionSources(
+  form: {
+    hosts: string[];
+    submission_source_policy: 'unrestricted' | 'restricted';
+  },
+  context: z.RefinementCtx
+) {
+  if (
+    form.submission_source_policy === 'restricted' &&
+    form.hosts.length === 0
+  ) {
+    context.addIssue({
+      code: 'custom',
+      message: 'must include at least one hostname when restricted',
+      path: ['hosts'],
+    });
+  }
+}
 
-export const updateFormSchema = formSchema.extend({
-  id: z.string().uuid(),
-});
+export const formSchema = formObjectSchema.superRefine(
+  validateSubmissionSources
+);
+
+export const createFormSchema = formObjectSchema
+  .omit({ id: true })
+  .superRefine(validateSubmissionSources);
+
+export const updateFormSchema = formObjectSchema
+  .extend({
+    id: z.string().uuid(),
+  })
+  .superRefine(validateSubmissionSources);
 
 function addProviderFieldIssues(
   context: z.RefinementCtx,

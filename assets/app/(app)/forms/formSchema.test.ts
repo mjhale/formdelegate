@@ -123,3 +123,85 @@ describe('email provider form validation', () => {
     }
   });
 });
+
+describe('submission source validation', () => {
+  const baseForm = {
+    name: 'Contact form',
+    email_integrations: [],
+  };
+
+  it('defaults to unrestricted with an empty host list', () => {
+    const result = createFormSchema.parse(baseForm);
+
+    assert.equal(result.submission_source_policy, 'unrestricted');
+    assert.deepEqual(result.hosts, []);
+  });
+
+  it('normalizes and deduplicates host rules', () => {
+    const result = createFormSchema.parse({
+      ...baseForm,
+      hosts: [' Example.COM. ', 'example.com', '*.EXAMPLE.org.', '', ' [::1] '],
+      submission_source_policy: 'restricted',
+    });
+
+    assert.deepEqual(result.hosts, ['example.com', '*.example.org', '::1']);
+  });
+
+  it('accepts exact hosts, wildcards, localhost, and IP addresses', () => {
+    const result = createFormSchema.safeParse({
+      ...baseForm,
+      hosts: ['example.com', '*.example.org', 'localhost', '127.0.0.1', '::1'],
+      submission_source_policy: 'restricted',
+    });
+
+    assert.equal(result.success, true);
+  });
+
+  it('requires a host when restricted', () => {
+    const result = createFormSchema.safeParse({
+      ...baseForm,
+      hosts: [],
+      submission_source_policy: 'restricted',
+    });
+
+    assert.equal(result.success, false);
+    if (result.success) return;
+
+    assert.deepEqual(result.error.format().hosts?._errors, [
+      'must include at least one hostname when restricted',
+    ]);
+  });
+
+  it('rejects URLs, ports, misplaced wildcards, unicode, and invalid IP addresses', () => {
+    const invalidHosts = [
+      'https://example.com',
+      'example.com:443',
+      'foo.*.example.com',
+      '*.localhost',
+      '*.127.0.0.1',
+      'münich.example',
+      '999.1.1.1',
+    ];
+
+    for (const host of invalidHosts) {
+      const result = createFormSchema.safeParse({
+        ...baseForm,
+        hosts: [host],
+      });
+
+      assert.equal(result.success, false, `${host} should be invalid`);
+    }
+  });
+
+  it('limits a form to fifty unique hosts', () => {
+    const result = createFormSchema.safeParse({
+      ...baseForm,
+      hosts: Array.from(
+        { length: 51 },
+        (_, index) => `host-${index}.example.com`
+      ),
+    });
+
+    assert.equal(result.success, false);
+  });
+});
