@@ -5,6 +5,7 @@ import { cacheLife, cacheTag } from 'next/cache';
 
 import { formCacheTag, formsCacheTag } from 'utils/cacheTags';
 import { getProfileContext } from 'utils/profile';
+import { publicFormEndpoint } from 'utils/publicFormEndpoint';
 
 import Link from 'next/link';
 import { FormDetailsSkeleton } from '../../_components/skeletons';
@@ -45,7 +46,7 @@ async function FormDetails({
       <div className="flex items-center max-w-xl">
         <label className="flex-0 w-1/4">Endpoint URL</label>
         <div className="flex-1 shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight">
-          {`https://formdelegate.com/f/${form.id}`}
+          {publicFormEndpoint(form.id)}
         </div>
       </div>
       <div className="flex items-center h-10 max-w-xl">

@@ -7,6 +7,7 @@ import { cacheLife, cacheTag } from 'next/cache';
 import { deleteForm } from './actions';
 import { formsCacheTag } from 'utils/cacheTags';
 import { getProfileContext } from 'utils/profile';
+import { publicFormEndpoint } from 'utils/publicFormEndpoint';
 
 import { FormsSkeleton } from '../_components/skeletons';
 
@@ -79,7 +80,7 @@ async function FormsList() {
             <div className="bg-white">
               <div className="flex flex-wrap gap-2 md:gap-4 justify-center content-between items-center p-2 text-center break-all">
                 <div className="md:flex-auto bg-slate-200 py-2">
-                  <span className="text-sm">{`https://www.formdelegate.com/f/${form.id}`}</span>
+                  <span className="text-sm">{publicFormEndpoint(form.id)}</span>
                 </div>
                 <div className="">
                   <CopyToClipboardButton form={form} />

@@ -1,13 +1,13 @@
 'use client';
 
+import { publicFormEndpoint } from 'utils/publicFormEndpoint';
+
 export default function CopyToClipboardButton({ form }) {
   return (
     <button
       className="px-2 py-1 inline-flex items-center gap-x-1 rounded border font-medium text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-white"
       onClick={() => {
-        navigator.clipboard.writeText(
-          `https://www.formdelegate.com/f/${form.id}`
-        );
+        navigator.clipboard.writeText(publicFormEndpoint(form.id));
       }}
     >
       <svg

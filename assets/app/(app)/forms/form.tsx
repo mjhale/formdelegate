@@ -335,8 +335,21 @@ function SubmissionSourcesFields({
   removeHostRule,
   state,
 }) {
+  const hostErrors = submissionSourceHostErrors(state);
+  const policyErrors = state?.errors?.submission_source_policy?._errors ?? [];
+  const descriptionIds = [
+    policyErrors.length > 0 ? 'submission-source-policy-errors' : null,
+    hostErrors.length > 0 ? 'host-rules-errors' : null,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <fieldset className="m-0 flex max-w-xl flex-col gap-y-3 rounded-lg border border-slate-200 p-4">
+    <fieldset
+      aria-describedby={descriptionIds || undefined}
+      aria-invalid={policyErrors.length > 0 || hostErrors.length > 0}
+      className="m-0 flex max-w-xl flex-col gap-y-3 rounded-lg border border-slate-200 p-4"
+    >
       <legend className="px-1 text-lg font-semibold">Submission sources</legend>
 
       <label className="flex items-start gap-x-3">
@@ -374,89 +387,102 @@ function SubmissionSourcesFields({
         </span>
       </label>
 
-      {state?.errors?.submission_source_policy?._errors?.map(
-        (error: string) => (
-          <p className="text-sm text-red-700" key={error}>
-            {error}
-          </p>
-        )
-      )}
-
-      {policy === 'restricted' && (
-        <div className="flex flex-col gap-y-3 border-l-2 border-slate-200 pl-4">
-          <p id="host-rules-hint" className="text-sm text-gray-600">
-            <code>example.com</code> matches only that host.{' '}
-            <code>*.example.com</code> matches subdomains, but not the apex
-            domain.
-          </p>
-
-          {hostRuleFields.map((field, index) => {
-            const errorId = `host-rule-${index}-error`;
-            const errors = state?.errors?.hosts?.[index]?._errors ?? [];
-
-            return (
-              <div key={field.id} className="flex flex-col gap-y-1">
-                <div className="flex items-center gap-x-2">
-                  <label className="sr-only" htmlFor={`host-rule-${index}`}>
-                    Allowed host {index + 1}
-                  </label>
-                  <input
-                    {...register(`host_rules.${index}.value`)}
-                    id={`host-rule-${index}`}
-                    type="text"
-                    autoComplete="off"
-                    maxLength={253}
-                    aria-describedby={
-                      errors.length > 0
-                        ? `${errorId} host-rules-hint`
-                        : 'host-rules-hint'
-                    }
-                    aria-invalid={errors.length > 0}
-                    placeholder="example.com"
-                    className="flex-1 appearance-none rounded border px-3 py-2 text-gray-700 shadow-sm focus:outline-none focus:ring-2"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeHostRule(index)}
-                    aria-label={`Remove allowed host ${index + 1}`}
-                    className="rounded border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2"
-                  >
-                    Remove
-                  </button>
-                </div>
-                {errors.length > 0 && (
-                  <div id={errorId}>
-                    {errors.map((error: string) => (
-                      <p className="text-sm text-red-700" key={error}>
-                        {error}
-                      </p>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-
-          {state?.errors?.hosts?._errors?.map((error: string) => (
+      {policyErrors.length > 0 && (
+        <div id="submission-source-policy-errors" role="alert">
+          {policyErrors.map((error: string) => (
             <p className="text-sm text-red-700" key={error}>
               {error}
             </p>
           ))}
-
-          <div>
-            <button
-              type="button"
-              disabled={hostRuleFields.length >= 50}
-              onClick={() => appendHostRule({ value: '' })}
-              className="rounded border border-gray-200 bg-white px-3 py-1 text-sm text-gray-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              Add allowed host
-            </button>
-          </div>
         </div>
       )}
+
+      <div className="flex flex-col gap-y-3 border-l-2 border-slate-200 pl-4">
+        <p id="host-rules-hint" className="text-sm text-gray-600">
+          <code>example.com</code> matches only that host.{' '}
+          <code>*.example.com</code> matches subdomains, but not the apex
+          domain.
+        </p>
+
+        {policy === 'unrestricted' && (
+          <p className="text-sm text-gray-600">
+            These saved rules are inactive while submissions are allowed from
+            any website.
+          </p>
+        )}
+
+        {hostRuleFields.map((field, index) => (
+          <div key={field.id} className="flex flex-col gap-y-1">
+            <div className="flex items-center gap-x-2">
+              <label className="sr-only" htmlFor={`host-rule-${index}`}>
+                Allowed host {index + 1}
+              </label>
+              <input
+                {...register(`host_rules.${index}.value`)}
+                id={`host-rule-${index}`}
+                type="text"
+                autoComplete="off"
+                maxLength={253}
+                aria-describedby="host-rules-hint"
+                placeholder="example.com"
+                className="flex-1 appearance-none rounded border px-3 py-2 text-gray-700 shadow-sm focus:outline-none focus:ring-2"
+              />
+              <button
+                type="button"
+                onClick={() => removeHostRule(index)}
+                aria-label={`Remove allowed host ${index + 1}`}
+                className="rounded border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {hostErrors.length > 0 && (
+          <div id="host-rules-errors" role="alert">
+            {hostErrors.map((error: string) => (
+              <p className="text-sm text-red-700" key={error}>
+                {error}
+              </p>
+            ))}
+          </div>
+        )}
+
+        <div>
+          <button
+            type="button"
+            disabled={hostRuleFields.length >= 50}
+            onClick={() => appendHostRule({ value: '' })}
+            className="rounded border border-gray-200 bg-white px-3 py-1 text-sm text-gray-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Add allowed host
+          </button>
+        </div>
+      </div>
     </fieldset>
   );
+}
+
+function submissionSourceHostErrors(state: FormActionState): Array<string> {
+  const hosts = state?.errors?.hosts;
+
+  if (!hosts) {
+    return [];
+  }
+
+  const errors = [
+    ...(hosts._errors ?? []),
+    ...Object.entries(hosts).flatMap(([key, value]) => {
+      if (key === '_errors' || !value || Array.isArray(value)) {
+        return [];
+      }
+
+      return value._errors ?? [];
+    }),
+  ];
+
+  return Array.from(new Set(errors));
 }
 
 function SubmitButton({ isPending }) {
