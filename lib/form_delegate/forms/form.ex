@@ -55,9 +55,7 @@ defmodule FormDelegate.Forms.Form do
     ])
     |> update_change(:hosts, &normalize_hosts/1)
     |> validate_required([:name, :submission_source_policy])
-    |> validate_length(:hosts, max: @max_hosts)
-    |> validate_change(:hosts, &validate_hosts/2)
-    |> validate_restricted_hosts()
+    |> validate_host_settings()
     |> check_constraint(:submission_source_policy,
       name: :forms_submission_source_policy_check
     )
@@ -67,27 +65,49 @@ defmodule FormDelegate.Forms.Form do
 
   defp normalize_hosts(hosts) do
     hosts
-    |> Enum.map(&HostRule.normalize/1)
+    |> Enum.map(fn
+      host when is_binary(host) -> HostRule.normalize(host)
+      host -> host
+    end)
     |> Enum.reject(&(&1 == ""))
     |> Enum.uniq()
   end
 
-  defp validate_hosts(:hosts, hosts) do
-    invalid_hosts = Enum.reject(hosts, &HostRule.valid?/1)
+  defp validate_host_settings(changeset) do
+    policy = get_field(changeset, :submission_source_policy)
 
-    case invalid_hosts do
-      [] -> []
-      _ -> [hosts: "contains an invalid hostname or wildcard"]
+    if policy == :restricted or Map.has_key?(changeset.changes, :hosts) do
+      validate_effective_hosts(changeset, get_field(changeset, :hosts))
+    else
+      changeset
     end
   end
 
-  defp validate_restricted_hosts(changeset) do
-    case {get_field(changeset, :submission_source_policy), get_field(changeset, :hosts)} do
-      {:restricted, hosts} when hosts in [nil, []] ->
-        add_error(changeset, :hosts, "must include at least one hostname when restricted")
+  defp validate_effective_hosts(changeset, hosts) when hosts in [nil, []] do
+    if get_field(changeset, :submission_source_policy) == :restricted do
+      add_error(changeset, :hosts, "must include at least one hostname when restricted")
+    else
+      changeset
+    end
+  end
 
-      _ ->
+  defp validate_effective_hosts(changeset, hosts) when is_list(hosts) do
+    changeset
+    |> then(fn changeset ->
+      if length(hosts) > @max_hosts do
+        add_error(changeset, :hosts, "should have at most #{@max_hosts} item(s)")
+      else
         changeset
-    end
+      end
+    end)
+    |> then(fn changeset ->
+      if Enum.all?(hosts, &HostRule.valid?/1) do
+        changeset
+      else
+        add_error(changeset, :hosts, "contains an invalid hostname or wildcard")
+      end
+    end)
   end
+
+  defp validate_effective_hosts(changeset, _hosts), do: changeset
 end

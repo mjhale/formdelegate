@@ -19,7 +19,24 @@ deploying, migrating, and changing a production form each require their own curr
    Every pre-existing form must remain `unrestricted`. A nonempty legacy `hosts` array must not
    activate enforcement.
 
-5. Submit to an existing unrestricted form without `Origin` or `Referer` and confirm it is still
+5. Audit legacy host values before an owner activates restrictions. This read-only query identifies
+   values that need to be re-saved through the editor; application validation remains authoritative:
+
+   ```sql
+   SELECT id, hosts
+   FROM forms
+   WHERE hosts IS NOT NULL
+     AND EXISTS (
+       SELECT 1
+       FROM unnest(hosts) AS host
+       WHERE host IS NULL
+          OR host = ''
+          OR host <> lower(btrim(host))
+          OR host ~ '://|/|[?#@]'
+     );
+   ```
+
+6. Submit to an existing unrestricted form without `Origin` or `Referer` and confirm it is still
    accepted.
 
 ## 2. Activate the contact-form canary

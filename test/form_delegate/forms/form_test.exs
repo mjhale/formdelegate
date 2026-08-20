@@ -60,6 +60,13 @@ defmodule FormDelegate.Forms.FormTest do
       end
     end
 
+    test "rejects non-string host entries without raising" do
+      changeset = Form.changeset(%Form{}, %{name: "Contact", hosts: [nil]})
+
+      refute changeset.valid?
+      assert "contains an invalid hostname or wildcard" in errors_on(changeset).hosts
+    end
+
     test "requires at least one host when restricted" do
       changeset =
         Form.changeset(%Form{}, %{
@@ -101,6 +108,22 @@ defmodule FormDelegate.Forms.FormTest do
         })
 
       assert changeset.valid?
+    end
+
+    test "validates legacy hosts when restrictions are activated" do
+      legacy_form = %Form{
+        name: "Contact",
+        hosts: ["https://example.com/contact"],
+        submission_source_policy: :unrestricted
+      }
+
+      changeset =
+        Form.changeset(legacy_form, %{
+          submission_source_policy: :restricted
+        })
+
+      refute changeset.valid?
+      assert "contains an invalid hostname or wildcard" in errors_on(changeset).hosts
     end
 
     test "limits a form to fifty hosts" do

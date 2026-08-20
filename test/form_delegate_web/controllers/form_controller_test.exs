@@ -166,6 +166,30 @@ defmodule FormDelegateWeb.FormControllerTest do
     end
 
     @tag :as_inserted_user
+    test "rejects a null host entry without creating a form", %{
+      conn: conn,
+      jwt: jwt,
+      team: team
+    } do
+      billing_count_before = BillingCounts.get_latest_billing_count_of_team(team.id)
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> post(Routes.form_path(conn, :create),
+          form: %{name: "Contact Form", hosts: [nil]}
+        )
+        |> json_response(422)
+
+      assert response["error"]["errors"]["hosts"] == [
+               "contains an invalid hostname or wildcard"
+             ]
+
+      billing_count_after = BillingCounts.get_latest_billing_count_of_team(team.id)
+      assert billing_count_after.form_count == billing_count_before.form_count
+    end
+
+    @tag :as_inserted_user
     test "creates and verifies email integrations marked pending_verification", %{
       conn: conn,
       jwt: jwt
@@ -414,6 +438,30 @@ defmodule FormDelegateWeb.FormControllerTest do
       assert response["error"]["errors"]["hosts"] == [
                "contains an invalid hostname or wildcard"
              ]
+    end
+
+    @tag :as_inserted_user
+    test "rejects a null host entry without editing the form", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
+
+      response =
+        conn
+        |> put_req_header("authorization", "bearer: " <> jwt)
+        |> put(Routes.form_path(conn, :update, form.id),
+          form: %{hosts: [nil], name: form.name}
+        )
+        |> json_response(422)
+
+      assert response["error"]["errors"]["hosts"] == [
+               "contains an invalid hostname or wildcard"
+             ]
+
+      assert Repo.get!(Form, form.id).hosts == form.hosts
     end
 
     @tag :as_inserted_user
