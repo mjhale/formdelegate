@@ -12,7 +12,6 @@ defmodule FormDelegate.Telemetry.EmailIntegrationVerificationHandler do
     case :telemetry.attach(@handler_id, @event_name, &__MODULE__.handle_event/4, nil) do
       :ok -> :ok
       {:error, :already_exists} -> :ok
-      {:error, reason} -> {:error, reason}
     end
   end
 
