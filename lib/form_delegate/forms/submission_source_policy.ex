@@ -11,7 +11,6 @@ defmodule FormDelegate.Forms.SubmissionSourcePolicy do
   @type denial_reason :: :missing_source | :malformed_source | :host_mismatch
   @type result :: :ok | {:error, denial_reason(), String.t() | nil}
 
-  @spec check(%Form{}, [String.t()], [String.t()]) :: result()
   def check(
         %Form{submission_source_policy: :unrestricted},
         _origin_headers,

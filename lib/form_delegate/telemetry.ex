@@ -7,9 +7,9 @@ defmodule FormDelegate.Telemetry do
   alias FormDelegate.Telemetry.SubmissionSourceRejectionHandler
 
   def attach_handlers do
-    with :ok <- EmailIntegrationVerificationHandler.attach(),
-         :ok <- SubmissionSourceRejectionHandler.attach() do
-      :ok
+    case EmailIntegrationVerificationHandler.attach() do
+      :ok -> SubmissionSourceRejectionHandler.attach()
+      error -> error
     end
   end
 end

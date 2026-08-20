@@ -12,6 +12,7 @@ defmodule FormDelegateWeb.SubmissionController do
   alias FormDelegate.BillingCounts
   alias FormDelegate.Forms.Form
   alias FormDelegate.Forms.SubmissionSourcePolicy
+  alias FormDelegate.Jobs.SubmissionIntegrations
   alias FormDelegate.{Submissions, Submissions.Submission}
   alias FormDelegateWeb.Authorizer
   alias FormDelegateWeb.SubmissionView
@@ -52,48 +53,10 @@ defmodule FormDelegateWeb.SubmissionController do
     merged_params = Map.merge(grouped_submission_params, sender_meta_data)
 
     # @TODO: Allow submissions without storing attachments if certain storage limits are reached
-    with {:ok, %Submission{form: %Form{callback_success_url: callback_success_url}} = submission} <-
-           create_submission_with_usage(form, plan, merged_params) do
-      # @TODO: Allow user-specified Akismet API key per form
-      case akismet_api().is_spam?(akismet_api_key(), submission) do
-        {:ok, false} ->
-          %{submission_id: submission.id, form_id: form.id}
-          |> FormDelegate.Jobs.SubmissionIntegrations.new()
-          |> Oban.insert()
+    case create_submission_with_usage(form, plan, merged_params) do
+      {:ok, %Submission{form: %Form{callback_success_url: callback_success_url}} = submission} ->
+        process_accepted_submission(conn, form, submission, callback_success_url)
 
-        {:ok, true} ->
-          Logger.info("FD: Spam detected for #{submission.id}")
-
-          Submissions.flag_submission(submission, %{
-            flagged_at: DateTime.utc_now(),
-            flagged_type:
-              Submissions.get_or_create_flagged_type(%{
-                type: "spam"
-              })
-          })
-
-        {:error, error} ->
-          Logger.error("FD: Akismet error for #{submission.id}: #{inspect(error)}")
-      end
-
-      # Broadcast submission to user's channel after processing spam filters
-      broadcast_submission(submission)
-
-      case get_format(conn) do
-        "json" when is_nil(callback_success_url) ->
-          body = Jason.encode!(%{submission: "Accepted"})
-
-          conn
-          |> put_resp_header("content-type", "application/json")
-          |> send_resp(:accepted, body)
-
-        "html" when is_nil(callback_success_url) ->
-          redirect(conn, external: "#{frontend_url()}/submissions/success")
-
-        _format ->
-          redirect(conn, external: generate_success_redirect_url(submission))
-      end
-    else
       {:error, %Ecto.Changeset{errors: [form_id: _form_id_error]}} ->
         Logger.debug("FD: Submission create changeset error for form #{params["form_id"]}")
         {:error, :not_found}
@@ -103,6 +66,56 @@ defmodule FormDelegateWeb.SubmissionController do
 
       {:error, :plan_grace_limit_exceeded} ->
         {:error, :plan_grace_limit_exceeded}
+    end
+  end
+
+  defp process_accepted_submission(conn, form, submission, callback_success_url) do
+    process_spam_filter(form, submission)
+
+    # Broadcast submission to user's channel after processing spam filters
+    broadcast_submission(submission)
+
+    respond_to_accepted_submission(conn, submission, callback_success_url)
+  end
+
+  # @TODO: Allow user-specified Akismet API key per form
+  defp process_spam_filter(form, submission) do
+    case akismet_api().is_spam?(akismet_api_key(), submission) do
+      {:ok, false} ->
+        %{submission_id: submission.id, form_id: form.id}
+        |> SubmissionIntegrations.new()
+        |> Oban.insert()
+
+      {:ok, true} ->
+        Logger.info("FD: Spam detected for #{submission.id}")
+
+        Submissions.flag_submission(submission, %{
+          flagged_at: DateTime.utc_now(),
+          flagged_type:
+            Submissions.get_or_create_flagged_type(%{
+              type: "spam"
+            })
+        })
+
+      {:error, error} ->
+        Logger.error("FD: Akismet error for #{submission.id}: #{inspect(error)}")
+    end
+  end
+
+  defp respond_to_accepted_submission(conn, submission, callback_success_url) do
+    case get_format(conn) do
+      "json" when is_nil(callback_success_url) ->
+        body = Jason.encode!(%{submission: "Accepted"})
+
+        conn
+        |> put_resp_header("content-type", "application/json")
+        |> send_resp(:accepted, body)
+
+      "html" when is_nil(callback_success_url) ->
+        redirect(conn, external: "#{frontend_url()}/submissions/success")
+
+      _format ->
+        redirect(conn, external: generate_success_redirect_url(submission))
     end
   end
 

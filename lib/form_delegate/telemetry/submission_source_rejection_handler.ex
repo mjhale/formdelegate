@@ -17,12 +17,13 @@ defmodule FormDelegate.Telemetry.SubmissionSourceRejectionHandler do
   end
 
   def handle_event(@event_name, _measurements, metadata, _config) do
-    Logger.warning("submission source rejected",
-      form_id: metadata.form_id,
-      team_id: metadata.team_id,
-      request_id: metadata.request_id,
-      submission_source_reason: metadata.reason,
-      submission_source_host: metadata.observed_host
+    Logger.warning(
+      "submission source rejected " <>
+        "form_id=#{inspect(metadata.form_id)} " <>
+        "team_id=#{inspect(metadata.team_id)} " <>
+        "request_id=#{inspect(metadata.request_id)} " <>
+        "reason=#{inspect(metadata.reason)} " <>
+        "observed_host=#{inspect(metadata.observed_host)}"
     )
   end
 end
