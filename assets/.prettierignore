@@ -2,6 +2,7 @@
 out/
 build/
 node_modules/
+pnpm-lock.yaml
 
 # Auto-generated Next.js TypeScript declaration
 next-env.d.ts

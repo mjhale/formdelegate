@@ -158,10 +158,10 @@ export default function AccountProfile({ user }) {
                 <Button className="inline-block px-2 py-1 text-sm font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer">
                   Change password
                 </Button>
-                <ModalOverlay className="h-[--visual-viewport-height] fixed inset-x-0 top-0 z-50 bg-black/60 backdrop-blur-sm transition-all entering:duration-75 entering:animate-in entering:fade-in exiting:animate-in exiting:fade-in exiting:direction-reverse">
+                <ModalOverlay className="h-[--visual-viewport-height] fixed inset-x-0 top-0 z-50 bg-black/60 backdrop-blur-sm transition-all data-[entering]:duration-75 data-[entering]:animate-in data-[entering]:fade-in data-[exiting]:animate-in data-[exiting]:fade-in data-[exiting]:direction-reverse">
                   <Modal
                     isDismissable
-                    className="my-16 max-w-[32rem] mx-auto w-full flex-col rounded bg-white outline-none entering:animate-in entering:zoom-in-95 exiting:animate-in exiting:zoom-in-95 exiting:direction-reverse"
+                    className="my-16 max-w-[32rem] mx-auto w-full flex-col rounded bg-white outline-none data-[entering]:animate-in data-[entering]:zoom-in-95 data-[exiting]:animate-in data-[exiting]:zoom-in-95 data-[exiting]:direction-reverse"
                   >
                     <Dialog className="relative flex h-full flex-col outline-none">
                       {({ close }) => (

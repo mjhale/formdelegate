@@ -21,14 +21,13 @@ export default defineConfig({
       url: `http://127.0.0.1:${apiPort}/health`,
     },
     {
-      command: `npm run dev -- --hostname 127.0.0.1 --port ${port}`,
+      command: `pnpm dev -- --hostname 127.0.0.1 --port ${port}`,
       env: {
         NEXT_DIST_DIR: '.next/e2e',
         NEXT_PUBLIC_API_HOST: `http://127.0.0.1:${apiPort}`,
         NEXT_PUBLIC_CAPTCHA_SITE_KEY: 'test-site-key',
         NEXT_PUBLIC_CONTACT_FORM_ENDPOINT: `http://127.0.0.1:${apiPort}/forms/contact`,
         NEXT_PUBLIC_DEPLOYMENT_ENV: 'test',
-        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: 'pk_test_playwright',
         NEXT_PUBLIC_SUPPORT_TICKET_ENDPOINT: `http://127.0.0.1:${apiPort}/forms/support`,
         WATCHPACK_POLLING: 'true',
       },

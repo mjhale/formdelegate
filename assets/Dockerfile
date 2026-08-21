@@ -6,39 +6,30 @@
 # This Dockerfile uses Node.js 24.13.0-slim, which was the latest LTS version at the time of writing.
 # To ensure security and compatibility, regularly update the NODE_VERSION ARG to the latest LTS version.
 ARG NODE_VERSION=24.13.0-slim
-ARG NPM_VERSION=11.17.0
+ARG PNPM_VERSION=11.22.0
 
-FROM --platform=$BUILDPLATFORM node:${NODE_VERSION} AS dependencies
+FROM --platform=$BUILDPLATFORM node:${NODE_VERSION} AS pnpm-base
+
+ARG PNPM_VERSION
+RUN npm install --global pnpm@${PNPM_VERSION}
+
+FROM pnpm-base AS dependencies
 
 # Set working directory
 WORKDIR /app
 
-# npm 11.6.x can fail resolving optional Sharp/Emnapi dependencies in the lockfile.
-ARG NPM_VERSION
-RUN npm install -g npm@${NPM_VERSION}
-
 # Copy package-related files first to leverage Docker's caching mechanism
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+COPY package.json pnpm-lock.yaml ./
 
 # Install project dependencies with frozen lockfile for reproducible builds
-RUN --mount=type=cache,target=/root/.npm \
-  --mount=type=cache,target=/usr/local/share/.cache/yarn \
-  --mount=type=cache,target=/root/.local/share/pnpm/store \
-  if [ -f package-lock.json ]; then \
-  npm ci --no-audit --no-fund; \
-  elif [ -f yarn.lock ]; then \
-  corepack enable yarn && yarn install --frozen-lockfile --production=false; \
-  elif [ -f pnpm-lock.yaml ]; then \
-  corepack enable pnpm && pnpm install --frozen-lockfile; \
-  else \
-  echo "No lockfile found." && exit 1; \
-  fi
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+  pnpm install --frozen-lockfile
 
 # ============================================
 # Stage 2: Build Next.js application in standalone mode
 # ============================================
 
-FROM --platform=$BUILDPLATFORM node:${NODE_VERSION} AS builder
+FROM pnpm-base AS builder
 
 # Set working directory
 WORKDIR /app
@@ -55,13 +46,11 @@ ARG NEXT_PUBLIC_SUPPORT_TICKET_ENDPOINT
 ARG NEXT_PUBLIC_CONTACT_FORM_ENDPOINT
 ARG NEXT_PUBLIC_CAPTCHA_SITE_KEY
 ARG NEXT_PUBLIC_DEPLOYMENT_ENV
-ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 ENV NEXT_PUBLIC_API_HOST=${NEXT_PUBLIC_API_HOST}
 ENV NEXT_PUBLIC_SUPPORT_TICKET_ENDPOINT=${NEXT_PUBLIC_SUPPORT_TICKET_ENDPOINT}
 ENV NEXT_PUBLIC_CONTACT_FORM_ENDPOINT=${NEXT_PUBLIC_CONTACT_FORM_ENDPOINT}
 ENV NEXT_PUBLIC_CAPTCHA_SITE_KEY=${NEXT_PUBLIC_CAPTCHA_SITE_KEY}
 ENV NEXT_PUBLIC_DEPLOYMENT_ENV=${NEXT_PUBLIC_DEPLOYMENT_ENV}
-ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
@@ -71,15 +60,7 @@ ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
 # Build Next.js application. BuildKit persists the Next.js compiler cache via
 # the workflow's existing GHA cache export; runtime fetch data is not copied.
 RUN --mount=type=cache,target=/app/.next/cache \
-  if [ -f package-lock.json ]; then \
-  npm run build; \
-  elif [ -f yarn.lock ]; then \
-  corepack enable yarn && yarn build; \
-  elif [ -f pnpm-lock.yaml ]; then \
-  corepack enable pnpm && pnpm build; \
-  else \
-  echo "No lockfile found." && exit 1; \
-  fi
+  pnpm build
 
 # ============================================
 # Stage 3: Run Next.js application

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-import getStripe from 'utils/getStripe';
 import { fetchCheckoutSession } from '../actions';
 
 export default function PlanSubscribeButton({
@@ -25,18 +24,13 @@ export default function PlanSubscribeButton({
       return null;
     }
 
-    const stripe = await getStripe();
-
-    const { error } = await stripe.redirectToCheckout({
-      sessionId: checkoutSession.id,
-    });
-
-    if (error) {
+    if (!checkoutSession.url) {
       setIsRedirecting(false);
-      console.warn(error.message);
+      console.error('Stripe did not return a Checkout Session URL.');
+      return null;
     }
 
-    return;
+    window.location.href = checkoutSession.url;
   }
 
   // @TODO: Implement free plan switching

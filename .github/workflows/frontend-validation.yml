@@ -24,7 +24,6 @@ jobs:
       NEXT_PUBLIC_CONTACT_FORM_ENDPOINT: https://contact.example.invalid
       NEXT_PUBLIC_CAPTCHA_SITE_KEY: test-site-key
       NEXT_PUBLIC_DEPLOYMENT_ENV: test
-      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_frontend_validation
     defaults:
       run:
         working-directory: assets
@@ -33,36 +32,38 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up pnpm and Node.js
+        uses: pnpm/setup@v1
         with:
-          node-version: 24.13.0
-          cache: npm
-          cache-dependency-path: assets/package-lock.json
-
-      - name: Set up npm
-        run: npm install --global npm@11.17.0
+          runtime: node@24.13.0
+          cache: true
+          package-json-file: assets/package.json
+          cache-dependency-path: assets/pnpm-lock.yaml
+          install: false
 
       - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+        run: pnpm install --frozen-lockfile
 
       - name: Verify dependency tree
-        run: npm ls
+        run: pnpm list --depth Infinity
 
       - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Run tests
-        run: npm test
+        run: pnpm test
 
       - name: Run lint
-        run: npm run lint
+        run: pnpm lint
+
+      - name: Check formatting
+        run: pnpm format:check
 
       - name: Run typecheck
-        run: npm run typecheck
+        run: pnpm typecheck
 
       - name: Build frontend
-        run: npm run build
+        run: pnpm build
 
       - name: Verify instant navigations
-        run: npm run test:e2e
+        run: pnpm test:e2e

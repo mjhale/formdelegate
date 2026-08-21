@@ -24,7 +24,6 @@ env:
   NEXT_PUBLIC_CONTACT_FORM_ENDPOINT: ${{ vars.NEXT_PUBLIC_CONTACT_FORM_ENDPOINT }}
   NEXT_PUBLIC_CAPTCHA_SITE_KEY: ${{ vars.NEXT_PUBLIC_CAPTCHA_SITE_KEY }}
   NEXT_PUBLIC_DEPLOYMENT_ENV: ${{ vars.NEXT_PUBLIC_DEPLOYMENT_ENV }}
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
 
 jobs:
   publish:
@@ -43,7 +42,6 @@ jobs:
             NEXT_PUBLIC_CONTACT_FORM_ENDPOINT
             NEXT_PUBLIC_CAPTCHA_SITE_KEY
             NEXT_PUBLIC_DEPLOYMENT_ENV
-            NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
           )
 
           for var_name in "${required_vars[@]}"; do
@@ -87,6 +85,5 @@ jobs:
             NEXT_PUBLIC_CONTACT_FORM_ENDPOINT=${{ env.NEXT_PUBLIC_CONTACT_FORM_ENDPOINT }}
             NEXT_PUBLIC_CAPTCHA_SITE_KEY=${{ env.NEXT_PUBLIC_CAPTCHA_SITE_KEY }}
             NEXT_PUBLIC_DEPLOYMENT_ENV=${{ env.NEXT_PUBLIC_DEPLOYMENT_ENV }}
-            NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
           cache-from: type=gha,scope=formdelegate-web
           cache-to: type=gha,scope=formdelegate-web,mode=max
