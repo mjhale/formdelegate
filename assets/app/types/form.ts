@@ -2,10 +2,7 @@ export type EmailProvider = 'smtp' | 'postmark' | 'sendgrid';
 export type SubmissionSourcePolicy = 'unrestricted' | 'restricted';
 
 export type EmailProviderStatus =
-  | 'unconfigured'
-  | 'pending_verification'
-  | 'verified'
-  | 'invalid';
+  'unconfigured' | 'pending_verification' | 'verified' | 'invalid';
 
 export type EmailProviderWritableStatus = 'pending_verification';
 

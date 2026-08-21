@@ -73,11 +73,7 @@ export interface Profile {
 }
 
 export type BillingUsageStatus =
-  | 'unlimited'
-  | 'ok'
-  | 'warning'
-  | 'over_limit'
-  | 'blocked';
+  'unlimited' | 'ok' | 'warning' | 'over_limit' | 'blocked';
 
 export interface BillingCountUsage {
   grace_limit: number | null;
