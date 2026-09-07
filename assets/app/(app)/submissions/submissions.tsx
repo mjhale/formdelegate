@@ -1,12 +1,12 @@
 'use client';
 
+import type { FormFilterMetadata } from './formFilterSummary';
+import type SubmissionType from 'types/submission';
+
 import { useState } from 'react';
 
-import SubmissionType from 'types/submission';
-
-import Submission from './submission';
+import InboxReader from './inboxReader';
 import SubmissionsToolbar from './toolbar';
-import type { FormFilterMetadata } from './formFilterSummary';
 
 export default function Submissions({
   submissions,
@@ -15,40 +15,41 @@ export default function Submissions({
   forms,
 }: {
   submissions: SubmissionType[];
-  pagination: {
-    limit: number;
-    total: number;
-    offset: number;
-  };
+  pagination: { limit: number; total: number; offset: number };
   formFilterSummary?: string;
   forms?: FormFilterMetadata[];
 }) {
   const [selectedSubmissionList, setSelectedSubmissionList] = useState<
     Set<string>
   >(new Set());
+  const allSelected =
+    submissions.length > 0 &&
+    selectedSubmissionList.size === submissions.length;
+
+  const toggleAll = () => {
+    setSelectedSubmissionList(
+      allSelected
+        ? new Set<string>()
+        : new Set(submissions.map((submission) => submission.id))
+    );
+  };
 
   return (
     <>
       <SubmissionsToolbar
         selectedSubmissionList={selectedSubmissionList}
         setSelectedSubmissionList={setSelectedSubmissionList}
-        submissions={submissions}
         paginationMetadata={pagination}
         formFilterSummary={formFilterSummary}
         forms={forms}
       />
-      <form id="submissions_management">
-        <div className="flex flex-col justify-center gap-3 md:gap-0 md:border md:border-slate-200 md:bg-white">
-          {submissions.map((submission) => (
-            <Submission
-              selectedSubmissionList={selectedSubmissionList}
-              setSelectedSubmissionList={setSelectedSubmissionList}
-              submission={submission}
-              key={submission.id}
-            />
-          ))}
-        </div>
-      </form>
+      <InboxReader
+        submissions={submissions}
+        selected={selectedSubmissionList}
+        onSelection={setSelectedSubmissionList}
+        allSelected={allSelected}
+        toggleAll={toggleAll}
+      />
     </>
   );
 }

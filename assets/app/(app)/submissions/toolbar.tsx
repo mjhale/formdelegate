@@ -1,32 +1,34 @@
 'use client';
 
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import { useDebouncedCallback } from 'use-debounce';
-import { useState } from 'react';
+import type { FormFilterMetadata } from './formFilterSummary';
 
-import { markSelectedAsSpam, markSelectedAsHam } from './actions';
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useDebouncedCallback } from 'use-debounce';
+
+import { markSelectedAsHam, markSelectedAsSpam } from './actions';
 import {
   clearSubmissionFormFilters,
   paginateSubmissionParams,
   searchSubmissionParams,
   setSubmissionFormFilters,
 } from './filterParams';
+
+import { Button as ActionButton } from '../_components/button';
+import { Card } from '../_components/card';
+import { Input } from '../_components/input';
 import FormFilterPicker from './formFilterPicker';
-import type { FormFilterMetadata } from './formFilterSummary';
 
 export default function Toolbar({
   selectedSubmissionList,
   setSelectedSubmissionList,
-  submissions,
   paginationMetadata,
   formFilterSummary,
   forms,
 }) {
   const searchParams = useSearchParams();
-  const [isSelectAllChecked, setIsSelectAllChecked] = useState<boolean>(false);
   const pathname = usePathname();
   const { replace } = useRouter();
-
   const { total, limit } = paginationMetadata;
   const currentPage = Number(searchParams.get('page')) || 1;
   const itemIndexFloor = total === 0 ? 0 : (currentPage - 1) * limit + 1;
@@ -38,166 +40,116 @@ export default function Toolbar({
     const paramsString = params.toString();
     replace(paramsString ? `${pathname}?${paramsString}` : pathname);
   };
-
-  const resetSelection = () => {
-    if (selectedSubmissionList.size > 0) {
-      setSelectedSubmissionList(new Set());
-    }
-
-    if (isSelectAllChecked) {
-      setIsSelectAllChecked(false);
-    }
-  };
-
+  const resetSelection = () => setSelectedSubmissionList(new Set<string>());
   const handleMarkSelectedAsSpam = async (formData: FormData) => {
     await markSelectedAsSpam(formData);
-    setIsSelectAllChecked(false);
-    setSelectedSubmissionList(new Set());
+    resetSelection();
   };
-
   const handleMarkSelectedAsHam = async (formData: FormData) => {
     await markSelectedAsHam(formData);
-    setIsSelectAllChecked(false);
-    setSelectedSubmissionList(new Set());
+    resetSelection();
   };
-
   const handleSearch = (term?: string) => {
-    const params = searchSubmissionParams(
-      new URLSearchParams(searchParams),
-      term
+    replaceWithParams(
+      searchSubmissionParams(new URLSearchParams(searchParams), term)
     );
-    replaceWithParams(params);
     resetSelection();
   };
-
   const handleClearFormFilters = () => {
-    const params = clearSubmissionFormFilters(
-      new URLSearchParams(searchParams)
+    replaceWithParams(
+      clearSubmissionFormFilters(new URLSearchParams(searchParams))
     );
-    replaceWithParams(params);
     resetSelection();
   };
-
   const handleApplyFormFilters = (formIds: string[]) => {
-    const params = setSubmissionFormFilters(
-      new URLSearchParams(searchParams),
-      formIds
+    replaceWithParams(
+      setSubmissionFormFilters(new URLSearchParams(searchParams), formIds)
     );
-    replaceWithParams(params);
     resetSelection();
   };
-
-  const handleSelectAllSubmissionsToggle = (
-    evt: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    setIsSelectAllChecked((prevIsSelectAllChecked) => !prevIsSelectAllChecked);
-    setSelectedSubmissionList(() => {
-      if (evt.target.checked) {
-        return new Set<string>([
-          ...submissions.map((submission) => submission.id),
-        ]);
-      } else {
-        return new Set<string>();
-      }
-    });
-  };
-
   const handlePageChange = (requestedPage: number) => {
-    const params = paginateSubmissionParams(
-      new URLSearchParams(searchParams),
-      requestedPage
+    replaceWithParams(
+      paginateSubmissionParams(new URLSearchParams(searchParams), requestedPage)
     );
-    setIsSelectAllChecked(false);
-    setSelectedSubmissionList(new Set());
-    replaceWithParams(params);
+    resetSelection();
   };
 
   return (
-    <>
-      <div className="mb-4 grid gap-3 md:grid-cols-[auto_1fr_auto] md:items-center">
-        <div
-          role="group"
-          aria-label="Bulk submission actions"
-          className="order-2 grid grid-cols-[44px_1fr_1fr] gap-2 md:order-1 md:flex md:w-auto"
-        >
-          <label className="inline-flex min-h-11 items-center justify-center rounded-md border border-gray-200 bg-white px-2 text-gray-600 shadow-sm">
-            <span className="sr-only">Select all submissions</span>
-            <input
-              type="checkbox"
-              name="selectAllSubmissions"
-              className="h-5 w-5 transition-all duration-500 ease-in-out"
-              onChange={handleSelectAllSubmissionsToggle}
-              checked={isSelectAllChecked}
-            />
-          </label>
-          <button
-            className="inline-flex min-h-11 items-center justify-center whitespace-normal rounded-md border border-gray-200 bg-white px-2 text-sm font-medium leading-tight text-gray-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60 sm:whitespace-nowrap sm:px-3 sm:text-base sm:leading-6"
-            formAction={handleMarkSelectedAsSpam}
-            form="submissions_management"
-            disabled={selectedSubmissionList.size === 0}
-          >
-            Mark as Junk
-          </button>
-          <button
-            className="inline-flex min-h-11 items-center justify-center whitespace-normal rounded-md border border-gray-200 bg-white px-2 text-sm font-medium leading-tight text-gray-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60 sm:whitespace-nowrap sm:px-3 sm:text-base sm:leading-6"
-            formAction={handleMarkSelectedAsHam}
-            form="submissions_management"
-            disabled={selectedSubmissionList.size === 0}
-          >
-            Mark as Not Junk
-          </button>
-        </div>
-
+    <Card className="mb-3.5">
+      <div className="grid grid-cols-[minmax(250px,_1fr)_auto_auto] items-center gap-3 p-3.5 max-lg:grid-cols-[1fr_auto] max-[520px]:grid-cols-1">
         <form
-          className="order-1 w-full md:order-2 md:justify-self-end"
+          className="relative"
           id="submissions_search"
-          action={(formData) => {
-            const searchTerm = formData.get('search')?.toString();
-            handleSearch(searchTerm);
-          }}
+          action={(formData) =>
+            handleSearch(formData.get('search')?.toString())
+          }
         >
           <label className="sr-only" htmlFor="submissions-search-input">
             Search submissions
           </label>
-          <input
-            onChange={useDebouncedCallback((evt) => {
-              handleSearch(evt.target.value);
-            }, 400)}
+          <Search
+            aria-hidden="true"
+            className="pointer-events-none absolute left-3 top-1/2 z-[1] size-[17px] -translate-y-1/2 text-[#8a8b91]"
+          />
+          <Input
+            onChange={useDebouncedCallback(
+              (evt) => handleSearch(evt.target.value),
+              400
+            )}
             defaultValue={searchParams?.get('query')?.toString()}
             id="submissions-search-input"
             name="search"
             type="search"
-            placeholder="Search..."
-            className="min-h-11 w-full rounded-md border border-gray-200 bg-white px-3 text-base font-medium leading-6 text-gray-600 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:pointer-events-none disabled:opacity-60 md:w-72"
+            placeholder="Search sender, message, or field value…"
+            search
           />
         </form>
 
-        <div className="order-3 flex min-h-11 items-center justify-end gap-3">
-          <div className="font-bold">
-            {itemIndexFloor}
-            {'-'}
-            {itemIndexCeiling} of {total}
-          </div>
-          <div className="flex gap-2">
-            <button
-              aria-label="Previous page"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-gray-200 bg-white text-base font-medium leading-6 text-gray-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={itemIndexFloor <= 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-              type="button"
-            >
-              {'<'}
-            </button>
-            <button
-              aria-label="Next page"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-gray-200 bg-white text-base font-medium leading-6 text-gray-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={itemIndexCeiling >= total}
-              onClick={() => handlePageChange(currentPage + 1)}
-              type="button"
-            >
-              {'>'}
-            </button>
-          </div>
+        <div
+          className="flex items-center gap-2 max-lg:col-span-full max-lg:row-start-2 max-[520px]:col-start-1 max-[520px]:row-start-3 max-[520px]:overflow-x-auto max-[520px]:[&>button]:min-w-max"
+          role="group"
+          aria-label="Bulk submission actions"
+        >
+          <ActionButton
+            size="small"
+            formAction={handleMarkSelectedAsSpam}
+            form="submissions_management"
+            disabled={selectedSubmissionList.size === 0}
+          >
+            Mark as junk
+          </ActionButton>
+          <ActionButton
+            size="small"
+            formAction={handleMarkSelectedAsHam}
+            form="submissions_management"
+            disabled={selectedSubmissionList.size === 0}
+          >
+            Mark as not junk
+          </ActionButton>
+        </div>
+
+        <div className="flex items-center gap-2 max-lg:col-start-2 max-lg:row-start-1 max-[520px]:col-start-1 max-[520px]:row-start-2 max-[520px]:justify-between">
+          <span className="mr-[3px] whitespace-nowrap text-[11px] font-[650] text-muted">
+            {itemIndexFloor}–{itemIndexCeiling} of {total}
+          </span>
+          <ActionButton
+            aria-label="Previous page"
+            size="icon"
+            disabled={itemIndexFloor <= 1}
+            onClick={() => handlePageChange(currentPage - 1)}
+            type="button"
+          >
+            <ChevronLeft aria-hidden="true" />
+          </ActionButton>
+          <ActionButton
+            aria-label="Next page"
+            size="icon"
+            disabled={itemIndexCeiling >= total}
+            onClick={() => handlePageChange(currentPage + 1)}
+            type="button"
+          >
+            <ChevronRight aria-hidden="true" />
+          </ActionButton>
         </div>
       </div>
 
@@ -209,6 +161,6 @@ export default function Toolbar({
         selectedFormIds={selectedFormIds}
         summary={formFilterSummary}
       />
-    </>
+    </Card>
   );
 }
