@@ -13,7 +13,9 @@ export default function Submissions({
   pagination,
   formFilterSummary,
   forms,
+  repliesEnabled = false,
 }: {
+  repliesEnabled?: boolean;
   submissions: SubmissionType[];
   pagination: { limit: number; total: number; offset: number };
   formFilterSummary?: string;
@@ -44,6 +46,7 @@ export default function Submissions({
         forms={forms}
       />
       <InboxReader
+        repliesEnabled={repliesEnabled}
         submissions={submissions}
         selected={selectedSubmissionList}
         onSelection={setSelectedSubmissionList}

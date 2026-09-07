@@ -136,6 +136,7 @@ async function SubmissionsContent({
   }
   return (
     <Submissions
+      repliesEnabled={process.env.FORMDELEGATE_ENABLE_INBOX_REPLIES === 'true'}
       submissions={result.data}
       pagination={result.pagination}
       formFilterSummary={formFilterSummary(selectedForms, forms)}

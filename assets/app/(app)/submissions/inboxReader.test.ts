@@ -42,10 +42,11 @@ const submission: Submission = {
   updated_at: '2026-09-01T12:00:00Z',
 };
 
-function renderInbox(submissions: Submission[]) {
+function renderInbox(submissions: Submission[], repliesEnabled?: boolean) {
   return renderToStaticMarkup(
     createElement(InboxReader, {
       allSelected: false,
+      repliesEnabled,
       onSelection: () => {},
       selected: new Set<string>(),
       submissions,
@@ -62,8 +63,26 @@ describe('real submissions inbox', () => {
     assert.ok(markup.includes('Select submission from A real sender'));
     assert.ok(markup.includes('https://example.com/request.pdf'));
     assert.ok(!/sample inbox|preview reply|sample-elena/i.test(markup));
+    assert.ok(!markup.includes('inline-reply'));
+    assert.ok(!markup.includes('Send reply'));
+    assert.ok(!markup.includes('draft a reply'));
+    assert.ok(!markup.includes('Drafts stay here'));
+    assert.ok(!markup.includes('Email sending not connected'));
+  });
+
+  it('shows the non-sending composer only when explicitly enabled', () => {
+    const markup = renderInbox([submission], true);
+    assert.ok(markup.includes('inline-reply'));
+    assert.ok(markup.includes('draft a reply'));
+    assert.ok(markup.includes('Drafts stay here'));
     assert.ok(markup.includes('Email sending not connected'));
     assert.match(markup, /<button[^>]*type="submit"[^>]*disabled=""/);
+  });
+
+  it('hides the reply composer when explicitly disabled', () => {
+    const markup = renderInbox([submission], false);
+    assert.ok(!markup.includes('inline-reply'));
+    assert.ok(!markup.includes('Send reply'));
   });
 
   it('shows the empty state rather than fictional messages', () => {

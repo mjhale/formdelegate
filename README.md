@@ -37,6 +37,49 @@ And that's it. You can configure your endpoint to automatically send an email wh
 received, and you can also set up integration hooks with services such as Zapier. Submissions are
 automatically filtered for spam via [Akismet](https://akismet.com/).
 
+## Inbox Reply Feature Flag
+
+The inbox reply composer is hidden by default. To show it for development, set
+`FORMDELEGATE_ENABLE_INBOX_REPLIES=true` in the Next.js server environment and
+restart the frontend. Only the exact value `true` enables it; leave it unset or
+set it to `false` to hide it. Submission browsing, selection, and attachments are
+unaffected.
+
+This flag exposes only the prototype UI. Email sending remains disabled even
+when the flag is enabled; it does not authorize or implement outbound replies.
+
+### Decision: defer outbound inbox replies
+
+Keep replies off until their delivery and abuse controls are designed and
+implemented. A submission's email address is untrusted input: allowing replies
+through a shared platform mail account could expose that account's reputation
+and quota to abuse. The existing composer is a UI prototype, not a supported
+delivery workflow. Hiding it avoids implying that replies can be sent today.
+
+### Potential implementation steps
+
+The following is a proposed direction, not a committed provider or delivery
+design:
+
+1. Decide whether an email-app handoff is sufficient or whether in-app sending
+   is needed. For in-app sending, consider team-owned Postmark or SendGrid
+   credentials; defer general-purpose SMTP initially. Keep replies separate
+   from the platform's authentication email account.
+2. Define a manual, single-recipient reply flow with explicit confirmation.
+   Validate the recipient instead of guessing it from a sender display name;
+   require authenticated team membership and submission ownership on the server.
+3. Verify provider credentials and sender identity, use least-privilege access,
+   and protect stored credentials with encryption, rotation, and log redaction.
+4. Add server-side rate limits, team quotas, spam/abuse restrictions, and an
+   operational kill switch. The UI flag must not serve as authorization for a
+   future send endpoint.
+5. Implement reliable delivery with duplicate prevention, clear failure states,
+   and delivery/audit records. Define Reply-To and threading behavior, and how
+   bounces, complaints, and suppression are handled before rollout.
+6. Test cross-team access denial, invalid recipients, quota enforcement,
+   duplicate requests, provider failures, and secret handling. Enable for a
+   limited pilot only after those checks pass and operational monitoring exists.
+
 ## Submission Source Allowlists
 
 Forms can optionally reject browser submissions that do not come from an allowed host. Existing

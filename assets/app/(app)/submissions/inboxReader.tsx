@@ -24,7 +24,9 @@ export default function InboxReader({
   onSelection,
   allSelected,
   toggleAll,
+  repliesEnabled = false,
 }: {
+  repliesEnabled?: boolean;
   submissions: Submission[];
   selected: Set<string>;
   onSelection: (value: Set<string>) => void;
@@ -58,7 +60,9 @@ export default function InboxReader({
   return (
     <div className="space-y-3">
       <p className="text-xs text-muted">
-        Select a message to read and draft a reply.
+        {repliesEnabled
+          ? 'Select a message to read and draft a reply.'
+          : 'Select a message to read its details.'}
       </p>
       <section
         aria-label="Submission inbox"
@@ -176,7 +180,7 @@ export default function InboxReader({
                       {active.sender}
                     </h3>
                     <p className="mt-1 break-all text-xs text-muted">
-                      {active.email || 'No reply address provided'}
+                      {active.email || 'No email address provided'}
                     </p>
                   </div>
                   <time
@@ -237,50 +241,54 @@ export default function InboxReader({
                     </dl>
                   </details>
                 )}
-                <form
-                  className="overflow-hidden rounded-lg border border-line-strong focus-within:border-brand"
-                  onSubmit={(e) => e.preventDefault()}
-                >
-                  <div className="flex items-center gap-2 border-b border-[#e9e3d9] bg-[#faf7f1] px-4 py-3 text-sm font-medium">
-                    <Reply size={16} />
-                    <label htmlFor="inline-reply">Reply</label>
-                    <span className="min-w-0 truncate text-xs font-normal text-muted">
-                      to {active.email || '—'}
-                    </span>
-                  </div>
-                  <textarea
-                    id="inline-reply"
-                    value={draft}
-                    onChange={(e) =>
-                      setDrafts({ ...drafts, [active.id]: e.target.value })
-                    }
-                    placeholder={
-                      active.email
-                        ? 'Write a reply…'
-                        : 'No email address is available for this submission.'
-                    }
-                    disabled={!active.email}
-                    rows={6}
-                    className="block w-full resize-y border-0 bg-transparent px-4 py-4 text-sm leading-6 outline-none disabled:opacity-50"
-                  />
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#e9e3d9] px-4 py-3">
-                    <button
-                      type="submit"
-                      disabled
-                      className="inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-deep disabled:cursor-not-allowed disabled:opacity-40"
+                {repliesEnabled && (
+                  <>
+                    <form
+                      className="overflow-hidden rounded-lg border border-line-strong focus-within:border-brand"
+                      onSubmit={(e) => e.preventDefault()}
                     >
-                      <Send size={14} />
-                      Send reply
-                    </button>
+                      <div className="flex items-center gap-2 border-b border-[#e9e3d9] bg-[#faf7f1] px-4 py-3 text-sm font-medium">
+                        <Reply size={16} />
+                        <label htmlFor="inline-reply">Reply</label>
+                        <span className="min-w-0 truncate text-xs font-normal text-muted">
+                          to {active.email || '—'}
+                        </span>
+                      </div>
+                      <textarea
+                        id="inline-reply"
+                        value={draft}
+                        onChange={(e) =>
+                          setDrafts({ ...drafts, [active.id]: e.target.value })
+                        }
+                        placeholder={
+                          active.email
+                            ? 'Write a reply…'
+                            : 'No email address is available for this submission.'
+                        }
+                        disabled={!active.email}
+                        rows={6}
+                        className="block w-full resize-y border-0 bg-transparent px-4 py-4 text-sm leading-6 outline-none disabled:opacity-50"
+                      />
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#e9e3d9] px-4 py-3">
+                        <button
+                          type="submit"
+                          disabled
+                          className="inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-deep disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          <Send size={14} />
+                          Send reply
+                        </button>
+                        <p className="text-xs text-muted">
+                          Email sending not connected
+                        </p>
+                      </div>
+                    </form>
                     <p className="text-xs text-muted">
-                      Email sending not connected
+                      Drafts stay here while switching messages. Refreshing
+                      clears them.
                     </p>
-                  </div>
-                </form>
-                <p className="text-xs text-muted">
-                  Drafts stay here while switching messages. Refreshing clears
-                  them.
-                </p>
+                  </>
+                )}
               </div>
             </>
           ) : (
