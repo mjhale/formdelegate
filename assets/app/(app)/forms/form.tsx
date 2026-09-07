@@ -1,8 +1,7 @@
 'use client';
 
-import { Fragment, ReactNode, useEffect, useState, useTransition } from 'react';
-import { useForm, useFieldArray, useWatch } from 'react-hook-form';
-import { useActionState } from 'react';
+import type { EmailIntegrationStatusUpdate } from './reverifyPolicy';
+import type { ReactNode } from 'react';
 import type {
   EmailIntegration,
   EmailIntegrationInput,
@@ -10,10 +9,18 @@ import type {
 } from 'types/form';
 
 import {
+  Fragment,
+  useActionState,
+  useEffect,
+  useState,
+  useTransition,
+} from 'react';
+import { useFieldArray, useForm, useWatch } from 'react-hook-form';
+
+import {
   canReverifyEmailIntegration,
   getEmailIntegrationIndexById,
   isReverifyStatusUpdateForIntegration,
-  type EmailIntegrationStatusUpdate,
 } from './reverifyPolicy';
 
 interface IFormInput {
@@ -239,87 +246,139 @@ export default function Form({
   }, [getValues, reverifyStatusUpdates, setValue]);
 
   return (
-    <form aria-busy={isReverifyPending} onSubmit={onSubmit}>
+    <form
+      className="max-w-5xl"
+      aria-busy={isReverifyPending || isPending}
+      onSubmit={onSubmit}
+    >
       <fieldset
-        className="m-0 flex min-w-0 flex-col gap-y-4 border-0 p-0"
+        className="m-0 flex min-w-0 flex-col gap-y-6 border-0 p-0"
         disabled={isReverifyPending}
       >
-        <div className="flex items-center h-10 max-w-xl">
-          {/* Form id */}
-          <input
-            {...register(`id`)}
-            type="hidden"
-            defaultValue={form?.id ?? ''}
+        <section
+          className="min-w-0 rounded-xl border border-line bg-white p-5 sm:p-7"
+          aria-labelledby="general-settings-heading"
+        >
+          <div className="mb-6 flex items-start gap-3 border-b border-[#e7e1d6] pb-5 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-[#303137] [&_p]:mt-1 [&_p]:text-sm [&_p]:leading-6 [&_p]:text-muted">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fbefeb] text-xs font-semibold text-brand-deep">
+              01
+            </span>
+            <div>
+              <h2 id="general-settings-heading">General settings</h2>
+              <p>Give this endpoint a recognizable name for your team.</p>
+            </div>
+          </div>
+          <div className="grid min-w-0 items-start gap-2 py-1 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-5">
+            {/* Form id */}
+            <input
+              {...register(`id`)}
+              type="hidden"
+              defaultValue={form?.id ?? ''}
+            />
+
+            {/* Form name */}
+            <label
+              className="text-xs font-medium leading-5 text-[#53545c]"
+              htmlFor="name"
+            >
+              Form Name
+            </label>
+            <input
+              {...register(`name`)}
+              id="name"
+              type="text"
+              autoComplete="off"
+              className={`${textControl} flex-1 appearance-none`}
+              aria-describedby="name.error"
+              defaultValue={form?.name ?? ''}
+            />
+          </div>
+          {state?.errors?.name &&
+            state?.errors.name._errors.map((error: string) => (
+              <p className="mt-2 text-sm text-red-500" key={error}>
+                {error}
+              </p>
+            ))}
+          {state?.errors?._errors &&
+            state.errors._errors.map((error: string) => (
+              <p className="mt-2 text-sm text-red-500" key={error}>
+                {error}
+              </p>
+            ))}
+          {reverifyState?.errors?._errors &&
+            reverifyState.errors._errors.map((error: string) => (
+              <p className="mt-2 text-sm text-red-500" key={error}>
+                {error}
+              </p>
+            ))}
+        </section>
+        <section
+          className="min-w-0 rounded-xl border border-line bg-white p-5 sm:p-7"
+          aria-labelledby="allowed-websites-heading"
+        >
+          <div className="mb-6 flex items-start gap-3 border-b border-[#e7e1d6] pb-5 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-[#303137] [&_p]:mt-1 [&_p]:text-sm [&_p]:leading-6 [&_p]:text-muted">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fbefeb] text-xs font-semibold text-brand-deep">
+              02
+            </span>
+            <div>
+              <h2 id="allowed-websites-heading">Allowed websites</h2>
+              <p>
+                Choose which websites can send submissions to this endpoint.
+              </p>
+            </div>
+          </div>
+          <SubmissionSourcesFields
+            appendHostRule={appendHostRule}
+            hostRuleFields={hostRuleFields}
+            policy={submissionSourcePolicy}
+            register={register}
+            removeHostRule={removeHostRule}
+            state={state}
           />
-
-          {/* Form name */}
-          <label className="flex-0 w-1/4" htmlFor="name">
-            Form Name
-          </label>
-          <input
-            {...register(`name`)}
-            id="name"
-            type="text"
-            autoComplete="off"
-            className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
-            aria-describedby="name.error"
-            defaultValue={form?.name ?? ''}
+        </section>
+        <section
+          className="min-w-0 rounded-xl border border-line bg-white p-5 sm:p-7"
+          aria-labelledby="email-integrations-heading"
+        >
+          <div className="mb-6 flex items-start gap-3 border-b border-[#e7e1d6] pb-5 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-[#303137] [&_p]:mt-1 [&_p]:text-sm [&_p]:leading-6 [&_p]:text-muted">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fbefeb] text-xs font-semibold text-brand-deep">
+              03
+            </span>
+            <div>
+              <h2 id="email-integrations-heading">Email integrations</h2>
+              <p>
+                Connect your email provider and choose who receives submission
+                notifications.
+              </p>
+            </div>
+          </div>
+          <EmailIntegrationsFieldArray
+            {...{
+              state,
+              reverifyState: activeReverifyState,
+              control,
+              register,
+              getValues,
+              setValue,
+              unregister,
+              watch,
+              formId: form?.id ?? '',
+              clearReverifyState,
+              isFormDirty: isDirty,
+              isReverifyPending,
+              requestReverify,
+              reverifyStatusUpdates: reverifyStatusUpdates ?? [],
+            }}
           />
-        </div>
-        {state?.errors?.name &&
-          state?.errors.name._errors.map((error: string) => (
-            <p className="mt-2 text-sm text-red-500" key={error}>
-              {error}
-            </p>
-          ))}
-        {state?.errors?._errors &&
-          state.errors._errors.map((error: string) => (
-            <p className="mt-2 text-sm text-red-500" key={error}>
-              {error}
-            </p>
-          ))}
-        {reverifyState?.errors?._errors &&
-          reverifyState.errors._errors.map((error: string) => (
-            <p className="mt-2 text-sm text-red-500" key={error}>
-              {error}
-            </p>
-          ))}
-
-        <SubmissionSourcesFields
-          appendHostRule={appendHostRule}
-          hostRuleFields={hostRuleFields}
-          policy={submissionSourcePolicy}
-          register={register}
-          removeHostRule={removeHostRule}
-          state={state}
-        />
-
-        {/* Email integrations */}
-        <div className="text-lg font-semibold">Email Integrations</div>
-        <EmailIntegrationsFieldArray
-          {...{
-            state,
-            reverifyState: activeReverifyState,
-            control,
-            register,
-            getValues,
-            setValue,
-            unregister,
-            watch,
-            formId: form?.id ?? '',
-            clearReverifyState,
-            isFormDirty: isDirty,
-            isReverifyPending,
-            requestReverify,
-            reverifyStatusUpdates: reverifyStatusUpdates ?? [],
-          }}
-        />
-
+        </section>
         <p aria-live="polite" className="sr-only">
           {state?.message && state.message}
         </p>
 
-        <div>
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-line bg-white px-5 py-4">
+          <p className="text-xs text-muted">
+            Changes take effect when you save this form.
+          </p>
           <SubmitButton isPending={isPending} />
         </div>
       </fieldset>
@@ -348,16 +407,16 @@ function SubmissionSourcesFields({
     <fieldset
       aria-describedby={descriptionIds || undefined}
       aria-invalid={policyErrors.length > 0 || hostErrors.length > 0}
-      className="m-0 flex max-w-xl flex-col gap-y-3 rounded-lg border border-slate-200 p-4"
+      className="m-0 flex min-w-0 flex-col gap-y-4 border-0 p-0"
     >
-      <legend className="px-1 text-lg font-semibold">Submission sources</legend>
+      <legend className="sr-only">Submission sources</legend>
 
-      <label className="flex items-start gap-x-3">
+      <label className="flex items-start gap-x-3 rounded-lg border border-[#e7e1d6] bg-[#faf7f1] p-4 has-[:checked]:border-brand has-[:checked]:bg-[#fff5f2]">
         <input
           {...register('submission_source_policy')}
           type="radio"
           value="unrestricted"
-          className="mt-1"
+          className={`${choiceControl} mt-1`}
         />
         <span>
           <span className="block font-medium">
@@ -370,12 +429,12 @@ function SubmissionSourcesFields({
         </span>
       </label>
 
-      <label className="flex items-start gap-x-3">
+      <label className="flex items-start gap-x-3 rounded-lg border border-[#e7e1d6] bg-[#faf7f1] p-4 has-[:checked]:border-brand has-[:checked]:bg-[#fff5f2]">
         <input
           {...register('submission_source_policy')}
           type="radio"
           value="restricted"
-          className="mt-1"
+          className={`${choiceControl} mt-1`}
         />
         <span>
           <span className="block font-medium">
@@ -425,13 +484,13 @@ function SubmissionSourcesFields({
                 maxLength={253}
                 aria-describedby="host-rules-hint"
                 placeholder="example.com"
-                className="flex-1 appearance-none rounded border px-3 py-2 text-gray-700 shadow-sm focus:outline-none focus:ring-2"
+                className={`${textControl} flex-1 appearance-none`}
               />
               <button
                 type="button"
                 onClick={() => removeHostRule(index)}
                 aria-label={`Remove allowed host ${index + 1}`}
-                className="rounded border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2"
+                className={`${editorButton} border bg-white text-gray-600 hover:bg-gray-50`}
               >
                 Remove
               </button>
@@ -454,7 +513,7 @@ function SubmissionSourcesFields({
             type="button"
             disabled={hostRuleFields.length >= 50}
             onClick={() => appendHostRule({ value: '' })}
-            className="rounded border border-gray-200 bg-white px-3 py-1 text-sm text-gray-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-60"
+            className={`${editorButton} border bg-white text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60`}
           >
             Add allowed host
           </button>
@@ -489,9 +548,10 @@ function SubmitButton({ isPending }) {
   return (
     <input
       aria-disabled={isPending}
+      disabled={isPending}
       type="submit"
-      value="Save Form"
-      className="inline-block px-3 py-1 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
+      value={isPending ? 'Saving…' : 'Save form'}
+      className={`${submitControl} hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer`}
     />
   );
 }
@@ -517,7 +577,7 @@ function EmailRecipientsFieldArray({
       {emailRecipientFields.map((recipient, j) => {
         return (
           <Fragment key={recipient.id}>
-            <div className="flex flex-col gap-y-2 max-w-xl bg-zinc-50 border border-slate-200 rounded-lg p-4">
+            <div className="flex min-w-0 flex-col gap-y-3 rounded-lg border border-[#e7e1d6] bg-[#faf7f1] p-4">
               {/* Recipient id */}
               <input
                 {...register(
@@ -530,9 +590,9 @@ function EmailRecipientsFieldArray({
               />
 
               {/* Recipient name */}
-              <div className="flex items-center h-10 max-w-xl">
+              <div className="grid min-w-0 items-start gap-2 py-1 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-5">
                 <label
-                  className="flex-0 w-1/4"
+                  className="text-xs font-medium leading-5 text-[#53545c]"
                   htmlFor={`email_integrations.${i}.email_integration_recipients.${j}.name`}
                 >
                   Recipient Name
@@ -544,7 +604,7 @@ function EmailRecipientsFieldArray({
                   id={`email_integrations.${i}.email_integration_recipients.${j}.name`}
                   aria-describedby={`email_integrations.${i}.email_integration_recipients.${j}.name.error`}
                   type="text"
-                  className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+                  className={`${textControl} flex-1 appearance-none`}
                   defaultValue={getValues(
                     `email_integrations.${i}.email_integration_recipients.${j}.name`
                   )}
@@ -569,9 +629,9 @@ function EmailRecipientsFieldArray({
               </div>
 
               {/* Recipient email */}
-              <div className="flex items-center h-10 max-w-xl">
+              <div className="grid min-w-0 items-start gap-2 py-1 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-5">
                 <label
-                  className="flex-0 w-1/4"
+                  className="text-xs font-medium leading-5 text-[#53545c]"
                   htmlFor={`email_integrations.${i}.email_integration_recipients.${j}.email`}
                 >
                   Recipient Email
@@ -583,7 +643,7 @@ function EmailRecipientsFieldArray({
                   id={`email_integrations.${i}.email_integration_recipients.${j}.email`}
                   aria-describedby={`email_integrations.${i}.email_integration_recipients.${j}.email.error`}
                   type="text"
-                  className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+                  className={`${textControl} flex-1 appearance-none`}
                   defaultValue={getValues(
                     `email_integrations.${i}.email_integration_recipients.${j}.email`
                   )}
@@ -608,22 +668,22 @@ function EmailRecipientsFieldArray({
               </div>
 
               {/* Recipient type */}
-              <div className="flex items-center h-10 max-w-xl">
+              <div className="grid min-w-0 items-start gap-2 py-1 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-5">
                 <label
-                  className="flex-0 w-1/4"
+                  className="text-xs font-medium leading-5 text-[#53545c]"
                   htmlFor={`email_integrations.${i}.email_integration_recipients.${j}.type`}
                 >
                   Recipient Type
                 </label>
                 <div className="flex-1">
-                  <div className="inline-block relative w-full">
+                  <div className="relative inline-block w-full">
                     <select
                       {...register(
                         `email_integrations.${i}.email_integration_recipients.${j}.type`
                       )}
                       id={`email_integrations.${i}.email_integration_recipients.${j}.type`}
                       aria-describedby={`email_integrations.${i}.email_integration_recipients.${j}.type.error`}
-                      className="w-full appearance-none shadow-sm border rounded py-2 px-3 pr-8 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+                      className={`${textControl} appearance-none`}
                       defaultValue={getValues(
                         `email_integrations.${i}.email_integration_recipients.${j}.type`
                       )}
@@ -634,7 +694,7 @@ function EmailRecipientsFieldArray({
                     </select>
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                       <svg
-                        className="fill-current h-4 w-4"
+                        className="h-4 w-4 fill-current"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
                       >
@@ -661,9 +721,9 @@ function EmailRecipientsFieldArray({
                     )
                   )}
               </div>
-              <div className="flex justify-end max-w-xl">
+              <div className="flex max-w-xl justify-end">
                 <button
-                  className="inline-block px-2 py-1 text-sm font-medium leading-tight text-red-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
+                  className={`${editorButton} inline-block font-medium leading-tight text-red-600 whitespace-no-wrap bg-white border hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer`}
                   type="button"
                   onClick={() => remove(j)}
                 >
@@ -678,7 +738,7 @@ function EmailRecipientsFieldArray({
       <div className="flex max-w-xl pt-2">
         <button
           type="button"
-          className="inline-block px-2 py-1 text-sm font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
+          className={`${editorButton} inline-block font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer`}
           onClick={() =>
             append({
               id: null,
@@ -743,7 +803,7 @@ function EmailIntegrationsFieldArray({
     <>
       {emailIntegrationFields.map((emailIntegration, i) => (
         <Fragment key={emailIntegration.id}>
-          <div className="bg-white p-4 flex flex-col gap-y-2 max-w-xl rounded border">
+          <div className="mb-4 flex min-w-0 flex-col gap-3 rounded-lg border border-line bg-surface p-4 sm:p-5">
             <input
               {...register(`email_integrations.${i}.id`)}
               type="hidden"
@@ -784,9 +844,9 @@ function EmailIntegrationsFieldArray({
                 defaultValue="true"
               />
             )}
-            <div className="flex items-center h-10 max-w-xl">
+            <div className="grid min-w-0 items-start gap-2 py-1 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-5">
               <label
-                className="flex-0 w-1/4"
+                className="text-xs font-medium leading-5 text-[#53545c]"
                 htmlFor={`email_integrations.${i}.enabled`}
               >
                 Enabled
@@ -795,7 +855,7 @@ function EmailIntegrationsFieldArray({
                 <input
                   {...register(`email_integrations.${i}.enabled`)}
                   id={`email_integrations.${i}.enabled`}
-                  className="w-4 h-4 focus:outline-none focus:ring-2"
+                  className={choiceControl}
                   type="checkbox"
                   defaultChecked={getValues(`email_integrations.${i}.enabled`)}
                 />
@@ -826,14 +886,16 @@ function EmailIntegrationsFieldArray({
             />
             <div className="flex max-w-xl py-2">
               <button
-                className="inline-block px-2 py-1 text-sm font-medium leading-tight text-red-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
+                className={`${editorButton} inline-block font-medium leading-tight text-red-600 whitespace-no-wrap bg-white border hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer`}
                 type="button"
                 onClick={() => removeEmailIntegration(i)}
               >
                 Remove Integration
               </button>
             </div>
-            <div className="text-lg font-semibold">Recipients</div>
+            <h3 className="border-t border-[#e7e1d6] pt-4 text-sm font-semibold">
+              Recipients
+            </h3>
             <EmailRecipientsFieldArray
               nestIndex={i}
               {...{ state, control, getValues, register }}
@@ -845,7 +907,7 @@ function EmailIntegrationsFieldArray({
       <div className="flex max-w-xl pt-2">
         <button
           type="button"
-          className="inline-block px-2 py-1 text-sm font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
+          className={`${editorButton} inline-block font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer`}
           onClick={appendEmailIntegration}
         >
           Add Email Integration
@@ -909,7 +971,7 @@ function EmailProviderSetupFields({
 
   return (
     <>
-      <div className="flex items-center h-10 max-w-xl">
+      <div className="grid min-w-0 items-start gap-2 py-1 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-5">
         {isVerified ? (
           <>
             <input
@@ -917,15 +979,17 @@ function EmailProviderSetupFields({
               type="hidden"
               defaultValue={getValues(`email_integrations.${i}.email_provider`)}
             />
-            <div className="flex-0 w-1/4">Provider</div>
-            <div className="flex-1 shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight">
+            <div className="text-xs font-medium leading-5 text-[#53545c]">
+              Provider
+            </div>
+            <div className="flex-1 rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm">
               {formatProviderLabel(provider)}
             </div>
           </>
         ) : (
           <>
             <label
-              className="flex-0 w-1/4"
+              className="text-xs font-medium leading-5 text-[#53545c]"
               htmlFor={`email_integrations.${i}.email_provider`}
             >
               Provider
@@ -936,7 +1000,7 @@ function EmailProviderSetupFields({
                   onChange: (event) => resetProviderFields(event.target.value),
                 })}
                 id={`email_integrations.${i}.email_provider`}
-                className="w-full appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+                className={`${textControl} appearance-none`}
                 defaultValue={
                   getValues(`email_integrations.${i}.email_provider`) ?? ''
                 }
@@ -950,21 +1014,25 @@ function EmailProviderSetupFields({
           </>
         )}
       </div>
-      <div className="flex items-center h-10 max-w-xl">
-        <div className="flex-0 w-1/4">Status</div>
-        <div className="flex-1 shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight">
+      <div className="grid min-w-0 items-start gap-2 py-1 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-5">
+        <div className="text-xs font-medium leading-5 text-[#53545c]">
+          Status
+        </div>
+        <div className="flex-1 rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm">
           {formatProviderStatus(currentStatus)}
         </div>
       </div>
-      <div className="flex items-center h-10 max-w-xl">
-        <div className="flex-0 w-1/4">Last Verified</div>
-        <div className="flex-1 shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight">
+      <div className="grid min-w-0 items-start gap-2 py-1 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-5">
+        <div className="text-xs font-medium leading-5 text-[#53545c]">
+          Last Verified
+        </div>
+        <div className="flex-1 rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm">
           {formatLastVerifiedAt(lastVerifiedAt)}
         </div>
       </div>
       {canReverify && (
         <div className="flex max-w-xl">
-          <div className="flex-0 w-1/4" />
+          <div className="text-xs font-medium leading-5 text-[#53545c]" />
           <button
             type="button"
             disabled={isReverifyPending}
@@ -975,7 +1043,7 @@ function EmailProviderSetupFields({
                 integrationIndex: i,
               })
             }
-            className="inline-block px-2 py-1 text-sm font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
+            className={`${editorButton} inline-block font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer`}
           >
             Reverify Provider
           </button>
@@ -1109,7 +1177,7 @@ function ProviderConfigFields({
               label="Message Stream"
               readOnly={readOnly}
             />
-            <p className="ml-[25%] mt-1 text-xs text-gray-500">
+            <p className="ml-0 mt-1 text-xs text-gray-500">
               Optional. Defaults to Postmark&apos;s outbound transactional
               stream.
             </p>
@@ -1160,15 +1228,18 @@ function ProviderTextInput({
 
   if (readOnly && isSecretField) {
     return (
-      <div className="flex items-center h-10 max-w-xl">
-        <label className="flex-0 w-1/4" htmlFor={name}>
+      <div className="grid min-w-0 items-start gap-2 py-1 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-5">
+        <label
+          className="text-xs font-medium leading-5 text-[#53545c]"
+          htmlFor={name}
+        >
           {label}
         </label>
         <input
           id={name}
           type={type}
           autoComplete="new-password"
-          className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight bg-gray-50 focus:outline-none"
+          className={`${textControl} flex-1 appearance-none`}
           defaultValue=""
           disabled
         />
@@ -1177,8 +1248,11 @@ function ProviderTextInput({
   }
 
   return (
-    <div className="flex items-center h-10 max-w-xl">
-      <label className="flex-0 w-1/4" htmlFor={name}>
+    <div className="grid min-w-0 items-start gap-2 py-1 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-5">
+      <label
+        className="text-xs font-medium leading-5 text-[#53545c]"
+        htmlFor={name}
+      >
         {label}
       </label>
       <input
@@ -1186,7 +1260,7 @@ function ProviderTextInput({
         id={name}
         type={type}
         autoComplete={type === 'password' ? 'new-password' : 'off'}
-        className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+        className={`${textControl} flex-1 appearance-none`}
         readOnly={readOnly}
         defaultValue={
           type === 'password' ? '' : getStringFieldValue(getValues(name))
@@ -1209,7 +1283,7 @@ function ProviderCheckboxInput({
 
   if (readOnly) {
     return (
-      <div className="flex items-center h-10 max-w-xl">
+      <div className="grid min-w-0 items-start gap-2 py-1 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-5">
         {checked && (
           <input
             {...register(name)}
@@ -1217,11 +1291,13 @@ function ProviderCheckboxInput({
             defaultValue={checked ? 'true' : ''}
           />
         )}
-        <div className="flex-0 w-1/4">{label}</div>
+        <div className="text-xs font-medium leading-5 text-[#53545c]">
+          {label}
+        </div>
         <div className="flex-1">
           <input
             id={name}
-            className="w-4 h-4 focus:outline-none"
+            className={choiceControl}
             type="checkbox"
             checked={checked}
             disabled
@@ -1233,15 +1309,18 @@ function ProviderCheckboxInput({
   }
 
   return (
-    <div className="flex items-center h-10 max-w-xl">
-      <label className="flex-0 w-1/4" htmlFor={name}>
+    <div className="grid min-w-0 items-start gap-2 py-1 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-5">
+      <label
+        className="text-xs font-medium leading-5 text-[#53545c]"
+        htmlFor={name}
+      >
         {label}
       </label>
       <div className="flex-1">
         <input
           {...register(name)}
           id={name}
-          className="w-4 h-4 focus:outline-none focus:ring-2"
+          className={choiceControl}
           type="checkbox"
           defaultChecked={checked}
         />
@@ -1384,3 +1463,13 @@ function formatLastVerifiedAt(value: unknown): string {
     timeStyle: 'short',
   }).format(date);
 }
+
+// Shared Tailwind recipes for the editor controls.
+const textControl =
+  'min-h-10 w-full min-w-0 rounded-lg border border-line-strong bg-white px-3 py-2 text-sm leading-5 text-[#303137] shadow-none focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#bf453d]/20 disabled:cursor-not-allowed disabled:bg-[#f8f5ef] disabled:text-muted';
+const choiceControl =
+  'h-4 w-4 shrink-0 accent-brand focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#bf453d]/20 disabled:cursor-not-allowed disabled:bg-[#f8f5ef] disabled:text-muted';
+const editorButton =
+  'min-h-9 rounded-lg border-line-strong px-3 py-2 text-xs shadow-none';
+const submitControl =
+  'min-h-10 cursor-pointer rounded-lg border border-brand-deep bg-brand px-5 py-2 text-sm font-semibold text-white shadow-none hover:bg-brand-deep disabled:cursor-wait disabled:opacity-60';

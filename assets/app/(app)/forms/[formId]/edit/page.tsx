@@ -1,13 +1,15 @@
 import type { Metadata } from 'next';
 
-import { Suspense } from 'react';
 import { cacheLife, cacheTag } from 'next/cache';
+import { Suspense } from 'react';
 
+import { reverifyEmailIntegration, updateForm } from '../../actions';
 import { formCacheTag, formsCacheTag } from 'utils/cacheTags';
 import { getProfileContext } from 'utils/profile';
-import { reverifyEmailIntegration, updateForm } from '../../actions';
 
-import { FormDetailsSkeleton } from '../../../_components/skeletons';
+import { FormEditorSkeleton } from '../../../_components/skeletons';
+import DeleteFormSection from '../../deleteFormSection';
+import EditorHeader from '../../editorHeader';
 import Form from '../../form';
 
 export default function EditFormPage({
@@ -17,10 +19,8 @@ export default function EditFormPage({
 }) {
   return (
     <>
-      <h1 className="text-3xl lowercase pb-4 tracking-wide font-semibold">
-        Edit Form
-      </h1>
-      <Suspense fallback={<FormDetailsSkeleton />}>
+      <EditorHeader editing />
+      <Suspense fallback={<FormEditorSkeleton />}>
         <EditForm params={params} />
       </Suspense>
     </>
@@ -32,11 +32,14 @@ async function EditForm({ params }: { params: Promise<{ formId: string }> }) {
   const form = await fetchForm(formId);
 
   return (
-    <Form
-      form={form}
-      saveFormAction={updateForm}
-      reverifyEmailIntegrationAction={reverifyEmailIntegration}
-    />
+    <>
+      <Form
+        form={form}
+        saveFormAction={updateForm}
+        reverifyEmailIntegrationAction={reverifyEmailIntegration}
+      />
+      <DeleteFormSection formId={form.id} formName={form.name} />
+    </>
   );
 }
 
