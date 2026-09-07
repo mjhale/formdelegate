@@ -204,7 +204,10 @@ export default function InboxReader({
                   {active.body}
                 </div>
                 {active.source && (
-                  <details className="border-y border-[#e9e3d9] py-3 text-xs text-muted">
+                  <details
+                    open
+                    className="border-y border-[#e9e3d9] py-3 text-xs text-muted"
+                  >
                     <summary className="cursor-pointer font-medium">
                       Submission details & attachments
                     </summary>

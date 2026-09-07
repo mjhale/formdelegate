@@ -79,6 +79,13 @@ describe('real submissions inbox', () => {
     assert.match(markup, /<button[^>]*type="submit"[^>]*disabled=""/);
   });
 
+  it('expands submission details and attachments by default', () => {
+    const markup = renderInbox([submission]);
+    assert.match(markup, /<details[^>]*open=""/);
+    assert.ok(markup.includes('Submission details &amp; attachments'));
+    assert.ok(markup.includes('request.pdf'));
+  });
+
   it('hides the reply composer when explicitly disabled', () => {
     const markup = renderInbox([submission], false);
     assert.ok(!markup.includes('inline-reply'));
