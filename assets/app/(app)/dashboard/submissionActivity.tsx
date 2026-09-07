@@ -1,3 +1,9 @@
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../_components/card';
 interface ActivityDay {
   day: string;
   submission_count: number;
@@ -25,14 +31,6 @@ const MONTH_LABELS = [
   'Nov',
   'Dec',
 ];
-
-const INTENSITY_CLASSES = [
-  'bg-zinc-100',
-  'bg-emerald-100',
-  'bg-emerald-300',
-  'bg-emerald-500',
-  'bg-emerald-700',
-];
 const MOBILE_ACTIVITY_DAY_LIMIT = 80;
 const DESKTOP_ACTIVITY_DAY_LIMIT = 240;
 
@@ -44,37 +42,41 @@ export default function SubmissionActivity({
   const mobileCalendar = buildCalendar(activity, MOBILE_ACTIVITY_DAY_LIMIT);
   const desktopCalendar = buildCalendar(activity, DESKTOP_ACTIVITY_DAY_LIMIT);
 
-  if (desktopCalendar.weeks.length === 0) {
-    return (
-      <section className="border border-grey-600 rounded-t overflow-hidden">
-        <div className="bg-carnation-400 text-white border-stone-200 block text-sm font-semibold leading-6 p-2 uppercase">
-          Submission Activity
-        </div>
-        <div className="py-4 px-6 bg-white text-sm text-slate-600">
-          No submission activity to show yet.
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section className="border border-grey-600 rounded-t overflow-hidden">
-      <div className="bg-carnation-400 text-white border-stone-200 block text-sm font-semibold leading-6 p-2 uppercase">
-        Submission Activity
+    <Card>
+      <CardHeader>
+        <div>
+          <CardTitle>Submission activity</CardTitle>
+          <CardDescription>
+            Daily activity across all forms over the last 240 days.
+          </CardDescription>
+        </div>
+        <div className="flex items-baseline gap-2 [&_span]:text-xs [&_span]:text-muted [&_strong]:text-[21px] [&_strong]:tracking-[-0.03em]">
+          <strong>{desktopCalendar.totalSubmissions.toLocaleString()}</strong>
+          <span>submissions</span>
+        </div>
+      </CardHeader>
+      <div className="p-5">
+        {desktopCalendar.weeks.length === 0 ? (
+          <p className="m-0 text-[13px] text-muted">
+            No submission activity to show yet.
+          </p>
+        ) : (
+          <>
+            <ActivityWindow
+              calendar={mobileCalendar}
+              className="sm:hidden"
+              dayLimit={MOBILE_ACTIVITY_DAY_LIMIT}
+            />
+            <ActivityWindow
+              calendar={desktopCalendar}
+              className="hidden sm:block"
+              dayLimit={DESKTOP_ACTIVITY_DAY_LIMIT}
+            />
+          </>
+        )}
       </div>
-      <div className="bg-white px-4 py-5 sm:px-6">
-        <ActivityWindow
-          calendar={mobileCalendar}
-          className="[--activity-cell-size:1.125rem] [--activity-gap:0.375rem] sm:hidden"
-          dayLimit={MOBILE_ACTIVITY_DAY_LIMIT}
-        />
-        <ActivityWindow
-          calendar={desktopCalendar}
-          className="hidden [--activity-cell-size:0.8125rem] [--activity-gap:0.25rem] sm:block"
-          dayLimit={DESKTOP_ACTIVITY_DAY_LIMIT}
-        />
-      </div>
-    </section>
+    </Card>
   );
 }
 
@@ -89,73 +91,65 @@ function ActivityWindow({
 }) {
   return (
     <div className={className}>
-      <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="text-base font-semibold text-slate-900">
-            {calendar.totalSubmissions.toLocaleString()} submissions in the last{' '}
-            {dayLimit} days
-          </h2>
-          <p className="text-xs text-slate-500">
-            {formatDisplayDate(calendar.firstActivityDate)} -{' '}
-            {formatDisplayDate(calendar.lastActivityDate)}
-          </p>
-        </div>
-      </div>
-
-      <div className="inline-grid max-w-full grid-cols-[auto_1fr] gap-x-2">
-        <div className="h-6" />
-        <div
-          className="grid h-6 gap-[var(--activity-gap)]"
-          style={{
-            gridTemplateColumns: `repeat(${calendar.weeks.length}, var(--activity-cell-size))`,
-          }}
-        >
-          {calendar.monthLabels.map((monthLabel) => (
-            <div
-              className="text-xs leading-5 text-slate-500"
-              key={`${monthLabel.month}-${monthLabel.weekIndex}`}
-              style={{
-                gridColumn: `${monthLabel.weekIndex + 1} / span ${
-                  monthLabel.span
-                }`,
-              }}
-            >
-              {monthLabel.month}
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-rows-7 gap-[var(--activity-gap)] pt-px">
-          {DAY_LABELS.map((label, index) => (
-            <div
-              className="h-[var(--activity-cell-size)] text-xs leading-[var(--activity-cell-size)] text-slate-500"
-              key={`${label}-${index}`}
-            >
-              {label}
-            </div>
-          ))}
-        </div>
+      <div className="max-w-full overflow-x-auto pb-0.5 pl-0 pr-0 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div
           aria-label={`Daily submission activity for the last ${dayLimit} days`}
-          className="grid grid-flow-col grid-rows-7 gap-[var(--activity-gap)]"
+          className="inline-grid min-w-[650px] grid-cols-[29px_auto] gap-1.5"
         >
-          {calendar.weeks.flat().map((day) => (
-            <div
-              aria-label={`${formatDisplayDate(day.date)}: ${
-                day.count
-              } submissions`}
-              className={`h-[var(--activity-cell-size)] w-[var(--activity-cell-size)] rounded-sm ring-1 ring-inset ring-black/5 ${
-                day.isInRange
-                  ? INTENSITY_CLASSES[
-                      getIntensity(day.count, calendar.maxCount)
-                    ]
-                  : 'bg-transparent ring-transparent'
-              }`}
-              key={day.dateKey}
-              title={`${formatDisplayDate(day.date)}: ${day.count} submissions`}
-            />
-          ))}
+          <div />
+          <div
+            className="grid h-5 grid-cols-[repeat(42,_12px)] gap-1 text-[10px] text-muted [&_span]:whitespace-nowrap"
+            style={{
+              gridTemplateColumns: `repeat(${calendar.weeks.length}, 12px)`,
+            }}
+          >
+            {calendar.monthLabels.map((monthLabel) => (
+              <span
+                key={`${monthLabel.month}-${monthLabel.weekIndex}`}
+                style={{
+                  gridColumn: `${monthLabel.weekIndex + 1} / span ${monthLabel.span}`,
+                }}
+              >
+                {monthLabel.month}
+              </span>
+            ))}
+          </div>
+          <div className="grid grid-rows-[repeat(7,12px)] gap-1 text-[9px] leading-[12px] text-[#9899a0]">
+            {DAY_LABELS.map((label, index) => (
+              <span key={`${label}-${index}`}>{label}</span>
+            ))}
+          </div>
+          <div
+            className="grid grid-flow-col grid-cols-[repeat(42,_12px)] grid-rows-[repeat(7,12px)] gap-1"
+            style={{
+              gridTemplateColumns: `repeat(${calendar.weeks.length}, 12px)`,
+            }}
+          >
+            {calendar.weeks.flat().map((day) => {
+              const intensity = day.isInRange
+                ? getIntensity(day.count, calendar.maxCount)
+                : 0;
+
+              return (
+                <span
+                  aria-label={`${formatDisplayDate(day.date)}: ${day.count} submissions`}
+                  className={activityCellClasses(intensity)}
+                  key={day.dateKey}
+                  title={`${formatDisplayDate(day.date)}: ${day.count} submissions`}
+                />
+              );
+            })}
+          </div>
         </div>
+      </div>
+      <div className="mt-3 flex items-center justify-end gap-[5px] text-[10px] text-muted">
+        <span>Less</span>
+        <span className={activityCellClasses(0)} />
+        <span className={activityCellClasses(1)} />
+        <span className={activityCellClasses(2)} />
+        <span className={activityCellClasses(3)} />
+        <span className={activityCellClasses(4)} />
+        <span>More</span>
       </div>
     </div>
   );
@@ -169,7 +163,7 @@ function buildCalendar(activity: ActivityDay[], dayLimit: number) {
       maxCount: 0,
       monthLabels: [],
       totalSubmissions: 0,
-      weeks: [],
+      weeks: [] as CalendarDay[][],
     };
   }
 
@@ -221,9 +215,7 @@ function buildMonthLabels(weeks: CalendarDay[][]) {
   >((labels, week, weekIndex) => {
     const monthStart = week.find((day) => day.date.getDate() === 1);
 
-    if (!monthStart) {
-      return labels;
-    }
+    if (!monthStart) return labels;
 
     const nextMonthWeek = weeks.findIndex(
       (candidateWeek, candidateWeekIndex) =>
@@ -245,16 +237,12 @@ function buildMonthLabels(weeks: CalendarDay[][]) {
 }
 
 function getIntensity(count: number, maxCount: number) {
-  if (count <= 0 || maxCount <= 0) {
-    return 0;
-  }
-
+  if (count <= 0 || maxCount <= 0) return 0;
   return Math.min(4, Math.ceil((count / maxCount) * 4));
 }
 
 function parseDateKey(dateKey: string) {
   const [year, month, day] = dateKey.split('-').map(Number);
-
   return new Date(year, month - 1, day);
 }
 
@@ -262,7 +250,6 @@ function toDateKey(date: Date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
-
   return `${year}-${month}-${day}`;
 }
 
@@ -277,14 +264,12 @@ function formatDisplayDate(date: Date) {
 function startOfWeek(date: Date) {
   const start = new Date(date);
   start.setDate(start.getDate() - start.getDay());
-
   return start;
 }
 
 function endOfWeek(date: Date) {
   const end = new Date(date);
   end.setDate(end.getDate() + (6 - end.getDay()));
-
   return end;
 }
 
@@ -302,10 +287,20 @@ function eachDay(startDate: Date, endDate: Date) {
 
 function chunk<T>(items: T[], size: number) {
   const chunks: T[][] = [];
-
   for (let index = 0; index < items.length; index += size) {
     chunks.push(items.slice(index, index + size));
   }
-
   return chunks;
+}
+
+const activityLevels = [
+  'border-[#7e5d4b]/10 bg-[#f0ece5]',
+  'border-[#f3c8c2] bg-[#f8d6d2]',
+  'border-[#e98e85] bg-[#eea49d]',
+  'border-[#cb574e] bg-[#d9685f]',
+  'border-[#932d28] bg-[#a63731]',
+];
+
+function activityCellClasses(intensity: number) {
+  return `inline-block size-3 rounded-[3px] border ${activityLevels[intensity] ?? activityLevels[0]}`;
 }

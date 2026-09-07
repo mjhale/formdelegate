@@ -657,6 +657,61 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
 
   describe "recent_activity/3" do
     @tag :as_inserted_user
+    test "counts spam by arrival date within the team and reflects reclassification", %{
+      conn: conn,
+      jwt: jwt,
+      user: user,
+      team: team
+    } do
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      yesterday = NaiveDateTime.add(now, -86_400, :second)
+      spam_type = Submissions.get_or_create_flagged_type(%{type: "spam"})
+
+      spam =
+        FormDelegate.Factory.insert(:submission,
+          form: form,
+          inserted_at: yesterday,
+          flagged_at: now,
+          flagged_type: spam_type
+        )
+
+      FormDelegate.Factory.insert(:submission, form: form)
+      other_form = FormDelegate.Factory.insert(:form)
+
+      FormDelegate.Factory.insert(:submission,
+        form: other_form,
+        flagged_at: now,
+        flagged_type: spam_type
+      )
+
+      response =
+        conn
+        |> authorize(jwt)
+        |> get(Routes.team_submission_recent_activity_path(conn, :recent_activity, team.id))
+        |> json_response(200)
+
+      assert %{"submission_count" => 1, "spam_count" => 1} =
+               activity_for(response, NaiveDateTime.to_date(yesterday))
+
+      assert %{"submission_count" => 1, "spam_count" => 0} =
+               activity_for(response, Date.utc_today())
+
+      assert %{"submission_count" => 0, "spam_count" => 0} =
+               activity_for(response, Date.add(Date.utc_today(), -2))
+
+      {:ok, _} = Submissions.flag_submission(spam, %{flagged_at: nil, flagged_type: nil})
+
+      response =
+        conn
+        |> authorize(jwt)
+        |> get(Routes.team_submission_recent_activity_path(conn, :recent_activity, team.id))
+        |> json_response(200)
+
+      assert %{"spam_count" => 0} = activity_for(response, NaiveDateTime.to_date(yesterday))
+    end
+
+    @tag :as_inserted_user
     test "returns recent activity for the requested team only", %{
       conn: conn,
       jwt: jwt,

@@ -222,7 +222,8 @@ defmodule FormDelegate.Submissions do
         order_by: day.d,
         select: %{
           day: fragment("date(?)", day.d),
-          submission_count: count(s.id)
+          submission_count: count(s.id),
+          spam_count: filter(count(s.id), not is_nil(s.flagged_at))
         }
 
     Repo.all(query)
