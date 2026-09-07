@@ -2,13 +2,13 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-  SENT_MESSAGE,
-  SERVICE_ERROR_MESSAGE,
   buildSubmissionBody,
   fieldErrorState,
   isSuccessfulSubmissionStatus,
   messageInputSchema,
+  SENT_MESSAGE,
   sentState,
+  SERVICE_ERROR_MESSAGE,
   serviceErrorState,
   validateMessageEndpoint,
 } from './messageFormContract';

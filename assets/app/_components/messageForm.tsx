@@ -1,12 +1,12 @@
 'use client';
 
+import type { MessageFormField, MessageFormState } from './messageFormContract';
 import type { ChangeEvent, FormEvent } from 'react';
 
+import clsx from 'clsx';
 import { useRef, useState } from 'react';
 
 import {
-  type MessageFormField,
-  type MessageFormState,
   buildSubmissionBody,
   fieldErrorState,
   isSuccessfulSubmissionStatus,
@@ -15,6 +15,8 @@ import {
   serviceErrorState,
   validateMessageEndpoint,
 } from './messageFormContract';
+
+import { buttonClasses } from '../(app)/_components/button';
 
 type FormField = 'name' | MessageFormField;
 
@@ -27,6 +29,7 @@ interface MessageFormValues {
 interface MessageFormProps {
   endpoint?: string;
   formLabel: string;
+  layout?: 'inline' | 'stacked';
 }
 
 const initialValues: MessageFormValues = {
@@ -35,7 +38,22 @@ const initialValues: MessageFormValues = {
   name: '',
 };
 
-export default function MessageForm({ endpoint, formLabel }: MessageFormProps) {
+export default function MessageForm({
+  endpoint,
+  formLabel,
+  layout = 'inline',
+}: MessageFormProps) {
+  const stacked = layout === 'stacked';
+  const fieldRow = stacked ? 'flex flex-col gap-1.5' : 'flex h-10 items-center';
+  const fieldLabel = stacked
+    ? 'text-[11px] font-[650] leading-[1.4] text-[#45464c]'
+    : 'w-1/4 shrink-0';
+  const fieldControl = stacked
+    ? 'w-full rounded-lg border border-line-strong bg-white px-[11px] py-[9px] text-[13px] leading-[1.4] text-[#303137] shadow-input transition duration-150 focus:border-brand focus:outline-none focus:ring-[3px] focus:ring-brand/[0.14]'
+    : 'flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2';
+  const fieldErrors = stacked
+    ? 'text-[11px] text-red-700'
+    : 'ml-[25%] mt-1 text-sm text-red-700';
   const [values, setValues] = useState<MessageFormValues>(initialValues);
   const [state, setState] = useState<MessageFormState>({ status: 'idle' });
   const [pending, setPending] = useState(false);
@@ -113,10 +131,10 @@ export default function MessageForm({ endpoint, formLabel }: MessageFormProps) {
       aria-busy={pending}
       aria-label={formLabel}
       onSubmit={handleSubmit}
-      className="flex flex-col gap-y-4"
+      className={stacked ? 'flex flex-col gap-3.5' : 'flex flex-col gap-4'}
     >
-      <div className="flex items-center h-10 max-w-xl">
-        <label className="flex-0 w-1/4" htmlFor="message-form-name">
+      <div className={clsx(fieldRow, !stacked && 'max-w-xl')}>
+        <label className={fieldLabel} htmlFor="message-form-name">
           Name
         </label>
         <input
@@ -126,13 +144,13 @@ export default function MessageForm({ endpoint, formLabel }: MessageFormProps) {
           autoComplete="name"
           value={values.name}
           onChange={(event) => handleChange('name', event)}
-          className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+          className={clsx(fieldControl, stacked && 'min-h-10')}
         />
       </div>
 
-      <div className="max-w-xl">
-        <div className="flex items-center h-10">
-          <label className="flex-0 w-1/4" htmlFor="message-form-email">
+      <div className={stacked ? 'w-full' : 'max-w-xl'}>
+        <div className={fieldRow}>
+          <label className={fieldLabel} htmlFor="message-form-email">
             Email address
           </label>
           <input
@@ -147,23 +165,20 @@ export default function MessageForm({ endpoint, formLabel }: MessageFormProps) {
             aria-describedby={
               emailErrors.length > 0 ? 'message-form-email-error' : undefined
             }
-            className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+            className={clsx(fieldControl, stacked && 'min-h-10')}
           />
         </div>
         {emailErrors.length > 0 && (
-          <p
-            id="message-form-email-error"
-            className="ml-[25%] mt-1 text-sm text-red-700"
-          >
+          <p id="message-form-email-error" className={fieldErrors}>
             {emailErrors.join(' ')}
           </p>
         )}
       </div>
 
-      <div className="max-w-xl">
-        <div className="flex items-start">
+      <div className={stacked ? 'w-full' : 'max-w-xl'}>
+        <div className={stacked ? fieldRow : 'flex items-start'}>
           <label
-            className="flex-0 w-1/4 self-start"
+            className={clsx(fieldLabel, 'self-start')}
             htmlFor="message-form-message"
           >
             Message
@@ -181,14 +196,11 @@ export default function MessageForm({ endpoint, formLabel }: MessageFormProps) {
                 ? 'message-form-message-error'
                 : undefined
             }
-            className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+            className={clsx(fieldControl, stacked && 'min-h-[132px] resize-y')}
           />
         </div>
         {messageErrors.length > 0 && (
-          <p
-            id="message-form-message-error"
-            className="ml-[25%] mt-1 text-sm text-red-700"
-          >
+          <p id="message-form-message-error" className={fieldErrors}>
             {messageErrors.join(' ')}
           </p>
         )}
@@ -214,7 +226,11 @@ export default function MessageForm({ endpoint, formLabel }: MessageFormProps) {
         <button
           type="submit"
           disabled={pending}
-          className="inline-block px-3 py-1 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
+          className={
+            stacked
+              ? buttonClasses({ variant: 'primary' })
+              : 'whitespace-no-wrap inline-block rounded-md border border-gray-200 bg-white px-3 py-1 text-base font-medium leading-6 text-gray-600 shadow-sm hover:cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 active:shadow active:shadow-neutral-700 disabled:cursor-not-allowed disabled:opacity-60'
+          }
         >
           {pending ? 'Sending…' : 'Send Message'}
         </button>
