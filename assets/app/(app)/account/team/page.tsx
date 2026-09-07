@@ -5,8 +5,8 @@ import type {
   TeamMembershipUser,
 } from 'types/user';
 
-import { Suspense } from 'react';
 import { cacheLife, cacheTag } from 'next/cache';
+import { Suspense } from 'react';
 
 import {
   profileCacheTag,

@@ -1,21 +1,27 @@
 import type { Metadata } from 'next';
-
-import { Suspense } from 'react';
-import { cacheLife, cacheTag } from 'next/cache';
-
 import type {
   BillingCountUsage,
   BillingStorageUsage,
   BillingUsage,
   BillingUsageStatus,
 } from 'types/user';
+
+import { cacheLife, cacheTag } from 'next/cache';
+import { Suspense } from 'react';
+
 import { plansCacheTag } from 'utils/cacheTags';
 import { getProfileContext } from 'utils/profile';
 
+import AccountNav from '../../_components/accountNav';
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../../_components/card';
 import { BillingSkeleton } from '../../_components/skeletons';
-
-import StripePortalButton from './stripePortalButton';
 import PlanSubscribeButton from './planSubscribeButton';
+import StripePortalButton from './stripePortalButton';
 
 async function fetchPlans() {
   'use cache: private';
@@ -23,7 +29,6 @@ async function fetchPlans() {
   cacheTag(plansCacheTag);
 
   const { accessToken } = await getProfileContext();
-
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/v1/plans`, {
     cache: 'no-store',
     headers: {
@@ -32,12 +37,8 @@ async function fetchPlans() {
     },
   });
 
-  if (!res.ok) {
-    throw new Error('Unable to fetch plans.');
-  }
-
+  if (!res.ok) throw new Error('Unable to fetch plans.');
   const { data } = await res.json();
-
   return data;
 }
 
@@ -56,191 +57,202 @@ async function fetchBillingUsage(
     }
   );
 
-  if (!res.ok) {
-    throw new Error('Unable to fetch billing usage.');
-  }
-
+  if (!res.ok) throw new Error('Unable to fetch billing usage.');
   const { data } = await res.json();
-
   return data;
 }
 
 export default async function BillingPage() {
   return (
-    <Suspense fallback={<BillingSkeleton />}>
+    <Suspense fallback={<BillingFallback />}>
       <BillingContent />
     </Suspense>
   );
 }
 
 async function BillingContent() {
-  const profileContextPromise = getProfileContext();
-  const plansPromise = fetchPlans();
-  const { accessToken, profile, selectedTeam } = await profileContextPromise;
+  const { accessToken, profile, selectedTeam } = await getProfileContext();
   const [plans, billingUsage] = await Promise.all([
-    plansPromise,
+    fetchPlans(),
     fetchBillingUsage(accessToken, selectedTeam.id),
   ]);
 
   let currentSubscriptionPlanId = billingUsage.plan?.id;
-
   if (!currentSubscriptionPlanId) {
-    currentSubscriptionPlanId = plans.find((plan) => plan.name === 'Free').id;
+    currentSubscriptionPlanId = plans.find((plan) => plan.name === 'Free')?.id;
   }
 
-  const sortedPlansBySubmissions = [...plans].sort((a, b) =>
+  const sortedPlans = [...plans].sort((a, b) =>
     a.limit_submissions > b.limit_submissions ? 1 : -1
   );
 
   return (
     <>
-      <h1 className="text-3xl lowercase tracking-wide font-semibold mb-4">
-        Billing Overview
-      </h1>
+      <header className="mb-[18px] flex items-start justify-between gap-6 max-lg:flex-col max-lg:items-stretch max-lg:gap-[15px] [&_h1]:mb-[7px] [&_h1]:ml-0 [&_h1]:mr-0 [&_h1]:mt-0 [&_h1]:text-[clamp(27px,_2.3vw,_34px)] [&_h1]:font-bold [&_h1]:leading-[1.15] [&_h1]:tracking-[-0.035em] [&_h1]:text-[#202126]">
+        <div className="min-w-0">
+          <p className="mb-1.5 ml-0 mr-0 mt-0 text-[11px] font-extrabold uppercase tracking-[0.09em] text-[#a33a34]">
+            Subscription
+          </p>
+          <h1>Billing</h1>
+          <p className="m-0 max-w-[660px] text-sm leading-[1.45] text-muted">
+            Review your plan, usage, and payment settings.
+          </p>
+        </div>
+      </header>
 
-      <hr className="bg-slate-100 mb-5" />
+      <AccountNav />
 
-      <BillingUsageOverview billingUsage={billingUsage} />
+      <Card className="[&+section]:mt-[18px]">
+        <CardHeader>
+          <div>
+            <CardTitle>Current plan</CardTitle>
+            <CardDescription>
+              {billingUsage.plan.name} plan · period ends{' '}
+              {formatDate(billingUsage.period.ended_at)}.
+            </CardDescription>
+          </div>
+          <StatusBadge status={overallStatus(billingUsage)} />
+        </CardHeader>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-        {sortedPlansBySubmissions.map((plan) => (
-          <div className="rounded-lg bg-white border shadow-lg" key={plan.id}>
-            <div className="flex flex-col p-4">
-              <h3 className="text-2xl font-semibold">{plan.name}</h3>
-            </div>
-            <div className="pl-10">
-              <ul className="list-disc space-y-2">
-                <li>
+        <div className="grid min-h-[82px] grid-cols-[minmax(210px,_0.9fr)_minmax(260px,_1.35fr)_auto] items-center gap-[26px] border-t border-t-[#e5ded3] px-[19px] py-[17px] first:border-t-0 max-[820px]:grid-cols-[minmax(0,_1fr)_auto] max-[820px]:gap-[10px_16px]">
+          <div className="[&_p]:m-0 [&_p]:text-[11px] [&_p]:text-muted [&_strong]:mb-[3px] [&_strong]:block [&_strong]:text-xs [&_strong]:font-[690] [&_strong]:text-[#33343a]">
+            <strong>Plan</strong>
+            <p>Your current workspace subscription.</p>
+          </div>
+          <div className="min-w-0 text-xs text-[#46474d] max-[820px]:col-span-full max-[820px]:row-start-2 [&_code]:block [&_code]:overflow-hidden [&_code]:text-ellipsis [&_code]:whitespace-nowrap [&_code]:rounded-[7px] [&_code]:border [&_code]:border-[#e5ded3] [&_code]:bg-[#f7f3eb] [&_code]:px-2.5 [&_code]:py-2 [&_code]:font-mono [&_code]:text-[10px] [&_code]:text-[#4a4140]">
+            <strong>{billingUsage.plan.name}</strong>
+          </div>
+          <div className="[justify-self:end] max-[820px]:col-start-2 max-[820px]:row-start-1">
+            <StripePortalButton />
+          </div>
+        </div>
+
+        <UsageSettingsRow label="Forms" usage={billingUsage.usage.forms} />
+        <UsageSettingsRow
+          label="Monthly submissions"
+          usage={billingUsage.usage.submissions}
+        />
+        <StorageSettingsRow usage={billingUsage.usage.storage} />
+      </Card>
+
+      <Card className="[&+section]:mt-[18px]">
+        <CardHeader>
+          <div>
+            <CardTitle>Available plans</CardTitle>
+            <CardDescription>
+              Compare workspace limits and change plans when you need more
+              capacity.
+            </CardDescription>
+          </div>
+        </CardHeader>
+        <div className="grid gap-0">
+          {sortedPlans.map((plan) => (
+            <div
+              className="grid min-h-[86px] grid-cols-[minmax(170px,_0.8fr)_minmax(260px,_1.45fr)_128px] items-center gap-5 border-t border-t-[#e5ded3] px-[18px] py-4 first:border-t-0 max-[820px]:grid-cols-[1fr_auto]"
+              key={plan.id}
+            >
+              <div className="[&_span]:mt-[3px] [&_span]:block [&_span]:text-[10px] [&_span]:text-muted [&_strong]:block [&_strong]:text-[13px]">
+                <strong>{plan.name}</strong>
+                <span>
+                  {plan.id === currentSubscriptionPlanId
+                    ? 'Current plan'
+                    : 'Available plan'}
+                </span>
+              </div>
+              <div className="grid min-w-0 grid-cols-[minmax(0,_0.8fr)_minmax(0,_1.3fr)_minmax(0,_1fr)] gap-[6px_12px] text-[11px] text-muted [font-variant-numeric:tabular-nums] max-[820px]:col-span-full max-[820px]:row-start-2">
+                <span>
                   {plan.limit_forms === 0 ? 'Unlimited' : plan.limit_forms}{' '}
                   forms
-                </li>
-                <li>{plan.limit_submissions.toLocaleString()} submissions</li>
-                <li>
-                  {(plan.limit_storage / Math.pow(1000, 3)).toLocaleString()} GB
-                  storage
-                </li>
-              </ul>
+                </span>
+                <span>
+                  {plan.limit_submissions.toLocaleString()} submissions
+                </span>
+                <span>{formatBytes(plan.limit_storage)} storage</span>
+              </div>
+              <div className="[justify-self:end] max-[820px]:col-start-2 max-[820px]:row-start-1">
+                <PlanSubscribeButton
+                  currentSubscriptionPlanId={currentSubscriptionPlanId}
+                  plan={plan}
+                  user={profile.user}
+                />
+              </div>
             </div>
-            <div className="items-center p-4 flex justify-center">
-              <PlanSubscribeButton
-                plan={plan}
-                user={profile.user}
-                currentSubscriptionPlanId={currentSubscriptionPlanId}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="flex justify-center">
-        <StripePortalButton />
-      </div>
+          ))}
+        </div>
+      </Card>
     </>
   );
 }
 
-function BillingUsageOverview({
-  billingUsage,
-}: {
-  billingUsage: BillingUsage;
-}) {
-  return (
-    <section className="mb-10">
-      <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">Current Usage</h2>
-          <p className="text-sm text-gray-500">
-            {billingUsage.plan.name} plan · period ends{' '}
-            {formatDate(billingUsage.period.ended_at)}
-          </p>
-        </div>
-        <StatusBadge status={overallStatus(billingUsage)} />
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <UsagePanel label="Forms" usage={billingUsage.usage.forms} />
-        <UsagePanel
-          label="Submissions"
-          usage={billingUsage.usage.submissions}
-        />
-        <StorageUsagePanel usage={billingUsage.usage.storage} />
-      </div>
-    </section>
-  );
-}
-
-function UsagePanel({
+function UsageSettingsRow({
   label,
   usage,
 }: {
   label: string;
   usage: BillingCountUsage;
 }) {
+  const width = usage.limit
+    ? Math.min((usage.used / usage.limit) * 100, 100)
+    : 0;
+
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-base font-semibold text-gray-900">{label}</h3>
+    <div className="grid min-h-[82px] grid-cols-[minmax(210px,_0.9fr)_minmax(260px,_1.35fr)_auto] items-center gap-[26px] border-t border-t-[#e5ded3] px-[19px] py-[17px] first:border-t-0 max-[820px]:grid-cols-[minmax(0,_1fr)_auto] max-[820px]:gap-[10px_16px]">
+      <div className="[&_p]:m-0 [&_p]:text-[11px] [&_p]:text-muted [&_strong]:mb-[3px] [&_strong]:block [&_strong]:text-xs [&_strong]:font-[690] [&_strong]:text-[#33343a]">
+        <strong>{label}</strong>
+        <p>{limitLabel(usage)}</p>
+      </div>
+      <div className="min-w-0 text-xs text-[#46474d] max-[820px]:col-span-full max-[820px]:row-start-2 [&_code]:block [&_code]:overflow-hidden [&_code]:text-ellipsis [&_code]:whitespace-nowrap [&_code]:rounded-[7px] [&_code]:border [&_code]:border-[#e5ded3] [&_code]:bg-[#f7f3eb] [&_code]:px-2.5 [&_code]:py-2 [&_code]:font-mono [&_code]:text-[10px] [&_code]:text-[#4a4140]">
+        {usage.used.toLocaleString()} used
+        <div
+          aria-hidden="true"
+          className="mt-2 h-1.5 overflow-hidden rounded-[999px] bg-[#efe9df] [&_>_span]:block [&_>_span]:h-full [&_>_span]:rounded-[inherit] [&_>_span]:bg-brand"
+        >
+          <span style={{ width: `${width}%` }} />
+        </div>
+      </div>
+      <div className="[justify-self:end] max-[820px]:col-start-2 max-[820px]:row-start-1">
         <StatusBadge status={usage.status} />
       </div>
-      <div className="text-2xl font-semibold text-gray-900">
-        {usage.used.toLocaleString()}
-      </div>
-      <p className="mt-1 text-sm text-gray-500">{limitLabel(usage)}</p>
-      <UsageBar usage={usage} />
     </div>
   );
 }
 
-function StorageUsagePanel({ usage }: { usage: BillingStorageUsage }) {
+function StorageSettingsRow({ usage }: { usage: BillingStorageUsage }) {
+  const width = usage.limit_bytes
+    ? Math.min((usage.used_bytes / usage.limit_bytes) * 100, 100)
+    : 0;
+
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-base font-semibold text-gray-900">Storage</h3>
+    <div className="grid min-h-[82px] grid-cols-[minmax(210px,_0.9fr)_minmax(260px,_1.35fr)_auto] items-center gap-[26px] border-t border-t-[#e5ded3] px-[19px] py-[17px] first:border-t-0 max-[820px]:grid-cols-[minmax(0,_1fr)_auto] max-[820px]:gap-[10px_16px]">
+      <div className="[&_p]:m-0 [&_p]:text-[11px] [&_p]:text-muted [&_strong]:mb-[3px] [&_strong]:block [&_strong]:text-xs [&_strong]:font-[690] [&_strong]:text-[#33343a]">
+        <strong>Storage</strong>
+        <p>{formatBytes(usage.limit_bytes)} included</p>
+      </div>
+      <div className="min-w-0 text-xs text-[#46474d] max-[820px]:col-span-full max-[820px]:row-start-2 [&_code]:block [&_code]:overflow-hidden [&_code]:text-ellipsis [&_code]:whitespace-nowrap [&_code]:rounded-[7px] [&_code]:border [&_code]:border-[#e5ded3] [&_code]:bg-[#f7f3eb] [&_code]:px-2.5 [&_code]:py-2 [&_code]:font-mono [&_code]:text-[10px] [&_code]:text-[#4a4140]">
+        {formatBytes(usage.used_bytes)} used
+        <div
+          aria-hidden="true"
+          className="mt-2 h-1.5 overflow-hidden rounded-[999px] bg-[#efe9df] [&_>_span]:block [&_>_span]:h-full [&_>_span]:rounded-[inherit] [&_>_span]:bg-brand"
+        >
+          <span style={{ width: `${width}%` }} />
+        </div>
+      </div>
+      <div className="[justify-self:end] max-[820px]:col-start-2 max-[820px]:row-start-1">
         <StatusBadge status={usage.status} />
       </div>
-      <div className="text-2xl font-semibold text-gray-900">
-        {formatBytes(usage.used_bytes)}
-      </div>
-      <p className="mt-1 text-sm text-gray-500">
-        {formatBytes(usage.limit_bytes)} included · grace at{' '}
-        {formatBytes(usage.grace_limit_bytes)}
-      </p>
-      <UsageBar
-        usage={{
-          grace_limit: usage.grace_limit_bytes,
-          limit: usage.limit_bytes,
-          status: usage.status,
-          used: usage.used_bytes,
-        }}
-      />
-    </div>
-  );
-}
-
-function UsageBar({ usage }: { usage: BillingCountUsage }) {
-  if (usage.status === 'unlimited' || !usage.grace_limit) {
-    return <div className="mt-4 h-2 rounded-full bg-gray-100" />;
-  }
-
-  const width = Math.min((usage.used / usage.grace_limit) * 100, 100);
-
-  return (
-    <div className="mt-4 h-2 overflow-hidden rounded-full bg-gray-100">
-      <div
-        className={`h-full rounded-full ${statusFillClass(usage.status)}`}
-        style={{ width: `${width}%` }}
-      />
     </div>
   );
 }
 
 function StatusBadge({ status }: { status: BillingUsageStatus }) {
+  if (status === 'ok') return null;
+  const success = status === 'unlimited';
   return (
     <span
-      className={`rounded-md px-2 py-1 text-xs font-medium ${statusBadgeClass(
-        status
-      )}`}
+      className={` inline-flex w-[fit-content] items-center gap-[5px] [padding:3px_7px] text-[color:#6f2421] [border:1px_solid_#efc2bc] rounded-[999px] bg-[#fff4f1] text-[10px] font-[750] ${success ? '' : ''}`}
+      title={statusLabel(status)}
     >
+      <span className="h-[5px] w-[5px] rounded-full bg-[currentColor]" />
       {statusLabel(status)}
     </span>
   );
@@ -260,13 +272,8 @@ function overallStatus(billingUsage: BillingUsage): BillingUsageStatus {
 }
 
 function limitLabel(usage: BillingCountUsage) {
-  if (usage.status === 'unlimited') {
-    return 'Unlimited on this plan';
-  }
-
-  const graceLimit = usage.grace_limit?.toLocaleString() ?? '-';
-
-  return `${usage.limit.toLocaleString()} included · grace at ${graceLimit}`;
+  if (usage.status === 'unlimited') return 'Unlimited on this plan';
+  return `${usage.limit.toLocaleString()} included`;
 }
 
 function statusLabel(status: BillingUsageStatus) {
@@ -280,42 +287,14 @@ function statusLabel(status: BillingUsageStatus) {
     case 'unlimited':
       return 'Unlimited';
     default:
-      return 'Ok';
-  }
-}
-
-function statusBadgeClass(status: BillingUsageStatus) {
-  switch (status) {
-    case 'blocked':
-      return 'bg-red-50 text-red-700 ring-1 ring-red-200';
-    case 'over_limit':
-      return 'bg-orange-50 text-orange-700 ring-1 ring-orange-200';
-    case 'warning':
-      return 'bg-amber-50 text-amber-700 ring-1 ring-amber-200';
-    case 'unlimited':
-      return 'bg-blue-50 text-blue-700 ring-1 ring-blue-200';
-    default:
-      return 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200';
-  }
-}
-
-function statusFillClass(status: BillingUsageStatus) {
-  switch (status) {
-    case 'blocked':
-      return 'bg-red-500';
-    case 'over_limit':
-      return 'bg-orange-500';
-    case 'warning':
-      return 'bg-amber-500';
-    default:
-      return 'bg-emerald-500';
+      return '';
   }
 }
 
 function formatDate(value: string) {
-  return new Intl.DateTimeFormat('en', {
-    dateStyle: 'medium',
-  }).format(new Date(value));
+  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(
+    new Date(value)
+  );
 }
 
 function formatBytes(value: number) {
@@ -324,13 +303,17 @@ function formatBytes(value: number) {
   let unitIndex = 0;
 
   while (amount >= 1000 && unitIndex < units.length - 1) {
-    amount = amount / 1000;
+    amount /= 1000;
     unitIndex += 1;
   }
 
-  return `${amount.toLocaleString('en', {
+  return `${amount.toLocaleString('en-US', {
     maximumFractionDigits: amount >= 10 || unitIndex === 0 ? 0 : 1,
   })} ${units[unitIndex]}`;
+}
+
+function BillingFallback() {
+  return <BillingSkeleton />;
 }
 
 export const metadata: Metadata = {
