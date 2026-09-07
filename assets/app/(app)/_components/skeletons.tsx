@@ -1,230 +1,221 @@
 import type { ReactNode } from 'react';
 
-function SkeletonBlock({ className = '' }: { className?: string }) {
+function Block({ className = '' }: { className?: string }) {
   return (
     <div
-      className={`animate-pulse rounded bg-slate-200 ${className}`}
       aria-hidden="true"
+      className={`max-w-full animate-pulse rounded-md bg-[#e9e3d9] motion-reduce:animate-none ${className}`}
     />
   );
 }
-
-function SkeletonPanel({
-  titleWidth = 'w-44',
-  children,
-}: {
-  titleWidth?: string;
-  children: ReactNode;
-}) {
+function Loading({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="border border-grey-600 rounded-t overflow-hidden">
-      <div className="bg-carnation-400 rounded-t border-stone-200 p-2">
-        <SkeletonBlock className={`h-5 ${titleWidth} bg-carnation-200`} />
+    <div role="status" aria-label={label} className="min-w-0 space-y-5">
+      <span className="sr-only">{label}…</span>
+      <div aria-hidden="true" className="space-y-5">
+        {children}
       </div>
-      <div className="bg-white p-4">{children}</div>
     </div>
   );
 }
-
+function Panel({ children }: { children: ReactNode }) {
+  return (
+    <div className="min-w-0 overflow-hidden rounded-xl border border-line bg-white">
+      <div className="border-b border-[#e7e1d6] p-5">
+        <Block className="h-4 w-40" />
+      </div>
+      <div className="space-y-4 p-5">{children}</div>
+    </div>
+  );
+}
+function Fields({ rows = 3 }: { rows?: number }) {
+  return (
+    <>
+      {Array.from({ length: rows }, (_, i) => (
+        <div key={i} className="grid gap-3 sm:grid-cols-[140px_minmax(0,1fr)]">
+          <Block className="h-4 w-24 self-center" />
+          <Block className="h-10 w-full" />
+        </div>
+      ))}
+    </>
+  );
+}
+export function PageHeaderSkeleton() {
+  return (
+    <div aria-hidden="true" className="mb-6 space-y-3">
+      <Block className="h-3 w-32" />
+      <Block className="h-8 w-56" />
+      <Block className="h-4 w-80" />
+    </div>
+  );
+}
 export function NavBarSkeleton() {
   return (
     <div
-      aria-label="Loading account navigation"
-      className="fixed inset-0 z-10 h-12 w-full animate-pulse bg-red-900 px-4 lg:static lg:z-0 lg:my-4 lg:ml-4 lg:h-auto lg:w-1/4 lg:rounded-lg xl:w-1/5"
       role="status"
-    />
+      aria-label="Loading navigation"
+      className="fixed inset-x-0 top-0 z-10 h-[62px] bg-brand lg:bottom-0 lg:right-auto lg:h-auto lg:w-64"
+    >
+      <span className="sr-only">Loading navigation…</span>
+    </div>
   );
 }
-
 export function DashboardSkeleton() {
   return (
-    <div
-      className="flex flex-col gap-y-4"
-      role="status"
-      aria-label="Loading dashboard"
-    >
-      <SkeletonPanel titleWidth="w-52">
-        <div className="h-28 overflow-hidden">
-          <div className="grid grid-cols-12 gap-1">
-            {Array.from({ length: 84 }).map((_, index) => (
-              <SkeletonBlock key={index} className="h-3 rounded-sm" />
-            ))}
+    <Loading label="Loading dashboard">
+      <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+        {Array.from({ length: 4 }, (_, i) => (
+          <div
+            key={i}
+            className="space-y-4 rounded-xl border border-line bg-white p-5"
+          >
+            <Block className="h-3 w-24" />
+            <Block className="h-8 w-16" />
+            <Block className="h-3 w-28" />
           </div>
-        </div>
-      </SkeletonPanel>
-
-      <SkeletonPanel titleWidth="w-36">
-        <SkeletonBlock className="h-5 w-3/4" />
-      </SkeletonPanel>
-    </div>
+        ))}
+      </div>
+      <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
+        <Panel>
+          <Block className="h-48 w-full" />
+        </Panel>
+        <Panel>
+          <Block className="h-48 w-full" />
+        </Panel>
+      </div>
+    </Loading>
   );
 }
-
 export function SubmissionsSkeleton() {
   return (
-    <div role="status" aria-label="Loading submissions">
-      <div className="flex flex-wrap-reverse justify-between mb-4 gap-y-3 md:flex-wrap">
-        <div className="flex justify-between lg:inline-flex gap-x-1.5 w-full md:w-auto">
-          <SkeletonBlock className="h-9 w-10 bg-white border border-gray-200" />
-          <SkeletonBlock className="h-9 w-28 bg-white border border-gray-200" />
-          <SkeletonBlock className="h-9 w-36 bg-white border border-gray-200" />
-        </div>
-        <div className="flex gap-x-3 justify-between w-full md:w-auto">
-          <SkeletonBlock className="h-9 w-48 bg-white border border-gray-200" />
-          <SkeletonBlock className="h-9 w-32 bg-white border border-gray-200" />
-        </div>
-      </div>
-
-      <div className="flex flex-col border border-slate-200 bg-white">
-        {Array.from({ length: 8 }).map((_, index) => (
-          <div
-            key={index}
-            className="grid grid-cols-[2.5rem_1fr] items-center border-b border-slate-200 px-4 py-4 last:border-b-0"
-          >
-            <SkeletonBlock className="h-4 w-4" />
-            <div className="grid grid-cols-3 gap-4">
-              <SkeletonBlock className="h-4 w-4/5" />
-              <SkeletonBlock className="h-4 w-full" />
-              <SkeletonBlock className="h-4 w-20 justify-self-end" />
+    <Loading label="Loading submissions">
+      <Panel>
+        <Block className="h-10 w-full" />
+        <Block className="h-8 w-48" />
+      </Panel>
+      <div className="grid overflow-hidden rounded-xl border border-line bg-white lg:grid-cols-[0.85fr_1.65fr]">
+        <div className="divide-y divide-[#e7e1d6] lg:border-r lg:border-line">
+          {Array.from({ length: 5 }, (_, i) => (
+            <div key={i} className="space-y-3 p-5">
+              <div className="flex justify-between gap-4">
+                <Block className="h-4 w-32" />
+                <Block className="h-3 w-10" />
+              </div>
+              <Block className="h-3 w-24" />
+              <Block className="h-3 w-full" />
+              <Block className="h-3 w-3/4" />
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="hidden space-y-6 p-7 lg:block">
+          <Block className="h-5 w-48" />
+          <Block className="h-3 w-36" />
+          <Block className="h-40 w-full" />
+          <Block className="h-44 w-full" />
+        </div>
       </div>
-    </div>
+    </Loading>
   );
 }
-
 export function FormsSkeleton() {
   return (
-    <div
-      className="flex flex-col gap-y-4"
-      role="status"
-      aria-label="Loading forms"
-    >
-      {Array.from({ length: 3 }).map((_, index) => (
-        <SkeletonPanel key={index} titleWidth="w-32">
-          <div className="flex flex-wrap gap-2 md:gap-4 justify-center content-between items-center text-center">
-            <SkeletonBlock className="h-10 flex-1 min-w-64" />
-            <SkeletonBlock className="h-9 w-24 bg-white border border-gray-200" />
-          </div>
-          <div className="flex gap-x-2 justify-between pt-3">
-            <div className="flex gap-x-2">
-              <SkeletonBlock className="h-9 w-20 bg-white border border-gray-200" />
-              <SkeletonBlock className="h-9 w-32 bg-white border border-gray-200" />
+    <Loading label="Loading forms">
+      <Panel>
+        {Array.from({ length: 3 }, (_, i) => (
+          <div
+            key={i}
+            className="grid gap-4 border-b border-[#e7e1d6] pb-4 last:border-0 sm:grid-cols-[1fr_1.4fr]"
+          >
+            <div className="space-y-3">
+              <Block className="h-4 w-32" />
+              <Block className="h-3 w-24" />
             </div>
-            <SkeletonBlock className="h-9 w-24 bg-white border border-gray-200" />
+            <Block className="h-9 w-full" />
           </div>
-        </SkeletonPanel>
-      ))}
-    </div>
+        ))}
+      </Panel>
+      <Panel>
+        <Fields rows={2} />
+      </Panel>
+    </Loading>
   );
 }
-
 export function FormDetailsSkeleton() {
   return (
-    <div
-      aria-label="Loading form details"
-      className="flex max-w-xl flex-col gap-y-4"
-      role="status"
-    >
-      {Array.from({ length: 4 }).map((_, index) => (
-        <div className="flex h-10 items-center" key={index}>
-          <SkeletonBlock className="h-5 w-1/4 max-w-32" />
-          <SkeletonBlock className="h-10 flex-1 bg-white border border-gray-200" />
+    <Loading label="Loading form details">
+      <PageHeaderSkeleton />
+      <Panel>
+        <Block className="h-12 w-full" />
+        <div className="grid grid-cols-3 gap-4">
+          <Block className="h-12 w-full" />
+          <Block className="h-12 w-full" />
+          <Block className="h-12 w-full" />
         </div>
-      ))}
-    </div>
+      </Panel>
+      <div className="grid gap-5 lg:grid-cols-2">
+        <Panel>
+          <Block className="h-24 w-full" />
+        </Panel>
+        <Panel>
+          <Block className="h-24 w-full" />
+        </Panel>
+      </div>
+    </Loading>
   );
 }
-
+export function FormEditorSkeleton() {
+  return (
+    <Loading label="Loading form settings">
+      {Array.from({ length: 3 }, (_, i) => (
+        <Panel key={i}>
+          <Fields rows={i === 0 ? 1 : 3} />
+        </Panel>
+      ))}
+    </Loading>
+  );
+}
 export function AccountProfileSkeleton() {
   return (
-    <div role="status" aria-label="Loading account profile">
-      <div className="flex items-center justify-between mb-4">
-        <SkeletonBlock className="h-9 w-52" />
-        <SkeletonBlock className="h-8 w-16 bg-white border border-gray-200" />
-      </div>
-
-      <hr className="bg-slate-100 mb-5" />
-
-      <div className="rounded-lg bg-white border border-slate-200 p-4">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className="flex items-center h-14">
-            <SkeletonBlock className="h-5 w-1/4 max-w-28" />
-            <SkeletonBlock className="h-5 w-1/2 max-w-sm" />
-          </div>
-        ))}
-      </div>
-    </div>
+    <Loading label="Loading profile">
+      <Panel>
+        <Fields />
+      </Panel>
+      <Panel>
+        <Fields rows={2} />
+      </Panel>
+    </Loading>
   );
 }
-
 export function BillingSkeleton() {
   return (
-    <div role="status" aria-label="Loading billing">
-      <SkeletonBlock className="h-9 w-48 mb-4" />
-
-      <hr className="bg-slate-100 mb-5" />
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div className="rounded-lg bg-white border shadow-lg p-4" key={index}>
-            <SkeletonBlock className="h-7 w-32 mb-6" />
-            <div className="space-y-3 mb-6">
-              <SkeletonBlock className="h-4 w-28" />
-              <SkeletonBlock className="h-4 w-36" />
-              <SkeletonBlock className="h-4 w-32" />
-            </div>
-            <SkeletonBlock className="h-9 w-28 mx-auto bg-white border border-gray-200" />
-          </div>
+    <Loading label="Loading billing">
+      <Panel>
+        <Fields rows={2} />
+      </Panel>
+      <div className="grid gap-5 md:grid-cols-3">
+        {Array.from({ length: 3 }, (_, i) => (
+          <Panel key={i}>
+            <Block className="h-8 w-24" />
+            <Block className="h-24 w-full" />
+            <Block className="h-10 w-full" />
+          </Panel>
         ))}
       </div>
-
-      <div className="flex justify-center">
-        <SkeletonBlock className="h-9 w-36 bg-white border border-gray-200" />
-      </div>
-    </div>
+    </Loading>
   );
 }
-
 export function TeamManagementSkeleton() {
   return (
-    <div role="status" aria-label="Loading team">
-      <div className="flex items-center justify-between mb-4">
-        <SkeletonBlock className="h-9 w-32" />
-        <SkeletonBlock className="h-8 w-24 bg-white border border-gray-200" />
-      </div>
-
-      <hr className="bg-slate-100 mb-5" />
-
-      <div className="space-y-8">
-        <div>
-          <SkeletonBlock className="h-6 w-36 mb-3" />
-          <SkeletonBlock className="h-10 w-full max-w-md bg-white border border-gray-200" />
-        </div>
-
-        <div>
-          <SkeletonBlock className="h-6 w-28 mb-3" />
-          <div className="bg-white border border-slate-200">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-4 gap-4 px-4 py-4 border-b border-slate-200 last:border-b-0"
-              >
-                <SkeletonBlock className="h-5 w-28" />
-                <SkeletonBlock className="h-5 w-44" />
-                <SkeletonBlock className="h-5 w-24" />
-                <SkeletonBlock className="h-8 w-32 justify-self-end bg-white border border-gray-200" />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <SkeletonBlock className="h-6 w-40 mb-3" />
-          <SkeletonBlock className="h-10 w-full max-w-md bg-white border border-gray-200" />
-        </div>
-      </div>
-    </div>
+    <Loading label="Loading team">
+      <Panel>
+        <Fields rows={1} />
+      </Panel>
+      <Panel>
+        <Fields />
+      </Panel>
+      <Panel>
+        <Fields rows={2} />
+      </Panel>
+    </Loading>
   );
 }

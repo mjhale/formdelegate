@@ -32,7 +32,7 @@ export function TeamInvitationAuthContext({
         <h1 className="text-2xl font-light text-slate-950">{heading}</h1>
         <p className="text-sm leading-6 text-slate-600">{body}</p>
       </div>
-      <p className="border-t border-b border-slate-200 py-3 text-sm leading-6 text-slate-700">
+      <p className="border-b border-t border-slate-200 py-3 text-sm leading-6 text-slate-700">
         {help}
       </p>
     </div>

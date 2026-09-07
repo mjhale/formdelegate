@@ -1,8 +1,8 @@
 'use client';
 
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { useState } from 'react';
 import { useActionState } from 'react';
-import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 import { createUserAction } from './actions';
 
@@ -34,7 +34,7 @@ export default function SignupForm({
           value={destination}
         />
 
-        <div className="flex items-center h-10 max-w-xl">
+        <div className="flex h-10 max-w-xl items-center">
           {/* Email */}
           <label className="flex-0 w-1/4" htmlFor="user.email">
             Email
@@ -43,7 +43,7 @@ export default function SignupForm({
             name="user.email"
             id="user.email"
             type="text"
-            className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+            className="flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
             aria-describedby="user.email.error"
           />
         </div>
@@ -56,7 +56,7 @@ export default function SignupForm({
             ))}
         </div>
 
-        <div className="flex items-center h-10 max-w-xl">
+        <div className="flex h-10 max-w-xl items-center">
           {/* Name */}
           <label className="flex-0 w-1/4" htmlFor="user.name">
             Full Name
@@ -65,7 +65,7 @@ export default function SignupForm({
             name="user.name"
             id="user.name"
             type="text"
-            className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+            className="flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
             aria-describedby="user.name.error"
           />
         </div>
@@ -78,7 +78,7 @@ export default function SignupForm({
             ))}
         </div>
 
-        <div className="flex items-center h-10 max-w-xl">
+        <div className="flex h-10 max-w-xl items-center">
           {/* Password */}
           <label className="flex-0 w-1/4" htmlFor="user.password">
             Password
@@ -87,7 +87,7 @@ export default function SignupForm({
             name="user.password"
             id="user.password"
             type="password"
-            className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+            className="flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
             aria-describedby="user.password.error"
           />
         </div>
@@ -100,7 +100,7 @@ export default function SignupForm({
             ))}
         </div>
 
-        <div className="flex items-center h-10 max-w-xl">
+        <div className="flex h-10 max-w-xl items-center">
           {/* Password confirmation */}
           <label className="flex-0 w-1/4" htmlFor="user.password_confirmation">
             Confirm Password
@@ -109,7 +109,7 @@ export default function SignupForm({
             name="user.password_confirmation"
             id="user.password_confirmation"
             type="password"
-            className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+            className="flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
             aria-describedby="user.password_confirmation.error"
           />
         </div>
@@ -156,7 +156,7 @@ export default function SignupForm({
           <input
             type="submit"
             value={submitLabel}
-            className="inline-block px-3 py-2 text-base font-medium leading-6 text-white whitespace-no-wrap bg-carnation-400 border border-carnation-400 rounded-md shadow-sm hover:bg-red-900 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
+            className="whitespace-no-wrap inline-block rounded-md border border-carnation-400 bg-carnation-400 px-3 py-2 text-base font-medium leading-6 text-white shadow-sm hover:cursor-pointer hover:bg-red-900 focus:outline-none focus:ring-2 active:shadow active:shadow-neutral-700 disabled:cursor-not-allowed disabled:opacity-60 aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
           />
         </div>
       </form>

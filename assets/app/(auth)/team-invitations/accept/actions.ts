@@ -5,12 +5,12 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+import { invitationAcceptancePath } from 'utils/destination';
 import {
   CURRENT_TEAM_COOKIE,
   fetchProfile,
   setCurrentTeamCookie,
 } from 'utils/profile';
-import { invitationAcceptancePath } from 'utils/destination';
 
 export interface AcceptInvitationState {
   message: string | null;

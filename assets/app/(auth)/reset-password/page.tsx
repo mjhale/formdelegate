@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
 
-import { Suspense } from 'react';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
 import {
   isInvitationAcceptanceDestination,
   safeRedirectPath,
 } from 'utils/destination';
 
-import ResetRequest from './resetRequest';
 import ResetPassword from './resetPassword';
+import ResetRequest from './resetRequest';
 
 export default function ResetPasswordPage({
   searchParams,
@@ -37,22 +37,22 @@ async function ResetPasswordContent({
 
   return (
     <>
-      <div className="flex justify-center align-middle items-center h-32 mb-4">
+      <div className="mb-4 flex h-32 items-center justify-center align-middle">
         <Link
           href="/"
-          className="block md:max-w-[4em] text-center text-2xl italic font-black no-underline text-neutral-100 [font-family:var(--font-lato)] md:leading-8 md:text-5xl lowercase hover:text-white active:animate-scale-increase-fast"
+          className="block text-center text-2xl font-black lowercase italic text-neutral-100 no-underline [font-family:var(--font-lato)] hover:text-white active:animate-scale-increase-fast md:max-w-[4em] md:text-5xl md:leading-8"
         >
           Form Delegate
         </Link>
       </div>
-      <div className="bg-white border rounded-lg p-6 text-black mb-4">
+      <div className="mb-4 rounded-lg border bg-white p-6 text-black">
         {token ? (
           <ResetPassword token={token} />
         ) : (
           <ResetRequest isInvitationReset={isInvitationReset} />
         )}
       </div>
-      <div className="flex justify-center text-sm text-gray-800 font-medium">
+      <div className="flex justify-center text-sm font-medium text-gray-800">
         Don't have an account?
         <Link href={signupHref} className="pl-1 underline">
           Sign up
@@ -65,8 +65,8 @@ async function ResetPasswordContent({
 function ResetPasswordFallback() {
   return (
     <>
-      <div className="flex h-32 items-center justify-center mb-4">
-        <span className="text-center text-2xl italic font-black text-neutral-100 [font-family:var(--font-lato)] md:max-w-[4em] md:leading-8 md:text-5xl lowercase">
+      <div className="mb-4 flex h-32 items-center justify-center">
+        <span className="text-center text-2xl font-black lowercase italic text-neutral-100 [font-family:var(--font-lato)] md:max-w-[4em] md:text-5xl md:leading-8">
           Form Delegate
         </span>
       </div>

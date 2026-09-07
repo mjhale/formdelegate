@@ -3,14 +3,14 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
 import {
-  InvitationAccountSwitchLink,
-  TeamInvitationAuthContext,
-} from '_components/teamInvitationAuthContext';
-import {
   isInvitationAcceptanceDestination,
   safeRedirectPath,
 } from 'utils/destination';
 
+import {
+  InvitationAccountSwitchLink,
+  TeamInvitationAuthContext,
+} from '_components/teamInvitationAuthContext';
 import SignupForm from './form';
 
 export default function SignupPage({
@@ -40,7 +40,7 @@ async function SignupPageContent({
   return (
     <>
       <div className="flex flex-col items-center">
-        <div className="flex flex-col gap-y-4 w-full max-w-4xl">
+        <div className="flex w-full max-w-4xl flex-col gap-y-4">
           {isInvitationSignup ? (
             <div className="max-w-xl rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
               <TeamInvitationAuthContext action="signup" className="mb-5" />
@@ -51,7 +51,7 @@ async function SignupPageContent({
             </div>
           ) : (
             <>
-              <h1 className="text-3xl lowercase tracking-wide font-semibold">
+              <h1 className="text-3xl font-semibold lowercase tracking-wide">
                 Sign Up for Form Delegate
               </h1>
 

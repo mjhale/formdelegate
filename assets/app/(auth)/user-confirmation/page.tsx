@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
-import { Suspense } from 'react';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
 async function verifyConfirmationToken(token: string) {
   const accessToken = (await cookies()).get('access_token')?.value;
@@ -29,7 +29,7 @@ async function verifyConfirmationToken(token: string) {
               Your confirmation link is no longer valid. Please request a{' '}
               <Link
                 href="/user-confirmation/request"
-                className="underline font-semibold"
+                className="font-semibold underline"
               >
                 new confirmation link
               </Link>
@@ -44,7 +44,7 @@ async function verifyConfirmationToken(token: string) {
               Error: Unable to verify your confirmation link. Please request a{' '}
               <Link
                 href="/user-confirmation/request"
-                className="underline font-semibold"
+                className="font-semibold underline"
               >
                 new confirmation link
               </Link>
@@ -64,12 +64,12 @@ async function verifyConfirmationToken(token: string) {
             Unable to confirm account. Please request a{' '}
             <Link
               href="/user-confirmation/request"
-              className="underline font-semibold"
+              className="font-semibold underline"
             >
               new confirmation link
             </Link>{' '}
             or{' '}
-            <Link href="/support" className="underline font-semibold">
+            <Link href="/support" className="font-semibold underline">
               contact support
             </Link>{' '}
             if the issue persists.
@@ -109,7 +109,7 @@ async function ConfirmationContent({
   const confirmation = await verifyConfirmationToken(token);
 
   return (
-    <div className="bg-white border rounded-lg p-6 text-black mb-4">
+    <div className="mb-4 rounded-lg border bg-white p-6 text-black">
       {!!confirmation?.message && confirmation.message}
     </div>
   );
@@ -117,10 +117,10 @@ async function ConfirmationContent({
 
 function BrandLink() {
   return (
-    <div className="flex justify-center align-middle items-center h-32 mb-4">
+    <div className="mb-4 flex h-32 items-center justify-center align-middle">
       <Link
         href="/"
-        className="block md:max-w-[4em] text-center text-2xl italic font-black no-underline text-neutral-100 [font-family:var(--font-lato)] md:leading-8 md:text-5xl lowercase hover:text-white active:animate-scale-increase-fast"
+        className="block text-center text-2xl font-black lowercase italic text-neutral-100 no-underline [font-family:var(--font-lato)] hover:text-white active:animate-scale-increase-fast md:max-w-[4em] md:text-5xl md:leading-8"
       >
         Form Delegate
       </Link>

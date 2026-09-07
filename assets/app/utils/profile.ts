@@ -2,9 +2,9 @@ import type { Membership, Profile, Team } from 'types/user';
 
 import 'server-only';
 
-import { cache } from 'react';
 import { cacheLife, cacheTag } from 'next/cache';
 import { cookies } from 'next/headers';
+import { cache } from 'react';
 
 import { profileCacheTag, teamCacheTag } from './cacheTags';
 

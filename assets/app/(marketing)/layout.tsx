@@ -32,12 +32,12 @@ export default function RootLayout({
     <div className="min-h-screen w-full bg-amber-50 text-slate-900">
       <div className="lg:flex">
         <NavBar links={navigationLinks} />
-        <div className="mt-16 mx-4 lg:mt-4 lg:w-full">
+        <div className="mx-4 mt-16 lg:mt-4 lg:w-full">
           <section>{children}</section>
-          <div className="flex justify-center pt-8 pb-4 my-4 space-x-4">
+          <div className="my-4 flex justify-center space-x-4 pb-4 pt-8">
             <a
               href="https://github.com/mjhale/formdelegate"
-              className="text-xs underline text-gray-500"
+              className="text-xs text-gray-500 underline"
               target="_blank"
               rel="noopener"
             >
@@ -45,21 +45,21 @@ export default function RootLayout({
             </a>
             <Link
               href="/privacy"
-              className="text-xs underline text-gray-500"
+              className="text-xs text-gray-500 underline"
               prefetch={false}
             >
               Privacy Policy
             </Link>
             <Link
               href="/tos"
-              className="text-xs underline text-gray-500"
+              className="text-xs text-gray-500 underline"
               prefetch={false}
             >
               Terms of Service
             </Link>
             <Link
               href="/contact"
-              className="text-xs underline text-gray-500"
+              className="text-xs text-gray-500 underline"
               prefetch={false}
             >
               Contact

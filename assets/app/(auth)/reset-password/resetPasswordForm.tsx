@@ -15,7 +15,7 @@ export default function ResetPasswordForm({ token }) {
   return (
     <>
       <form
-        className="flex flex-col gap-y-2 max-w-xs mx-auto"
+        className="mx-auto flex max-w-xs flex-col gap-y-2"
         action={formAction}
       >
         {!!state?.message && <p className="text-sm">{state.message}</p>}
@@ -27,7 +27,7 @@ export default function ResetPasswordForm({ token }) {
           value={token}
         />
 
-        <div className="flex flex-col gap-y-2 w-full">
+        <div className="flex w-full flex-col gap-y-2">
           <label className="font-medium" htmlFor="password">
             New Password
           </label>
@@ -35,7 +35,7 @@ export default function ResetPasswordForm({ token }) {
             name="password"
             id="password"
             type="password"
-            className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+            className="flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
             aria-describedby="password.error"
             required
           />
@@ -49,7 +49,7 @@ export default function ResetPasswordForm({ token }) {
             ))}
         </div>
 
-        <div className="flex flex-col gap-y-2 w-full">
+        <div className="flex w-full flex-col gap-y-2">
           <label className="font-medium" htmlFor="password_confirmation">
             Password Confirmation
           </label>
@@ -57,7 +57,7 @@ export default function ResetPasswordForm({ token }) {
             name="password_confirmation"
             id="password_confirmation"
             type="password"
-            className="flex-1 appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+            className="flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
             aria-describedby="password_confirmation.error"
             required
           />
@@ -79,7 +79,7 @@ export default function ResetPasswordForm({ token }) {
           <input
             type="submit"
             value="Reset Password"
-            className="inline-block px-3 py-1 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
+            className="whitespace-no-wrap inline-block rounded-md border border-gray-200 bg-white px-3 py-1 text-base font-medium leading-6 text-gray-600 shadow-sm hover:cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 active:shadow active:shadow-neutral-700 disabled:cursor-not-allowed disabled:opacity-60 aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
           />
         </div>
       </form>

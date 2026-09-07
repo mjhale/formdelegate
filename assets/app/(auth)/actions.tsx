@@ -1,26 +1,25 @@
 'use server';
 
+import { cookies } from 'next/headers';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { cookies } from 'next/headers';
 
+import { safeRedirectPath } from 'utils/destination';
 import {
   CURRENT_TEAM_COOKIE,
   fetchProfile,
   setCurrentTeamCookie,
 } from 'utils/profile';
-import { safeRedirectPath } from 'utils/destination';
 
 import {
   fieldErrorState,
   invalidCredentialsState,
   loginInputSchema,
+  type LoginState,
   parseLoginSessionResponse,
   serviceErrorState,
-  type LoginState,
 } from './login/loginContract';
-
-import Link from 'next/link';
 
 const requestPasswordResetSchema = z.object({
   email: z.string().email(),
@@ -217,7 +216,7 @@ export async function resetPasswordAction(
         message: (
           <>
             Unable to change password. Please request a new{' '}
-            <Link href="/reset-password" className="underline font-semibold">
+            <Link href="/reset-password" className="font-semibold underline">
               password reset email
             </Link>
             .

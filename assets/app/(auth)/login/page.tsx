@@ -1,17 +1,17 @@
 import type { Metadata } from 'next';
 
-import { Suspense } from 'react';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
-import {
-  InvitationAccountSwitchLink,
-  TeamInvitationAuthContext,
-} from '_components/teamInvitationAuthContext';
 import {
   isInvitationAcceptanceDestination,
   safeRedirectPath,
 } from 'utils/destination';
 
+import {
+  InvitationAccountSwitchLink,
+  TeamInvitationAuthContext,
+} from '_components/teamInvitationAuthContext';
 import LoginForm from './form';
 
 export default function LoginPage({
@@ -43,19 +43,19 @@ async function LoginPageContent({
 
   return (
     <>
-      <div className="flex justify-center align-middle items-center h-32 mb-4">
+      <div className="mb-4 flex h-32 items-center justify-center align-middle">
         <Link
           href="/"
-          className="block max-w-40 text-center text-4xl leading-7 italic font-black no-underline text-neutral-100 [font-family:var(--font-lato)] md:max-w-[4em] md:leading-8 md:text-5xl lowercase hover:text-white active:animate-scale-increase-fast"
+          className="block max-w-40 text-center text-4xl font-black lowercase italic leading-7 text-neutral-100 no-underline [font-family:var(--font-lato)] hover:text-white active:animate-scale-increase-fast md:max-w-[4em] md:text-5xl md:leading-8"
         >
           Form Delegate
         </Link>
       </div>
-      <div className="bg-white border rounded-md p-6 text-black mx-4 md:mx-0 md:rounded-lg">
+      <div className="mx-4 rounded-md border bg-white p-6 text-black md:mx-0 md:rounded-lg">
         {isInvitationLogin ? (
           <TeamInvitationAuthContext action="login" className="mb-5" />
         ) : (
-          <h1 className="text-2xl font-light text-center mb-4">Sign In</h1>
+          <h1 className="mb-4 text-center text-2xl font-light">Sign In</h1>
         )}
         <LoginForm
           destination={safeDestination}
@@ -72,7 +72,7 @@ async function LoginPageContent({
         ) : (
           <p className="mx-auto max-w-xs pt-4 text-right text-sm text-slate-600">
             Forgot your password?{' '}
-            <Link href={resetHref} className="font-semibold text-sm">
+            <Link href={resetHref} className="text-sm font-semibold">
               Reset it
             </Link>
           </p>
@@ -85,7 +85,7 @@ async function LoginPageContent({
           linkText="Create one instead"
         />
       ) : (
-        <div className="flex justify-center text-sm text-gray-800 font-medium mt-4">
+        <div className="mt-4 flex justify-center text-sm font-medium text-gray-800">
           Don't have an account?
           <Link href={signupHref} className="pl-1 underline">
             Sign up
@@ -99,8 +99,8 @@ async function LoginPageContent({
 function LoginPageFallback() {
   return (
     <>
-      <div className="flex h-32 items-center justify-center mb-4">
-        <span className="block max-w-40 text-center text-4xl leading-7 italic font-black text-neutral-100 [font-family:var(--font-lato)] md:max-w-[4em] md:leading-8 md:text-5xl lowercase">
+      <div className="mb-4 flex h-32 items-center justify-center">
+        <span className="block max-w-40 text-center text-4xl font-black lowercase italic leading-7 text-neutral-100 [font-family:var(--font-lato)] md:max-w-[4em] md:text-5xl md:leading-8">
           Form Delegate
         </span>
       </div>

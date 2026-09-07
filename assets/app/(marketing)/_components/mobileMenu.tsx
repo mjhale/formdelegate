@@ -1,8 +1,8 @@
 'use client';
 
 import clsx from 'clsx';
-import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Suspense, useEffect, useState } from 'react';
 
 import NavLink from './navLink';
 
@@ -26,7 +26,7 @@ export default function MobileMenu({ links }) {
       <button
         onClick={() => setIsOpen(!isOpen)}
         type="button"
-        className="inline-flex items-center w-8 h-8 justify-center text-sm text-white rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-gray-200 lg:hidden"
+        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm text-white hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-gray-200 lg:hidden"
         aria-controls="main-menu"
         aria-expanded={isOpen}
       >
@@ -34,7 +34,7 @@ export default function MobileMenu({ links }) {
           <>
             <span className="sr-only">Open main menu</span>
             <svg
-              className="w-5 h-5"
+              className="h-5 w-5"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -56,7 +56,7 @@ export default function MobileMenu({ links }) {
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"
               fill="currentColor"
-              className="w-5 h-5"
+              className="h-5 w-5"
             >
               <path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z" />
             </svg>
@@ -66,7 +66,7 @@ export default function MobileMenu({ links }) {
 
       <nav
         className={clsx(
-          'fixed top-0 inset-x-0 mt-12 w-full h-auto bg-red-900 border-t-red-900 shadow-md',
+          'fixed inset-x-0 top-0 mt-12 h-auto w-full border-t-red-900 bg-red-900 shadow-md',
           {
             hidden: !isOpen,
           }
@@ -80,7 +80,7 @@ export default function MobileMenu({ links }) {
                   <Link
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className="block text-slate-300 lowercase tracking-wide p-4 font-sans hover:text-white hover:bg-red-900 hover:border-r-8 border-red-300"
+                    className="block border-red-300 p-4 font-sans lowercase tracking-wide text-slate-300 hover:border-r-8 hover:bg-red-900 hover:text-white"
                   >
                     {link.name}
                   </Link>
@@ -90,7 +90,7 @@ export default function MobileMenu({ links }) {
                   href={link.href}
                   name={link.name}
                   onClick={() => setIsOpen(false)}
-                  className="block text-slate-300 lowercase tracking-wide p-4 font-sans hover:text-white hover:bg-red-900 hover:border-r-8 border-red-300"
+                  className="block border-red-300 p-4 font-sans lowercase tracking-wide text-slate-300 hover:border-r-8 hover:bg-red-900 hover:text-white"
                 />
               </Suspense>
             </li>

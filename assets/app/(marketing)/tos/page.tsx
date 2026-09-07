@@ -6,8 +6,8 @@ export default async function TosPage() {
   return (
     <>
       <div className="flex flex-col items-center">
-        <div className="flex flex-col gap-y-4 w-full max-w-4xl">
-          <h1 className="text-3xl lowercase tracking-wide font-semibold">
+        <div className="flex w-full max-w-4xl flex-col gap-y-4">
+          <h1 className="text-3xl font-semibold lowercase tracking-wide">
             Terms of Service
           </h1>
 
@@ -145,7 +145,7 @@ export default async function TosPage() {
               other things, this means that:
             </p>
 
-            <ul className="list-disc list-inside">
+            <ul className="list-inside list-disc">
               <li>
                 Our services cannot be used in, from, by, or for the benefit of
                 a country, organization, entity, or person embargoed or blocked
@@ -178,7 +178,7 @@ export default async function TosPage() {
 
             <p>So, for example:</p>
 
-            <ul className="list-disc list-inside">
+            <ul className="list-inside list-disc">
               <li>We don't have any control over third-party websites.</li>
               <li>
                 A link to or from one of our Services does not represent or
@@ -302,7 +302,7 @@ export default async function TosPage() {
               that:
             </p>
 
-            <ul className="list-disc list-inside">
+            <ul className="list-inside list-disc">
               <li>
                 Third-Party Services aren't vetted, endorsed, or controlled by
                 Form Delegate.
@@ -443,7 +443,7 @@ export default async function TosPage() {
           <div className="space-y-4">
             <h2 className="text-2xl">Change log</h2>
 
-            <ul className="list-disc list-inside">
+            <ul className="list-inside list-disc">
               <li>May 7, 2024: Initial release of our Terms of Service.</li>
             </ul>
           </div>

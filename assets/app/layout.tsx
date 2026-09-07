@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+
 import { Lato } from 'next/font/google';
 
 import './globals.css';
@@ -33,8 +34,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={lato.variable}>
-      <body className="antialiased">{children}</body>
+    <html
+      lang="en"
+      className={`${lato.variable} bg-[#fbf6ea] selection:bg-[#f2c7c2] selection:text-[#431715]`}
+    >
+      <body className="group/app min-w-[320px] antialiased max-lg:data-[menu-open=true]:overflow-hidden">
+        {children}
+      </body>
     </html>
   );
 }

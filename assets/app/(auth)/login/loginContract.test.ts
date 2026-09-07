@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-  INVALID_CREDENTIALS_MESSAGE,
-  SERVICE_ERROR_MESSAGE,
   fieldErrorState,
+  INVALID_CREDENTIALS_MESSAGE,
   invalidCredentialsState,
   loginInputSchema,
   parseLoginSessionResponse,
+  SERVICE_ERROR_MESSAGE,
   serviceErrorState,
 } from './loginContract';
 

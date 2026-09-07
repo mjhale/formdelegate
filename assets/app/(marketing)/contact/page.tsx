@@ -6,9 +6,9 @@ export default async function ContactPage() {
   const CONTACT_FORM_ENDPOINT = process.env.NEXT_PUBLIC_CONTACT_FORM_ENDPOINT;
 
   return (
-    <div className="py-8 flex flex-col items-center">
-      <div className="flex flex-col gap-y-4 w-full max-w-4xl">
-        <h1 className="text-3xl lowercase tracking-wide font-semibold">
+    <div className="flex flex-col items-center py-8">
+      <div className="flex w-full max-w-4xl flex-col gap-y-4">
+        <h1 className="text-3xl font-semibold lowercase tracking-wide">
           Contact Us
         </h1>
         <MessageForm

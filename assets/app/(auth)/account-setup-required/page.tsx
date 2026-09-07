@@ -4,8 +4,8 @@ import Link from 'next/link';
 
 export default function AccountSetupRequiredPage() {
   return (
-    <div className="bg-white border rounded-md p-6 text-black mx-4 md:mx-0 md:rounded-lg">
-      <h1 className="text-2xl font-light text-center mb-4">
+    <div className="mx-4 rounded-md border bg-white p-6 text-black md:mx-0 md:rounded-lg">
+      <h1 className="mb-4 text-center text-2xl font-light">
         Account setup required
       </h1>
       <p className="text-sm leading-6 text-gray-700">
@@ -13,7 +13,7 @@ export default function AccountSetupRequiredPage() {
         support so we can finish setting up your workspace.
       </p>
       <div className="mt-6 flex justify-end">
-        <Link href="/contact" className="font-semibold text-sm underline">
+        <Link href="/contact" className="text-sm font-semibold underline">
           Contact support
         </Link>
       </div>

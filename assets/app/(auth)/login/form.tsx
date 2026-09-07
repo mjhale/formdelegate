@@ -1,9 +1,10 @@
 'use client';
 
+import type { LoginField, LoginState } from './loginContract';
+
 import { useActionState, useState } from 'react';
 
 import { loginUser } from '../actions';
-import type { LoginField, LoginState } from './loginContract';
 
 const initialState: LoginState = { status: 'idle' };
 
@@ -68,7 +69,7 @@ export default function LoginForm({
     <form
       action={formAction}
       aria-busy={pending}
-      className="flex flex-col gap-y-4 max-w-xs mx-auto"
+      className="mx-auto flex max-w-xs flex-col gap-y-4"
       noValidate
       onSubmit={recordSubmission}
     >
@@ -79,7 +80,7 @@ export default function LoginForm({
         value={destination}
       />
 
-      <div className="flex flex-col gap-y-2 w-full">
+      <div className="flex w-full flex-col gap-y-2">
         <label className="font-medium" htmlFor="email">
           Email
         </label>
@@ -90,7 +91,7 @@ export default function LoginForm({
           autoComplete="email"
           value={credentials.email}
           onChange={(event) => updateCredential('email', event.target.value)}
-          className="appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+          className="appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
           aria-describedby={
             emailErrors.length > 0 ? 'login-email-error' : undefined
           }
@@ -108,7 +109,7 @@ export default function LoginForm({
         )}
       </div>
 
-      <div className="flex flex-col gap-y-2 w-full">
+      <div className="flex w-full flex-col gap-y-2">
         <label className="font-medium" htmlFor="password">
           Password
         </label>
@@ -119,7 +120,7 @@ export default function LoginForm({
           autoComplete="current-password"
           value={credentials.password}
           onChange={(event) => updateCredential('password', event.target.value)}
-          className="appearance-none shadow-sm border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2"
+          className="appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
           aria-describedby={
             passwordErrors.length > 0 ? 'login-password-error' : undefined
           }
@@ -166,7 +167,7 @@ function SubmitButton({
       type="submit"
       aria-disabled={pending}
       disabled={pending}
-      className="block w-full px-3 py-2 text-base font-medium leading-6 text-white whitespace-no-wrap bg-carnation-400 border border-carnation-400 rounded-md shadow-sm hover:bg-red-900 focus:outline-none focus:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer"
+      className="whitespace-no-wrap block w-full rounded-md border border-carnation-400 bg-carnation-400 px-3 py-2 text-base font-medium leading-6 text-white shadow-sm hover:cursor-pointer hover:bg-red-900 focus:outline-none focus:ring-2 active:shadow active:shadow-neutral-700 disabled:cursor-not-allowed disabled:opacity-60 aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
     >
       {pending ? 'Signing in…' : submitLabel}
     </button>

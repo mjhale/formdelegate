@@ -4,12 +4,12 @@ export default async function FaqPage() {
   return (
     <>
       <div className="flex flex-col items-center">
-        <div className="flex flex-col gap-y-4 w-full max-w-4xl">
-          <h1 className="text-3xl lowercase tracking-wide font-semibold">
+        <div className="flex w-full max-w-4xl flex-col gap-y-4">
+          <h1 className="text-3xl font-semibold lowercase tracking-wide">
             Frequently Asked Questions
           </h1>
 
-          <div className="">
+          <div>
             <h2 className="text-2xl">How does it work?</h2>
             <p>
               Code an HTML form into any page and let Form Delegate handle the
@@ -19,7 +19,7 @@ export default async function FaqPage() {
             </p>
           </div>
 
-          <div className="">
+          <div>
             <h2 className="text-2xl">
               Is this project ready for production usage?
             </h2>
@@ -30,7 +30,7 @@ export default async function FaqPage() {
             </p>
           </div>
 
-          <div className="">
+          <div>
             <h2 className="text-2xl">What are the free tier limitations?</h2>
             <p>
               The free tier service is limited to a maximum of 100 submissions
@@ -39,7 +39,7 @@ export default async function FaqPage() {
             </p>
           </div>
 
-          <div className="">
+          <div>
             <h2 className="text-2xl">
               Are forms with file input fields allowed?
             </h2>
@@ -49,7 +49,7 @@ export default async function FaqPage() {
             </p>
           </div>
 
-          <div className="">
+          <div>
             <h2 className="text-2xl">How do integrations work?</h2>
             <p>
               Form Delegate supports integrations with a number of third-party
@@ -58,7 +58,7 @@ export default async function FaqPage() {
             </p>
           </div>
 
-          <div className="">
+          <div>
             <h2 className="text-2xl">What are domain allow lists?</h2>
             <p>
               If you wish to restrict form submissions to specific domains, you

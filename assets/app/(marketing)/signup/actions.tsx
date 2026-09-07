@@ -4,12 +4,12 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+import { safeRedirectPath } from 'utils/destination';
 import {
   CURRENT_TEAM_COOKIE,
   fetchProfile,
   setCurrentTeamCookie,
 } from 'utils/profile';
-import { safeRedirectPath } from 'utils/destination';
 
 const userSchema = z.object({
   captcha: z.string().min(1, { message: 'Invalid Captcha response' }),

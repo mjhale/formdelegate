@@ -4,15 +4,15 @@ export default async function PrivacyPage() {
   return (
     <>
       <div className="flex flex-col items-center">
-        <div className="flex flex-col gap-y-4 w-full max-w-4xl">
-          <h1 className="text-3xl lowercase tracking-wide font-semibold">
+        <div className="flex w-full max-w-4xl flex-col gap-y-4">
+          <h1 className="text-3xl font-semibold lowercase tracking-wide">
             Privacy Policy
           </h1>
 
           <div className="space-y-4">
             <p>At Form Delegate, we have a few fundamental principles:</p>
 
-            <ul className="list-disc list-inside">
+            <ul className="list-inside list-disc">
               <li>
                 We are thoughtful about the personal information we ask you to
                 provide and the personal information that we collect about you
@@ -58,7 +58,7 @@ export default async function PrivacyPage() {
               provide to us directly. Here are some examples:
             </p>
 
-            <ul className="list-disc list-inside">
+            <ul className="list-inside list-disc">
               <li>
                 Basic account information: We ask for basic information from you
                 in order to set up your account. For example, we require
@@ -132,7 +132,7 @@ export default async function PrivacyPage() {
               below.
             </p>
 
-            <ul className="list-disc list-inside">
+            <ul className="list-inside list-disc">
               <li>
                 Subsidiaries and independent contractors: We may disclose
                 information about you to our subsidiaries and independent
@@ -194,7 +194,7 @@ export default async function PrivacyPage() {
               discloses your information with may include:
             </p>
 
-            <ul className="list-disc list-inside">
+            <ul className="list-inside list-disc">
               <li>Hetzner (Germany) - Web host and database host</li>
               <li>GitHub (USA) - Code repository provider</li>
               <li>Digital Ocean (USA) - Cloud storage provider</li>
@@ -226,7 +226,7 @@ export default async function PrivacyPage() {
           <div className="space-y-4">
             <h2 className="text-2xl">Change log</h2>
 
-            <ul className="list-disc list-inside">
+            <ul className="list-inside list-disc">
               <li>May 7, 2024: Initial release of our Privacy Policy.</li>
             </ul>
           </div>
