@@ -6,7 +6,7 @@
 # This Dockerfile uses Node.js 24.13.0-slim, which was the latest LTS version at the time of writing.
 # To ensure security and compatibility, regularly update the NODE_VERSION ARG to the latest LTS version.
 ARG NODE_VERSION=24.13.0-slim
-ARG PNPM_VERSION=11.22.0
+ARG PNPM_VERSION=12.3.4
 
 FROM --platform=$BUILDPLATFORM node:${NODE_VERSION} AS pnpm-base
 

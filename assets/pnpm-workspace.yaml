@@ -1,3 +1,8 @@
 allowBuilds:
   esbuild: true
   unrs-resolver: true
+
+overrides:
+  node-releases: 2.0.53
+  'next@16.3.0>sharp': 0.35.3
+  react-dom: 19.2.8

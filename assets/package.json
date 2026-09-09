@@ -3,33 +3,33 @@
   "version": "0.0.1",
   "private": true,
   "license": "GPL-3.0",
-  "packageManager": "pnpm@11.22.0",
+  "packageManager": "pnpm@12.3.4",
   "engines": {
     "node": ">=22"
   },
   "dependencies": {
-    "@hcaptcha/react-hcaptcha": "^2.0.2",
-    "@types/node": "^25.9.2",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "autoprefixer": "^10.4.19",
-    "clsx": "^2.1.0",
-    "eslint": "^9.39.4",
+    "@hcaptcha/react-hcaptcha": "^2.2.0",
+    "@types/node": "^25.9.6",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "~19.2.7",
+    "autoprefixer": "^10.5.5",
+    "clsx": "^2.1.1",
+    "eslint": "^9.39.5",
     "eslint-config-next": "16.3.0",
     "jwt-decode": "^4.0.0",
-    "lucide-react": "^1.35.0",
+    "lucide-react": "^1.43.0",
     "next": "16.3.0",
-    "postcss": "^8.4.38",
-    "react": "^19.2.7",
-    "react-aria-components": "^1.18.0",
+    "postcss": "^8.5.26",
+    "react": "^19.2.8",
+    "react-aria-components": "^1.21.1",
     "react-dom": "^19.2.7",
-    "react-hook-form": "^7.77.0",
+    "react-hook-form": "^7.87.0",
     "server-only": "^0.0.1",
-    "tailwindcss": "^3.4.3",
+    "tailwindcss": "^3.4.19",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.9.3",
-    "use-debounce": "^10.0.0",
-    "zod": "^4.4.3"
+    "use-debounce": "^10.1.1",
+    "zod": "^4.5.4"
   },
   "scripts": {
     "lint": "eslint .",
@@ -48,6 +48,6 @@
     "@playwright/test": "1.62.1",
     "eslint-config-prettier": "10.1.5",
     "prettier": "3.9.6",
-    "tsx": "^4.8.1"
+    "tsx": "^4.23.13"
   }
 }
