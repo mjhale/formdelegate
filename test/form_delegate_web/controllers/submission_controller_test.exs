@@ -71,6 +71,24 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
 
       billing_count = BillingCounts.get_latest_billing_count_of_team(form.team_id)
       assert billing_count.submission_count == 1
+      assert Repo.reload!(form).submission_count == 1
+    end
+
+    test "redirects accepted native submissions to the public success page", %{
+      conn: conn,
+      form: form
+    } do
+      previous_frontend_url = Application.get_env(:form_delegate, :frontend_url)
+      Application.put_env(:form_delegate, :frontend_url, "http://127.0.0.1:3100")
+      on_exit(fn -> Application.put_env(:form_delegate, :frontend_url, previous_frontend_url) end)
+
+      conn =
+        conn
+        |> put_req_header("accept", "text/html")
+        |> post(Routes.submission_path(conn, :create, form.id, @valid_attrs))
+
+      assert redirected_to(conn, 302) == "http://127.0.0.1:3100/submissions/success"
+      assert Repo.reload!(form).submission_count == 1
     end
 
     @tag :debug
@@ -224,6 +242,7 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
 
       assert Repo.aggregate(Submission, :count, :id) == submission_count
       assert Repo.aggregate(Attachment, :count, :id) == attachment_count
+      assert Repo.reload!(form).submission_count == form.submission_count
 
       reloaded_billing_count = BillingCounts.get_latest_billing_count_of_team(form.team_id)
       assert reloaded_billing_count == billing_count

@@ -353,8 +353,8 @@ defmodule FormDelegate.Submissions do
     if changeset.valid? do
       changeset
       |> Changeset.prepare_changes(fn prepared_changeset ->
-        if form = Changeset.get_change(prepared_changeset, :form) do
-          query = from(Form, where: [id: ^form.data.id])
+        if form_id = Changeset.get_field(prepared_changeset, :form_id) do
+          query = from(Form, where: [id: ^form_id])
           prepared_changeset.repo.update_all(query, inc: [submission_count: value])
         end
 
