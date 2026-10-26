@@ -13,9 +13,9 @@ const publicRoutes = ['/login', '/signup', '/reset-password'];
 export function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
-  const isProtectedRoute = protectedRoutes.find((route) =>
-    path.startsWith(route)
-  );
+  const isProtectedRoute =
+    path !== '/submissions/success' &&
+    protectedRoutes.some((route) => path.startsWith(route));
   const isPublicRoute = publicRoutes.find((route) => path.startsWith(route));
 
   const accessToken = req.cookies.get('access_token')?.value;

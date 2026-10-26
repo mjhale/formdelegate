@@ -5,12 +5,12 @@ const nextConfig = {
   cacheComponents: true,
   distDir: process.env.NEXT_DIST_DIR || '.next',
   partialPrefetching: true,
-  async redirects() {
+  // Proxy submissions so cross-origin redirects do not turn Origin into null.
+  async rewrites() {
     return [
       {
         source: '/f/:formId*',
         destination: `${process.env.NEXT_PUBLIC_API_HOST}/v1/submissions/:formId*`,
-        permanent: false,
       },
     ];
   },

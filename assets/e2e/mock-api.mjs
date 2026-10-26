@@ -38,6 +38,79 @@ async function readForm(request) {
 }
 
 const server = createServer(async (request, response) => {
+  const url = new URL(request.url, `http://${request.headers.host}`);
+
+  if (request.method === 'GET' && url.pathname === '/submission-fixture') {
+    const formId =
+      url.searchParams.get('success') === 'true'
+        ? 'intake-success'
+        : 'intake-transport';
+    response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    response.end(`<!doctype html><html lang="en"><title>Submission fixture</title>
+      <form action="${frontendOrigin}/f/${formId}" method="post" enctype="multipart/form-data">
+        <label>Name<input name="name" value="Synthetic sender"></label>
+        <label>Message<textarea name="message">Symbols &amp;=+ stay</textarea></label>
+        <label>Attachment<input type="file" name="attachment"></label>
+        <button type="submit">Submit form</button>
+        <button type="button" id="ajax">Submit as AJAX</button>
+      </form><pre id="result" role="status"></pre>
+      <script>
+        document.querySelector('#ajax').addEventListener('click', async () => {
+          const form = document.querySelector('form');
+          const result = document.querySelector('#result');
+          try {
+            const response = await fetch(form.action, {
+              method: 'POST', body: new FormData(form),
+              headers: { Accept: 'application/json' }, credentials: 'omit'
+            });
+            result.textContent = JSON.stringify({
+              status: response.status, data: await response.json()
+            });
+          } catch (error) { result.textContent = error.message; }
+        });
+      </script></html>`);
+    return;
+  }
+
+  if (url.pathname.startsWith('/v1/submissions/intake-')) {
+    // This stub checks transport only. Phoenix tests cover the source policy.
+    const sourceHeaders = {
+      ...corsHeaders,
+      'Access-Control-Allow-Origin': 'http://localhost:3101',
+    };
+    if (request.method === 'OPTIONS') {
+      response.writeHead(204, sourceHeaders);
+      response.end();
+      return;
+    }
+
+    const body = await readBody(request);
+    const observed = {
+      origin: request.headers.origin,
+      referer: request.headers.referer,
+      userAgent: request.headers['user-agent'],
+      contentType: request.headers['content-type'],
+      body,
+    };
+    const allowed = request.headers.origin === 'http://localhost:3101';
+
+    if (allowed && url.pathname === '/v1/submissions/intake-success') {
+      response.writeHead(302, {
+        ...sourceHeaders,
+        Location: `${frontendOrigin}/submissions/success`,
+      });
+      response.end();
+      return;
+    }
+
+    response.writeHead(allowed ? 202 : 403, {
+      ...sourceHeaders,
+      'Content-Type': 'application/json',
+    });
+    response.end(JSON.stringify(observed));
+    return;
+  }
+
   if (request.method === 'OPTIONS') {
     response.writeHead(204, corsHeaders);
     response.end();
