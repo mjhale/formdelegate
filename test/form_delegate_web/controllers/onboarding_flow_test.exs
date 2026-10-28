@@ -64,6 +64,7 @@ defmodule FormDelegateWeb.OnboardingFlowTest do
     form_path = "#{forms_path}/#{id}"
     intake_path = "/v1/submissions/#{id}"
     assert created["data"]["submission_count"] == 0
+    assert created["data"]["spam_filter_mode"] == "balanced"
 
     # Full URLs must be corrected to hostnames; invalid saves are atomic.
     invalid = %{
@@ -144,7 +145,7 @@ defmodule FormDelegateWeb.OnboardingFlowTest do
         ] do
       assert json_response(
                post(put_req_header(json(), header, source), intake_path, %{
-                 message: "A local onboarding inquiry",
+                 message: "A local onboarding inquiry from #{source}",
                  name: "Test visitor"
                }),
                202
@@ -163,8 +164,9 @@ defmodule FormDelegateWeb.OnboardingFlowTest do
 
     assert json_response(
              post(put_req_header(json(), "origin", "https://example.com"), intake_path, %{
-               message: "Held submission fixture",
-               name: "akismet-guaranteed-spam@example.com"
+               message:
+                 "Claim your prize. https://one.example https://two.example https://three.example https://four.example",
+               name: "Test visitor"
              }),
              202
            )
@@ -181,7 +183,12 @@ defmodule FormDelegateWeb.OnboardingFlowTest do
       approved = put(auth(jwt), "#{moderation_path}/ham") |> json_response(200)
       assert approved["data"]["flagged_at"] == nil
       assert approved["data"]["flagged_type"] == nil
+      assert approved["data"]["moderation_status"] == "approved"
     end
+
+    assert_receive {:delivered, %{host: "localhost"}, approved_email}
+    assert approved_email.text_body =~ "Claim your prize."
+    refute_receive {:delivered, _, _}
 
     assert Repo.get!(Form, id).submission_count == 4
     assert BillingCounts.get_latest_billing_count_of_team(team.id).submission_count == 4
