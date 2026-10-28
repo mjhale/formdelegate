@@ -3,9 +3,9 @@
 # ============================================
 
 # IMPORTANT: Node.js Version Maintenance
-# This Dockerfile uses Node.js 24.13.0-slim, which was the latest LTS version at the time of writing.
+# Keep the frontend image aligned with .tool-versions and frontend validation CI.
 # To ensure security and compatibility, regularly update the NODE_VERSION ARG to the latest LTS version.
-ARG NODE_VERSION=24.13.0-slim
+ARG NODE_VERSION=24.22.1-slim
 ARG PNPM_VERSION=12.3.4
 
 FROM --platform=$BUILDPLATFORM node:${NODE_VERSION} AS pnpm-base

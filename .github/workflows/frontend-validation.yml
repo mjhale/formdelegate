@@ -35,7 +35,7 @@ jobs:
       - name: Set up pnpm and Node.js
         uses: pnpm/setup@v1
         with:
-          runtime: node@24.13.0
+          runtime: node@24.22.1
           cache: true
           package-json-file: assets/package.json
           cache-dependency-path: assets/pnpm-lock.yaml
