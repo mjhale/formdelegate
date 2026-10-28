@@ -9,6 +9,11 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
   alias FormDelegateWeb.Mailers.NewSubmissionMailer
   require Logger
 
+  @job_timeout_ms 120_000
+
+  @impl Oban.Worker
+  def timeout(_job), do: @job_timeout_ms
+
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"submission_id" => submission_id}}) do
     case Moderation.prepare_delivery(submission_id) do
@@ -41,17 +46,22 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
     # integrations commit independently, so a later failure does not replay them.
     # A provider success followed by a DB/process crash can still be ambiguous;
     # exactly-once external delivery requires provider idempotency support.
-    Repo.transaction(fn ->
-      submission =
-        Repo.one!(from s in Submission, where: s.id == ^submission_id, lock: "FOR UPDATE")
+    Repo.transaction(
+      fn ->
+        submission =
+          Repo.one!(from s in Submission, where: s.id == ^submission_id, lock: "FOR UPDATE")
 
-      if Moderation.delivery_allowed?(submission) do
-        deliver_unless_completed(submission_id, integration)
-      else
-        submission |> Changeset.change(integrations_enqueued_at: nil) |> Repo.update!()
-        :held
-      end
-    end)
+        if Moderation.delivery_allowed?(submission) do
+          deliver_unless_completed(submission_id, integration)
+        else
+          submission |> Changeset.change(integrations_enqueued_at: nil) |> Repo.update!()
+          :held
+        end
+      end,
+      # Provider calls must not outlive the connection checkout and then lose a
+      # successful receipt. Oban bounds the whole job before this deadline.
+      timeout: @job_timeout_ms + 30_000
+    )
     |> case do
       {:ok, result} -> result
       {:error, reason} -> {:error, reason}
