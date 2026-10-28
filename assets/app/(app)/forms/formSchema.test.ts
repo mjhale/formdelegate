@@ -1,7 +1,31 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { createFormSchema } from './formSchema';
+import { createFormSchema, updateFormSchema } from './formSchema';
+
+describe('form name validation', () => {
+  for (const schema of [createFormSchema, updateFormSchema]) {
+    it('rejects blank names and trims valid names before saving', () => {
+      const fields = {
+        id: '93708631-5494-4484-80ab-c8d9e8235d77',
+        email_integrations: [],
+      };
+
+      for (const name of ['', '   ', '\t\n']) {
+        const result = schema.safeParse({ ...fields, name });
+        assert.equal(result.success, false);
+        if (!result.success) {
+          assert.deepEqual(result.error.format().name?._errors, [
+            'Enter a form name.',
+          ]);
+        }
+      }
+
+      const result = schema.parse({ ...fields, name: '  Contact form  ' });
+      assert.equal(result.name, 'Contact form');
+    });
+  }
+});
 
 const providerCases = [
   {

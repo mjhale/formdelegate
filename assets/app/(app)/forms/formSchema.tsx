@@ -270,7 +270,7 @@ const submissionSourcePolicySchema = z
 
 const formObjectSchema = z.object({
   id: nullableUuid,
-  name: z.string().min(1),
+  name: z.string().trim().min(1, 'Enter a form name.'),
   hosts: hostsSchema,
   submission_source_policy: submissionSourcePolicySchema,
   verified: z.never().optional(),
