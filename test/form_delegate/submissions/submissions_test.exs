@@ -6,6 +6,27 @@ defmodule FormDelegate.SubmissionsTest do
   alias FormDelegate.Submissions
   alias FormDelegate.Submissions.Submission
 
+  test "activity uses UTC dates when the database timezone crosses the date boundary" do
+    now = DateTime.utc_now()
+    today = DateTime.to_date(now)
+    timezone = if now.hour < 12, do: "Etc/GMT+12", else: "Etc/GMT-14"
+    Repo.query!("SELECT set_config('TimeZone', $1, true)", [timezone])
+    assert %{rows: [[database_today]]} = Repo.query!("SELECT CURRENT_DATE")
+    refute database_today == today
+
+    form = insert(:form)
+    insert(:submission, form: form, inserted_at: now)
+    insert(:submission)
+
+    for activity <- [
+          Submissions.get_submission_activity_of_user(form.user),
+          Submissions.get_submission_activity_of_team(form.team)
+        ] do
+      assert %{submission_count: 1} = Enum.find(activity, &(&1.day == today))
+      assert length(activity) == 366
+    end
+  end
+
   test "increments the correct form once for each persisted submission" do
     form = insert(:form)
     other_form = insert(:form)

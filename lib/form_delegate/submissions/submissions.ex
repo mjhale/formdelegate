@@ -186,9 +186,9 @@ defmodule FormDelegate.Submissions do
         on: form.user_id == ^user.id and form.id == s.form_id,
         right_join:
           day in fragment(
-            "SELECT generate_series(CURRENT_DATE - INTERVAL '365 days', CURRENT_DATE, '1 day') :: date AS d"
+            "SELECT generate_series((CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::date - INTERVAL '365 days', (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::date, '1 day') :: date AS d"
           ),
-        on: day.d == fragment("date(?)", s.inserted_at),
+        on: day.d == fragment("(? AT TIME ZONE 'UTC')::date", s.inserted_at),
         group_by: day.d,
         order_by: day.d,
         select: %{
@@ -215,9 +215,9 @@ defmodule FormDelegate.Submissions do
         on: form.id == s.form_id and form.team_id == ^team.id,
         right_join:
           day in fragment(
-            "SELECT generate_series(CURRENT_DATE - INTERVAL '365 days', CURRENT_DATE, '1 day') :: date AS d"
+            "SELECT generate_series((CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::date - INTERVAL '365 days', (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::date, '1 day') :: date AS d"
           ),
-        on: day.d == fragment("date(?)", s.inserted_at),
+        on: day.d == fragment("(? AT TIME ZONE 'UTC')::date", s.inserted_at),
         group_by: day.d,
         order_by: day.d,
         select: %{
