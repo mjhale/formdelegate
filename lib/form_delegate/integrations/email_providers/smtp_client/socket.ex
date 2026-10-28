@@ -74,8 +74,15 @@ defmodule FormDelegate.Integrations.EmailProviders.SMTPClient.Socket do
          {:ok, socket, transport, capabilities} <-
            maybe_starttls(transport, socket, capabilities, helo_domain, timeout),
          :ok <- authenticate(transport, socket, capabilities, username, password, timeout),
-         :ok <- send_mail(transport, socket, from_address, recipients, email, timeout),
-         {:ok, _quit_response} <- command(transport, socket, "QUIT\r\n", timeout, [221]) do
+         :ok <- send_mail(transport, socket, from_address, recipients, email, timeout) do
+      # Final DATA 250 is the delivery acknowledgement. QUIT is cleanup, so a
+      # closed, slow or faulty response must not turn acceptance into a retry.
+      try do
+        send_line(transport, socket, "QUIT\r\n")
+      after
+        transport.close(socket)
+      end
+
       :ok
     else
       {:error, reason} -> {:error, reason}
