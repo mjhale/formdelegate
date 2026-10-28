@@ -103,6 +103,7 @@ defmodule FormDelegateWeb.FormControllerTest do
             "inserted_at" => DateTime.to_iso8601(form.inserted_at),
             "name" => form.name,
             "submission_source_policy" => "unrestricted",
+            "spam_filter_mode" => "balanced",
             "submission_count" => 0,
             "updated_at" => DateTime.to_iso8601(form.updated_at),
             "verified" => false
@@ -344,6 +345,7 @@ defmodule FormDelegateWeb.FormControllerTest do
           "inserted_at" => DateTime.to_iso8601(form.inserted_at),
           "name" => form.name,
           "submission_source_policy" => "unrestricted",
+          "spam_filter_mode" => "balanced",
           "submission_count" => 0,
           "updated_at" => DateTime.to_iso8601(form.updated_at),
           "verified" => false
@@ -720,6 +722,7 @@ defmodule FormDelegateWeb.FormControllerTest do
           "inserted_at" => DateTime.to_iso8601(user_form.inserted_at),
           "name" => user_form.name,
           "submission_source_policy" => "unrestricted",
+          "spam_filter_mode" => "balanced",
           "submission_count" => 0,
           "updated_at" => DateTime.to_iso8601(user_form.updated_at),
           "verified" => false

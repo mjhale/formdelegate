@@ -12,7 +12,7 @@ defmodule FormDelegateWeb.SubmissionController do
   alias FormDelegate.BillingCounts
   alias FormDelegate.Forms.Form
   alias FormDelegate.Forms.SubmissionSourcePolicy
-  alias FormDelegate.Jobs.SubmissionIntegrations
+  alias FormDelegate.Submissions.Moderation
   alias FormDelegate.{Submissions, Submissions.Submission}
   alias FormDelegateWeb.Authorizer
   alias FormDelegateWeb.SubmissionView
@@ -26,7 +26,6 @@ defmodule FormDelegateWeb.SubmissionController do
 
   # @TODO: Check that user.confirmed_at is non-null
   # @TODO: Responds with /submissions/:submission_id link alongside 202
-  # @TODO: Apply some form of spam filtering before Akismet is used
   # @TODO: Allow user to specify redirect after submission
   def create(%{assigns: %{form: form, plan: plan}} = conn, params, current_user) do
     with :ok <- Authorizer.authorize(:create_submission, current_user),
@@ -69,37 +68,21 @@ defmodule FormDelegateWeb.SubmissionController do
     end
   end
 
-  defp process_accepted_submission(conn, form, submission, callback_success_url) do
-    process_spam_filter(form, submission)
+  defp process_accepted_submission(conn, _form, submission, callback_success_url) do
+    submission =
+      case Moderation.classify(submission) do
+        {:ok, classified} ->
+          classified
+
+        {:error, _reason} ->
+          Logger.error("FD: Moderation pending for #{submission.id}")
+          submission
+      end
 
     # Broadcast submission to user's channel after processing spam filters
     broadcast_submission(submission)
 
     respond_to_accepted_submission(conn, submission, callback_success_url)
-  end
-
-  # @TODO: Allow user-specified Akismet API key per form
-  defp process_spam_filter(form, submission) do
-    case akismet_api().is_spam?(akismet_api_key(), submission) do
-      {:ok, false} ->
-        %{submission_id: submission.id, form_id: form.id}
-        |> SubmissionIntegrations.new()
-        |> Oban.insert()
-
-      {:ok, true} ->
-        Logger.info("FD: Spam detected for #{submission.id}")
-
-        Submissions.flag_submission(submission, %{
-          flagged_at: DateTime.utc_now(),
-          flagged_type:
-            Submissions.get_or_create_flagged_type(%{
-              type: "spam"
-            })
-        })
-
-      {:error, error} ->
-        Logger.error("FD: Akismet error for #{submission.id}: #{inspect(error)}")
-    end
   end
 
   defp respond_to_accepted_submission(conn, submission, callback_success_url) do
@@ -166,12 +149,7 @@ defmodule FormDelegateWeb.SubmissionController do
              submission
            ),
          {:ok, submission} <-
-           Submissions.flag_submission(submission, %{
-             flagged_at: nil,
-             flagged_type: nil
-           }) do
-      submit_akismet_feedback(:ham, submission)
-
+           Moderation.review(submission, :approved, current_user.id) do
       render(conn, "show.json", submission: submission)
     end
   end
@@ -224,15 +202,7 @@ defmodule FormDelegateWeb.SubmissionController do
              submission
            ),
          {:ok, submission} <-
-           Submissions.flag_submission(submission, %{
-             flagged_at: DateTime.utc_now(),
-             flagged_type:
-               Submissions.get_or_create_flagged_type(%{
-                 type: "spam"
-               })
-           }) do
-      submit_akismet_feedback(:spam, submission)
-
+           Moderation.review(submission, :spam, current_user.id) do
       render(conn, "show.json", submission: submission)
     end
   end
@@ -251,36 +221,6 @@ defmodule FormDelegateWeb.SubmissionController do
              submission
            ) do
       render(conn, "show.json", submission: submission)
-    end
-  end
-
-  defp akismet_api do
-    Application.get_env(:form_delegate, :akismet_api)
-  end
-
-  defp akismet_api_key do
-    Application.get_env(:form_delegate, :akismet_api_key)
-  end
-
-  defp submit_akismet_feedback(:ham, %Submission{} = submission) do
-    case akismet_api().submit_ham(akismet_api_key(), submission) do
-      {:ok} ->
-        :ok
-
-      {:error, error} ->
-        Logger.error("FD: Akismet ham submission error for #{submission.id}: #{inspect(error)}")
-        :ok
-    end
-  end
-
-  defp submit_akismet_feedback(:spam, %Submission{} = submission) do
-    case akismet_api().submit_spam(akismet_api_key(), submission) do
-      {:ok} ->
-        :ok
-
-      {:error, error} ->
-        Logger.error("FD: Akismet spam submission error for #{submission.id}: #{inspect(error)}")
-        :ok
     end
   end
 

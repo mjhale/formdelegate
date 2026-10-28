@@ -19,6 +19,7 @@ defmodule FormDelegate.Forms.Form do
     field :callback_success_url, :string
     field :hosts, {:array, :string}
     field :name, :string
+    field :spam_filter_mode, Ecto.Enum, values: [:balanced, :review_all, :off], default: :balanced
 
     field :submission_source_policy, Ecto.Enum,
       values: @submission_source_policies,
@@ -50,11 +51,13 @@ defmodule FormDelegate.Forms.Form do
       :callback_success_includes_data,
       :callback_success_url,
       :name,
+      :spam_filter_mode,
       :hosts,
       :submission_source_policy
     ])
     |> update_change(:hosts, &normalize_hosts/1)
-    |> validate_required([:name, :submission_source_policy])
+    |> validate_required([:name, :submission_source_policy, :spam_filter_mode])
+    |> check_constraint(:spam_filter_mode, name: :forms_spam_filter_mode_check)
     |> validate_host_settings()
     |> check_constraint(:submission_source_policy,
       name: :forms_submission_source_policy_check

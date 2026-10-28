@@ -118,8 +118,7 @@ if config_env() == :prod do
   config :form_delegate, :akismet_api, FormDelegate.Services.Akismet.Tesla
 
   config :form_delegate,
-    akismet_api_key:
-      System.get_env("AKISMET_API_KEY") || raise("Env var not set: AKISMET_API_KEY")
+    akismet_api_key: System.get_env("AKISMET_API_KEY")
 
   # Configures Hcaptcha module to use Tesla HTTP client
   config :form_delegate, :hcaptcha_api, FormDelegate.Services.Hcaptcha.Tesla

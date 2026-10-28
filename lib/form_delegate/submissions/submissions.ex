@@ -344,8 +344,12 @@ defmodule FormDelegate.Submissions do
   """
   def get_or_create_flagged_type(flagged_type_attrs) do
     if type = flagged_type_attrs[:type] do
-      Repo.get_by(FlaggedType, type: type) ||
-        Repo.insert!(FlaggedType.changeset(%FlaggedType{}, flagged_type_attrs))
+      Repo.insert!(FlaggedType.changeset(%FlaggedType{}, flagged_type_attrs),
+        on_conflict: :nothing,
+        conflict_target: [:type]
+      )
+
+      Repo.get_by!(FlaggedType, type: type)
     end
   end
 

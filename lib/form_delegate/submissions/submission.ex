@@ -13,6 +13,16 @@ defmodule FormDelegate.Submissions.Submission do
     field :sender, :string
     field :body, :string
 
+    field :moderation_status, Ecto.Enum,
+      values: [:unclassified, :pending, :accepted, :review, :spam, :approved],
+      default: :pending
+
+    field :spam_assessment, :map
+    field :content_fingerprint, :string
+    field :reviewed_at, :utc_datetime_usec
+    field :reviewed_by_id, :integer
+    field :integrations_enqueued_at, :utc_datetime_usec
+
     field :flagged_at, :naive_datetime
 
     field :sender_ip, :string

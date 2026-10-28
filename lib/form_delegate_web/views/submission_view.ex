@@ -41,6 +41,10 @@ defmodule FormDelegateWeb.SubmissionView do
 
     %{
       body: submission.body,
+      moderation_status: submission.moderation_status,
+      spam_assessment: submission.spam_assessment,
+      reviewed_at: submission.reviewed_at,
+      reviewed_by_id: submission.reviewed_by_id,
       data: Map.merge(attachment_field_map, text_field_map),
       flagged_at: submission.flagged_at,
       flagged_type:

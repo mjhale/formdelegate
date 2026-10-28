@@ -5,7 +5,7 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
 
   alias FormDelegate.Forms.Form
   alias FormDelegate.Integrations.EmailDispatcher
-  alias FormDelegate.{Submissions, Submissions.Submission}
+  alias FormDelegate.Submissions.Submission
   alias FormDelegateWeb.Mailers.NewSubmissionMailer
 
   require Logger
@@ -14,9 +14,14 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
   def perform(%Oban.Job{args: %{"submission_id" => submission_id} = _args}) do
     Logger.info("FD: Integration jobs running for #{submission_id}")
 
-    %Submission{form: %Form{} = form} = submission = Submissions.get_submission!(submission_id)
+    case FormDelegate.Submissions.Moderation.prepare_delivery(submission_id) do
+      {:ok, {:deliver, submission}} -> deliver(submission)
+      {:ok, :held} -> :ok
+      {:error, reason} -> {:error, reason}
+    end
+  end
 
-    # Email integrations
+  defp deliver(%Submission{form: %Form{} = form} = submission) do
     Enum.each(form.email_integrations, fn email_integration ->
       if email_integration.enabled do
         Logger.info("FD: Form email job running for #{submission.id}")

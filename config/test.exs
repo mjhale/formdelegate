@@ -13,8 +13,10 @@ config :logger, level: :warning
 config :form_delegate, FormDelegate.Repo,
   username: "postgres",
   password: "postgres",
-  database: "form_delegate_test",
+  database: System.get_env("FORM_DELEGATE_TEST_DATABASE", "form_delegate_test"),
   hostname: "localhost",
+  port: String.to_integer(System.get_env("FORM_DELEGATE_TEST_DATABASE_PORT", "5432")),
+  parameters: [timezone: "UTC"],
   pool: Ecto.Adapters.SQL.Sandbox
 
 # Configures Bamboo mailer

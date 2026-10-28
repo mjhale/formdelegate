@@ -320,6 +320,10 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
         "data" => [
           %{
             "body" => submission.body,
+            "moderation_status" => "pending",
+            "spam_assessment" => nil,
+            "reviewed_at" => nil,
+            "reviewed_by_id" => nil,
             "data" => %{"message" => "Content submission body"},
             "flagged_at" => nil,
             "flagged_type" => nil,
@@ -332,6 +336,7 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
               "inserted_at" => DateTime.to_iso8601(form.inserted_at),
               "name" => form.name,
               "submission_source_policy" => "unrestricted",
+              "spam_filter_mode" => "balanced",
               "submission_count" => 0,
               "updated_at" => DateTime.to_iso8601(form.updated_at),
               "verified" => false
@@ -590,6 +595,10 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
       expected = %{
         "data" => %{
           "body" => submission.body,
+          "moderation_status" => "pending",
+          "spam_assessment" => nil,
+          "reviewed_at" => nil,
+          "reviewed_by_id" => nil,
           "data" => %{"message" => "Content submission body"},
           "flagged_at" => nil,
           "flagged_type" => nil,
