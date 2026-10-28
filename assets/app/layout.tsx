@@ -1,13 +1,25 @@
 import type { Metadata, Viewport } from 'next';
 
-import { Lato } from 'next/font/google';
+import localFont from 'next/font/local';
 
 import './globals.css';
 
-const lato = Lato({
-  weight: ['700', '900'],
-  subsets: ['latin'],
-  style: ['normal', 'italic'],
+const lato = localFont({
+  src: [
+    { path: './fonts/lato/Lato-Bold.ttf', weight: '700', style: 'normal' },
+    {
+      path: './fonts/lato/Lato-BoldItalic.ttf',
+      weight: '700',
+      style: 'italic',
+    },
+    { path: './fonts/lato/Lato-Black.ttf', weight: '900', style: 'normal' },
+    {
+      path: './fonts/lato/Lato-BlackItalic.ttf',
+      weight: '900',
+      style: 'italic',
+    },
+  ],
+  display: 'swap',
   variable: '--font-lato',
 });
 
