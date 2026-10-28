@@ -1,17 +1,27 @@
 defmodule FormDelegateWeb.OnboardingFlowTest do
   use FormDelegateWeb.ConnCase
+  use Oban.Testing, repo: FormDelegate.Repo
 
   alias FormDelegate.BillingCounts
   alias FormDelegate.Forms.Form
   alias FormDelegate.Integrations.EmailIntegration
+  alias FormDelegate.Jobs.SubmissionIntegrations
   alias FormDelegate.Repo
-  alias FormDelegate.Submissions.{Attachment, Submission}
+  alias FormDelegate.Submissions.{Attachment, Delivery, Submission}
 
   defmodule SMTPReceiver do
     def verify(%{password: "invalid"}), do: {:error, "invalid SMTP credentials"}
     def verify(_params), do: :ok
 
     def deliver(params, email) do
+      if Process.get(:onboarding_delivery_failure, false) do
+        {:error, :synthetic_provider_unavailable}
+      else
+        accept(params, email)
+      end
+    end
+
+    defp accept(params, email) do
       send(
         Application.fetch_env!(:form_delegate, :onboarding_receiver),
         {:delivered, params, email}
@@ -195,6 +205,128 @@ defmodule FormDelegateWeb.OnboardingFlowTest do
   end
 
   @tag :as_inserted_user
+  test "queued API approval survives a lost response, provider failure and scheduled retry", %{
+    jwt: jwt,
+    team: team
+  } do
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      form = configured_form(jwt, team, %{spam_filter_mode: "review_all"})
+      intake_path = "/v1/submissions/#{form["id"]}"
+
+      post(json(), intake_path, %{message: "Please contact me about a local project"})
+      |> json_response(202)
+
+      [held] = (get(auth(jwt), "/v1/teams/#{team.id}/submissions") |> json_response(200))["data"]
+      assert held["moderation_status"] == "review"
+      assert all_enqueued(worker: SubmissionIntegrations) == []
+      path = "/v1/teams/#{team.id}/submissions/#{held["id"]}"
+
+      # Ignore the first response as a client that disconnected after the commit.
+      put(auth(jwt), "#{path}/ham")
+      resumed = get(auth(jwt), path) |> json_response(200)
+      assert resumed["data"]["moderation_status"] == "approved"
+      assert resumed["data"]["spam_assessment"] == held["spam_assessment"]
+      put(auth(jwt), "#{path}/ham") |> json_response(200)
+      [job] = all_enqueued(worker: SubmissionIntegrations)
+      refute_receive {:delivered, _, _}
+
+      Process.put(:onboarding_delivery_failure, true)
+      assert %{failure: 1, success: 0} = Oban.drain_queue(queue: :submission_integrations)
+      refute_receive {:delivered, _, _}
+      receipt = Repo.one!(Delivery)
+      assert receipt.attempts == 1
+      assert is_nil(receipt.delivered_at)
+      assert receipt.last_error == "provider_delivery_failed"
+      assert Repo.get!(Oban.Job, job.id).state == "retryable"
+
+      # Reloading and approving again must not replace the existing retry job.
+      put(auth(jwt), "#{path}/ham") |> json_response(200)
+      assert Repo.aggregate(Oban.Job, :count) == 1
+      assert Repo.get!(Oban.Job, job.id).state == "retryable"
+      Process.delete(:onboarding_delivery_failure)
+
+      assert %{failure: 0, success: 1} =
+               Oban.drain_queue(queue: :submission_integrations, with_scheduled: true)
+
+      assert_receive {:delivered, _, email}
+      assert email.text_body =~ "Please contact me about a local project"
+      assert Repo.get!(Oban.Job, job.id).state == "completed"
+      assert Repo.reload!(receipt).attempts == 2
+      assert Repo.reload!(receipt).delivered_at
+      assert is_nil(Repo.reload!(receipt).last_error)
+      put(auth(jwt), "#{path}/ham") |> json_response(200)
+
+      assert %{success: 0} =
+               Oban.drain_queue(queue: :submission_integrations, with_scheduled: true)
+
+      refute_receive {:delivered, _, _}
+      assert Repo.get!(Form, form["id"]).submission_count == 1
+      assert BillingCounts.get_latest_billing_count_of_team(team.id).submission_count == 1
+    end)
+  end
+
+  @tag :as_inserted_user
+  test "redacted integration settings can be disabled, reloaded and enabled without losing secrets",
+       %{
+         jwt: jwt,
+         team: team
+       } do
+    form = configured_form(jwt, team)
+    path = "/v1/teams/#{team.id}/forms/#{form["id"]}"
+    [integration] = form["email_integrations"]
+    refute Map.has_key?(integration, "email_provider_secrets")
+
+    # Mirror the editor's persisted integration fields; secrets are intentionally absent.
+    settings =
+      Map.take(integration, [
+        "id",
+        "email_provider",
+        "email_provider_config",
+        "email_integration_recipients"
+      ])
+
+    settings = Map.put(settings, "enabled", false)
+    put(auth(jwt), path, form: %{email_integrations: [settings]}) |> json_response(200)
+    [disabled] = (get(auth(jwt), path) |> json_response(200))["data"]["email_integrations"]
+    assert disabled["enabled"] == false
+    assert disabled["email_provider_status"] == "verified"
+
+    post(json(), "/v1/submissions/#{form["id"]}", %{message: "Stored while email is disabled"})
+    |> json_response(202)
+
+    refute_receive {:delivered, _, _}
+
+    [recipient] = settings["email_integration_recipients"]
+
+    settings =
+      settings
+      |> Map.put("enabled", true)
+      |> Map.put("email_integration_recipients", [
+        Map.put(recipient, "email", "updated@example.test")
+      ])
+
+    for _ <- 1..2 do
+      put(auth(jwt), path, form: %{email_integrations: [settings]}) |> json_response(200)
+    end
+
+    assert Repo.aggregate(EmailIntegration, :count) == 1
+
+    assert Repo.get!(EmailIntegration, integration["id"]).email_provider_secrets["password"] ==
+             "local-fixture"
+
+    post(json(), "/v1/submissions/#{form["id"]}", %{message: "Deliver after enabling again"})
+    |> json_response(202)
+
+    assert_receive {:delivered, _, email}
+    assert Enum.map(email.to, &elem(&1, 1)) == ["updated@example.test"]
+    assert email.text_body =~ "Deliver after enabling again"
+    refute_receive {:delivered, _, _}
+    assert Repo.get!(Form, form["id"]).submission_count == 2
+    assert BillingCounts.get_latest_billing_count_of_team(team.id).form_count == 1
+    assert BillingCounts.get_latest_billing_count_of_team(team.id).submission_count == 2
+  end
+
+  @tag :as_inserted_user
   test "API intake stores attachment bytes locally and accounts for storage", %{
     jwt: jwt,
     team: team
@@ -257,6 +389,16 @@ defmodule FormDelegateWeb.OnboardingFlowTest do
     assert counts.storage_count == byte_size(body)
     assert counts.submission_count == 1
     assert Repo.get!(Form, form_id).submission_count == 1
+  end
+
+  defp configured_form(jwt, team, overrides \\ %{}) do
+    attrs =
+      Map.merge(
+        %{name: "Local acceptance", email_integrations: [integration("local-fixture")]},
+        overrides
+      )
+
+    (post(auth(jwt), "/v1/teams/#{team.id}/forms", form: attrs) |> json_response(201))["data"]
   end
 
   defp json, do: build_conn() |> put_req_header("accept", "application/json")
