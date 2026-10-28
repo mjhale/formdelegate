@@ -1,60 +1,104 @@
 defmodule FormDelegate.Jobs.SubmissionIntegrations do
+  @moduledoc "Deliver each integration with durable receipts and retryable failures."
   use Oban.Worker, queue: :submission_integrations
-
-  alias Bamboo.Email
-
-  alias FormDelegate.Forms.Form
+  import Ecto.Query
+  alias Ecto.Changeset
   alias FormDelegate.Integrations.EmailDispatcher
-  alias FormDelegate.Submissions.Submission
+  alias FormDelegate.{Repo, Submissions}
+  alias FormDelegate.Submissions.{Delivery, Moderation, Submission}
   alias FormDelegateWeb.Mailers.NewSubmissionMailer
-
   require Logger
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"submission_id" => submission_id} = _args}) do
-    Logger.info("FD: Integration jobs running for #{submission_id}")
+  def perform(%Oban.Job{args: %{"submission_id" => submission_id}}) do
+    case Moderation.prepare_delivery(submission_id) do
+      {:ok, {:deliver, submission}} ->
+        deliver_integrations(submission)
 
-    case FormDelegate.Submissions.Moderation.prepare_delivery(submission_id) do
-      {:ok, {:deliver, submission}} -> deliver(submission)
-      {:ok, :held} -> :ok
+      {:ok, :held} ->
+        :ok
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  defp deliver_integrations(submission) do
+    submission.form.email_integrations
+    |> Enum.filter(& &1.enabled)
+    |> Enum.sort_by(& &1.id)
+    |> Enum.reduce_while(:ok, fn integration, result ->
+      delivery_result(deliver_once(submission.id, integration), result)
+    end)
+  end
+
+  defp delivery_result(:ok, result), do: {:cont, result}
+  defp delivery_result(:held, _result), do: {:halt, :ok}
+  defp delivery_result({:error, _} = error, _result), do: {:cont, error}
+
+  defp deliver_once(submission_id, integration) do
+    # Serialize each attempt with owner moderation and other workers. Successful
+    # integrations commit independently, so a later failure does not replay them.
+    # A provider success followed by a DB/process crash can still be ambiguous;
+    # exactly-once external delivery requires provider idempotency support.
+    Repo.transaction(fn ->
+      submission =
+        Repo.one!(from s in Submission, where: s.id == ^submission_id, lock: "FOR UPDATE")
+
+      if Moderation.delivery_allowed?(submission) do
+        deliver_unless_completed(submission_id, integration)
+      else
+        submission |> Changeset.change(integrations_enqueued_at: nil) |> Repo.update!()
+        :held
+      end
+    end)
+    |> case do
+      {:ok, result} -> result
       {:error, reason} -> {:error, reason}
     end
   end
 
-  defp deliver(%Submission{form: %Form{} = form} = submission) do
-    Enum.each(form.email_integrations, fn email_integration ->
-      if email_integration.enabled do
-        Logger.info("FD: Form email job running for #{submission.id}")
+  defp deliver_unless_completed(submission_id, integration) do
+    receipt =
+      Repo.get_by(Delivery, submission_id: submission_id, form_integration_id: integration.id) ||
+        Repo.insert!(%Delivery{submission_id: submission_id, form_integration_id: integration.id})
 
-        recipient_groups =
-          Enum.group_by(
-            email_integration.email_integration_recipients,
-            &Map.get(&1, :type),
-            fn recipient ->
-              {recipient.name, recipient.email}
-            end
-          )
-
-        submission
-        |> NewSubmissionMailer.new_submission_email(recipient_groups)
-        |> deliver_with_provider(email_integration)
-      end
-    end)
-
-    :ok
+    if receipt.delivered_at,
+      do: :ok,
+      else: attempt_delivery(Submissions.get_submission!(submission_id), integration, receipt)
   end
 
-  defp deliver_with_provider(%Email{} = email, email_integration) do
-    case EmailDispatcher.deliver_submission_email(email_integration, email) do
-      {:ok, _delivery_result} = success ->
-        success
+  defp attempt_delivery(submission, integration, receipt) do
+    recipients =
+      Enum.group_by(integration.email_integration_recipients, & &1.type, &{&1.name, &1.email})
 
-      {:error, reason} ->
+    email = NewSubmissionMailer.new_submission_email(submission, recipients)
+
+    case EmailDispatcher.deliver_submission_email(integration, email) do
+      {:ok, _result} ->
+        receipt
+        |> Changeset.change(
+          attempts: receipt.attempts + 1,
+          delivered_at: DateTime.utc_now(),
+          last_error: nil
+        )
+        |> Repo.update!()
+
+        :ok
+
+      {:error, _reason} ->
+        receipt
+        |> Changeset.change(
+          attempts: receipt.attempts + 1,
+          last_error: "provider_delivery_failed"
+        )
+        |> Repo.update!()
+
         Logger.warning(
-          "FD: Email integration delivery failed integration_id=#{email_integration.id} provider=#{email_integration.email_provider} reason=#{reason}"
+          "FD: Email delivery failed integration_id=#{integration.id}; retry required"
         )
 
-        {:error, reason}
+        {:error, {:provider_delivery_failed, integration.id}}
     end
   end
 end
