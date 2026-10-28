@@ -1,5 +1,10 @@
 'use client';
 
+import ModerationDetails, {
+  isHeld,
+  moderationLabel,
+} from './moderationDetails';
+
 import type SubmissionType from 'types/submission';
 
 import clsx from 'clsx';
@@ -81,9 +86,9 @@ export default function Submission({
             className="flex min-w-0 items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-[#4c4d53] max-[820px]:col-[1_/_3] max-[820px]:row-start-2 [&_>_span:last-child]:overflow-hidden [&_>_span:last-child]:text-ellipsis"
             title={messagePreview(submission)}
           >
-            {submission.flagged_at && (
+            {isHeld(submission) && (
               <span className="inline-flex min-h-[22px] flex-[0_0_auto] items-center rounded-[4px_7px_7px_4px] border border-l-[3px] border-[#efc2bc] border-l-[#bf453d] bg-[#fff1ef] px-2 py-[3px] text-[9px] font-extrabold uppercase leading-none tracking-[0.045em] text-brand-deep">
-                Spam
+                {moderationLabel(submission)}
               </span>
             )}
             <span>{messagePreview(submission)}</span>
@@ -134,6 +139,9 @@ function ExpandedSubmissionView({
       className="grid grid-cols-3 gap-3.5 border-t border-t-[#e5ded3] bg-[rgba(247,_240,_226,_0.5)] pb-[18px] pl-[70px] pr-[19px] pt-4 max-[820px]:grid-cols-1 max-[820px]:pb-4 max-[820px]:pl-[60px] max-[820px]:pr-4 max-[820px]:pt-3.5"
       id={id}
     >
+      <div className="col-span-full">
+        <ModerationDetails submission={submission} />
+      </div>
       <Detail label="Form" value={submission.form.name} />
       <Detail
         label="Submission date"

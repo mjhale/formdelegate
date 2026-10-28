@@ -273,6 +273,7 @@ const formObjectSchema = z.object({
   name: z.string().trim().min(1, 'Enter a form name.'),
   hosts: hostsSchema,
   submission_source_policy: submissionSourcePolicySchema,
+  spam_filter_mode: z.enum(['balanced', 'review_all', 'off']).optional(),
   verified: z.never().optional(),
   email_integrations: emailIntegrationSchema.array(),
 });

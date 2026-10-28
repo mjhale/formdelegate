@@ -6,6 +6,10 @@ import { ArrowLeft, Inbox, Reply, Send } from 'lucide-react';
 import { useState } from 'react';
 
 import EmptyState from '../_components/emptyState';
+import ModerationDetails, {
+  isHeld,
+  moderationLabel,
+} from './moderationDetails';
 
 type Message = {
   id: string;
@@ -52,7 +56,7 @@ export default function InboxReader({
         .filter((value) => typeof value === 'string')
         .join('\n'),
     date: s.inserted_at,
-    spam: Boolean(s.flagged_at),
+    spam: isHeld(s),
     source: s,
   }));
   const active = messages.find((m) => m.id === activeId) || messages[0];
@@ -136,7 +140,7 @@ export default function InboxReader({
                   <span className="mt-2 line-clamp-2 text-[13px] leading-5 text-[#62636b]">
                     {m.spam && (
                       <span className="mr-1.5 rounded bg-[#ead9ce] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#70452d]">
-                        Spam
+                        {moderationLabel(m.source)}
                       </span>
                     )}
                     {m.body}
@@ -198,11 +202,12 @@ export default function InboxReader({
                 <div className="whitespace-pre-wrap break-words text-sm leading-7 text-[#42434b]">
                   {active.spam && (
                     <span className="mb-3 block w-fit rounded bg-[#ead9ce] px-2 py-1 text-xs font-semibold text-[#70452d]">
-                      Spam
+                      {moderationLabel(active.source)}
                     </span>
                   )}
                   {active.body}
                 </div>
+                <ModerationDetails submission={active.source} />
                 {active.source && (
                   <details
                     open

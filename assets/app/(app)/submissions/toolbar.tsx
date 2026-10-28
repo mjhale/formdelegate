@@ -124,7 +124,7 @@ export default function Toolbar({
             form="submissions_management"
             disabled={selectedSubmissionList.size === 0}
           >
-            Mark as not junk
+            Approve
           </ActionButton>
         </div>
 

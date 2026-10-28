@@ -6,6 +6,7 @@ import type {
   EmailIntegration,
   EmailIntegrationInput,
   SubmissionSourcePolicy,
+  SpamFilterMode,
 } from 'types/form';
 
 import {
@@ -29,6 +30,7 @@ interface IFormInput {
   email_integrations: Array<EmailIntegrationInput>;
   host_rules: Array<{ value: string }>;
   submission_source_policy: SubmissionSourcePolicy;
+  spam_filter_mode: SpamFilterMode;
 }
 
 interface IFormActionPayload {
@@ -37,6 +39,7 @@ interface IFormActionPayload {
   email_integrations: Array<EmailIntegrationInput>;
   hosts: Array<string>;
   submission_source_policy: SubmissionSourcePolicy;
+  spam_filter_mode: SpamFilterMode;
 }
 
 interface IReverifyInput {
@@ -60,6 +63,7 @@ interface FormActionState {
     submission_source_policy?: {
       _errors: Array<string>;
     };
+    spam_filter_mode?: { _errors: Array<string> };
     email_integrations?: any;
   };
   emailIntegrationStatusUpdates?: Array<EmailIntegrationStatusUpdate>;
@@ -148,6 +152,7 @@ export default function Form({
     defaultValues: {
       id: form?.id ?? '',
       name: form?.name ?? '',
+      spam_filter_mode: form?.spam_filter_mode ?? 'balanced',
       host_rules:
         (form?.hosts?.length ?? 0) > 0
           ? form.hosts.map((host) => ({ value: host }))
@@ -174,6 +179,7 @@ export default function Form({
       formAction({
         id: data.id,
         name: data.name,
+        spam_filter_mode: data.spam_filter_mode,
         email_integrations: data.email_integrations,
         hosts: data.host_rules.map((hostRule) => hostRule.value),
         submission_source_policy: data.submission_source_policy,
@@ -335,6 +341,52 @@ export default function Form({
             removeHostRule={removeHostRule}
             state={state}
           />
+        </section>
+        <section
+          className="min-w-0 rounded-xl border border-line bg-white p-5 sm:p-7"
+          aria-labelledby="spam-filter-heading"
+        >
+          <h2 id="spam-filter-heading" className="text-base font-semibold">
+            Spam filtering
+          </h2>
+          <p
+            id="spam-filter-help"
+            className="mt-2 text-sm leading-6 text-muted"
+          >
+            Built-in filtering keeps every submission in your inbox. Items
+            needing review and suspected spam are held from email delivery until
+            you approve them. Changing this setting affects new submissions
+            only.
+          </p>
+          <label
+            htmlFor="spam-filter-mode"
+            className="mb-2 mt-4 block text-sm font-medium"
+          >
+            Moderation mode
+          </label>
+          <select
+            id="spam-filter-mode"
+            defaultValue={form?.spam_filter_mode ?? 'balanced'}
+            {...register('spam_filter_mode')}
+            className={textControl}
+            aria-describedby="spam-filter-help spam-filter-errors"
+            aria-invalid={Boolean(state?.errors?.spam_filter_mode)}
+          >
+            <option value="balanced">
+              Balanced — review suspicious submissions
+            </option>
+            <option value="review_all">
+              Review all — approve every submission before delivery
+            </option>
+            <option value="off">Off — deliver without spam checks</option>
+          </select>
+          <div id="spam-filter-errors" role="alert">
+            {state?.errors?.spam_filter_mode?._errors.map((error) => (
+              <p key={error} className="mt-2 text-sm text-red-500">
+                {error}
+              </p>
+            ))}
+          </div>
         </section>
         <section
           className="min-w-0 rounded-xl border border-line bg-white p-5 sm:p-7"

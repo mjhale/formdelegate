@@ -1,4 +1,5 @@
 export type EmailProvider = 'smtp' | 'postmark' | 'sendgrid';
+export type SpamFilterMode = 'balanced' | 'review_all' | 'off';
 export type SubmissionSourcePolicy = 'unrestricted' | 'restricted';
 
 export type EmailProviderStatus =
@@ -94,6 +95,7 @@ export default interface Form {
   inserted_at: string;
   name: string;
   submission_source_policy: SubmissionSourcePolicy;
+  spam_filter_mode?: SpamFilterMode;
   submission_count: number;
   updated_at: string;
   verified: boolean;
