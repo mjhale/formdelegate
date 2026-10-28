@@ -80,7 +80,7 @@ defmodule FormDelegate.Submissions.SpamClassifierTest do
     assert %{status: :review, assessment: %{"reasons" => reasons}} =
              classify(String.duplicate("a", 32_769))
 
-    assert "inspection_limit" in reasons
+    assert reasons == ["inspection_limit"]
     assert %{status: :accepted} = classify(String.duplicate("a", 32_768))
   end
 

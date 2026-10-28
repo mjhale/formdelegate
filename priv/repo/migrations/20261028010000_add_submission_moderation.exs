@@ -20,7 +20,7 @@ defmodule FormDelegate.Repo.Migrations.AddSubmissionModeration do
     end
 
     # Do not replay pre-migration deliveries when a legacy record is reclassified.
-    execute "UPDATE submissions SET integrations_enqueued_at = inserted_at"
+    execute "UPDATE submissions SET integrations_enqueued_at = inserted_at AT TIME ZONE 'UTC'"
 
     alter table(:submissions) do
       modify :moderation_status, :string, default: "pending"

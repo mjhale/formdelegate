@@ -16,7 +16,7 @@ defmodule FormDelegate.Submissions.SpamClassifier do
     reasons =
       []
       |> add(incomplete?, "inspection_limit", 0)
-      |> add(text == "", "empty_content", 0)
+      |> add(text == "" and not incomplete?, "empty_content", 0)
       |> add(Regex.match?(@solicitation, text), "commercial_solicitation", 3)
       |> add(Regex.match?(@credentials, text), "credential_request", 3)
       |> add(urls >= 4, "many_links", 3)

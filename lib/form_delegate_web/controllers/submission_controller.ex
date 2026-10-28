@@ -12,8 +12,8 @@ defmodule FormDelegateWeb.SubmissionController do
   alias FormDelegate.BillingCounts
   alias FormDelegate.Forms.Form
   alias FormDelegate.Forms.SubmissionSourcePolicy
-  alias FormDelegate.Submissions.Moderation
-  alias FormDelegate.{Submissions, Submissions.Submission}
+  alias FormDelegate.Submissions
+  alias FormDelegate.Submissions.{Moderation, Submission}
   alias FormDelegateWeb.Authorizer
   alias FormDelegateWeb.SubmissionView
 
