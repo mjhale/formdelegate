@@ -33,7 +33,9 @@ async function EditForm({ params }: { params: Promise<{ formId: string }> }) {
 
   return (
     <>
+      {/* Saved server changes must replace Activity-preserved form defaults. */}
       <Form
+        key={JSON.stringify(form)}
         form={form}
         saveFormAction={updateForm}
         reverifyEmailIntegrationAction={reverifyEmailIntegration}

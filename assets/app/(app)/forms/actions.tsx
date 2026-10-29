@@ -1,6 +1,6 @@
 'use server';
 
-import { updateTag } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
@@ -77,6 +77,7 @@ export async function updateForm(_currentState, formData) {
 
   updateTag(formsCacheTag(selectedTeam.id));
   updateTag(formCacheTag(selectedTeam.id, validatedData.data.id));
+  revalidatePath(`/forms/${validatedData.data.id}/edit`);
   redirect('/forms');
 }
 
