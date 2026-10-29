@@ -9,6 +9,7 @@ defmodule FormDelegateWeb.SubmissionController do
 
   require Logger
 
+  alias FormDelegate.Accounts.User
   alias FormDelegate.BillingCounts
   alias FormDelegate.Forms.Form
   alias FormDelegate.Forms.SubmissionSourcePolicy
@@ -24,12 +25,12 @@ defmodule FormDelegateWeb.SubmissionController do
     apply(__MODULE__, action_name(conn), args)
   end
 
-  # @TODO: Check that user.confirmed_at is non-null
   # @TODO: Responds with /submissions/:submission_id link alongside 202
   # @TODO: Allow user to specify redirect after submission
   def create(%{assigns: %{form: form, plan: plan}} = conn, params, current_user) do
     with :ok <- Authorizer.authorize(:create_submission, current_user),
-         :ok <- authorize_submission_source(conn, form) do
+         :ok <- authorize_submission_source(conn, form),
+         :ok <- require_confirmed_owner(form) do
       create_allowed_submission(conn, params, form, plan)
     else
       {:error, :submission_source_not_allowed} ->
@@ -39,6 +40,14 @@ defmodule FormDelegateWeb.SubmissionController do
         {:error, :forbidden}
     end
   end
+
+  # Reject before persistence, quota accounting, storage, classification, jobs,
+  # or broadcasts. A missing or unloaded owner fails closed.
+  defp require_confirmed_owner(%Form{user: %User{confirmed_at: confirmed_at}})
+       when not is_nil(confirmed_at),
+       do: :ok
+
+  defp require_confirmed_owner(_form), do: {:error, :forbidden}
 
   defp create_allowed_submission(conn, params, form, plan) do
     grouped_submission_params = transform_params_to_submission_map(params)

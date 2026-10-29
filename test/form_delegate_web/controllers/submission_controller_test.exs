@@ -2,6 +2,7 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
   use FormDelegateWeb.ConnCase
   use Oban.Testing, repo: FormDelegate.Repo
 
+  alias FormDelegate.Accounts.User
   alias FormDelegate.BillingCounts
   alias FormDelegate.Forms.Form
   alias FormDelegate.Repo
@@ -56,10 +57,13 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
   describe "create/2" do
     setup [:create_form]
 
-    test "Responds with accepted with @valid_attrs", %{
+    test "accepts anonymous submissions for a confirmed owner", %{
       conn: conn,
       form: form
     } do
+      assert is_nil(conn.assigns[:current_user])
+      assert form.user.confirmed_at
+
       response =
         conn
         |> post(Routes.submission_path(conn, :create, form.id, @valid_attrs))
@@ -72,6 +76,67 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
       billing_count = BillingCounts.get_latest_billing_count_of_team(form.team_id)
       assert billing_count.submission_count == 1
       assert Repo.reload!(form).submission_count == 1
+    end
+
+    test "rejects unconfirmed owners before persistence, quota, storage, jobs or broadcasts", %{
+      conn: conn
+    } do
+      {user, team, _membership} = FormDelegate.Factory.insert_user_with_membership()
+      assert is_nil(user.confirmed_at)
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
+      FormDelegateWeb.Endpoint.subscribe("user_form_submissions:#{form.user_id}")
+
+      schemas = [Submission, Attachment, FormDelegate.BillingCounts.BillingCount, Oban.Job]
+      counts = Enum.map(schemas, &Repo.aggregate(&1, :count, :id))
+      billing_count = BillingCounts.get_latest_billing_count_of_team(team.id)
+      # A nonexistent upload would fail if attachment storage were reached.
+      upload = %Plug.Upload{
+        path: "/nonexistent/confirmed-owner-gate.txt",
+        filename: "attachment.txt",
+        content_type: "text/plain"
+      }
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        response =
+          conn
+          |> post(
+            Routes.submission_path(conn, :create, form.id),
+            Map.put(@valid_attrs, :attachment, upload)
+          )
+          |> json_response(403)
+
+        assert response == %{"error" => %{"code" => 403, "type" => "FORBIDDEN"}}
+        refute_enqueued(worker: FormDelegate.Jobs.SubmissionIntegrations)
+      end)
+
+      assert Enum.map(schemas, &Repo.aggregate(&1, :count, :id)) == counts
+      assert BillingCounts.get_latest_billing_count_of_team(team.id) == billing_count
+      assert Repo.reload!(form).submission_count == 0
+      refute_receive %Phoenix.Socket.Broadcast{event: "new_msg"}
+    end
+
+    test "renders HTML 403 for unconfirmed owners", %{conn: conn} do
+      {user, team, _membership} = FormDelegate.Factory.insert_user_with_membership()
+      form = FormDelegate.Factory.insert(:form, user: user, team: team)
+
+      conn =
+        conn
+        |> put_req_header("accept", "text/html")
+        |> post(Routes.submission_path(conn, :create, form.id, @valid_attrs))
+
+      assert html_response(conn, 403) =~ "Submission not accepted"
+    end
+
+    test "fails closed when the owner association is missing or unloaded", %{
+      conn: conn,
+      form: form
+    } do
+      for owner <- [nil, %Ecto.Association.NotLoaded{}] do
+        conn = conn |> assign(:form, %{form | user: owner}) |> assign(:plan, nil)
+
+        assert {:error, :forbidden} =
+                 FormDelegateWeb.SubmissionController.create(conn, @valid_attrs, :guest)
+      end
     end
 
     test "redirects accepted native submissions to the public success page", %{
@@ -831,6 +896,7 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
 
   defp create_form(_context) do
     {user, team, _membership} = FormDelegate.Factory.insert_user_with_membership()
+    user = user |> User.confirmed_changeset() |> Repo.update!()
     form = FormDelegate.Factory.insert(:form, user: user, team: team)
 
     {:ok, form: form}
