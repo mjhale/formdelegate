@@ -1,0 +1,4 @@
+# Copy ignored environment files into new worktrees.
+/.env
+.env.local
+.env.*.local
