@@ -1,4 +1,10 @@
-import type { EmailProvider, EmailProviderStatus } from 'types/form';
+import type {
+  EmailProvider,
+  EmailProviderStatus,
+  WebhookIntegrationInput,
+} from 'types/form';
+
+import { serializeWebhookPayload } from './webhookPayload';
 
 export const emailProviderRequirements = {
   smtp: {
@@ -20,6 +26,7 @@ export const emailProviderRequirements = {
 
 interface FormPayloadInput extends Record<string, unknown> {
   email_integrations?: Array<EmailIntegrationPayloadInput>;
+  webhook_integrations?: Array<WebhookIntegrationInput>;
 }
 
 interface EmailIntegrationPayloadInput extends Record<string, unknown> {
@@ -35,6 +42,12 @@ export function serializeFormPayload(
 
   delete formPayload.email_integrations;
   delete formPayload.verified;
+  delete formPayload.webhook_integrations;
+  if (Array.isArray(form.webhook_integrations)) {
+    formPayload.webhook_integrations = form.webhook_integrations.map(
+      serializeWebhookPayload
+    );
+  }
 
   if (!Array.isArray(emailIntegrations)) {
     return formPayload;

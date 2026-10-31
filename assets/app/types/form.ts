@@ -86,10 +86,25 @@ export interface EmailIntegration {
   updated_at: string;
 }
 
+export interface WebhookIntegrationInput {
+  id?: string | null;
+  enabled: boolean;
+  url: string;
+  signing_secret?: string;
+}
+
+export interface WebhookIntegration {
+  id: string;
+  enabled: boolean;
+  url: string;
+  has_signing_secret: boolean;
+}
+
 export default interface Form {
   callback_success_includes_data: boolean;
   callback_success_url: string | null;
   email_integrations: Array<EmailIntegration>;
+  webhook_integrations?: Array<WebhookIntegration>;
   hosts: Array<string> | null;
   id: string;
   inserted_at: string;

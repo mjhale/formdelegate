@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import type {
   EmailIntegration,
   EmailIntegrationInput,
+  WebhookIntegrationInput,
   SubmissionSourcePolicy,
   SpamFilterMode,
 } from 'types/form';
@@ -18,6 +19,9 @@ import {
 } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 
+import { sanitizeWebhookDefaults } from './webhookPayload';
+import WebhookIntegrations from './webhookIntegrations';
+
 import {
   canReverifyEmailIntegration,
   getEmailIntegrationIndexById,
@@ -28,6 +32,7 @@ interface IFormInput {
   id: string;
   name: string;
   email_integrations: Array<EmailIntegrationInput>;
+  webhook_integrations: Array<WebhookIntegrationInput>;
   host_rules: Array<{ value: string }>;
   submission_source_policy: SubmissionSourcePolicy;
   spam_filter_mode: SpamFilterMode;
@@ -37,6 +42,7 @@ interface IFormActionPayload {
   id: string;
   name: string;
   email_integrations: Array<EmailIntegrationInput>;
+  webhook_integrations: Array<WebhookIntegrationInput>;
   hosts: Array<string>;
   submission_source_policy: SubmissionSourcePolicy;
   spam_filter_mode: SpamFilterMode;
@@ -65,6 +71,7 @@ interface FormActionState {
     };
     spam_filter_mode?: { _errors: Array<string> };
     email_integrations?: any;
+    webhook_integrations?: any;
   };
   emailIntegrationStatusUpdates?: Array<EmailIntegrationStatusUpdate>;
   reverifyIntegrationId?: string;
@@ -159,6 +166,7 @@ export default function Form({
           : [{ value: '' }],
       submission_source_policy:
         form?.submission_source_policy ?? 'unrestricted',
+      webhook_integrations: sanitizeWebhookDefaults(form?.webhook_integrations),
       email_integrations: sanitizeEmailIntegrationDefaults(
         form?.email_integrations
       ),
@@ -181,6 +189,7 @@ export default function Form({
         name: data.name,
         spam_filter_mode: data.spam_filter_mode,
         email_integrations: data.email_integrations,
+        webhook_integrations: data.webhook_integrations,
         hosts: data.host_rules.map((hostRule) => hostRule.value),
         submission_source_policy: data.submission_source_policy,
       });
@@ -423,6 +432,16 @@ export default function Form({
             }}
           />
         </section>
+        <WebhookIntegrations
+          control={control}
+          register={register}
+          getValues={getValues}
+          setValue={setValue}
+          errors={state?.errors?.webhook_integrations}
+          textControl={textControl}
+          choiceControl={choiceControl}
+          editorButton={editorButton}
+        />
         <p aria-live="polite" className="sr-only">
           {state?.message && state.message}
         </p>
