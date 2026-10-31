@@ -30,7 +30,8 @@ defmodule FormDelegate.Submissions do
         preload: [
           :attachments,
           :flagged_type,
-          form: {form, email_integrations: [:email_integration_recipients]}
+          form:
+            {form, [:webhook_integrations, email_integrations: [:email_integration_recipients]]}
         ]
 
     query
@@ -85,7 +86,8 @@ defmodule FormDelegate.Submissions do
         preload: [
           :attachments,
           :flagged_type,
-          form: {form, email_integrations: [:email_integration_recipients]}
+          form:
+            {form, [:webhook_integrations, email_integrations: [:email_integration_recipients]]}
         ]
 
     query
@@ -114,7 +116,7 @@ defmodule FormDelegate.Submissions do
       preload: [
         :attachments,
         :flagged_type,
-        form: {form, email_integrations: [:email_integration_recipients]}
+        form: {form, [:webhook_integrations, email_integrations: [:email_integration_recipients]]}
       ]
   end
 
@@ -250,7 +252,12 @@ defmodule FormDelegate.Submissions do
         preload: [
           :attachments,
           :flagged_type,
-          form: [:team, :user, email_integrations: [:email_integration_recipients]]
+          form: [
+            :team,
+            :user,
+            :webhook_integrations,
+            email_integrations: [:email_integration_recipients]
+          ]
         ]
     )
   end
@@ -316,7 +323,7 @@ defmodule FormDelegate.Submissions do
       |> Repo.preload([
         :attachments,
         :flagged_type,
-        form: [email_integrations: [:email_integration_recipients]]
+        form: [:webhook_integrations, email_integrations: [:email_integration_recipients]]
       ])
       |> Submission.update_changeset(params)
     end)

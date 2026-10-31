@@ -67,7 +67,7 @@ defmodule FormDelegate.Submissions.Moderation do
     |> Repo.preload([
       :attachments,
       :flagged_type,
-      form: [email_integrations: [:email_integration_recipients]]
+      form: [:webhook_integrations, email_integrations: [:email_integration_recipients]]
     ])
   end
 

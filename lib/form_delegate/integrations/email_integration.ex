@@ -22,7 +22,7 @@ defmodule FormDelegate.Integrations.EmailIntegration do
 
     field :email_provider_last_verified_at, :utc_datetime_usec
 
-    field :integration_type, Ecto.Enum, values: [:email, :zapier, :ifttt]
+    field :integration_type, Ecto.Enum, values: [:email, :zapier, :ifttt, :webhook]
 
     belongs_to :form, Form, type: Ecto.UUID
 

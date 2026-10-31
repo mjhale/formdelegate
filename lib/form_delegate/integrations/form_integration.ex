@@ -24,7 +24,7 @@ defmodule FormDelegate.Integrations.FormIntegration do
     has_many :email_integration_recipients, EmailIntegrationRecipient,
       foreign_key: :form_integration_id
 
-    field :integration_type, Ecto.Enum, values: [:email, :zapier, :ifttt]
+    field :integration_type, Ecto.Enum, values: [:email, :zapier, :ifttt, :webhook]
     belongs_to :form, Form, type: Ecto.UUID
 
     timestamps()

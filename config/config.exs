@@ -5,6 +5,9 @@
 # is restricted to this project.
 import Config
 
+# Webhook URLs may contain receiver tokens as well as signing credentials.
+config :phoenix, :filter_parameters, ["password", "signing_secret", "webhook_integrations"]
+
 # General application configuration
 config :form_delegate,
   namespace: FormDelegate,

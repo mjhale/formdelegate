@@ -35,7 +35,7 @@ defmodule FormDelegateWeb.FormController do
            end) do
       form =
         FormDelegate.Repo.preload(form, [
-          [email_integrations: [:email_integration_recipients]],
+          [:webhook_integrations, email_integrations: [:email_integration_recipients]],
           :team,
           :user
         ])
