@@ -46,13 +46,14 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
 
   defp delivery_result(:ok, result), do: {:cont, result}
   defp delivery_result(:held, _result), do: {:halt, :ok}
+
   defp delivery_result({:error, _} = error, _result), do: {:cont, error}
 
   defp deliver_once(submission_id, integration) do
     # Serialize each attempt with owner moderation and other workers. Successful
     # integrations commit independently, so a later failure does not replay them.
     # A provider success followed by a DB/process crash can still be ambiguous;
-    # exactly-once external delivery requires provider idempotency support.
+    # Resend keys help for 24 hours; retries after that window can duplicate mail.
     Repo.transaction(
       fn ->
         submission =
@@ -87,7 +88,7 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
       Repo.get_by(Delivery, submission_id: submission_id, form_integration_id: integration.id) ||
         Repo.insert!(%Delivery{submission_id: submission_id, form_integration_id: integration.id})
 
-    if receipt.delivered_at,
+    if receipt.delivered_at || receipt.failed_at,
       do: :ok,
       else: attempt_delivery(Submissions.get_submission!(submission_id), integration, receipt)
   end
@@ -102,16 +103,40 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
     )
   end
 
-  defp current_integration(%EmailIntegration{} = integration), do: integration
+  defp current_integration(%EmailIntegration{} = integration) do
+    Repo.one(
+      from i in EmailIntegration,
+        where:
+          i.id == ^integration.id and i.form_id == ^integration.form_id and
+            i.integration_type == :email and i.enabled == true,
+        lock: "FOR SHARE"
+    )
+    |> case do
+      nil -> nil
+      current -> Repo.preload(current, :email_integration_recipients)
+    end
+  end
 
   defp attempt_delivery(submission, integration, receipt) do
     case dispatch(integration, submission) do
-      :ok ->
+      {:ok, result} ->
         receipt
         |> Changeset.change(
           attempts: receipt.attempts + 1,
           delivered_at: DateTime.utc_now(),
-          last_error: nil
+          last_error: nil,
+          provider_message_id: Map.get(result, :id)
+        )
+        |> Repo.update!()
+
+        :ok
+
+      {:error, {:permanent, _reason}} ->
+        receipt
+        |> Changeset.change(
+          attempts: receipt.attempts + 1,
+          failed_at: DateTime.utc_now(),
+          last_error: "provider_permanent_failure"
         )
         |> Repo.update!()
 
@@ -134,18 +159,25 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
   end
 
   defp dispatch(%WebhookIntegration{} = integration, submission) do
-    WebhookDispatcher.deliver(integration, submission)
+    case WebhookDispatcher.deliver(integration, submission) do
+      :ok -> {:ok, %{}}
+      error -> error
+    end
   end
 
   defp dispatch(%EmailIntegration{} = integration, submission) do
+    email = submission_email(integration, submission)
+
+    case EmailDispatcher.deliver_submission_email(integration, email) do
+      {:ok, result} -> {:ok, result}
+      {:error, _reason} = error -> error
+    end
+  end
+
+  defp submission_email(integration, submission) do
     recipients =
       Enum.group_by(integration.email_integration_recipients, & &1.type, &{&1.name, &1.email})
 
-    email = NewSubmissionMailer.new_submission_email(submission, recipients)
-
-    case EmailDispatcher.deliver_submission_email(integration, email) do
-      {:ok, _result} -> :ok
-      {:error, _reason} = error -> error
-    end
+    NewSubmissionMailer.new_submission_email(submission, recipients)
   end
 end

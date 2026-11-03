@@ -11,9 +11,9 @@ defmodule FormDelegate.Integrations.EmailIntegration do
   schema "form_integrations" do
     field :enabled, :boolean
 
-    field :email_provider, Ecto.Enum, values: [:smtp, :postmark, :sendgrid]
+    field :email_provider, Ecto.Enum, values: [:smtp, :postmark, :sendgrid, :resend]
     field :email_provider_config, :map
-    field :email_provider_secrets, :map
+    field :email_provider_secrets, :map, redact: true
     field :verify_provider, :boolean, virtual: true, default: false
 
     field :email_provider_status, Ecto.Enum,
@@ -182,11 +182,13 @@ defmodule FormDelegate.Integrations.EmailIntegration do
 
   defp required_config_keys(:smtp), do: ["host", "port", "username", "from_address"]
   defp required_config_keys(:postmark), do: ["from_address"]
+  defp required_config_keys(:resend), do: ["from_address"]
   defp required_config_keys(:sendgrid), do: ["from_address"]
   defp required_config_keys(_provider), do: []
 
   defp required_secret_keys(:smtp), do: ["password"]
   defp required_secret_keys(:postmark), do: ["server_token"]
+  defp required_secret_keys(:resend), do: ["api_key"]
   defp required_secret_keys(:sendgrid), do: ["api_key"]
   defp required_secret_keys(_provider), do: []
 

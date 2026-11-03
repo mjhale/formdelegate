@@ -52,7 +52,6 @@ defmodule FormDelegate.Mixfile do
       {:pbkdf2_elixir, "~> 2.2"},
       {:bamboo, "~> 2.3"},
       {:bamboo_phoenix, "~> 1.0"},
-      {:bamboo_postmark, "~> 1.0"},
       {:scrivener_ecto, "~> 3.1.0"},
       {:scrivener_headers, "~> 3.2.2"},
       {:cors_plug, "~> 3.0.3"},

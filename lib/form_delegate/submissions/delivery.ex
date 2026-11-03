@@ -8,6 +8,8 @@ defmodule FormDelegate.Submissions.Delivery do
     field :attempts, :integer, default: 0
     field :delivered_at, :utc_datetime_usec
     field :last_error, :string
+    field :failed_at, :utc_datetime_usec
+    field :provider_message_id, :string
     timestamps()
   end
 end

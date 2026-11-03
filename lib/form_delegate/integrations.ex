@@ -2,13 +2,14 @@ defmodule FormDelegate.Integrations do
   import Ecto.Query, warn: false
 
   alias FormDelegate.Integrations.EmailIntegration
-  alias FormDelegate.Integrations.EmailProviders.{Postmark, SMTP, SendGrid}
+  alias FormDelegate.Integrations.EmailProviders.{Postmark, Resend, SMTP, SendGrid}
   alias FormDelegate.Repo
 
   @provider_modules %{
     smtp: SMTP,
     postmark: Postmark,
-    sendgrid: SendGrid
+    sendgrid: SendGrid,
+    resend: Resend
   }
 
   @verification_event [:form_delegate, :email_integration, :verification]
