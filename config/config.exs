@@ -5,9 +5,11 @@
 # is restricted to this project.
 import Config
 
-# Provider credentials must not appear in Phoenix request logs.
+# Webhook URLs may contain receiver tokens as well as signing credentials.
 config :phoenix, :filter_parameters, [
   "password",
+  "signing_secret",
+  "webhook_integrations",
   "email_provider_secrets",
   "api_key",
   "server_token"

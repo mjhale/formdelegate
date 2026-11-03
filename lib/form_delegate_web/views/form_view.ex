@@ -21,6 +21,15 @@ defmodule FormDelegateWeb.FormView do
           "form_email_integration.json",
           as: :email_integration
         ),
+      webhook_integrations:
+        Enum.map(form.webhook_integrations, fn webhook ->
+          %{
+            id: webhook.id,
+            enabled: webhook.enabled,
+            url: webhook.url,
+            has_signing_secret: is_binary(webhook.signing_secret) and webhook.signing_secret != ""
+          }
+        end),
       hosts: form.hosts,
       id: form.id,
       inserted_at: form.inserted_at,

@@ -396,6 +396,7 @@ defmodule FormDelegateWeb.SubmissionControllerTest do
               "callback_success_includes_data" => false,
               "callback_success_url" => nil,
               "email_integrations" => [],
+              "webhook_integrations" => [],
               "hosts" => nil,
               "id" => form.id,
               "inserted_at" => DateTime.to_iso8601(form.inserted_at),

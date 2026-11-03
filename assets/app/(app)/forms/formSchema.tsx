@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
 import {
+  isPublicWebhookUrl,
+  MAX_WEBHOOK_INTEGRATIONS,
+  serializeWebhookPayload,
+} from './webhookPayload';
+
+import {
   compactEmailProviderConfig,
   compactRecord,
   emailProviderRequirements as providerRequirements,
@@ -272,6 +278,34 @@ const submissionSourcePolicySchema = z
   .enum(['unrestricted', 'restricted'])
   .default('unrestricted');
 
+const webhookIntegrationSchema = z
+  .object({
+    id: nullableUuid.optional(),
+    enabled: z.boolean(),
+    url: z
+      .string()
+      .trim()
+      .refine(
+        isPublicWebhookUrl,
+        'Enter an HTTPS URL with a public DNS hostname, no credentials or fragment, and port 443 only.'
+      ),
+    signing_secret: z.string().optional(),
+  })
+  .superRefine((integration, context) => {
+    const secret = integration.signing_secret;
+    if (!integration.id || secret) {
+      const length = Array.from(secret ?? '').length;
+      if (!secret?.trim() || length < 32 || length > 1024) {
+        context.addIssue({
+          code: 'custom',
+          message: 'Enter a signing secret with 32 to 1024 characters.',
+          path: ['signing_secret'],
+        });
+      }
+    }
+  })
+  .transform(serializeWebhookPayload);
+
 const formObjectSchema = z.object({
   id: nullableUuid,
   name: z.string().trim().min(1, 'Enter a form name.'),
@@ -280,6 +314,10 @@ const formObjectSchema = z.object({
   spam_filter_mode: z.enum(['balanced', 'review_all', 'off']).optional(),
   verified: z.never().optional(),
   email_integrations: emailIntegrationSchema.array(),
+  webhook_integrations: webhookIntegrationSchema
+    .array()
+    .max(MAX_WEBHOOK_INTEGRATIONS, 'Use at most 3 outbound webhooks.')
+    .default([]),
 });
 
 function validateSubmissionSources(

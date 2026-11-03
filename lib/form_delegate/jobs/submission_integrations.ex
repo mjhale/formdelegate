@@ -3,7 +3,14 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
   use Oban.Worker, queue: :submission_integrations
   import Ecto.Query
   alias Ecto.Changeset
-  alias FormDelegate.Integrations.{EmailDispatcher, EmailIntegration}
+
+  alias FormDelegate.Integrations.{
+    EmailDispatcher,
+    EmailIntegration,
+    WebhookDispatcher,
+    WebhookIntegration
+  }
+
   alias FormDelegate.{Repo, Submissions}
   alias FormDelegate.Submissions.{Delivery, Moderation, Submission}
   alias FormDelegateWeb.Mailers.NewSubmissionMailer
@@ -29,7 +36,7 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
   end
 
   defp deliver_integrations(submission) do
-    submission.form.email_integrations
+    (submission.form.email_integrations ++ submission.form.webhook_integrations)
     |> Enum.filter(& &1.enabled)
     |> Enum.sort_by(& &1.id)
     |> Enum.reduce_while(:ok, fn integration, result ->
@@ -39,6 +46,7 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
 
   defp delivery_result(:ok, result), do: {:cont, result}
   defp delivery_result(:held, _result), do: {:halt, :ok}
+
   defp delivery_result({:error, _} = error, _result), do: {:cont, error}
 
   defp deliver_once(submission_id, integration) do
@@ -69,24 +77,9 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
   end
 
   defp deliver_current_integration(submission_id, integration) do
-    current =
-      Repo.one(
-        from i in EmailIntegration,
-          where:
-            i.id == ^integration.id and i.form_id == ^integration.form_id and
-              i.integration_type == :email and i.enabled == true,
-          lock: "FOR SHARE"
-      )
-
-    case current do
-      nil ->
-        :ok
-
-      current ->
-        deliver_unless_completed(
-          submission_id,
-          Repo.preload(current, :email_integration_recipients)
-        )
+    case current_integration(integration) do
+      nil -> :ok
+      current -> deliver_unless_completed(submission_id, current)
     end
   end
 
@@ -100,13 +93,32 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
       else: attempt_delivery(Submissions.get_submission!(submission_id), integration, receipt)
   end
 
+  defp current_integration(%WebhookIntegration{} = integration) do
+    Repo.one(
+      from i in WebhookIntegration,
+        where:
+          i.id == ^integration.id and i.form_id == ^integration.form_id and
+            i.integration_type == :webhook and i.enabled == true,
+        lock: "FOR SHARE"
+    )
+  end
+
+  defp current_integration(%EmailIntegration{} = integration) do
+    Repo.one(
+      from i in EmailIntegration,
+        where:
+          i.id == ^integration.id and i.form_id == ^integration.form_id and
+            i.integration_type == :email and i.enabled == true,
+        lock: "FOR SHARE"
+    )
+    |> case do
+      nil -> nil
+      current -> Repo.preload(current, :email_integration_recipients)
+    end
+  end
+
   defp attempt_delivery(submission, integration, receipt) do
-    recipients =
-      Enum.group_by(integration.email_integration_recipients, & &1.type, &{&1.name, &1.email})
-
-    email = NewSubmissionMailer.new_submission_email(submission, recipients)
-
-    case EmailDispatcher.deliver_submission_email(integration, email) do
+    case dispatch(integration, submission) do
       {:ok, result} ->
         receipt
         |> Changeset.change(
@@ -139,10 +151,33 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
         |> Repo.update!()
 
         Logger.warning(
-          "FD: Email delivery failed integration_id=#{integration.id}; retry required"
+          "FD: Integration delivery failed integration_id=#{integration.id}; retry required"
         )
 
         {:error, {:provider_delivery_failed, integration.id}}
     end
+  end
+
+  defp dispatch(%WebhookIntegration{} = integration, submission) do
+    case WebhookDispatcher.deliver(integration, submission) do
+      :ok -> {:ok, %{}}
+      error -> error
+    end
+  end
+
+  defp dispatch(%EmailIntegration{} = integration, submission) do
+    email = submission_email(integration, submission)
+
+    case EmailDispatcher.deliver_submission_email(integration, email) do
+      {:ok, result} -> {:ok, result}
+      {:error, _reason} = error -> error
+    end
+  end
+
+  defp submission_email(integration, submission) do
+    recipients =
+      Enum.group_by(integration.email_integration_recipients, & &1.type, &{&1.name, &1.email})
+
+    NewSubmissionMailer.new_submission_email(submission, recipients)
   end
 end

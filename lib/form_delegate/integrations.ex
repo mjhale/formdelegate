@@ -34,7 +34,9 @@ defmodule FormDelegate.Integrations do
       when is_binary(form_id) and is_binary(email_integration_id) do
     Repo.one(
       from integration in EmailIntegration,
-        where: integration.id == ^email_integration_id and integration.form_id == ^form_id,
+        where:
+          integration.id == ^email_integration_id and integration.form_id == ^form_id and
+            integration.integration_type == :email,
         preload: [:email_integration_recipients]
     )
   end
@@ -46,7 +48,8 @@ defmodule FormDelegate.Integrations do
     email_integration =
       Repo.one!(
         from integration in EmailIntegration,
-          where: integration.id == ^email_integration_id
+          where:
+            integration.id == ^email_integration_id and integration.integration_type == :email
       )
 
     verify_email_integration_provider(email_integration)

@@ -5,7 +5,7 @@ defmodule FormDelegate.Forms.Form do
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
   alias FormDelegate.Forms.HostRule
-  alias FormDelegate.Integrations.{EmailIntegration, FormIntegration}
+  alias FormDelegate.Integrations.{EmailIntegration, FormIntegration, WebhookIntegration}
   alias FormDelegate.Submissions.Submission
   alias FormDelegate.Teams.Team
 
@@ -36,6 +36,11 @@ defmodule FormDelegate.Forms.Form do
 
     has_many :email_integrations, EmailIntegration,
       where: [integration_type: :email],
+      on_delete: :delete_all,
+      on_replace: :delete
+
+    has_many :webhook_integrations, WebhookIntegration,
+      where: [integration_type: :webhook],
       on_delete: :delete_all,
       on_replace: :delete
 

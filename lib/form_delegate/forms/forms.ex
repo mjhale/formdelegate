@@ -8,7 +8,7 @@ defmodule FormDelegate.Forms do
   alias FormDelegate.Accounts.User
   alias FormDelegate.Forms.Form
   alias FormDelegate.Integrations
-  alias FormDelegate.Integrations.EmailIntegration
+  alias FormDelegate.Integrations.{EmailIntegration, WebhookIntegration}
   alias FormDelegate.Repo
   alias FormDelegate.Teams.Team
 
@@ -25,7 +25,7 @@ defmodule FormDelegate.Forms do
     Repo.all(
       from f in Form,
         where: f.user_id == ^user.id,
-        preload: [email_integrations: [:email_integration_recipients]],
+        preload: [:webhook_integrations, email_integrations: [:email_integration_recipients]],
         order_by: f.inserted_at
     )
   end
@@ -43,7 +43,7 @@ defmodule FormDelegate.Forms do
     Repo.all(
       from f in Form,
         where: f.team_id == ^team.id,
-        preload: [email_integrations: [:email_integration_recipients]],
+        preload: [:webhook_integrations, email_integrations: [:email_integration_recipients]],
         order_by: f.inserted_at
     )
   end
@@ -66,7 +66,7 @@ defmodule FormDelegate.Forms do
     Repo.one!(
       from f in Form,
         preload: [
-          [email_integrations: [:email_integration_recipients]],
+          [:webhook_integrations, email_integrations: [:email_integration_recipients]],
           :team,
           :user
         ],
@@ -94,9 +94,10 @@ defmodule FormDelegate.Forms do
              |> Ecto.Changeset.cast_assoc(:email_integrations,
                with: &EmailIntegration.changeset/2
              )
+             |> cast_webhooks()
              |> Ecto.Changeset.put_assoc(:user, user)
              |> Ecto.Changeset.put_assoc(:team, team)
-             |> Repo.insert(),
+             |> Repo.insert(log: false),
            {:ok, %Form{} = form} <- maybe_verify_email_integrations(form) do
         form
       else
@@ -123,6 +124,8 @@ defmodule FormDelegate.Forms do
 
   """
   def update_form(%Form{} = form, attrs) do
+    form = Repo.preload(form, :webhook_integrations)
+
     Repo.transaction(fn ->
       with {:ok, %Form{} = form} <-
              form
@@ -130,7 +133,8 @@ defmodule FormDelegate.Forms do
              |> Ecto.Changeset.cast_assoc(:email_integrations,
                with: &EmailIntegration.changeset/2
              )
-             |> Repo.update(returning: true),
+             |> cast_webhooks()
+             |> Repo.update(returning: true, log: false),
            {:ok, %Form{} = form} <- maybe_verify_email_integrations(form) do
         form
       else
@@ -173,6 +177,56 @@ defmodule FormDelegate.Forms do
     Form.changeset(form, %{})
   end
 
+  defp cast_webhooks(changeset) do
+    params = Map.get(changeset.params || %{}, "webhook_integrations", [])
+
+    if too_many_webhooks?(params) do
+      Ecto.Changeset.add_error(changeset, :webhook_integrations, "should have at most 3 item(s)")
+    else
+      cast_owned_webhooks(changeset, params)
+    end
+  end
+
+  defp too_many_webhooks?(params) when is_list(params), do: length(params) > 3
+  defp too_many_webhooks?(params) when is_map(params), do: map_size(params) > 3
+  defp too_many_webhooks?(_params), do: false
+
+  defp cast_owned_webhooks(changeset, params) do
+    existing = Ecto.Changeset.get_field(changeset, :webhook_integrations, [])
+    owned_ids = MapSet.new(existing, & &1.id)
+    entries = if is_map(params), do: Map.values(params), else: params
+
+    foreign_id? =
+      is_list(entries) and
+        Enum.any?(entries, fn
+          %{"id" => id} when not is_nil(id) -> not MapSet.member?(owned_ids, id)
+          _ -> false
+        end)
+
+    if foreign_id? do
+      Ecto.Changeset.add_error(
+        changeset,
+        :webhook_integrations,
+        "contains an unknown integration"
+      )
+    else
+      changeset
+      |> Ecto.Changeset.cast_assoc(:webhook_integrations, with: &WebhookIntegration.changeset/2)
+      |> validate_webhook_count()
+    end
+  end
+
+  defp validate_webhook_count(changeset) do
+    if length(Ecto.Changeset.get_field(changeset, :webhook_integrations, [])) > 3,
+      do:
+        Ecto.Changeset.add_error(
+          changeset,
+          :webhook_integrations,
+          "should have at most 3 item(s)"
+        ),
+      else: changeset
+  end
+
   defp normalize_transaction_result({:ok, %Form{} = form}), do: {:ok, form}
 
   defp normalize_transaction_result({:error, {:error, status, metadata}}),
@@ -182,7 +236,12 @@ defmodule FormDelegate.Forms do
   defp normalize_transaction_result({:error, reason}), do: {:error, reason}
 
   defp maybe_verify_email_integrations(%Form{} = form) do
-    form = Repo.preload(form, [email_integrations: [:email_integration_recipients]], force: true)
+    form =
+      Repo.preload(
+        form,
+        [:webhook_integrations, email_integrations: [:email_integration_recipients]],
+        force: true
+      )
 
     verification_result =
       form.email_integrations
@@ -202,7 +261,11 @@ defmodule FormDelegate.Forms do
     case verification_result do
       :ok ->
         {:ok,
-         Repo.preload(form, [email_integrations: [:email_integration_recipients]], force: true)}
+         Repo.preload(
+           form,
+           [:webhook_integrations, email_integrations: [:email_integration_recipients]],
+           force: true
+         )}
 
       {:error, _status, _metadata} = error ->
         error

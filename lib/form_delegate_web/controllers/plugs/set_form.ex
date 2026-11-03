@@ -15,6 +15,7 @@ defmodule FormDelegateWeb.Plugs.SetForm do
              where: f.id == ^form_id,
              preload: [
                :user,
+               :webhook_integrations,
                team: [subscriptions: [:plan]],
                email_integrations: [:email_integration_recipients]
              ]
