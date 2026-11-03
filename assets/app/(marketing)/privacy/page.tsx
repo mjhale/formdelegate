@@ -204,7 +204,7 @@ export default async function PrivacyPage() {
                 Cloudflare (USA) - Domain registrar and DDoS mitigation provider
               </li>
               <li>Stripe (USA) - Payment processor</li>
-              <li>Postmark (USA) - Mail delivery processor</li>
+              <li>Resend (USA) - Transactional mail delivery processor</li>
             </ul>
           </div>
 

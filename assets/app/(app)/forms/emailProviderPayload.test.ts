@@ -36,3 +36,39 @@ describe('Postmark provider payload', () => {
     });
   });
 });
+
+describe('Resend provider payload', () => {
+  it('keeps the owned key and sender and drops old templates and other provider fields', () => {
+    const payload = serializeFormPayload({
+      email_integrations: [
+        {
+          id: null,
+          enabled: true,
+          email_provider: 'resend',
+          email_provider_config: {
+            from_address: 'hello@example.test',
+            template_id: 'notification',
+            host: 'stale',
+          },
+          email_provider_secrets: {
+            api_key: 'synthetic',
+            server_token: 'stale',
+          },
+        },
+      ],
+    });
+    assert.deepEqual(payload.email_integrations, [
+      {
+        id: null,
+        enabled: true,
+        email_provider: 'resend',
+        email_provider_config: {
+          from_address: 'hello@example.test',
+        },
+        email_provider_secrets: { api_key: 'synthetic' },
+        email_provider_status: 'pending_verification',
+        verify_provider: true,
+      },
+    ]);
+  });
+});

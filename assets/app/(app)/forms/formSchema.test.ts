@@ -29,6 +29,15 @@ describe('form name validation', () => {
 
 const providerCases = [
   {
+    provider: 'resend',
+    config: { from_address: '' },
+    secrets: { api_key: '' },
+    expectedFields: [
+      ['email_provider_config', 'from_address'],
+      ['email_provider_secrets', 'api_key'],
+    ],
+  },
+  {
     provider: 'smtp',
     config: {
       from_address: 'sender@example.com',
@@ -109,6 +118,45 @@ describe('email provider form validation', () => {
       );
     });
   }
+
+  it('accepts Resend without a template and strips old template configuration', () => {
+    for (const config of [
+      { from_address: 'sender@example.test' },
+      {
+        from_address: 'sender@example.test',
+        template_id: 'unused-old-template',
+      },
+    ]) {
+      const result = createFormSchema.parse({
+        name: 'Contact form',
+        email_integrations: [
+          {
+            id: null,
+            enabled: true,
+            email_provider: 'resend',
+            email_provider_config: config,
+            email_provider_secrets: { api_key: 'synthetic-owned-key' },
+            email_provider_status: 'pending_verification',
+            verify_provider: true,
+            email_integration_recipients: [
+              {
+                id: null,
+                name: null,
+                email: 'recipient@example.test',
+                type: 'to',
+              },
+            ],
+          },
+        ],
+      });
+      assert.deepEqual(result.email_integrations[0].email_provider_config, {
+        from_address: 'sender@example.test',
+      });
+      assert.deepEqual(result.email_integrations[0].email_provider_secrets, {
+        api_key: 'synthetic-owned-key',
+      });
+    }
+  });
 
   it('accepts Postmark without a message stream', () => {
     const result = createFormSchema.safeParse({

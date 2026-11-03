@@ -24,7 +24,7 @@ const nullableUuid = z.preprocess(
   z.string().uuid().nullable()
 );
 
-const emailProviderSchema = z.enum(['smtp', 'postmark', 'sendgrid']);
+const emailProviderSchema = z.enum(['smtp', 'postmark', 'sendgrid', 'resend']);
 const nullableEmailProviderSchema = z.preprocess(
   (value) => (value === '' ? null : value),
   emailProviderSchema.nullable().optional()
@@ -59,6 +59,9 @@ const emailProviderConfigSchemas = {
   smtp: smtpEmailProviderConfigSchema,
   postmark: postmarkEmailProviderConfigSchema,
   sendgrid: sendgridEmailProviderConfigSchema,
+  resend: z.object({
+    from_address: z.string().email(),
+  }),
 };
 
 const smtpEmailProviderSecretsSchema = z.object({
@@ -77,6 +80,7 @@ const emailProviderSecretsSchemas = {
   smtp: smtpEmailProviderSecretsSchema,
   postmark: postmarkEmailProviderSecretsSchema,
   sendgrid: sendgridEmailProviderSecretsSchema,
+  resend: sendgridEmailProviderSecretsSchema,
 };
 
 const emailIntegrationRecipientSchema = z.object({

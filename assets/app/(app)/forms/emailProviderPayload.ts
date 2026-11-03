@@ -17,6 +17,11 @@ export const emailProviderRequirements = {
     requiredConfig: ['from_address'],
     secrets: ['server_token'],
   },
+  resend: {
+    config: ['from_address'],
+    requiredConfig: ['from_address'],
+    secrets: ['api_key'],
+  },
   sendgrid: {
     config: ['from_address'],
     requiredConfig: ['from_address'],
@@ -187,7 +192,8 @@ function getEmailProvider(provider: unknown): EmailProvider | null {
   if (
     provider === 'smtp' ||
     provider === 'postmark' ||
-    provider === 'sendgrid'
+    provider === 'sendgrid' ||
+    provider === 'resend'
   ) {
     return provider;
   }

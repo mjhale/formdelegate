@@ -1,4 +1,4 @@
-export type EmailProvider = 'smtp' | 'postmark' | 'sendgrid';
+export type EmailProvider = 'smtp' | 'postmark' | 'sendgrid' | 'resend';
 export type SpamFilterMode = 'balanced' | 'review_all' | 'off';
 export type SubmissionSourcePolicy = 'unrestricted' | 'restricted';
 
@@ -26,10 +26,15 @@ export interface SendGridEmailProviderConfig {
   from_address: string;
 }
 
+export interface ResendEmailProviderConfig {
+  from_address: string;
+}
+
 export type EmailProviderConfigShape =
   | SMTPEmailProviderConfig
   | PostmarkEmailProviderConfig
-  | SendGridEmailProviderConfig;
+  | SendGridEmailProviderConfig
+  | ResendEmailProviderConfig;
 
 export type EmailProviderConfig = Record<string, unknown>;
 

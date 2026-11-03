@@ -28,7 +28,7 @@ function getBackendErrorTypeMessage(type): string | null {
     case 'EMAIL_PROVIDER_VERIFICATION_FAILED_UNKNOWN':
       return 'Email provider verification failed. Check the provider settings and try again.';
     case 'UNSUPPORTED_EMAIL_PROVIDER':
-      return 'Unsupported email provider. Select SMTP, Postmark, or SendGrid before reverifying.';
+      return 'Unsupported email provider. Select SMTP, Postmark, SendGrid, or Resend before reverifying.';
     case 'UNPROCESSABLE_ENTITY':
       return null;
     default:

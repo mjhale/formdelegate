@@ -119,6 +119,7 @@ const providerLabels = {
   smtp: 'SMTP',
   postmark: 'Postmark',
   sendgrid: 'SendGrid',
+  resend: 'Resend',
 } as const;
 
 const statusLabels = {
@@ -1079,6 +1080,7 @@ function EmailProviderSetupFields({
                 <option value="">Select provider</option>
                 <option value="smtp">{providerLabels.smtp}</option>
                 <option value="postmark">{providerLabels.postmark}</option>
+                <option value="resend">{providerLabels.resend}</option>
                 <option value="sendgrid">{providerLabels.sendgrid}</option>
               </select>
             </div>
@@ -1253,6 +1255,40 @@ function ProviderConfigFields({
               stream.
             </p>
           </details>
+        </>
+      );
+
+    case 'resend':
+      return (
+        <>
+          <p className="max-w-xl text-xs text-gray-600">
+            Use your own sending-only Resend key restricted to your verified
+            domain. Save or reverify sends one test to delivered@resend.dev and
+            counts against your Resend quota. This checks provider acceptance;
+            confirm inbox delivery with a real submission.
+          </p>
+          <ProviderTextInput
+            index={index}
+            register={register}
+            getValues={getValues}
+            path="email_provider_config.from_address"
+            label="From Address"
+            type="email"
+            readOnly={readOnly}
+          />
+          <p className="max-w-xl text-xs text-gray-600">
+            Form Delegate sends its standard notification with the submission
+            details and inbox link through your Resend account.
+          </p>
+          <ProviderTextInput
+            index={index}
+            register={register}
+            getValues={getValues}
+            path="email_provider_secrets.api_key"
+            label="API Key"
+            type="password"
+            readOnly={readOnly}
+          />
         </>
       );
 
