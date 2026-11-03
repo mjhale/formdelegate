@@ -3,7 +3,7 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
   use Oban.Worker, queue: :submission_integrations
   import Ecto.Query
   alias Ecto.Changeset
-  alias FormDelegate.Integrations.EmailDispatcher
+  alias FormDelegate.Integrations.{EmailDispatcher, EmailIntegration}
   alias FormDelegate.{Repo, Submissions}
   alias FormDelegate.Submissions.{Delivery, Moderation, Submission}
   alias FormDelegateWeb.Mailers.NewSubmissionMailer
@@ -45,14 +45,14 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
     # Serialize each attempt with owner moderation and other workers. Successful
     # integrations commit independently, so a later failure does not replay them.
     # A provider success followed by a DB/process crash can still be ambiguous;
-    # exactly-once external delivery requires provider idempotency support.
+    # Resend keys help for 24 hours; retries after that window can duplicate mail.
     Repo.transaction(
       fn ->
         submission =
           Repo.one!(from s in Submission, where: s.id == ^submission_id, lock: "FOR UPDATE")
 
         if Moderation.delivery_allowed?(submission) do
-          deliver_unless_completed(submission_id, integration)
+          deliver_current_integration(submission_id, integration)
         else
           submission |> Changeset.change(integrations_enqueued_at: nil) |> Repo.update!()
           :held
@@ -68,12 +68,34 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
     end
   end
 
+  defp deliver_current_integration(submission_id, integration) do
+    current =
+      Repo.one(
+        from i in EmailIntegration,
+          where:
+            i.id == ^integration.id and i.form_id == ^integration.form_id and
+              i.integration_type == :email and i.enabled == true,
+          lock: "FOR SHARE"
+      )
+
+    case current do
+      nil ->
+        :ok
+
+      current ->
+        deliver_unless_completed(
+          submission_id,
+          Repo.preload(current, :email_integration_recipients)
+        )
+    end
+  end
+
   defp deliver_unless_completed(submission_id, integration) do
     receipt =
       Repo.get_by(Delivery, submission_id: submission_id, form_integration_id: integration.id) ||
         Repo.insert!(%Delivery{submission_id: submission_id, form_integration_id: integration.id})
 
-    if receipt.delivered_at,
+    if receipt.delivered_at || receipt.failed_at,
       do: :ok,
       else: attempt_delivery(Submissions.get_submission!(submission_id), integration, receipt)
   end
@@ -85,12 +107,24 @@ defmodule FormDelegate.Jobs.SubmissionIntegrations do
     email = NewSubmissionMailer.new_submission_email(submission, recipients)
 
     case EmailDispatcher.deliver_submission_email(integration, email) do
-      {:ok, _result} ->
+      {:ok, result} ->
         receipt
         |> Changeset.change(
           attempts: receipt.attempts + 1,
           delivered_at: DateTime.utc_now(),
-          last_error: nil
+          last_error: nil,
+          provider_message_id: Map.get(result, :id)
+        )
+        |> Repo.update!()
+
+        :ok
+
+      {:error, {:permanent, _reason}} ->
+        receipt
+        |> Changeset.change(
+          attempts: receipt.attempts + 1,
+          failed_at: DateTime.utc_now(),
+          last_error: "provider_permanent_failure"
         )
         |> Repo.update!()
 

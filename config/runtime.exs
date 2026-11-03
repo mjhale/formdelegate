@@ -28,6 +28,14 @@ if System.get_env("PHX_SERVER") == "true" do
   config :form_delegate, FormDelegateWeb.Endpoint, server: true
 end
 
+# Local delivery stays in Bamboo unless explicitly enabled for inbox testing.
+if config_env() == :prod or (config_env() == :dev and System.get_env("MAIL_DELIVERY") == "resend") do
+  config :form_delegate, FormDelegateWeb.MailService,
+    adapter: FormDelegateWeb.ResendAdapter,
+    api_key: System.fetch_env!("RESEND_API_KEY"),
+    from: System.get_env("MAIL_FROM", "Form Delegate <hello@formdelegate.com>")
+end
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
@@ -71,29 +79,6 @@ if config_env() == :prod do
       port: port
     ],
     secret_key_base: secret_key_base
-
-  # ## Configuring the mailer
-  #
-  # In production you need to configure the mailer to use a different adapter.
-  # Also, you may need to configure the Swoosh API client of your choice if you
-  # are not using SMTP. Here is an example of the configuration:
-  #
-  #     config :form_delegate, FormDelegate.Mailer,
-  #       adapter: Swoosh.Adapters.Mailgun,
-  #       api_key: System.get_env("MAILGUN_API_KEY"),
-  #       domain: System.get_env("MAILGUN_DOMAIN")
-  #
-  # For this example you need include a HTTP client required by Swoosh API client.
-  # Swoosh supports Hackney and Finch out of the box:
-  #
-  #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
-  #
-  # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
-
-  # Configures Bamboo mailer
-  config :form_delegate, FormDelegateWeb.MailService,
-    adapter: Bamboo.PostmarkAdapter,
-    api_key: System.get_env("POSTMARK_API_KEY") || raise("Env var not set: POSTMARK_API_KEY")
 
   # Configures CORS options
   config :cors_plug,

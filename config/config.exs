@@ -5,6 +5,14 @@
 # is restricted to this project.
 import Config
 
+# Provider credentials must not appear in Phoenix request logs.
+config :phoenix, :filter_parameters, [
+  "password",
+  "email_provider_secrets",
+  "api_key",
+  "server_token"
+]
+
 # General application configuration
 config :form_delegate,
   namespace: FormDelegate,

@@ -1,7 +1,6 @@
 defmodule FormDelegate.Jobs.TeamInvitationEmail do
   use Oban.Worker, queue: :mailer
 
-  alias Bamboo.Email
   alias FormDelegate.{Repo, Teams.TeamInvitation}
   alias FormDelegateWeb.MailService
   alias FormDelegateWeb.Mailers.TeamInvitationMailer
@@ -9,7 +8,7 @@ defmodule FormDelegate.Jobs.TeamInvitationEmail do
   require Logger
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"invitation_id" => invitation_id}}) do
+  def perform(%Oban.Job{args: %{"invitation_id" => invitation_id}} = job) do
     invitation =
       case Repo.get(TeamInvitation, invitation_id) do
         %TeamInvitation{} = invitation ->
@@ -22,15 +21,14 @@ defmodule FormDelegate.Jobs.TeamInvitationEmail do
       end
 
     if deliverable?(invitation) do
-      Logger.info("FD: Sending team invitation email to #{invitation.email}")
+      Logger.info("FD: Sending team invitation email invitation_id=#{invitation.id}")
 
-      {:ok, %Email{} = _email, _response} =
-        invitation
-        |> TeamInvitationMailer.team_invitation_email()
-        |> MailService.deliver_now(response: true)
+      invitation
+      |> TeamInvitationMailer.team_invitation_email()
+      |> MailService.deliver_job(job)
+    else
+      :ok
     end
-
-    :ok
   end
 
   defp deliverable?(%TeamInvitation{status: :pending, expires_at: expires_at, token: token})

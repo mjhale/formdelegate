@@ -120,6 +120,7 @@ Integrations are verified against the configured provider before they can become
 - `smtp`
 - `postmark`
 - `sendgrid`
+- `resend`
 
 ### Form Create/Update Verification Trigger
 
@@ -215,7 +216,7 @@ Additionally, Form Delegate uses the following services:
 
 - [Amazon S3](https://aws.amazon.com/s3/) for block storage of submission files
 
-- [Postmark](https://postmarkapp.com/) for transactional email delivery
+- [Resend](https://resend.com/) for transactional email delivery
 
 _Note: Production domains, CORS origins, frontend URLs, and public form endpoints must match your
 own deployment. Update environment variables rather than reusing the official Form Delegate domains._
@@ -228,7 +229,8 @@ Set the API container environment from your Compose stack or container orchestra
 - `POOL_SIZE`
 - `SECRET_KEY_BASE`
 - `GUARDIAN_SECRET`
-- `POSTMARK_API_KEY`
+- `RESEND_API_KEY`
+- `MAIL_FROM`
 - `AKISMET_API_KEY`
 - `HCAPTCHA_SECRET_API_KEY`
 - `AWS_ACCESS_KEY_ID`
@@ -328,7 +330,7 @@ FormDelegate.Repo.insert!(%FormDelegate.Plans.Plan{
 - Configure Stripe webhooks to post to `/webhooks/stripe` on the API domain.
 - Allow your production frontend origins in `CORS_ORIGINS`.
 - Configure hCaptcha allowed domains.
-- Configure Postmark sender/domain authentication.
+- Configure Resend sender/domain authentication.
 - Confirm S3 upload and asset URLs work.
 - Back up Postgres and your object storage bucket.
 - Follow the [form host allowlist rollout](docs/form-host-allowlist-rollout.md) before restricting
