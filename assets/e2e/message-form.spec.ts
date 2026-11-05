@@ -117,6 +117,8 @@ test.describe('message forms', () => {
 
     await expect(page.getByRole('status')).toHaveText(sentMessage);
     await expect(page).toHaveURL(/\/support$/);
-    await expect(page.getByRole('heading', { name: 'Support' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Support', exact: true, level: 1 })
+    ).toBeVisible();
   });
 });

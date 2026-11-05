@@ -2,6 +2,7 @@ import { defineConfig } from '@playwright/test';
 
 const port = 3100;
 const apiPort = 3101;
+const production = process.env.PLAYWRIGHT_PRODUCTION === '1';
 
 export default defineConfig({
   testDir: './e2e',
@@ -11,6 +12,7 @@ export default defineConfig({
   reporter: process.env.CI ? 'github' : 'list',
   use: {
     baseURL: `http://127.0.0.1:${port}`,
+    channel: process.env.PLAYWRIGHT_CHANNEL,
     trace: 'retain-on-failure',
   },
   webServer: [
@@ -21,7 +23,9 @@ export default defineConfig({
       url: `http://127.0.0.1:${apiPort}/health`,
     },
     {
-      command: `pnpm dev -- --hostname 127.0.0.1 --port ${port}`,
+      command: production
+        ? `pnpm build && pnpm start --hostname 127.0.0.1 --port ${port}`
+        : `pnpm dev --hostname 127.0.0.1 --port ${port}`,
       env: {
         NEXT_DIST_DIR: '.next/e2e',
         NEXT_PUBLIC_API_HOST: `http://127.0.0.1:${apiPort}`,
@@ -32,7 +36,7 @@ export default defineConfig({
         WATCHPACK_POLLING: 'true',
       },
       reuseExistingServer: false,
-      timeout: 120_000,
+      timeout: production ? 180_000 : 120_000,
       url: `http://127.0.0.1:${port}`,
     },
   ],
