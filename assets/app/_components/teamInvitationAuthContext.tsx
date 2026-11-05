@@ -50,13 +50,13 @@ export function InvitationAuthActions({
     <div className="grid gap-2 sm:grid-cols-2">
       <Link
         href={loginHref}
-        className="inline-flex min-h-10 items-center justify-center rounded-md border border-carnation-400 bg-carnation-400 px-3 py-2 text-sm font-semibold leading-5 text-white shadow-sm hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-carnation-200 active:shadow active:shadow-neutral-700"
+        className="inline-flex min-h-10 items-center justify-center rounded-md border border-carnation-400 bg-carnation-400 px-3 py-2 text-sm font-semibold leading-5 text-white shadow-xs hover:bg-red-900 focus:outline-hidden focus:ring-2 focus:ring-carnation-200 active:shadow-sm active:shadow-neutral-700"
       >
         Sign in to accept
       </Link>
       <Link
         href={signupHref}
-        className="inline-flex min-h-10 items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold leading-5 text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-carnation-200 active:shadow active:shadow-neutral-700"
+        className="inline-flex min-h-10 items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold leading-5 text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-carnation-200 active:shadow-sm active:shadow-neutral-700"
       >
         Create account
       </Link>

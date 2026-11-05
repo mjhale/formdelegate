@@ -65,7 +65,7 @@ async function requestUserConfirmationLink(
 
 export default function UserConfirmationRequestPage() {
   return (
-    <div className="mx-auto max-w-xl rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="mx-auto max-w-xl rounded-lg border border-slate-200 bg-white p-6 shadow-xs">
       <h1 className="text-2xl font-semibold text-slate-900">
         Request a new confirmation link
       </h1>

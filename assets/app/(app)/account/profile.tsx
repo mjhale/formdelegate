@@ -240,7 +240,7 @@ function PasswordDialog({
           className="max-h-[calc(100vh_-_36px)] w-[min(100%,_520px)] rounded-[14px] border border-[#e5ded3] bg-surface shadow-[0_24px_70px_rgba(54,_33,_22,_0.2)] [overflow:auto]"
           isDismissable
         >
-          <Dialog className="outline-none">
+          <Dialog className="outline-hidden">
             {({ close }) => (
               <form
                 action={async (formData: FormData) => {

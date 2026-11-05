@@ -42,7 +42,7 @@ async function SignupPageContent({
       <div className="flex flex-col items-center">
         <div className="flex w-full max-w-4xl flex-col gap-y-4">
           {isInvitationSignup ? (
-            <div className="max-w-xl rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="max-w-xl rounded-lg border border-slate-200 bg-white p-6 shadow-xs">
               <TeamInvitationAuthContext action="signup" className="mb-5" />
               <SignupForm
                 destination={safeDestination}
@@ -75,7 +75,7 @@ function SignupPageFallback() {
   return (
     <div className="flex flex-col items-center">
       <div className="flex w-full max-w-4xl flex-col gap-y-4">
-        <div className="h-9 w-72 animate-pulse rounded bg-slate-200" />
+        <div className="h-9 w-72 animate-pulse rounded-sm bg-slate-200" />
         <div className="h-96 w-full max-w-xl animate-pulse rounded-lg bg-white" />
       </div>
     </div>

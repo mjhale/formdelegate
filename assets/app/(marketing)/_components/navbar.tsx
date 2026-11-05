@@ -18,7 +18,7 @@ export default function Navbar({ links }) {
             alt=""
             width={72}
             height={72}
-            className="h-8 w-8 shrink-0 drop-shadow-sm lg:h-[4.5rem] lg:w-[4.5rem]"
+            className="h-8 w-8 shrink-0 drop-shadow-xs lg:h-[4.5rem] lg:w-[4.5rem]"
             priority
           />
           <span className="lg:max-w-[4em]">Form Delegate</span>

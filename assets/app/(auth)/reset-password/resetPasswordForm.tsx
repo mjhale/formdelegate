@@ -35,7 +35,7 @@ export default function ResetPasswordForm({ token }) {
             name="password"
             id="password"
             type="password"
-            className="flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
+            className="flex-1 appearance-none rounded-sm border px-3 py-2 leading-tight text-gray-700 shadow-xs focus:outline-hidden focus:ring-2"
             aria-describedby="password.error"
             required
           />
@@ -57,7 +57,7 @@ export default function ResetPasswordForm({ token }) {
             name="password_confirmation"
             id="password_confirmation"
             type="password"
-            className="flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
+            className="flex-1 appearance-none rounded-sm border px-3 py-2 leading-tight text-gray-700 shadow-xs focus:outline-hidden focus:ring-2"
             aria-describedby="password_confirmation.error"
             required
           />
@@ -79,7 +79,7 @@ export default function ResetPasswordForm({ token }) {
           <input
             type="submit"
             value="Reset Password"
-            className="whitespace-no-wrap inline-block rounded-md border border-gray-200 bg-white px-3 py-1 text-base font-medium leading-6 text-gray-600 shadow-sm hover:cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 active:shadow active:shadow-neutral-700 disabled:cursor-not-allowed disabled:opacity-60 aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
+            className="whitespace-no-wrap inline-block rounded-md border border-gray-200 bg-white px-3 py-1 text-base font-medium leading-6 text-gray-600 shadow-xs hover:cursor-pointer hover:bg-gray-50 focus:outline-hidden focus:ring-2 active:shadow-sm active:shadow-neutral-700 disabled:cursor-not-allowed disabled:opacity-60 aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
           />
         </div>
       </form>

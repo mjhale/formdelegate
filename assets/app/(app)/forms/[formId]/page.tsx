@@ -95,7 +95,7 @@ async function FormDetails({
           </CardHeader>
           <div className="space-y-4 p-5 sm:p-6">
             <div className="flex min-w-0 flex-wrap items-center gap-3 rounded-lg border border-[#e7e1d6] bg-[#f8f4ec] p-3">
-              <span className="rounded border border-line-strong bg-white px-2 py-1 font-mono text-[10px] font-semibold text-brand-deep">
+              <span className="rounded-sm border border-line-strong bg-white px-2 py-1 font-mono text-[10px] font-semibold text-brand-deep">
                 POST
               </span>
               <code className="min-w-0 flex-1 break-all text-xs leading-6 text-[#544b48]">

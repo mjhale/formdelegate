@@ -43,7 +43,7 @@ export default function SignupForm({
             name="user.email"
             id="user.email"
             type="text"
-            className="flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
+            className="flex-1 appearance-none rounded-sm border px-3 py-2 leading-tight text-gray-700 shadow-xs focus:outline-hidden focus:ring-2"
             aria-describedby="user.email.error"
           />
         </div>
@@ -65,7 +65,7 @@ export default function SignupForm({
             name="user.name"
             id="user.name"
             type="text"
-            className="flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
+            className="flex-1 appearance-none rounded-sm border px-3 py-2 leading-tight text-gray-700 shadow-xs focus:outline-hidden focus:ring-2"
             aria-describedby="user.name.error"
           />
         </div>
@@ -87,7 +87,7 @@ export default function SignupForm({
             name="user.password"
             id="user.password"
             type="password"
-            className="flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
+            className="flex-1 appearance-none rounded-sm border px-3 py-2 leading-tight text-gray-700 shadow-xs focus:outline-hidden focus:ring-2"
             aria-describedby="user.password.error"
           />
         </div>
@@ -109,7 +109,7 @@ export default function SignupForm({
             name="user.password_confirmation"
             id="user.password_confirmation"
             type="password"
-            className="flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
+            className="flex-1 appearance-none rounded-sm border px-3 py-2 leading-tight text-gray-700 shadow-xs focus:outline-hidden focus:ring-2"
             aria-describedby="user.password_confirmation.error"
           />
         </div>
@@ -156,7 +156,7 @@ export default function SignupForm({
           <input
             type="submit"
             value={submitLabel}
-            className="whitespace-no-wrap inline-block rounded-md border border-carnation-400 bg-carnation-400 px-3 py-2 text-base font-medium leading-6 text-white shadow-sm hover:cursor-pointer hover:bg-red-900 focus:outline-none focus:ring-2 active:shadow active:shadow-neutral-700 disabled:cursor-not-allowed disabled:opacity-60 aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
+            className="whitespace-no-wrap inline-block rounded-md border border-carnation-400 bg-carnation-400 px-3 py-2 text-base font-medium leading-6 text-white shadow-xs hover:cursor-pointer hover:bg-red-900 focus:outline-hidden focus:ring-2 active:shadow-sm active:shadow-neutral-700 disabled:cursor-not-allowed disabled:opacity-60 aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
           />
         </div>
       </form>

@@ -72,7 +72,7 @@ export default function Submission({
           aria-controls={detailsId}
           aria-expanded={showExpandedView}
           aria-label={`${showExpandedView ? 'Collapse' : 'Expand'} submission from ${submission.sender || 'Unknown sender'}`}
-          className="group/trigger grid min-h-[60px] min-w-0 cursor-pointer grid-cols-[minmax(155px,_0.9fr)_minmax(260px,_2.15fr)_100px_28px] items-center gap-x-2.5 border-0 bg-transparent p-0 text-left text-inherit outline-none focus-visible:shadow-[inset_0_0_0_2px_rgba(191,_69,_61,_0.45)] max-lg:grid-cols-[minmax(135px,_0.8fr)_minmax(220px,_1.8fr)_85px_26px] max-lg:gap-x-[7px] max-[820px]:min-h-[78px] max-[820px]:grid-cols-[minmax(0,_1fr)_28px] max-[820px]:grid-rows-[auto_auto] max-[820px]:gap-[5px_9px] max-[820px]:px-0 max-[820px]:py-3"
+          className="group/trigger grid min-h-[60px] min-w-0 cursor-pointer grid-cols-[minmax(155px,_0.9fr)_minmax(260px,_2.15fr)_100px_28px] items-center gap-x-2.5 border-0 bg-transparent p-0 text-left text-inherit outline-hidden focus-visible:shadow-[inset_0_0_0_2px_rgba(191,_69,_61,_0.45)] max-lg:grid-cols-[minmax(135px,_0.8fr)_minmax(220px,_1.8fr)_85px_26px] max-lg:gap-x-[7px] max-[820px]:min-h-[78px] max-[820px]:grid-cols-[minmax(0,_1fr)_28px] max-[820px]:grid-rows-[auto_auto] max-[820px]:gap-[5px_9px] max-[820px]:px-0 max-[820px]:py-3"
           onClick={() => setShowExpandedView((previous) => !previous)}
           type="button"
         >

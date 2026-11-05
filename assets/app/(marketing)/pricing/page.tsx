@@ -16,7 +16,7 @@ export default async function PricingPage() {
           </p>
 
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="flex flex-col rounded border border-gray-300 bg-white p-4 shadow-lg">
+            <div className="flex flex-col rounded-sm border border-gray-300 bg-white p-4 shadow-lg">
               <div className="flex flex-col items-center">
                 <div className="mb-2 font-semibold">Basic</div>
                 <div className="mb-4 text-3xl font-extrabold">Free</div>
@@ -30,7 +30,7 @@ export default async function PricingPage() {
               </div>
             </div>
 
-            <div className="flex flex-col rounded border border-gray-300 bg-white p-4 shadow-lg">
+            <div className="flex flex-col rounded-sm border border-gray-300 bg-white p-4 shadow-lg">
               <div className="flex flex-col items-center">
                 <div className="mb-2 font-semibold">Professional</div>
                 <div className="mb-4 text-3xl font-extrabold">$25/mo</div>
@@ -44,7 +44,7 @@ export default async function PricingPage() {
               </div>
             </div>
 
-            <div className="flex flex-col rounded border border-gray-300 bg-white p-4 shadow-lg">
+            <div className="flex flex-col rounded-sm border border-gray-300 bg-white p-4 shadow-lg">
               <div className="flex flex-col items-center">
                 <div className="mb-2 font-semibold">Enterprise</div>
                 <div className="mb-4 text-3xl font-extrabold">$300/mo</div>
@@ -62,7 +62,7 @@ export default async function PricingPage() {
           <div className="mt-8 flex justify-center">
             <Link
               href="/signup"
-              className="whitespace-no-wrap inline-block rounded-md border border-gray-200 bg-white px-3 py-1 text-base font-medium leading-6 text-gray-600 shadow-sm hover:cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 active:shadow active:shadow-neutral-700 disabled:cursor-not-allowed disabled:opacity-60 aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
+              className="whitespace-no-wrap inline-block rounded-md border border-gray-200 bg-white px-3 py-1 text-base font-medium leading-6 text-gray-600 shadow-xs hover:cursor-pointer hover:bg-gray-50 focus:outline-hidden focus:ring-2 active:shadow-sm active:shadow-neutral-700 disabled:cursor-not-allowed disabled:opacity-60 aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
             >
               Sign up for free
             </Link>

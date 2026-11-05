@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function SubmissionSuccessPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-12 text-slate-900">
-      <section className="w-full max-w-md rounded-2xl border border-stone-200 bg-white p-8 text-center shadow-sm">
+      <section className="w-full max-w-md rounded-2xl border border-stone-200 bg-white p-8 text-center shadow-xs">
         <CheckCircle2
           aria-hidden="true"
           className="mx-auto h-12 w-12 text-emerald-700"

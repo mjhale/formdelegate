@@ -210,12 +210,12 @@ export default function FormFilterPicker({
                 {visibleForms.length > 0 ? (
                   visibleForms.map((form) => (
                     <label
-                      className="flex min-h-9 cursor-pointer items-center gap-2 rounded px-2 text-sm text-slate-800 hover:bg-[#f8f5ef]"
+                      className="flex min-h-9 cursor-pointer items-center gap-2 rounded-sm px-2 text-sm text-slate-800 hover:bg-[#f8f5ef]"
                       key={form.id}
                     >
                       <input
                         checked={draftSelection.has(form.id)}
-                        className="h-4 w-4 rounded border-slate-300 text-[#b83f38] focus:ring-[#b83f38]"
+                        className="h-4 w-4 rounded-sm border-slate-300 text-[#b83f38] focus:ring-[#b83f38]"
                         onChange={(event) =>
                           setDraftSelection((previousSelection) => {
                             const nextSelection = new Set(previousSelection);

@@ -49,8 +49,8 @@ export default function MessageForm({
     ? 'text-[11px] font-[650] leading-[1.4] text-[#45464c]'
     : 'w-1/4 shrink-0';
   const fieldControl = stacked
-    ? 'w-full rounded-lg border border-line-strong bg-white px-[11px] py-[9px] text-[13px] leading-[1.4] text-[#303137] shadow-input transition duration-150 focus:border-brand focus:outline-none focus:ring-[3px] focus:ring-brand/[0.14]'
-    : 'flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2';
+    ? 'w-full rounded-lg border border-line-strong bg-white px-[11px] py-[9px] text-[13px] leading-[1.4] text-[#303137] shadow-input transition duration-150 focus:border-brand focus:outline-hidden focus:ring-[3px] focus:ring-brand/[0.14]'
+    : 'flex-1 appearance-none rounded-sm border px-3 py-2 leading-tight text-gray-700 shadow-xs focus:outline-hidden focus:ring-2';
   const fieldErrors = stacked
     ? 'text-[11px] text-red-700'
     : 'ml-[25%] mt-1 text-sm text-red-700';
@@ -229,7 +229,7 @@ export default function MessageForm({
           className={
             stacked
               ? buttonClasses({ variant: 'primary' })
-              : 'whitespace-no-wrap inline-block rounded-md border border-gray-200 bg-white px-3 py-1 text-base font-medium leading-6 text-gray-600 shadow-sm hover:cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 active:shadow active:shadow-neutral-700 disabled:cursor-not-allowed disabled:opacity-60'
+              : 'whitespace-no-wrap inline-block rounded-md border border-gray-200 bg-white px-3 py-1 text-base font-medium leading-6 text-gray-600 shadow-xs hover:cursor-pointer hover:bg-gray-50 focus:outline-hidden focus:ring-2 active:shadow-sm active:shadow-neutral-700 disabled:cursor-not-allowed disabled:opacity-60'
           }
         >
           {pending ? 'Sending…' : 'Send Message'}

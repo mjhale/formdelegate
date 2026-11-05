@@ -623,7 +623,7 @@ function SubmitButton({ isPending }) {
       disabled={isPending}
       type="submit"
       value={isPending ? 'Saving…' : 'Save form'}
-      className={`${submitControl} hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer`}
+      className={`${submitControl} hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow-sm active:shadow-neutral-700 hover:cursor-pointer`}
     />
   );
 }
@@ -795,7 +795,7 @@ function EmailRecipientsFieldArray({
               </div>
               <div className="flex max-w-xl justify-end">
                 <button
-                  className={`${editorButton} inline-block font-medium leading-tight text-red-600 whitespace-no-wrap bg-white border hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer`}
+                  className={`${editorButton} inline-block font-medium leading-tight text-red-600 whitespace-no-wrap bg-white border hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow-sm active:shadow-neutral-700 hover:cursor-pointer`}
                   type="button"
                   onClick={() => remove(j)}
                 >
@@ -810,7 +810,7 @@ function EmailRecipientsFieldArray({
       <div className="flex max-w-xl pt-2">
         <button
           type="button"
-          className={`${editorButton} inline-block font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer`}
+          className={`${editorButton} inline-block font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow-sm active:shadow-neutral-700 hover:cursor-pointer`}
           onClick={() =>
             append({
               id: null,
@@ -958,7 +958,7 @@ function EmailIntegrationsFieldArray({
             />
             <div className="flex max-w-xl py-2">
               <button
-                className={`${editorButton} inline-block font-medium leading-tight text-red-600 whitespace-no-wrap bg-white border hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer`}
+                className={`${editorButton} inline-block font-medium leading-tight text-red-600 whitespace-no-wrap bg-white border hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow-sm active:shadow-neutral-700 hover:cursor-pointer`}
                 type="button"
                 onClick={() => removeEmailIntegration(i)}
               >
@@ -979,7 +979,7 @@ function EmailIntegrationsFieldArray({
       <div className="flex max-w-xl pt-2">
         <button
           type="button"
-          className={`${editorButton} inline-block font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer`}
+          className={`${editorButton} inline-block font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border hover:bg-gray-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 active:shadow-sm active:shadow-neutral-700 hover:cursor-pointer`}
           onClick={appendEmailIntegration}
         >
           Add Email Integration
@@ -1054,7 +1054,7 @@ function EmailProviderSetupFields({
             <div className="text-xs font-medium leading-5 text-[#53545c]">
               Provider
             </div>
-            <div className="flex-1 rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm">
+            <div className="flex-1 rounded-sm border px-3 py-2 leading-tight text-gray-700 shadow-xs">
               {formatProviderLabel(provider)}
             </div>
           </>
@@ -1091,7 +1091,7 @@ function EmailProviderSetupFields({
         <div className="text-xs font-medium leading-5 text-[#53545c]">
           Status
         </div>
-        <div className="flex-1 rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm">
+        <div className="flex-1 rounded-sm border px-3 py-2 leading-tight text-gray-700 shadow-xs">
           {formatProviderStatus(currentStatus)}
         </div>
       </div>
@@ -1099,7 +1099,7 @@ function EmailProviderSetupFields({
         <div className="text-xs font-medium leading-5 text-[#53545c]">
           Last Verified
         </div>
-        <div className="flex-1 rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm">
+        <div className="flex-1 rounded-sm border px-3 py-2 leading-tight text-gray-700 shadow-xs">
           {formatLastVerifiedAt(lastVerifiedAt)}
         </div>
       </div>
@@ -1116,7 +1116,7 @@ function EmailProviderSetupFields({
                 integrationIndex: i,
               })
             }
-            className={`${editorButton} inline-block font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 active:shadow active:shadow-neutral-700 hover:cursor-pointer`}
+            className={`${editorButton} inline-block font-medium leading-tight text-gray-600 whitespace-no-wrap bg-white border hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 active:shadow-sm active:shadow-neutral-700 hover:cursor-pointer`}
           >
             Reverify Provider
           </button>
@@ -1573,9 +1573,9 @@ function formatLastVerifiedAt(value: unknown): string {
 
 // Shared Tailwind recipes for the editor controls.
 const textControl =
-  'min-h-10 w-full min-w-0 rounded-lg border border-line-strong bg-white px-3 py-2 text-sm leading-5 text-[#303137] shadow-none focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#bf453d]/20 disabled:cursor-not-allowed disabled:bg-[#f8f5ef] disabled:text-muted';
+  'min-h-10 w-full min-w-0 rounded-lg border border-line-strong bg-white px-3 py-2 text-sm leading-5 text-[#303137] shadow-none focus-visible:border-brand focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[#bf453d]/20 disabled:cursor-not-allowed disabled:bg-[#f8f5ef] disabled:text-muted';
 const choiceControl =
-  'h-4 w-4 shrink-0 accent-brand focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#bf453d]/20 disabled:cursor-not-allowed disabled:bg-[#f8f5ef] disabled:text-muted';
+  'h-4 w-4 shrink-0 accent-brand focus-visible:border-brand focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[#bf453d]/20 disabled:cursor-not-allowed disabled:bg-[#f8f5ef] disabled:text-muted';
 const editorButton =
   'min-h-9 rounded-lg border-line-strong px-3 py-2 text-xs shadow-none';
 const submitControl =

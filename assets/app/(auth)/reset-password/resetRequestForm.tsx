@@ -31,7 +31,7 @@ export default function ResetRequestForm() {
             name="email"
             id="email"
             type="text"
-            className="flex-1 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow-sm focus:outline-none focus:ring-2"
+            className="flex-1 appearance-none rounded-sm border px-3 py-2 leading-tight text-gray-700 shadow-xs focus:outline-hidden focus:ring-2"
             aria-describedby="email.error"
           />
         </div>
@@ -48,7 +48,7 @@ export default function ResetRequestForm() {
           <input
             type="submit"
             value="Submit Request"
-            className="whitespace-no-wrap inline-block rounded-md border border-gray-200 bg-white px-3 py-1 text-base font-medium leading-6 text-gray-600 shadow-sm hover:cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 active:shadow active:shadow-neutral-700 disabled:cursor-not-allowed disabled:opacity-60 aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
+            className="whitespace-no-wrap inline-block rounded-md border border-gray-200 bg-white px-3 py-1 text-base font-medium leading-6 text-gray-600 shadow-xs hover:cursor-pointer hover:bg-gray-50 focus:outline-hidden focus:ring-2 active:shadow-sm active:shadow-neutral-700 disabled:cursor-not-allowed disabled:opacity-60 aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
           />
         </div>
       </form>

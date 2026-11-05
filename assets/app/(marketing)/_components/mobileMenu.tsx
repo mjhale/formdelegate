@@ -26,7 +26,7 @@ export default function MobileMenu({ links }) {
       <button
         onClick={() => setIsOpen(!isOpen)}
         type="button"
-        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm text-white hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-gray-200 lg:hidden"
+        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm text-white hover:bg-red-800 focus:outline-hidden focus:ring-2 focus:ring-gray-200 lg:hidden"
         aria-controls="main-menu"
         aria-expanded={isOpen}
       >

@@ -105,8 +105,8 @@ function LoginPageFallback() {
         </span>
       </div>
       <div className="mx-4 rounded-md border bg-white p-6 text-black md:mx-0 md:rounded-lg">
-        <div className="mx-auto h-7 w-24 animate-pulse rounded bg-slate-200" />
-        <div className="mx-auto mt-6 h-40 max-w-xs animate-pulse rounded bg-slate-100" />
+        <div className="mx-auto h-7 w-24 animate-pulse rounded-sm bg-slate-200" />
+        <div className="mx-auto mt-6 h-40 max-w-xs animate-pulse rounded-sm bg-slate-100" />
       </div>
     </>
   );

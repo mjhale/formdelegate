@@ -139,7 +139,7 @@ export default function InboxReader({
                   </span>
                   <span className="mt-2 line-clamp-2 text-[13px] leading-5 text-[#62636b]">
                     {m.spam && (
-                      <span className="mr-1.5 rounded bg-[#ead9ce] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#70452d]">
+                      <span className="mr-1.5 rounded-sm bg-[#ead9ce] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#70452d]">
                         {moderationLabel(m.source)}
                       </span>
                     )}
@@ -168,7 +168,7 @@ export default function InboxReader({
                   type="button"
                   onClick={() => setMobileReader(false)}
                   aria-label="Back to inbox"
-                  className="rounded p-2 hover:bg-[#f5eee4] lg:hidden"
+                  className="rounded-sm p-2 hover:bg-[#f5eee4] lg:hidden"
                 >
                   <ArrowLeft size={18} />
                 </button>
@@ -201,7 +201,7 @@ export default function InboxReader({
                 </div>
                 <div className="whitespace-pre-wrap break-words text-sm leading-7 text-[#42434b]">
                   {active.spam && (
-                    <span className="mb-3 block w-fit rounded bg-[#ead9ce] px-2 py-1 text-xs font-semibold text-[#70452d]">
+                    <span className="mb-3 block w-fit rounded-sm bg-[#ead9ce] px-2 py-1 text-xs font-semibold text-[#70452d]">
                       {moderationLabel(active.source)}
                     </span>
                   )}
@@ -275,7 +275,7 @@ export default function InboxReader({
                         }
                         disabled={!active.email}
                         rows={6}
-                        className="block w-full resize-y border-0 bg-transparent px-4 py-4 text-sm leading-6 outline-none disabled:opacity-50"
+                        className="block w-full resize-y border-0 bg-transparent px-4 py-4 text-sm leading-6 outline-hidden disabled:opacity-50"
                       />
                       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#e9e3d9] px-4 py-3">
                         <button
