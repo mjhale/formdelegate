@@ -6,6 +6,7 @@ import { ArrowLeft, Inbox, Reply, Send } from 'lucide-react';
 import { useState } from 'react';
 
 import EmptyState from '../_components/emptyState';
+import LocalTime from './localTime';
 import ModerationDetails, {
   isHeld,
   moderationLabel,
@@ -124,15 +125,11 @@ export default function InboxReader({
                     <span className="truncate font-semibold text-[#292a30]">
                       {m.sender}
                     </span>
-                    <time
+                    <LocalTime
                       dateTime={m.date}
                       className="shrink-0 text-[11px] tabular-nums text-muted"
-                    >
-                      {new Date(m.date).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                    </time>
+                      options={{ month: 'short', day: 'numeric' }}
+                    />
                   </span>
                   <span className="mt-1 block truncate text-xs font-medium text-muted">
                     {m.form}
@@ -187,17 +184,16 @@ export default function InboxReader({
                       {active.email || 'No email address provided'}
                     </p>
                   </div>
-                  <time
+                  <LocalTime
                     dateTime={active.date}
                     className="text-xs tabular-nums text-muted"
-                  >
-                    {new Date(active.date).toLocaleString('en-US', {
+                    options={{
                       month: 'short',
                       day: 'numeric',
                       hour: 'numeric',
                       minute: '2-digit',
-                    })}
-                  </time>
+                    }}
+                  />
                 </div>
                 <div className="whitespace-pre-wrap break-words text-sm leading-7 text-[#42434b]">
                   {active.spam && (

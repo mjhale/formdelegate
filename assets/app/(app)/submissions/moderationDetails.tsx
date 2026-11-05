@@ -1,4 +1,5 @@
 import type Submission from 'types/submission';
+import LocalTime from './localTime';
 
 const reasons: Record<string, string> = {
   commercial_solicitation: 'Promotional or prize solicitation language',
@@ -89,10 +90,7 @@ export default function ModerationDetails({
       )}
       {submission.reviewed_at && (
         <p className="mt-2 text-muted">
-          Last reviewed:{' '}
-          <time dateTime={submission.reviewed_at}>
-            {new Date(submission.reviewed_at).toLocaleString('en-US')}
-          </time>
+          Last reviewed: <LocalTime dateTime={submission.reviewed_at} />
         </p>
       )}
     </section>
