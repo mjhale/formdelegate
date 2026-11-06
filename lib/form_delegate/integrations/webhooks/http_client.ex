@@ -7,14 +7,23 @@ defmodule FormDelegate.Integrations.Webhooks.HTTPClient do
     pinned_url = URI.to_string(%{uri | host: address |> :inet.ntoa() |> to_string()})
     options = options(uri.host)
 
-    case :hackney.request(:post, pinned_url, [{"Host", uri.host} | headers], body, options) do
-      {:ok, status, _headers, ref} ->
-        # Webhook acknowledgement uses status alone. Never buffer response bodies.
-        :hackney.close(ref)
-        {:ok, status}
+    headers = [{"Host", uri.host} | headers]
 
-      {:ok, status, _headers} ->
-        {:ok, status}
+    # Hackney 4's ordinary request/5 buffers the response body. Use its streaming
+    # API so acknowledgements still read headers only and close immediately.
+    case :hackney.request(:post, pinned_url, headers, :stream, options) do
+      {:ok, ref} ->
+        try do
+          with :ok <- :hackney.send_body(ref, body),
+               :ok <- :hackney.finish_send_body(ref),
+               {:ok, status, _headers, ^ref} <- :hackney.start_response(ref) do
+            {:ok, status}
+          else
+            {:error, _reason} -> {:error, :request_failed}
+          end
+        after
+          :hackney.close(ref)
+        end
 
       {:error, _reason} ->
         {:error, :request_failed}

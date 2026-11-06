@@ -27,7 +27,7 @@ defmodule FormDelegateWeb.StripeHandler do
     %{object: %Stripe.Invoice{} = stripe_invoice} = data
 
     {:ok, %Stripe.Subscription{} = stripe_subscription} =
-      stripe_api().retrieve_subscription(stripe_invoice.subscription)
+      stripe_api().retrieve_subscription(invoice_subscription_id(stripe_invoice))
 
     {:ok, %Subscription{} = _subscription} = upsert_subscription(stripe_subscription)
 
@@ -91,7 +91,7 @@ defmodule FormDelegateWeb.StripeHandler do
       %Subscription{} = subscription ->
         attrs =
           %{stripe_subscription_status: stripe_subscription.status || fallback_status}
-          |> maybe_put_ends_at(stripe_subscription.current_period_end)
+          |> maybe_put_ends_at(subscription_period_end(stripe_subscription))
 
         {:ok, %Subscription{} = _subscription} =
           Subscriptions.update_subscription(subscription, attrs)
@@ -112,7 +112,7 @@ defmodule FormDelegateWeb.StripeHandler do
         team_id: stripe_subscription.metadata["team_id"],
         plan_id: plan.id
       }
-      |> maybe_put_ends_at(stripe_subscription.current_period_end)
+      |> maybe_put_ends_at(subscription_period_end(stripe_subscription))
 
     case Subscriptions.get_subscription(stripe_subscription.id) do
       nil ->
@@ -124,6 +124,23 @@ defmodule FormDelegateWeb.StripeHandler do
         |> then(&Subscriptions.update_subscription(subscription, &1))
     end
   end
+
+  # Stripe's current API stores billing periods on subscription items. The app
+  # continues to support one active item per subscription.
+  defp subscription_period_end(%Stripe.Subscription{
+         items: %Stripe.List{data: [%Stripe.SubscriptionItem{current_period_end: ends_at} | _]}
+       }),
+       do: ends_at
+
+  defp subscription_period_end(_subscription), do: nil
+
+  defp invoice_subscription_id(%Stripe.Invoice{
+         parent: %{subscription_details: %{subscription: id}}
+       })
+       when is_binary(id), do: id
+
+  # Older webhook endpoint API versions still send the top-level field.
+  defp invoice_subscription_id(%Stripe.Invoice{subscription: id}), do: id
 
   defp maybe_put_ends_at(attrs, current_period_end) when is_integer(current_period_end) do
     Map.put(attrs, :ends_at, DateTime.from_unix!(current_period_end, :second))

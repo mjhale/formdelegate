@@ -204,6 +204,78 @@ defmodule FormDelegateWeb.StripeControllerTest do
   end
 
   describe "Stripe Webhook Handler" do
+    test "current Stripe webhook payload persists the item billing period", %{
+      team: team,
+      plan: plan
+    } do
+      payload =
+        Jason.encode!(%{
+          "object" => "event",
+          "type" => "customer.subscription.created",
+          "data" => %{
+            "object" => %{
+              "object" => "subscription",
+              "id" => "sub_current_payload",
+              "status" => "active",
+              "metadata" => %{"team_id" => team.id},
+              "items" => %{
+                "object" => "list",
+                "data" => [
+                  %{
+                    "object" => "subscription_item",
+                    "current_period_end" => 1_800_000_000,
+                    "price" => %{"object" => "price", "id" => plan.stripe_price_id}
+                  }
+                ]
+              }
+            }
+          }
+        })
+
+      timestamp = System.system_time(:second)
+      secret = "synthetic-webhook-secret"
+
+      signature =
+        :crypto.mac(:hmac, :sha256, secret, "#{timestamp}.#{payload}")
+        |> Base.encode16(case: :lower)
+
+      assert {:ok, event} =
+               Stripe.Webhook.construct_event(payload, "t=#{timestamp},v1=#{signature}", secret)
+
+      assert :ok = StripeHandler.handle_event(event)
+
+      assert Subscriptions.get_subscription!("sub_current_payload").ends_at ==
+               DateTime.from_unix!(1_800_000_000)
+    end
+
+    test "invoice paid supports current parent and legacy subscription references", %{
+      team: team,
+      plan: plan
+    } do
+      {:ok, _} =
+        Subscriptions.create_subscription(%{
+          stripe_subscription_id: "sub_invoice",
+          stripe_subscription_status: "past_due",
+          team_id: team.id,
+          plan_id: plan.id
+        })
+
+      for invoice <- [
+            %Stripe.Invoice{parent: %{subscription_details: %{subscription: "sub_invoice"}}},
+            %Stripe.Invoice{subscription: "sub_invoice"}
+          ] do
+        assert :ok =
+                 StripeHandler.handle_event(%Stripe.Event{
+                   type: "invoice.paid",
+                   data: %{object: invoice}
+                 })
+
+        subscription = Subscriptions.get_subscription!("sub_invoice")
+        assert subscription.stripe_subscription_status == "active"
+        assert %DateTime{} = subscription.ends_at
+      end
+    end
+
     test "customer.subscription.created creates a subscription", %{team: team, plan: plan} do
       event = %Stripe.Event{
         type: "customer.subscription.created",
@@ -275,11 +347,11 @@ defmodule FormDelegateWeb.StripeControllerTest do
           object: %Stripe.Subscription{
             id: "sub_test123",
             status: "active",
-            current_period_end: 1_800_000_000,
             metadata: %{"team_id" => team.id},
             items: %Stripe.List{
               data: [
                 %Stripe.SubscriptionItem{
+                  current_period_end: 1_800_000_000,
                   plan: %Stripe.Plan{
                     product: plan.stripe_product_id
                   }
@@ -317,6 +389,7 @@ defmodule FormDelegateWeb.StripeControllerTest do
       assert sub.stripe_subscription_status == "active"
       assert sub.team_id == team.id
       assert sub.plan_id == plan.id
+      assert sub.ends_at == DateTime.from_unix!(1_800_000_000)
     end
 
     test "customer.subscription.deleted marks the subscription canceled", %{

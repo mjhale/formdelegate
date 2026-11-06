@@ -63,6 +63,7 @@ config :tesla, adapter: Tesla.Adapter.Hackney
 
 # Configures ExAws and ExAws S3
 config :ex_aws,
+  http_client: ExAws.Request.Req,
   json_codec: Jason,
   access_key_id: {:system, "AWS_ACCESS_KEY_ID"},
   secret_access_key: {:system, "AWS_SECRET_ACCESS_KEY"},
@@ -74,9 +75,13 @@ config :ex_aws, :s3,
 
 # Configures Waffle
 config :waffle,
+  http_client: Waffle.HTTPClient.Req,
   storage: Waffle.Storage.S3,
   bucket: {:system, "AWS_S3_BUCKET"},
   asset_host: {:system, "AWS_S3_ASSET_HOST"}
+
+# Keep Stripe requests aligned with the webhook endpoint and SDK schema.
+config :stripity_stripe, api_version: "2025-11-17.clover"
 
 # Configures Stripe
 config :form_delegate, :stripe_api, FormDelegate.Services.Stripe.Impl

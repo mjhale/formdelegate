@@ -58,11 +58,12 @@ defmodule FormDelegate.Services.Stripe.Mock do
      %Stripe.Subscription{
        id: id,
        status: "active",
-       current_period_end: DateTime.utc_now() |> DateTime.add(30, :day) |> DateTime.to_unix(),
        items: %Stripe.List{
          data: [
            %Stripe.SubscriptionItem{
              id: "si_mock123",
+             current_period_end:
+               DateTime.utc_now() |> DateTime.add(30, :day) |> DateTime.to_unix(),
              price: %Stripe.Price{
                product: "prod_JqNR8AZx7ESoF8I"
              },
@@ -81,11 +82,12 @@ defmodule FormDelegate.Services.Stripe.Mock do
      %Stripe.Subscription{
        id: id,
        status: "active",
-       current_period_end: DateTime.utc_now() |> DateTime.add(30, :day) |> DateTime.to_unix(),
        items: %Stripe.List{
          data: [
            %Stripe.SubscriptionItem{
              id: "si_mock123",
+             current_period_end:
+               DateTime.utc_now() |> DateTime.add(30, :day) |> DateTime.to_unix(),
              price: %Stripe.Price{
                product: "prod_JqNR8AZx7ESoF8I"
              },
