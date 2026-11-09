@@ -341,13 +341,8 @@ defmodule FormDelegate.Accounts do
   end
 
   @doc false
-  defp verify_confirmation_token_window(%User{confirmation_sent_at: sent_at} = user) do
-    # Set validity window to 5 days
-    confirmation_validity_in_seconds = 5 * (60 * 60 * 24)
-    seconds_since_confirmation_sent_at = DateTime.diff(DateTime.utc_now(), sent_at, :second)
-    is_confirmation_valid = seconds_since_confirmation_sent_at < confirmation_validity_in_seconds
-
-    if is_confirmation_valid do
+  defp verify_confirmation_token_window(%User{} = user) do
+    if User.confirmation_token_remaining(user) > 0 do
       {:ok, user}
     else
       {:error, :invalid_or_expired_token}

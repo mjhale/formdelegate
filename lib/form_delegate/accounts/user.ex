@@ -40,6 +40,27 @@ defmodule FormDelegate.Accounts.User do
     timestamps()
   end
 
+  @type t :: %__MODULE__{}
+
+  @confirmation_token_lifetime 5 * 86_400
+
+  @doc "Seconds a confirmation token remains valid after `confirmation_sent_at`."
+  @spec confirmation_token_lifetime() :: pos_integer()
+  def confirmation_token_lifetime, do: @confirmation_token_lifetime
+
+  @doc "Seconds until the confirmation token expires; zero when missing or expired."
+  @spec confirmation_token_remaining(t(), DateTime.t()) :: non_neg_integer()
+  def confirmation_token_remaining(user, now \\ DateTime.utc_now())
+
+  def confirmation_token_remaining(
+        %User{confirmation_token: token, confirmation_sent_at: sent_at},
+        now
+      )
+      when is_binary(token) and not is_nil(sent_at),
+      do: max(0, @confirmation_token_lifetime - DateTime.diff(now, sent_at, :second))
+
+  def confirmation_token_remaining(%User{}, _now), do: 0
+
   @doc false
   def changeset(%User{} = user, params \\ %{}) do
     user
