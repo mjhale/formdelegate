@@ -1,12 +1,20 @@
 import type { SpamActivityDay } from './spamAnalysis';
 import type { Metadata } from 'next';
 
-import { Clock3, Inbox, ListChecks, Plus, TrendingUp } from 'lucide-react';
+import {
+  Clock3,
+  Inbox,
+  ListChecks,
+  MailWarning,
+  Plus,
+  TrendingUp,
+} from 'lucide-react';
+import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
 
-import { getProfileContext } from 'utils/profile';
+import { fetchProfile, getProfileContext } from 'utils/profile';
 
 import AsyncPanelErrorBoundary from '../_components/asyncPanelErrorBoundary';
 import { ButtonLink } from '../_components/button';
@@ -80,12 +88,59 @@ export default async function DashboardPage() {
         </div>
       </header>
 
+      <AsyncPanelErrorBoundary title="Unable to check email verification.">
+        <Suspense fallback={null}>
+          <EmailVerificationWarning />
+        </Suspense>
+      </AsyncPanelErrorBoundary>
+
       <AsyncPanelErrorBoundary title="Unable to load dashboard activity.">
         <Suspense fallback={<DashboardFallback />}>
           <DashboardContent />
         </Suspense>
       </AsyncPanelErrorBoundary>
     </>
+  );
+}
+
+async function EmailVerificationWarning() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('access_token')?.value;
+  const userId = cookieStore.get('user_id')?.value;
+
+  if (!accessToken || !userId) {
+    throw new Error('Missing authenticated user cookies.');
+  }
+
+  // Bypass the private profile cache so confirmation is reflected on reload.
+  const { user } = await fetchProfile(accessToken, userId);
+
+  if (user.confirmed_at) return null;
+
+  return (
+    <section
+      aria-labelledby="email-verification-heading"
+      className="mb-6 flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-950"
+      role="status"
+    >
+      <MailWarning aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
+      <div className="min-w-0">
+        <h2 id="email-verification-heading" className="text-sm font-semibold">
+          Please verify your email address
+        </h2>
+        <p className="mt-1 text-sm leading-6">
+          You can create and configure forms, but form submissions will not be
+          accepted until you verify your email address. Check your inbox for the
+          confirmation link.
+        </p>
+        <Link
+          href="/user-confirmation/request"
+          className="mt-2 inline-block text-sm font-semibold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
+        >
+          Request a new verification email
+        </Link>
+      </div>
+    </section>
   );
 }
 
