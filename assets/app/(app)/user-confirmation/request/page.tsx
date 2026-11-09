@@ -2,8 +2,6 @@ import type { Metadata } from 'next';
 
 import { cookies } from 'next/headers';
 
-import { getProfileContext } from 'utils/profile';
-
 import ConfirmationRequestForm, {
   type ConfirmationRequestState,
 } from './requestForm';
@@ -15,14 +13,9 @@ async function requestUserConfirmationLink(
   'use server';
 
   try {
-    const [{ profile }, cookieStore] = await Promise.all([
-      getProfileContext(),
-      cookies(),
-    ]);
-    const accessToken = cookieStore.get('access_token')?.value;
-    const email = profile?.user?.email;
+    const accessToken = (await cookies()).get('access_token')?.value;
 
-    if (!accessToken || !email) {
+    if (!accessToken) {
       return {
         status: 'error',
         message: 'Unable to request a new confirmation link.',
@@ -38,10 +31,20 @@ async function requestUserConfirmationLink(
           'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify({ user: { email } }),
+        body: JSON.stringify({}),
         method: 'POST',
       }
     );
+
+    if (response.status === 429) {
+      const retryAfter = Number(response.headers.get('Retry-After')) || 60;
+      return {
+        status: 'limited',
+        retryAt: Date.now() + retryAfter * 1000,
+        message:
+          'Too many confirmation requests. Please wait before trying again.',
+      };
+    }
 
     if (!response.ok) {
       return {
@@ -50,10 +53,22 @@ async function requestUserConfirmationLink(
       };
     }
 
+    const payload = await response.json();
+    if (payload.data?.status === 'already_verified') {
+      return {
+        status: 'verified',
+        message:
+          'Your email is already verified. No confirmation email is needed.',
+      };
+    }
+
     return {
+      retryAt: Date.now() + (payload.data?.retry_after || 60) * 1000,
       status: 'success',
       message:
-        'Got it! Please check your email inbox for a new confirmation link.',
+        payload.data?.status === 'already_queued'
+          ? 'A confirmation email is already queued. Please check your inbox shortly.'
+          : 'Got it! Please check your inbox for a new confirmation link.',
     };
   } catch {
     return {
