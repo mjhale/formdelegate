@@ -50,7 +50,10 @@ config :form_delegate, FormDelegateWeb.Guardian,
 
 config :form_delegate, Oban,
   engine: Oban.Engines.Basic,
-  plugins: [{Oban.Plugins.Pruner, max_age: 86_400}],
+  plugins: [
+    {Oban.Plugins.Pruner, max_age: 86_400},
+    {Oban.Plugins.Cron, crontab: [{"17 * * * *", FormDelegate.Jobs.PruneConfirmationSends}]}
+  ],
   queues: [default: 10, billing_count: 1, submission_integrations: 5, mailer: 5],
   repo: FormDelegate.Repo
 

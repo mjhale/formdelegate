@@ -63,6 +63,9 @@ defmodule FormDelegate.AccountsTest do
       assert user.email == "user@formdelegate.com"
       assert user.is_admin == false
       assert user.name == "Form User"
+      assert [send] = Repo.all(FormDelegate.Accounts.ConfirmationSend)
+      assert send.user_id == user.id
+      assert send.inserted_at == user.confirmation_sent_at
     end
 
     test "register_user/1 with invalid data returns error changeset" do

@@ -2,7 +2,7 @@ defmodule FormDelegate.Accounts.Registration do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias FormDelegate.Accounts.{Registration, User}
+  alias FormDelegate.Accounts.{ConfirmationRateLimit, Registration, User}
   alias FormDelegate.BillingCounts.BillingCount
   alias FormDelegate.Memberships.Membership
   alias FormDelegate.Teams.Team
@@ -43,6 +43,10 @@ defmodule FormDelegate.Accounts.Registration do
         storage_count: 0,
         form_count: 0
       })
+    end)
+    # The welcome email carries the first confirmation link and starts the resend limits.
+    |> Ecto.Multi.insert(:confirmation_send, fn %{user: user} ->
+      ConfirmationRateLimit.record_changeset(user.id, user.confirmation_sent_at)
     end)
   end
 
