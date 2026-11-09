@@ -2,28 +2,31 @@ defmodule FormDelegateWeb.UserConfirmationController do
   use FormDelegateWeb, :controller
 
   alias FormDelegate.{Accounts, Accounts.User}
-  alias FormDelegate.Jobs.UserConfirmationEmail
-
-  require Logger
+  alias FormDelegate.Accounts.{ConfirmationRateLimit, ConfirmationRequests}
 
   action_fallback FormDelegateWeb.FallbackController
 
-  def create(conn, %{"user" => %{"email" => email}}) do
-    if user = Accounts.get_user_by_email(email) do
-      # @TODO: Prevent multiple reset confirmation attempts in a short period
-      with {:ok, %User{} = user} <- Accounts.reset_user_confirmation(user) do
-        %{user_id: user.id}
-        |> UserConfirmationEmail.new()
-        |> Oban.insert()
-      else
-        {:error, %Ecto.Changeset{} = changeset} ->
-          Logger.error("FD User Confirmation Token: Unable to create token for #{email}")
-          Logger.error(inspect(changeset, pretty: true))
-      end
-    end
+  def create(conn, _params) do
+    case ConfirmationRequests.request(conn.assigns.current_user) do
+      {:ok, status} when status in [:sent, :already_queued] ->
+        conn
+        |> put_status(:accepted)
+        |> json(%{data: %{status: status, retry_after: ConfirmationRateLimit.cooldown_seconds()}})
 
-    # Show same response regardless of outcome
-    render(conn, :show, %{user: %{email: email}})
+      {:ok, :already_verified} ->
+        json(conn, %{data: %{status: "already_verified"}})
+
+      {:ok, {:rate_limited, seconds}} ->
+        conn
+        |> put_status(:too_many_requests)
+        |> put_resp_header("retry-after", Integer.to_string(seconds))
+        |> json(%{error: %{code: 429, type: "RATE_LIMITED", retry_after: seconds}})
+
+      {:error, _reason} ->
+        conn
+        |> put_status(:service_unavailable)
+        |> json(%{error: %{code: 503, type: "CONFIRMATION_UNAVAILABLE"}})
+    end
   end
 
   def confirm(conn, %{"token" => token}) do

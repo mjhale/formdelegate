@@ -51,7 +51,6 @@ defmodule FormDelegateWeb.Router do
 
     resources "/users", UserController, only: [:create]
 
-    post "/users/confirm", UserConfirmationController, :create, as: :user_confirmation
     get "/users/confirm", UserConfirmationController, :confirm, as: :user_confirmation
 
     post "/users/reset-password", ResetPasswordController, :create, as: :reset_password
@@ -64,6 +63,8 @@ defmodule FormDelegateWeb.Router do
   # Authenticated routes
   scope "/v1", FormDelegateWeb do
     pipe_through [:api, :check_authenticated, :ensure_authenticated, :load_user]
+
+    post "/users/confirm", UserConfirmationController, :create, as: :user_confirmation
 
     post "/teams/:team_id/stripe/checkout-sessions", StripeController, :create_checkout_session,
       as: :team_stripe_checkout_session
