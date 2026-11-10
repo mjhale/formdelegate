@@ -234,6 +234,26 @@ defmodule FormDelegateWeb.UserControllerTest do
       assert response == expected
     end
 
+    test "Returns a field error and does not create a user if the email is registered", %{
+      conn: conn
+    } do
+      conn |> post(Routes.user_path(conn, :create), @valid_attrs) |> json_response(201)
+
+      response =
+        build_conn()
+        |> put_req_header("accept", "application/json")
+        |> post(Routes.user_path(conn, :create), @valid_attrs)
+        |> json_response(422)
+
+      assert response == %{
+               "error" => %{
+                 "code" => 422,
+                 "errors" => %{"user" => %{"email" => ["has already been taken"]}},
+                 "type" => "UNPROCESSABLE_ENTITY"
+               }
+             }
+    end
+
     test "Returns an error and does not create a user if attributes are invalid", %{conn: conn} do
       response =
         conn

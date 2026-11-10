@@ -318,6 +318,9 @@ defmodule FormDelegate.Accounts do
 
         {:error, :welcome_email_unavailable}
 
+      {:error, :user, %Ecto.Changeset{} = user_changeset, _changes} ->
+        {:error, Registration.put_user_errors(changeset, user_changeset)}
+
       {:error, _operation, changeset, _changes} ->
         {:error, changeset}
     end

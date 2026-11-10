@@ -104,6 +104,14 @@ defmodule FormDelegate.AccountsTest do
       assert Repo.aggregate(Oban.Job, :count) == 0
     end
 
+    test "register_user/1 with a registered email returns a nested field error" do
+      assert {:ok, _user} = Accounts.register_user(@valid_registration_attrs)
+      assert {:error, changeset} = Accounts.register_user(@valid_registration_attrs)
+      assert "has already been taken" in errors_on(changeset).user.email
+      assert Repo.aggregate(User, :count) == 1
+      assert Repo.aggregate(ConfirmationSend, :count) == 1
+    end
+
     test "register_user/1 with invalid data returns error changeset" do
       assert {:error, changeset} = Accounts.register_user(@invalid_registration_attrs)
       assert "can't be blank" in errors_on(changeset).user.email

@@ -29,7 +29,7 @@ defmodule FormDelegate.Accounts.Registration do
     data = Ecto.Changeset.apply_changes(changeset)
 
     Ecto.Multi.new()
-    |> Ecto.Multi.insert(:user, to_user_struct(data))
+    |> Ecto.Multi.insert(:user, user_insert_changeset(data))
     |> Ecto.Multi.insert(:team, Team.changeset(%Team{}, %{}))
     |> Ecto.Multi.insert(:membership, fn %{user: user, team: team} ->
       %Membership{}
@@ -62,7 +62,19 @@ defmodule FormDelegate.Accounts.Registration do
   def to_multi(changeset, _oban), do: {:error, changeset}
 
   @doc false
-  defp to_user_struct(registration) do
-    Map.fetch!(registration, :user)
+  # Nests the user's insert errors (e.g. a taken email) under `user`, like validation errors.
+  def put_user_errors(%Ecto.Changeset{} = changeset, %Ecto.Changeset{} = user_changeset) do
+    changeset
+    |> put_embed(:user, user_changeset)
+    |> Map.put(:action, :insert)
+  end
+
+  # The registration changeset already validated and prepared the user. A changeset
+  # (not a bare struct) is inserted so the database's unique email index maps to a
+  # field error instead of raising.
+  defp user_insert_changeset(%Registration{user: %User{} = user}) do
+    user
+    |> change()
+    |> unique_constraint(:email)
   end
 end
