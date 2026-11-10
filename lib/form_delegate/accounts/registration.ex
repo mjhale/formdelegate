@@ -4,6 +4,7 @@ defmodule FormDelegate.Accounts.Registration do
 
   alias FormDelegate.Accounts.{ConfirmationRateLimit, Registration, User}
   alias FormDelegate.BillingCounts.BillingCount
+  alias FormDelegate.Jobs.WelcomeEmail
   alias FormDelegate.Memberships.Membership
   alias FormDelegate.Teams.Team
 
@@ -22,7 +23,9 @@ defmodule FormDelegate.Accounts.Registration do
   end
 
   @doc false
-  def to_multi(%{valid?: true} = changeset) do
+  def to_multi(changeset, oban \\ Oban)
+
+  def to_multi(%{valid?: true} = changeset, oban) do
     data = Ecto.Changeset.apply_changes(changeset)
 
     Ecto.Multi.new()
@@ -44,14 +47,19 @@ defmodule FormDelegate.Accounts.Registration do
         form_count: 0
       })
     end)
-    # The welcome email carries the first confirmation link and starts the resend limits.
+    # The welcome email carries the first confirmation link and starts the resend
+    # limits, so the job and its send record commit or roll back together.
+    |> then(
+      &Oban.insert(oban, &1, :welcome_email, fn %{user: user} ->
+        WelcomeEmail.new(%{user_id: user.id})
+      end)
+    )
     |> Ecto.Multi.insert(:confirmation_send, fn %{user: user} ->
       ConfirmationRateLimit.record_changeset(user.id, user.confirmation_sent_at)
     end)
   end
 
-  @doc false
-  def to_multi(changeset), do: {:error, changeset}
+  def to_multi(changeset, _oban), do: {:error, changeset}
 
   @doc false
   defp to_user_struct(registration) do

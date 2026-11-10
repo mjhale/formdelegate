@@ -4,7 +4,6 @@ defmodule FormDelegateWeb.UserController do
   plug FormDelegateWeb.Plugs.LoadCurrentTeam when action in [:show, :update]
 
   alias FormDelegate.{Accounts, Accounts.User}
-  alias FormDelegate.Jobs.WelcomeEmail
   alias FormDelegateWeb.Authorizer
   alias FormDelegateWeb.Guardian
 
@@ -28,10 +27,6 @@ defmodule FormDelegateWeb.UserController do
          {:ok, %User{} = user} <- Accounts.register_user(registration_params),
          {:ok, token, _claims} <-
            Guardian.encode_and_sign(user, %{}, token_type: "access") do
-      %{user_id: user.id}
-      |> WelcomeEmail.new()
-      |> Oban.insert()
-
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.user_path(conn, :show, user.id))

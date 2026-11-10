@@ -117,4 +117,11 @@ defmodule FormDelegateWeb.FallbackController do
     |> put_view(FormDelegateWeb.ErrorView)
     |> render(:"503", %{type: "PLAN_LIMIT_EXCEEDED"})
   end
+
+  def call(conn, {:error, :welcome_email_unavailable}) do
+    conn
+    |> put_status(:service_unavailable)
+    |> put_view(FormDelegateWeb.ErrorView)
+    |> render(:"503", %{type: "REGISTRATION_UNAVAILABLE"})
+  end
 end

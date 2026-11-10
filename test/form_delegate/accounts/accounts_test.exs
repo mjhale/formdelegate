@@ -4,7 +4,20 @@ defmodule FormDelegate.AccountsTest do
   import FormDelegate.Factory
 
   alias FormDelegate.Accounts
+  alias FormDelegate.Accounts.ConfirmationSend
+  alias FormDelegate.Jobs.WelcomeEmail
   alias FormDelegate.Memberships.Membership
+
+  # A named, queue-less Oban instance whose inserts fail, so registration's
+  # enqueue failure path runs without replacing the application's Oban.
+  defmodule FailingEngine do
+    use FormDelegate.TestObanEngine
+
+    @impl true
+    def insert_job(_conf, changeset, _opts) do
+      {:error, Ecto.Changeset.add_error(changeset, :args, "synthetic enqueue failure")}
+    end
+  end
 
   describe "users" do
     alias FormDelegate.Accounts.User
@@ -66,6 +79,29 @@ defmodule FormDelegate.AccountsTest do
       assert [send] = Repo.all(FormDelegate.Accounts.ConfirmationSend)
       assert send.user_id == user.id
       assert send.inserted_at == user.confirmation_sent_at
+    end
+
+    test "register_user/2 enqueues the welcome email in the registration transaction" do
+      start_oban(:registration_manual_oban, Oban.Engines.Basic)
+
+      assert {:ok, user} =
+               Accounts.register_user(@valid_registration_attrs, :registration_manual_oban)
+
+      assert [%Oban.Job{worker: worker, args: args}] = Repo.all(Oban.Job)
+      assert worker == inspect(WelcomeEmail)
+      assert args == %{"user_id" => user.id}
+      assert [%ConfirmationSend{}] = Repo.all(ConfirmationSend)
+    end
+
+    test "register_user/2 rolls back the account and send record when enqueueing fails" do
+      start_oban(FailingEngine, FailingEngine)
+
+      assert {:error, :welcome_email_unavailable} =
+               Accounts.register_user(@valid_registration_attrs, FailingEngine)
+
+      assert Repo.aggregate(User, :count) == 0
+      assert Repo.aggregate(ConfirmationSend, :count) == 0
+      assert Repo.aggregate(Oban.Job, :count) == 0
     end
 
     test "register_user/1 with invalid data returns error changeset" do
@@ -206,5 +242,18 @@ defmodule FormDelegate.AccountsTest do
       team_id: team.id,
       is_billing_account: Keyword.fetch!(attrs, :is_billing_account)
     })
+  end
+
+  defp start_oban(name, engine) do
+    start_supervised!(
+      {Oban,
+       name: name,
+       repo: Repo,
+       engine: engine,
+       testing: :manual,
+       queues: false,
+       plugins: false,
+       peer: false}
+    )
   end
 end

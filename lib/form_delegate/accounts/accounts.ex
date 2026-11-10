@@ -10,6 +10,8 @@ defmodule FormDelegate.Accounts do
   alias FormDelegate.Accounts.User
   alias FormDelegate.Memberships.Membership
 
+  require Logger
+
   @doc """
   Returns the list of users.
 
@@ -298,15 +300,23 @@ defmodule FormDelegate.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def register_user(attrs \\ %{}) do
+  def register_user(attrs \\ %{}, oban \\ Oban) do
     changeset = Registration.changeset(%Registration{}, attrs)
 
-    with %Ecto.Multi{} = multi <- Registration.to_multi(changeset),
+    with %Ecto.Multi{} = multi <- Registration.to_multi(changeset, oban),
          {:ok, %{user: user}} <- Repo.transaction(multi) do
       {:ok, Repo.preload(user, user_preloads())}
     else
       {:error, changeset} ->
         {:error, changeset}
+
+      # A job error is an infrastructure failure, not a problem with the submitted fields.
+      {:error, :welcome_email, reason, _changes} ->
+        Logger.error(
+          "FD: Registration rolled back; welcome email enqueue failed: #{inspect(reason)}"
+        )
+
+        {:error, :welcome_email_unavailable}
 
       {:error, _operation, changeset, _changes} ->
         {:error, changeset}
