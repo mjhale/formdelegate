@@ -2,7 +2,6 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { z } from 'zod';
 
 import { safeRedirectPath } from 'utils/destination';
 import {
@@ -11,45 +10,43 @@ import {
   setCurrentTeamCookie,
 } from 'utils/profile';
 
-const userSchema = z.object({
-  captcha: z.string().min(1, { message: 'Invalid Captcha response' }),
-  destination: z.string(),
-  user: z
-    .object({
-      name: z.string().min(1, { message: 'Full name is required' }),
-      email: z.string().email(),
-      password: z.string().min(8),
-      password_confirmation: z.string().min(8),
-    })
-    .refine((data) => data.password === data.password_confirmation, {
-      message: "Passwords don't match",
-      path: ['password_confirmation'],
-    }),
-});
+import {
+  apiFieldErrorState,
+  captchaErrorState,
+  fieldErrorState,
+  parseSignupResponse,
+  serviceErrorState,
+  signInErrorState,
+  signupInputSchema,
+  type SignupState,
+} from './signupContract';
 
-export async function createUserAction(_currentState, rawFormData: FormData) {
+export async function createUserAction(
+  _currentState: SignupState,
+  rawFormData: FormData
+): Promise<SignupState> {
   const formData = {
-    captcha: rawFormData.get('captcha'),
-    destination: rawFormData.get('destination'),
+    captcha: String(rawFormData.get('captcha') ?? ''),
+    destination: String(rawFormData.get('destination') ?? ''),
     user: {
-      email: rawFormData.get('user.email'),
-      name: rawFormData.get('user.name'),
-      password: rawFormData.get('user.password'),
-      password_confirmation: rawFormData.get('user.password_confirmation'),
+      email: String(rawFormData.get('user.email') ?? ''),
+      name: String(rawFormData.get('user.name') ?? ''),
+      password: String(rawFormData.get('user.password') ?? ''),
+      password_confirmation: String(
+        rawFormData.get('user.password_confirmation') ?? ''
+      ),
     },
   };
 
-  const validatedData = userSchema.safeParse(formData);
+  const validatedData = signupInputSchema.safeParse(formData);
 
   if (!validatedData.success) {
-    return {
-      message: 'Failed to create user due to field errors.',
-      errors: validatedData.error.format(),
-    };
+    return fieldErrorState(validatedData.error);
   }
 
   const destination = safeRedirectPath(validatedData.data.destination, '');
   let redirectUrl = destination || '/dashboard';
+  let signupResult: Awaited<ReturnType<typeof parseSignupResponse>>;
 
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/v1/users`, {
@@ -64,19 +61,43 @@ export async function createUserAction(_currentState, rawFormData: FormData) {
       },
     });
 
-    if (!res.ok) {
-      throw new Error(`Network response failure while creating user`);
-    }
+    signupResult = await parseSignupResponse(res);
+  } catch {
+    console.error('Signup failed.', { stage: 'signup_request' });
+    return serviceErrorState();
+  }
 
-    const { data } = await res.json();
-    const profile = await fetchProfile(data.token, data.id.toString());
+  if (signupResult.status === 'captcha_error') {
+    return captchaErrorState();
+  }
+
+  if (signupResult.status === 'field_error') {
+    return apiFieldErrorState(signupResult.fieldErrors);
+  }
+
+  if (signupResult.status === 'service_error') {
+    console.error('Signup failed.', {
+      stage: 'signup_response',
+      status: signupResult.httpStatus,
+      reason: signupResult.reason,
+    });
+
+    return serviceErrorState();
+  }
+
+  // The account exists from here on, so a failure must not invite a second signup.
+  let failureStage = 'profile_request';
+
+  try {
+    const profile = await fetchProfile(signupResult.token, signupResult.userId);
     const selectedTeamId =
       profile.current_team?.id || profile.memberships[0]?.team.id;
+    failureStage = 'session_setup';
     const cookieStore = await cookies();
 
     cookieStore.set({
       name: 'access_token',
-      value: data.token,
+      value: signupResult.token,
       httpOnly: true,
       sameSite: 'lax',
       path: '/',
@@ -86,7 +107,7 @@ export async function createUserAction(_currentState, rawFormData: FormData) {
 
     cookieStore.set({
       name: 'user_id',
-      value: data.id,
+      value: signupResult.userId,
       httpOnly: false,
       sameSite: 'lax',
       path: '/',
@@ -100,8 +121,9 @@ export async function createUserAction(_currentState, rawFormData: FormData) {
       cookieStore.delete(CURRENT_TEAM_COOKIE);
       redirectUrl = destination || '/account-setup-required';
     }
-  } catch (error) {
-    throw new Error(`Fetch Error: Failed to create user`);
+  } catch {
+    console.error('Signup sign-in failed.', { stage: failureStage });
+    return signInErrorState();
   }
 
   redirect(redirectUrl);
